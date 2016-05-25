@@ -1,4 +1,6 @@
-class Plotly extends React.Component {
+import Plotly from 'plotly.js';
+
+class PlotlyPlot extends React.Component {
     constructor(props) {
         super(props);
         this.state = { data: [], layout: {} };
@@ -10,14 +12,13 @@ class Plotly extends React.Component {
 
     componentDidMount() {
         // let {data, layout, config} = this.props;
-        Plotly.plot(this.container, this.state.data, this.state.layout); //, config);
+        Plotly.newPlot(this.container, this.state.data, this.state.layout); //, config);
         // if (this.props.onClick)
         this.container.on('plotly_click', function(data) {
             console.log('onclick');
         }); //this.props.onClick);
 
         this.container.on('plotly_beforehover')
-
 
         if (this.props.onBeforeHover)
             this.container.on('plotly_beforehover', this.props.onBeforeHover);

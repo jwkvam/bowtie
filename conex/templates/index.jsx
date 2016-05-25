@@ -1,3 +1,5 @@
+import React from 'react';
+import {render} from 'react-dom';
 import { Flex, Item } from 'react-flex';
 import io from 'socket.io-client';
 
@@ -19,9 +21,9 @@ class Dashboard extends React.Component {
                 </Item>
                 <Flex column>
 
-                    {% for visuals in visualrow %}
+                    {% for visualrow in visuals %}
                     <Flex row>
-                        {% for visual in visuals %}
+                        {% for visual in visualrow %}
                         <Item>
                             {{ visual }}
                         </Item>

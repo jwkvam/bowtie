@@ -10,6 +10,8 @@ import dill as pickle
 from jinja2 import Environment, FileSystemLoader
 
 from conex.compat import makedirs
+from conex.control import Controller
+from conex.visual import Visual
 
 
 class _Subscription(object):
@@ -21,20 +23,55 @@ class _Subscription(object):
 
 class Layout(object):
 
+    _packages = [
+        'babel-core',
+        'babel-loader',
+        'babel-polyfill',
+        'babel-preset-es2015',
+        'babel-preset-react',
+        'classnames',
+        'core-js',
+        'css-loader',
+        'extract-text-webpack-plugin',
+        'less-loader',
+        'node-sass',
+        'react',
+        'react-dom',
+        'react-flex',
+        'sass-loader',
+        'socket.io-client',
+        'style-loader',
+        'webpack'
+    ]
+
     def __init__(self, title=None):
         self.title = title
         self.subscriptions = []
+        self.packages = set()
+        self.templates = set()
+        self.visuals = [[]]
+        self.controllers = []
 
-    def add_visual(self, visual):
-        pass
+    def add_visual(self, visual, next_row=False):
+        assert isinstance(visual, Visual)
+        self.packages.add(visual.package)
+        self.templates.add(visual.template)
 
-    def add_control(self, control):
-        pass
+        if next_row and self.visuals[-1]:
+            self.visuals.append([])
+
+        self.visuals[-1].append(visual.instantiate)
+
+
+    def add_controller(self, control):
+        assert isinstance(control, Controller)
+        self.packages.add(control.package)
+        self.templates.add(control.template)
+        self.controllers.append(control.instantiate)
 
     def subscribe(self, event, func):
         sub = _Subscription(event, func)
         self.subscriptions.append(sub)
-        # socket.on('{name}#{event}'.format(self.name, event))(func)
 
     def build(self, directory='build', host='0.0.0.0', port=9991,
               debug=False):
@@ -42,18 +79,12 @@ class Layout(object):
             path.join(path.dirname(__file__), 'templates')
         ))
 
-        package = env.get_template('package.json')
         webpack = env.get_template('webpack.config.js')
         server = env.get_template('server.py')
         index = env.get_template('index.html')
         react = env.get_template('index.jsx')
 
         src, app, templates = create_directories(directory=directory)
-
-        with open(path.join(directory, package.name), 'w') as f:
-            f.write(
-                package.render()
-            )
 
         with open(path.join(directory, webpack.name), 'w') as f:
             f.write(
@@ -78,15 +109,26 @@ class Layout(object):
                 index.render(title=self.title)
             )
 
+        components = [env.get_template(t).render() for t in self.templates]
+
         with open(path.join(app, react.name), 'w') as f:
             f.write(
-                react.render(title=self.title)
+                react.render(
+                    components=components,
+                    controls=self.controllers,
+                    visuals=self.visuals
+                )
             )
 
-        install = Popen('npm install', shell=True, cwd='build')
-        install.wait()
-        dev = Popen('npm run dev', shell=True, cwd='build')
-        dev.wait()
+
+        init = Popen('npm init -f', shell=True, cwd='build').wait()
+        assert init == 0, 'Error running "npm init -f"'
+        packages = ' '.join(self._packages + list(self.packages))
+        install = Popen('npm install -S {}'.format(packages),
+                        shell=True, cwd='build').wait()
+        assert install == 0, 'Error install node packages'
+        dev = Popen('webpack -d', shell=True, cwd='build').wait()
+        assert dev == 0, 'Error building with webpack'
 
 
 def create_directories(directory='build'):
