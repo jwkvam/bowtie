@@ -17,7 +17,7 @@ from conex.visual import Visual
 class _Subscription(object):
 
     def __init__(self, event, func):
-        self.event = event
+        self.event = "'{}'".format(event)
         self.func = pickle.dumps(func)
 
 

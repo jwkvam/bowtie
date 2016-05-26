@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from enum import Enum
+from collections import namedtuple
 
 import numpy as np
+from enum import Enum
 
 from conex.component import Component
+
+# from event import Event
 
 
 class Controller(Component):
@@ -19,17 +22,30 @@ class Nouislider(Controller):
     template = 'nouislider.jsx'
     package = 'react-nouislider'
     tag = ('<Nouislider range={{{{min: {min}, max: {max}}}}} '
-           'start={{{start}}} {tooltips} />')
+           'start={{{start}}} {tooltips} '
+           'onChange={{ function(x) {{console.log(x); socket.emit("{uuid}#change", x);}} }} '
+           '/>')
+
+
+    _events = [
+        'update',
+        'slide',
+        'set',
+        'change',
+        'start',
+        'end'
+    ]
 
     def __init__(self, start=0, minimum=0, maximum=100, tooltips=False):
+        super(Nouislider, self).__init__()
         start = np.atleast_1d(start)
         self.instantiate = self.tag.format(
+            uuid=self.uuid,
             min=minimum,
             max=maximum,
             start=start,
             tooltips='tooltips' if tooltips else ''
         )
-        super(Nouislider, self).__init__()
 
     # pass
     #events = Enum('Events', [''])kkk

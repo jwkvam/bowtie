@@ -1,2 +1,2 @@
-require('nouislider-algolia-fork/src/nouislider.css')
+require('nouislider-algolia-fork/src/nouislider.css');
 import Nouislider from 'react-nouislider';

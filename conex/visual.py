@@ -25,6 +25,7 @@ class Plotly(Visual):
     package = 'plotly.js'
     tag = '<PlotlyPlot />'
 
+    _events = ['click']
 
     def __init__(self, data=None, layout=None):
         self.instantiate = self.tag

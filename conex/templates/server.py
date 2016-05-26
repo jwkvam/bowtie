@@ -16,7 +16,7 @@ def index():
 
 {% for subscription in subscriptions %}
 socketio.on({{ subscription.event }})(
-    dill.loads({{ subscription.func }})
+    pickle.loads({{ subscription.func }})
 )
 {% endfor %}
 
