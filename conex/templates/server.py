@@ -12,7 +12,7 @@ socketio = SocketIO(app)
 
 @app.route('/')
 def index():
-    return render_template('index.html', scripts=['bundle.js'])
+    return render_template('index.html')
 
 {% for subscription in subscriptions %}
 socketio.on({{ subscription.event }})(
