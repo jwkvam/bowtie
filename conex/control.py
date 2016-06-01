@@ -23,29 +23,36 @@ class Nouislider(Controller):
     package = 'react-nouislider'
     tag = ('<Nouislider range={{{{min: {min}, max: {max}}}}} '
            'start={{{start}}} {tooltips} '
-           'onChange={{ function(x) {{console.log(x); socket.emit("{uuid}#change", x);}} }} '
+           'onChange={{ function(x) {{socket.emit("{uuid}#change", x);}} }} '
            '/>')
 
 
-    _events = [
-        'update',
-        'slide',
-        'set',
-        'change',
-        'start',
-        'end'
-    ]
 
     def __init__(self, start=0, minimum=0, maximum=100, tooltips=False):
         super(Nouislider, self).__init__()
         start = np.atleast_1d(start)
         self.instantiate = self.tag.format(
-            uuid=self.uuid,
+            uuid=self._uuid,
             min=minimum,
             max=maximum,
             start=start,
             tooltips='tooltips' if tooltips else ''
         )
 
-    # pass
-    #events = Enum('Events', [''])kkk
+    def on_update(self):
+        pass
+
+    def on_slide(self):
+        pass
+
+    def on_set(self):
+        pass
+
+    def on_change(self):
+        pass
+
+    def on_start(self):
+        pass
+
+    def on_en(self):
+        pass
