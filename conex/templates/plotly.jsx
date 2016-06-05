@@ -16,6 +16,7 @@ class PlotlyPlot extends React.Component {
     componentDidMount() {
         // let {data, layout, config} = this.props;
         // if (this.props.onClick)
+        var uuid = this.props.uuid;
         if (this.props.onClick)
             this.container.on('plotly_click', function (data) {
                 socket.emit(this.props.uuid + '#click', data);
@@ -26,21 +27,37 @@ class PlotlyPlot extends React.Component {
             });
         if (this.props.onHover)
             this.container.on('plotly_hover', function (data) {
-                socket.emit(this.props.uuid + '#hover');
+                socket.emit(this.props.uuid + '#hover', data);
             });
         if (this.props.onUnHover)
             this.container.on('plotly_unhover', function (data) {
-                socket.emit(this.props.uuid + '#unhover');
+                socket.emit(this.props.uuid + '#unhover', data);
             });
         if (this.props.onSelected)
             this.container.on('plotly_selected', function (data) {
-                socket.emit(this.props.uuid + '#selected');
+                socket.emit(this.props.uuid + '#selected', data);
             });
 
         socket.on(this.props.uuid + '#' + 'all', (data) => {
             this.setState(data);
-            console.log('hello???')
+            console.log('hello???');
         });
+        // socket.on(this.props.uuid + '#' + 'get', (data) => {
+        //     console.log('get command!!!');
+        //     console.log(data);
+        //     console.log(uuid + '#put');
+        //     socket.emit(uuid + '#put', [3]); //this.state);
+        //     console.log('done seding');
+        // });
+        socket.on(this.props.uuid + '#' + 'get', function (data, fn) {
+            console.log('get command!!!');
+            console.log(data);
+            console.log(uuid + '#put');
+            // socket.emit(uuid + '#put'); //this.state);
+            fn({hello: 'new data'});
+            console.log('done seding');
+        });
+        // socket.emit(this.props.uuid + '#put', [3]);
         Plotly.newPlot(this.container, this.state.data, this.state.layout); //, config);
     }
 
@@ -57,7 +74,7 @@ class PlotlyPlot extends React.Component {
         // this.container.data = this.props.data;
         // this.container.layout = this.props.layout;
         console.log('did update');
-        console.log(this.state);
+        // console.log(this.state);
         Plotly.newPlot(this.container, this.state.data, this.state.layout);
     }
 

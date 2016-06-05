@@ -20,6 +20,19 @@ class _Subscription(object):
         self.event = "'{}'".format(event)
         self.func = pickle.dumps(func)
 
+class _Function(object):
+
+    def __init__(self, func):
+        self.name = func.__code__.co_name
+        self.string = pickle.dumps(func)
+
+
+class _Queue(object):
+
+    def __init__(self, name, uuid):
+        self.name = name
+        self.uuid = uuid
+
 
 class Layout(object):
 
@@ -51,6 +64,8 @@ class Layout(object):
         self.templates = set()
         self.visuals = [[]]
         self.controllers = []
+        self.queue = []
+        self.functions = []
 
     def add_visual(self, visual, next_row=False):
         assert isinstance(visual, Visual)
@@ -61,6 +76,12 @@ class Layout(object):
             self.visuals.append([])
 
         self.visuals[-1].append(visual.instantiate)
+        self.queue.append(_Queue(name=visual.__class__.__name__,
+                                 uuid=visual._uuid))
+
+
+    def add_function(self, func):
+        self.functions.append(_Function(func))
 
 
     def add_controller(self, control):
@@ -68,6 +89,8 @@ class Layout(object):
         self.packages.add(control.package)
         self.templates.add(control.template)
         self.controllers.append(control.instantiate)
+        self.queue.append(_Queue(name=control.__class__.__name__,
+                                 uuid=control._uuid))
 
     def subscribe(self, event, func):
         sub = _Subscription(event, func)
@@ -95,7 +118,9 @@ class Layout(object):
         with open(server_path, 'w') as f:
             f.write(
                 server.render(
+                    components=self.queue,
                     subscriptions=self.subscriptions,
+                    functions=self.functions,
                     host="'{}'".format(host),
                     port=port,
                     debug=debug
