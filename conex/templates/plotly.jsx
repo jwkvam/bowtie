@@ -20,23 +20,25 @@ class PlotlyPlot extends React.Component {
         var uuid = this.props.uuid;
         // if (this.props.onClick)
         this.container.on('plotly_click', function (data) {
-            socket.emit(this.props.uuid + '#click', data);
+            console.log('clicked');
+            console.log('data');
+            socket.emit(uuid + '#click', data);
         });
         // if (this.props.onBeforeHover)
         this.container.on('plotly_beforehover', function (data) {
-            socket.emit(this.props.uuid + '#beforehover', data);
+            socket.emit(uuid + '#beforehover', data);
         });
         // if (this.props.onHover)
         this.container.on('plotly_hover', function (data) {
-            socket.emit(this.props.uuid + '#hover', data);
+            socket.emit(uuid + '#hover', data);
         });
         // if (this.props.onUnHover)
         this.container.on('plotly_unhover', function (data) {
-            socket.emit(this.props.uuid + '#unhover', data);
+            socket.emit(uuid + '#unhover', data);
         });
         // if (this.props.onSelected)
         this.container.on('plotly_selected', function (data) {
-            socket.emit(this.props.uuid + '#selected', data);
+            socket.emit(uuid + '#selected', data);
         });
 
         socket.on(this.props.uuid + '#all', (data) => {
@@ -70,11 +72,11 @@ class PlotlyPlot extends React.Component {
 
     componentDidUpdate() {
         //TODO use minimal update for given changes
-        // this.container.data = this.props.data;
-        // this.container.layout = this.props.layout;
+        this.container.data = this.state.data;
+        this.container.layout = this.state.layout;
         console.log('did update');
         // console.log(this.state);
-        Plotly.newPlot(this.container, this.state.data, this.state.layout);
+        Plotly.redraw(this.container); //, this.state.data, this.state.layout);
     }
 
     componentWillUnmount() {
