@@ -23,16 +23,17 @@ class Nouislider(Controller):
     package = 'react-nouislider'
     tag = ('<Nouislider range={{{{min: {min}, max: {max}}}}} '
            'start={{{start}}} {tooltips} '
-           'onChange={{ function(x) {{socket.emit("{uuid}#change", x);}} }} '
+           'uuid={{{uuid}}} '
            '/>')
 
 
+           # 'onChange={{ function(x) {{socket.emit("{uuid}#change", x);}} }} '
 
     def __init__(self, start=0, minimum=0, maximum=100, tooltips=False):
         super(Nouislider, self).__init__()
         start = np.atleast_1d(start)
         self.instantiate = self.tag.format(
-            uuid=self._uuid,
+            uuid="'{}'".format(self._uuid),
             min=minimum,
             max=maximum,
             start=start,

@@ -15,32 +15,32 @@ class PlotlyPlot extends React.Component {
 
     componentDidMount() {
         // let {data, layout, config} = this.props;
+        Plotly.newPlot(this.container, this.state.data, this.state.layout); //, config);
         // if (this.props.onClick)
         var uuid = this.props.uuid;
-        if (this.props.onClick)
-            this.container.on('plotly_click', function (data) {
-                socket.emit(this.props.uuid + '#click', data);
-            });
-        if (this.props.onBeforeHover)
-            this.container.on('plotly_beforehover', function (data) {
-                socket.emit(this.props.uuid + '#beforehover', data);
-            });
-        if (this.props.onHover)
-            this.container.on('plotly_hover', function (data) {
-                socket.emit(this.props.uuid + '#hover', data);
-            });
-        if (this.props.onUnHover)
-            this.container.on('plotly_unhover', function (data) {
-                socket.emit(this.props.uuid + '#unhover', data);
-            });
-        if (this.props.onSelected)
-            this.container.on('plotly_selected', function (data) {
-                socket.emit(this.props.uuid + '#selected', data);
-            });
+        // if (this.props.onClick)
+        this.container.on('plotly_click', function (data) {
+            socket.emit(this.props.uuid + '#click', data);
+        });
+        // if (this.props.onBeforeHover)
+        this.container.on('plotly_beforehover', function (data) {
+            socket.emit(this.props.uuid + '#beforehover', data);
+        });
+        // if (this.props.onHover)
+        this.container.on('plotly_hover', function (data) {
+            socket.emit(this.props.uuid + '#hover', data);
+        });
+        // if (this.props.onUnHover)
+        this.container.on('plotly_unhover', function (data) {
+            socket.emit(this.props.uuid + '#unhover', data);
+        });
+        // if (this.props.onSelected)
+        this.container.on('plotly_selected', function (data) {
+            socket.emit(this.props.uuid + '#selected', data);
+        });
 
-        socket.on(this.props.uuid + '#' + 'all', (data) => {
+        socket.on(this.props.uuid + '#all', (data) => {
             this.setState(data);
-            console.log('hello???');
         });
         // socket.on(this.props.uuid + '#' + 'get', (data) => {
         //     console.log('get command!!!');
@@ -58,7 +58,6 @@ class PlotlyPlot extends React.Component {
             console.log('done seding');
         });
         // socket.emit(this.props.uuid + '#put', [3]);
-        Plotly.newPlot(this.container, this.state.data, this.state.layout); //, config);
     }
 
     // updateState(state) {
@@ -95,7 +94,7 @@ class PlotlyPlot extends React.Component {
 }
 
 PlotlyPlot.propTypes = {
-    uuid: React.PropTypes.string,
+    uuid: React.PropTypes.string.isRequired,
     initState: React.PropTypes.object
 };
 

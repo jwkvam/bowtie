@@ -42,6 +42,7 @@ class Layout(object):
         'babel-polyfill',
         'babel-preset-es2015',
         'babel-preset-react',
+        'babel-plugin-transform-object-rest-spread',
         'classnames',
         'core-js',
         'css-loader',

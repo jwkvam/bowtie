@@ -22,7 +22,8 @@ var config = {
                 include: APP_DIR,
                 loader: 'babel',
                 query: {
-                    presets: ['es2015', 'react']
+                    presets: ['es2015', 'react'],
+                    plugins: ['transform-object-rest-spread']
                 }
             }, {
                 test: /\.scss$/,
