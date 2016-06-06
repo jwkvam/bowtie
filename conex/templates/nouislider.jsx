@@ -7,16 +7,19 @@ import nouislider from 'nouislider-algolia-fork';
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
 class Nouislider extends React.Component {
-    componentDidMount() {
-        if (this.props.disabled) this.sliderContainer.setAttribute('disabled', true);
-        else this.sliderContainer.removeAttribute('disabled');
+    constructor(props) {
+        super(props);
+        this.createSlider = this.createSlider.bind(this);
+        this.getValue = this.getValue.bind(this);
+    }
+
+    createSlider() {
         var slider = this.slider = nouislider.create(this.sliderContainer,
             {...this.props}
         );
+
         var uuid = this.props.uuid
 
-            // {..._objectWithoutProperties(this.props, ["uuid"])}
-        // if (this.props.onUpdate) {
         slider.on('update', function (data) {
             socket.emit(uuid + '#update', data);
         });
@@ -31,10 +34,25 @@ class Nouislider extends React.Component {
             socket.emit(uuid + '#slide', data);
         });
 
-        socket.on(uuid + '#get', function (data, fn) { 
-            console.log(this.state);
-            fn(this.state);
-        });
+            // {..._objectWithoutProperties(this.props, ["uuid"])}
+        // if (this.props.onUpdate) {
+    }
+
+    componentDidMount() {
+        if (this.props.disabled) this.sliderContainer.setAttribute('disabled', true);
+        else this.sliderContainer.removeAttribute('disabled');
+
+        this.createSlider();
+        var uuid = this.props.uuid
+
+        socket.on(uuid + '#get', this.getValue);
+        //     console.log(this.state);
+        //     fn(this.state);
+        // });
+    }
+
+    getValue(data, fn) {
+        fn(this.slider.get());
     }
 
     componentDidUpdate() {

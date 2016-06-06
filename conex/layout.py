@@ -65,7 +65,6 @@ class Layout(object):
         self.templates = set()
         self.visuals = [[]]
         self.controllers = []
-        self.queue = []
         self.functions = []
 
     def add_visual(self, visual, next_row=False):
@@ -77,8 +76,6 @@ class Layout(object):
             self.visuals.append([])
 
         self.visuals[-1].append(visual.instantiate)
-        self.queue.append(_Queue(name=visual.__class__.__name__,
-                                 uuid=visual._uuid))
 
 
     def add_function(self, func):
@@ -90,8 +87,6 @@ class Layout(object):
         self.packages.add(control.package)
         self.templates.add(control.template)
         self.controllers.append(control.instantiate)
-        self.queue.append(_Queue(name=control.__class__.__name__,
-                                 uuid=control._uuid))
 
     def subscribe(self, event, func):
         sub = _Subscription(event, func)
@@ -119,7 +114,6 @@ class Layout(object):
         with open(server_path, 'w') as f:
             f.write(
                 server.render(
-                    components=self.queue,
                     subscriptions=self.subscriptions,
                     functions=self.functions,
                     host="'{}'".format(host),

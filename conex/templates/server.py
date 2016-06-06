@@ -16,15 +16,15 @@ socketio = SocketIO(app)
 def index():
     return render_template('index.html')
 
-{% for component in components %}
-{{ "queue_" ~ component.name ~ "_" ~ component.uuid }} = LightQueue()
-
-@socketio.on('{{component.uuid ~ "#put"}}')
-def {{"get_" ~ component.name ~ "_" ~ component.uuid}}(data):
-    print('got sometingsss')
-    {{ "queue_" ~ component.name ~ "_" ~ component.uuid }}.put(data)
-
-{% endfor %}
+# {% for component in components %}
+# {{ "queue_" ~ component.name ~ "_" ~ component.uuid }} = LightQueue()
+#
+# @socketio.on('{{component.uuid ~ "#put"}}')
+# def {{"get_" ~ component.name ~ "_" ~ component.uuid}}(data):
+#     print('got sometingsss')
+#     {{ "queue_" ~ component.name ~ "_" ~ component.uuid }}.put(data)
+#
+# {% endfor %}
 
 # {% for subscription in subscriptions %}
 # socketio.on({{ subscription.event }})(

@@ -10,7 +10,6 @@ from uuid import uuid4
 
 from future.utils import with_metaclass
 
-from eventlet.queue import LightQueue
 from eventlet.event import Event
 
 
@@ -42,19 +41,6 @@ class Component(with_metaclass(_EventMeta, object)):
 
     def __init__(self):
         self._uuid = id(self)
-        self.queue = LightQueue()
-
-    def _get_queue(self):
-        for i, f in enumerate(stack(0)):
-            # if 'flask_socketio' in f[1] and '_handle' in f[3]:
-            if 'flask/ctx.py' in f[1] and 'wrapper' in f[3]:
-                break
-        name = self.__class__.__name__
-        # import IPython
-        # IPython.embed()
-        return stack(0)[i-1][0].f_globals['queue_{}_{}'.format(name, self._uuid)]
-
-
 
     def get(self, block=True, timeout=None):
         # queue = self._get_queue()
@@ -63,19 +49,19 @@ class Component(with_metaclass(_EventMeta, object)):
         #     print('spwaned', valx)
         #     return valx
         event = Event()
-        def ack(data):
-            print('acknowledged')
-            print(data)
-            # valx = queue.put(data)
-            event.send(data)
-        emit('{}#get'.format(self._uuid), callback=ack)
-        print('wait get')
-        val = [1]
+        # def ack(data):
+        #     print('acknowledged')
+        #     print(data)
+        #     # valx = queue.put(data)
+        #     event.send(data)
+        emit('{}#get'.format(self._uuid), callback=lambda x: event.send(x))
+        # print('wait get')
+        # val = [1]
         # valx = queue.get(block=block, timeout=10)
-        valx = event.wait()
+        return event.wait()
         # eventlet.spawn(getting)
         #
         # eventlet.sleep(1)
         # print(valx)
-        print('done get', valx)
-        return val
+        # print('done get', valx)
+        # return valx
