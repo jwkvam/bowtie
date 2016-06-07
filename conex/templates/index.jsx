@@ -1,3 +1,4 @@
+require('react-flex/index.css')
 import React from 'react';
 import {render} from 'react-dom';
 import { Flex, Item } from 'react-flex';

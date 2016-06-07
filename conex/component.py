@@ -4,7 +4,7 @@ from collections import namedtuple
 
 from inspect import stack
 
-from flask.ext.socketio import emit
+from flask_socketio import emit
 
 from uuid import uuid4
 

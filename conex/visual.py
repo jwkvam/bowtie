@@ -5,7 +5,7 @@ from collections import namedtuple
 
 from future.utils import with_metaclass
 
-from flask.ext.socketio import emit
+from flask_socketio import emit
 from conex.component import Component, _EventMeta
 
 
