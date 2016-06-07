@@ -20,26 +20,33 @@ class PlotlyPlot extends React.Component {
         var uuid = this.props.uuid;
         // if (this.props.onClick)
         this.container.on('plotly_click', function (data) {
+
+            var p0 = data.points[0];
+            var datum = {
+                n: p0.pointNumber,
+                x: p0.x,
+                y: p0.y,
+            };
             console.log('clicked');
             console.log('data');
-            socket.emit(uuid + '#click', data);
+            socket.emit(uuid + '#click', datum);
         });
         // if (this.props.onBeforeHover)
-        this.container.on('plotly_beforehover', function (data) {
-            socket.emit(uuid + '#beforehover', data);
-        });
-        // if (this.props.onHover)
-        this.container.on('plotly_hover', function (data) {
-            socket.emit(uuid + '#hover', data);
-        });
-        // if (this.props.onUnHover)
-        this.container.on('plotly_unhover', function (data) {
-            socket.emit(uuid + '#unhover', data);
-        });
-        // if (this.props.onSelected)
-        this.container.on('plotly_selected', function (data) {
-            socket.emit(uuid + '#selected', data);
-        });
+        // this.container.on('plotly_beforehover', function (data) {
+        //     socket.emit(uuid + '#beforehover', data);
+        // });
+        // // if (this.props.onHover)
+        // this.container.on('plotly_hover', function (data) {
+        //     socket.emit(uuid + '#hover', data);
+        // });
+        // // if (this.props.onUnHover)
+        // this.container.on('plotly_unhover', function (data) {
+        //     socket.emit(uuid + '#unhover', data);
+        // });
+        // // if (this.props.onSelected)
+        // this.container.on('plotly_selected', function (data) {
+        //     socket.emit(uuid + '#selected', data);
+        // });
 
         socket.on(this.props.uuid + '#all', (data) => {
             this.setState(data);
