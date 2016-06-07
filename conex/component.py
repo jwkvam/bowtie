@@ -1,15 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from collections import namedtuple
-
-from inspect import stack
-
 from flask_socketio import emit
-
-from uuid import uuid4
-
 from future.utils import with_metaclass
-
 from eventlet.event import Event
 
 
@@ -43,25 +35,6 @@ class Component(with_metaclass(_EventMeta, object)):
         self._uuid = id(self)
 
     def get(self, block=True, timeout=None):
-        # queue = self._get_queue()
-        # def getting():
-        #     valx = queue.get(block=block, timeout=10)
-        #     print('spwaned', valx)
-        #     return valx
         event = Event()
-        # def ack(data):
-        #     print('acknowledged')
-        #     print(data)
-        #     # valx = queue.put(data)
-        #     event.send(data)
         emit('{}#get'.format(self._uuid), callback=lambda x: event.send(x))
-        # print('wait get')
-        # val = [1]
-        # valx = queue.get(block=block, timeout=10)
         return event.wait()
-        # eventlet.spawn(getting)
-        #
-        # eventlet.sleep(1)
-        # print(valx)
-        # print('done get', valx)
-        # return valx
