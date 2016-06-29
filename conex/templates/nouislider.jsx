@@ -1,4 +1,5 @@
-require('nouislider-algolia-fork/src/nouislider.css');
+import React from 'react';
+import 'nouislider-algolia-fork/src/nouislider.css';
 // import Nouislider from 'react-nouislider';
 
 // import React from 'react';
@@ -6,7 +7,7 @@ import nouislider from 'nouislider-algolia-fork';
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-class Nouislider extends React.Component {
+export default class Nouislider extends React.Component {
     constructor(props) {
         super(props);
         this.createSlider = this.createSlider.bind(this);
@@ -18,7 +19,8 @@ class Nouislider extends React.Component {
             {...this.props}
         );
 
-        var uuid = this.props.uuid
+        var uuid = this.props.uuid;
+        var socket = this.props.socket;
 
         slider.on('update', function (data) {
             socket.emit(uuid + '#update', data);
@@ -43,7 +45,8 @@ class Nouislider extends React.Component {
         else this.sliderContainer.removeAttribute('disabled');
 
         this.createSlider();
-        var uuid = this.props.uuid
+        var uuid = this.props.uuid;
+        var socket = this.props.socket;
 
         socket.on(uuid + '#get', this.getValue);
         //     console.log(this.state);
@@ -76,6 +79,7 @@ class Nouislider extends React.Component {
 Nouislider.propTypes = {
     // http://refreshless.com/nouislider/slider-options/#section-animate
     uuid: React.PropTypes.string.isRequired,
+    socket: React.PropTypes.object.isRequired,
     animate: React.PropTypes.bool,
     // http://refreshless.com/nouislider/behaviour-option/
     behaviour: React.PropTypes.string,

@@ -5,6 +5,8 @@ from os import path
 import stat
 from subprocess import Popen
 
+from collections import namedtuple
+
 import dill as pickle
 
 from jinja2 import Environment, FileSystemLoader
@@ -27,11 +29,7 @@ class _Function(object):
         self.string = pickle.dumps(func)
 
 
-class _Queue(object):
-
-    def __init__(self, name, uuid):
-        self.name = name
-        self.uuid = uuid
+_Import = namedtuple('_Import', ['module', 'component'])
 
 
 class Layout(object):
@@ -42,6 +40,7 @@ class Layout(object):
         'babel-polyfill',
         'babel-preset-es2015',
         'babel-preset-react',
+        'babel-preset-stage-0',
         'babel-plugin-transform-object-rest-spread',
         'classnames',
         'core-js',
@@ -63,6 +62,7 @@ class Layout(object):
         self.subscriptions = []
         self.packages = set()
         self.templates = set()
+        self.imports = set()
         self.visuals = [[]]
         self.controllers = []
         self.functions = []
@@ -71,6 +71,8 @@ class Layout(object):
         assert isinstance(visual, Visual)
         self.packages.add(visual.package)
         self.templates.add(visual.template)
+        self.imports.add(_Import(component=visual.component,
+                                 module=visual.template[:visual.template.find('.')]))
 
         if next_row and self.visuals[-1]:
             self.visuals.append([])
@@ -86,6 +88,8 @@ class Layout(object):
         assert isinstance(control, Controller)
         self.packages.add(control.package)
         self.templates.add(control.template)
+        self.imports.add(_Import(component=control.component,
+                                 module=control.template[:control.template.find('.')]))
         self.controllers.append(control.instantiate)
 
     def subscribe(self, event, func):
@@ -129,12 +133,19 @@ class Layout(object):
                 index.render(title=self.title)
             )
 
-        components = [env.get_template(t).render() for t in self.templates]
+        # components = [env.get_template(t).render() for t in self.templates]
+
+        for template in self.templates:
+            temp = env.get_template(template)
+            with open(path.join(app, temp.name), 'w') as f:
+                f.write(
+                    temp.render()
+                )
 
         with open(path.join(app, react.name), 'w') as f:
             f.write(
                 react.render(
-                    components=components,
+                    components=self.imports,
                     controls=self.controllers,
                     visuals=self.visuals
                 )

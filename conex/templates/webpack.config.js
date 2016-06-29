@@ -10,7 +10,7 @@ var BUILD_DIR = path.resolve(__dirname, 'src/static');
 var APP_DIR = path.resolve(__dirname, 'src/app');
 
 var config = {
-    entry: APP_DIR + '/index',
+    entry: APP_DIR + '/index.jsx',
     output: {
         path: BUILD_DIR,
         filename: 'bundle.js'
@@ -21,8 +21,9 @@ var config = {
                 test: /\.jsx?/,
                 include: APP_DIR,
                 loader: 'babel',
+                exclude: /nodemodules/,
                 query: {
-                    presets: ['es2015', 'react'],
+                    presets: ['es2015', 'react', 'stage-0'],
                     plugins: ['transform-object-rest-spread']
                 }
             }, {
@@ -43,7 +44,7 @@ var config = {
             }
         ],
         noParse: [
-            /plotly\.js/
+            /plotly\.js$/
         ]
     },
     plugins: [

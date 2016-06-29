@@ -2,6 +2,7 @@
 
 
 from collections import namedtuple
+import json
 
 from future.utils import with_metaclass
 
@@ -15,7 +16,7 @@ def make_command(command):
         name = command.__name__[3:]
         signal = '{uuid}#{event}'.format(uuid=self._uuid, event=name)
         print(signal)
-        return emit(signal, data)
+        return emit(signal, json.dumps(data))
 
     actualcommand.__doc__ = command.__doc__
 
@@ -45,19 +46,21 @@ class Visual(with_metaclass(_CommandMeta, Component)):
 
 class Plotly(Visual):
     template = 'plotly.jsx'
+    component = 'PlotlyPlot'
     package = 'plotly.js'
     tag = ('<PlotlyPlot initState={{{init}}} '
+           'socket={{socket}} '
            'uuid={{{uuid}}} '
            '/>')
 
     def __init__(self, init=None):
         super(Plotly, self).__init__()
         if init is None:
-            init = dict(data=[], layout={})
+            init = dict(data=[], layout={'autoresize': True})
 
         self.instantiate = self.tag.format(
             uuid="'{}'".format(self._uuid),
-            init='{}' if init is None else init
+            init='{}' if init is None else json.dumps(init)
         )
 
     ## Events

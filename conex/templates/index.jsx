@@ -1,31 +1,30 @@
-require('react-flex/index.css')
+import 'react-flex/index.css';
 import React from 'react';
 import {render} from 'react-dom';
 import { Flex, Item } from 'react-flex';
 import io from 'socket.io-client';
 
-var socket = io();
-
 {% for component in components %}
-{{ component }}
+import {{ component.component }} from './{{ component.module }}';
 {% endfor %}
 
+var socket = io();
 
 class Dashboard extends React.Component {
     render() {
         return (
             <Flex row>
-                <Item flex={2}>
+                <Item flex={1}>
                     {% for control in controls %}
                     {{ control }}
                     {% endfor %}
                 </Item>
-                <Flex column>
+                <Flex column flex={9}>
 
                     {% for visualrow in visuals %}
-                    <Flex row>
+                    <Flex row flex={1} display='inline-flex'>
                         {% for visual in visualrow %}
-                        <Item>
+                        <Item flex={1}>
                             {{ visual }}
                         </Item>
                         {% endfor %}

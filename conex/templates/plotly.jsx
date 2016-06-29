@@ -1,6 +1,7 @@
+import React from 'react';
 import Plotly from 'plotly.js';
 
-class PlotlyPlot extends React.Component {
+export default class PlotlyPlot extends React.Component {
     constructor(props) {
         super(props);
         this.state = this.props.initState;
@@ -18,6 +19,7 @@ class PlotlyPlot extends React.Component {
         Plotly.newPlot(this.container, this.state.data, this.state.layout); //, config);
         // if (this.props.onClick)
         var uuid = this.props.uuid;
+        var socket = this.props.socket;
         // if (this.props.onClick)
         this.container.on('plotly_click', function (data) {
 
@@ -49,7 +51,7 @@ class PlotlyPlot extends React.Component {
         // });
 
         socket.on(this.props.uuid + '#all', (data) => {
-            this.setState(data);
+            this.setState(JSON.parse(data));
         });
         // socket.on(this.props.uuid + '#' + 'get', (data) => {
         //     console.log('get command!!!');
@@ -81,7 +83,6 @@ class PlotlyPlot extends React.Component {
         //TODO use minimal update for given changes
         this.container.data = this.state.data;
         this.container.layout = this.state.layout;
-        console.log('did update');
         // console.log(this.state);
         Plotly.redraw(this.container); //, this.state.data, this.state.layout);
     }
@@ -104,6 +105,7 @@ class PlotlyPlot extends React.Component {
 
 PlotlyPlot.propTypes = {
     uuid: React.PropTypes.string.isRequired,
+    socket: React.PropTypes.object.isRequired,
     initState: React.PropTypes.object
 };
 

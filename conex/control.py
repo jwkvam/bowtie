@@ -20,8 +20,10 @@ class Controller(Component):
 
 class Nouislider(Controller):
     template = 'nouislider.jsx'
+    component = 'Nouislider'
     package = 'react-nouislider'
     tag = ('<Nouislider range={{{{min: {min}, max: {max}}}}} '
+           'socket={{socket}} '
            'start={{{start}}} {tooltips} '
            'uuid={{{uuid}}} '
            '/>')
