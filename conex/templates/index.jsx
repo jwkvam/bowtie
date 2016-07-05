@@ -2,6 +2,8 @@ import React from 'react';
 import {render} from 'react-dom';
 import io from 'socket.io-client';
 
+import 'normalize.css';
+
 {% for component in components %}
 import {{ component.component }} from './{{ component.module }}';
 {% endfor %}
@@ -11,17 +13,17 @@ var socket = io();
 class Dashboard extends React.Component {
     render() {
         return (
-            <div style={{ '{{' }}display: 'flex', flexDirection: 'row'{{ '}}' }}>
-                <div style={{ '{{' }}flexDirection: 'column', flex: 1{{ '}}' }}>
+            <div style={{ '{{' }}display: 'flex', flexFlow: 'row nowrap'{{ '}}' }}>
+                <div style={{ '{{' }}display: 'flex', flexDirection: 'column', flex: 1{{ '}}' }}>
                     {% for control in controls %}
                     {{ control }}
                     {% endfor %}
 
                 </div>
-                <div style={{ '{{' }}flexDirection: 'column', flex: 9{{ '}}' }}>
+                <div style={{ '{{' }}display: 'flex', flexDirection: 'column', flex: 9{{ '}}' }}>
 
                     {% for visualrow in visuals %}
-                    <div style={{ '{{' }}flexDirection: 'row'{{ '}}' }}>
+                    <div style={{ '{{' }}display: 'flex', flexFlow: 'row nowrap'{{ '}}' }}>
                         {% for visual in visualrow %}
                         {{ visual }}
                         {% endfor %}

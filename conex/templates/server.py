@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from flask import Flask, render_template
+from flask import Flask, render_template, copy_current_request_context
 from flask_socketio import SocketIO, emit
 import eventlet
-from eventlet.queue import LightQueue
 
 import dill as pickle
 
@@ -16,44 +15,13 @@ socketio = SocketIO(app)
 def index():
     return render_template('index.html')
 
-# {% for component in components %}
-# {{ "queue_" ~ component.name ~ "_" ~ component.uuid }} = LightQueue()
-#
-# @socketio.on('{{component.uuid ~ "#put"}}')
-# def {{"get_" ~ component.name ~ "_" ~ component.uuid}}(data):
-#     print('got sometingsss')
-#     {{ "queue_" ~ component.name ~ "_" ~ component.uuid }}.put(data)
-#
-# {% endfor %}
-
-# {% for subscription in subscriptions %}
-# socketio.on({{ subscription.event }})(
-#     pickle.loads({{ subscription.func }})
-# )
-# {% endfor %}
-
-# OLD SEPARATE
-#
-# {% for subscription in subscriptions %}
-# foo = pickle.loads({{ subscription.func }})
-# #     {% for component in components %}
-# # foo.__globals__['{{ "queue_" ~ component.name ~ "_" ~ component.uuid }}'] = {{ "queue_" ~ component.name ~ "_" ~ component.uuid }}
-# #     {% endfor %}
-# socketio.on({{ subscription.event }})(foo)
-# {% endfor %}
-#
-# {% for function in functions %}
-# {{ function.name }} = pickle.loads({{ function.string }})
-# {% endfor %}
-
-from flask import copy_current_request_context
-
-{% for subscription in subscriptions %}
-@socketio.on({{ subscription.event }})
-def zzz(x):
-    print(x)
-    foo = copy_current_request_context(pickle.loads({{ subscription.func }}))
+{% for event, functions in subscriptions.items() %}
+@socketio.on({{ event }})
+def _(x):
+    {% for func in functions %}
+    foo = copy_current_request_context(pickle.loads({{ func }}))
     eventlet.spawn(foo, x)
+    {% endfor %}
 {% endfor %}
 
 if __name__ == '__main__':

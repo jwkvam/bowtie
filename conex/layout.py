@@ -5,7 +5,7 @@ from os import path
 import stat
 from subprocess import Popen
 
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 
 import dill as pickle
 
@@ -48,6 +48,7 @@ class Layout(object):
         'extract-text-webpack-plugin',
         'less-loader',
         'node-sass',
+        'normalize.css',
         'react',
         'react-dom',
         'sass-loader',
@@ -58,7 +59,7 @@ class Layout(object):
 
     def __init__(self, title=None):
         self.title = title
-        self.subscriptions = []
+        self.subscriptions = defaultdict(list)
         self.packages = set()
         self.templates = set()
         self.imports = set()
@@ -95,8 +96,9 @@ class Layout(object):
         self.controllers.append(control.instantiate)
 
     def subscribe(self, event, func):
-        sub = _Subscription(event, func)
-        self.subscriptions.append(sub)
+        e = "'{}'".format(event)
+        f = pickle.dumps(func)
+        self.subscriptions[e].append(f)
 
     def build(self, directory='build', host='0.0.0.0', port=9991,
               debug=False):
@@ -150,6 +152,8 @@ class Layout(object):
                     columns=len(visualrow),
                     rows=len(self.visuals)
                 )
+
+        # print(self.visuals)
 
 
 

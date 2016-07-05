@@ -30,10 +30,11 @@ export default class PlotlyPlot extends React.Component {
         // let {data, layout, config} = this.props;
 
         var hw = get_height_width();
-        this.state.layout['height'] = hw[1] / this.props.rows;
-        this.state.layout['width'] = (hw[0] * 9 / 10) / this.props.rows;
+        this.state.layout['height'] = Math.floor(hw[1] / this.props.rows);
+        this.state.layout['width'] = Math.floor((hw[0] * 9 / 10) / (1 + this.props.columns));
+        this.state.layout['autosize'] = false;
         
-        Plotly.newPlot(this.container, this.state.data, this.state.layout, {autosizable: true, displaylogo: false, fillFrame: true}); //, config);
+        Plotly.newPlot(this.container, this.state.data, this.state.layout, {autosizable: false, displaylogo: false, fillFrame: true}); //, config);
         // if (this.props.onClick)
         var uuid = this.props.uuid;
         var socket = this.props.socket;
@@ -104,7 +105,7 @@ export default class PlotlyPlot extends React.Component {
 
         var hw = get_height_width();
         this.state.layout['height'] = hw[1] / this.props.rows;
-        this.state.layout['width'] = (hw[0] * 9 / 10) / this.props.rows;
+        this.state.layout['width'] = (hw[0] * 9 / 10) / this.props.columns;
 
         this.container.config = {autosizable: true, fillFrame: true, displaylogo: false};
         // console.log(this.state);
