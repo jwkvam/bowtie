@@ -50,11 +50,10 @@ class Layout(object):
         'node-sass',
         'react',
         'react-dom',
-        'react-flex',
         'sass-loader',
         'socket.io-client',
         'style-loader',
-        'webpack'
+        'webpack',
     ]
 
     def __init__(self, title=None):
@@ -67,7 +66,10 @@ class Layout(object):
         self.controllers = []
         self.functions = []
 
-    def add_visual(self, visual, next_row=False):
+    def add_visual(self, visual,
+                   width=None, height=None,
+                   width_pixels=None, height_pixels=None,
+                   next_row=False):
         assert isinstance(visual, Visual)
         self.packages.add(visual.package)
         self.templates.add(visual.template)
@@ -77,7 +79,7 @@ class Layout(object):
         if next_row and self.visuals[-1]:
             self.visuals.append([])
 
-        self.visuals[-1].append(visual.instantiate)
+        self.visuals[-1].append(visual)
 
 
     def add_function(self, func):
@@ -141,6 +143,15 @@ class Layout(object):
                 f.write(
                     temp.render()
                 )
+
+        for i, visualrow in enumerate(self.visuals):
+            for j, visual in enumerate(visualrow):
+                self.visuals[i][j] = self.visuals[i][j].instantiate(
+                    columns=len(visualrow),
+                    rows=len(self.visuals)
+                )
+
+
 
         with open(path.join(app, react.name), 'w') as f:
             f.write(

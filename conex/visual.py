@@ -51,17 +51,24 @@ class Plotly(Visual):
     tag = ('<PlotlyPlot initState={{{init}}} '
            'socket={{socket}} '
            'uuid={{{uuid}}} '
+           'rows={{{rows}}} '
+           'columns={{{columns}}} '
            '/>')
 
     def __init__(self, init=None):
         super(Plotly, self).__init__()
         if init is None:
-            init = dict(data=[], layout={'autoresize': True})
+            init = dict(data=[], layout={'autosize': True})
+        self.init = init
 
-        self.instantiate = self.tag.format(
+    def instantiate(self, columns, rows):
+        return self.tag.format(
             uuid="'{}'".format(self._uuid),
-            init='{}' if init is None else json.dumps(init)
+            init=json.dumps(self.init),
+            rows=rows,
+            columns=columns
         )
+
 
     ## Events
 

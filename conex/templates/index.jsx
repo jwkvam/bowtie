@@ -1,7 +1,5 @@
-import 'react-flex/index.css';
 import React from 'react';
 import {render} from 'react-dom';
-import { Flex, Item } from 'react-flex';
 import io from 'socket.io-client';
 
 {% for component in components %}
@@ -13,25 +11,24 @@ var socket = io();
 class Dashboard extends React.Component {
     render() {
         return (
-            <Flex row>
-                <Item flex={1}>
+            <div style={{ '{{' }}display: 'flex', flexDirection: 'row'{{ '}}' }}>
+                <div style={{ '{{' }}flexDirection: 'column', flex: 1{{ '}}' }}>
                     {% for control in controls %}
                     {{ control }}
                     {% endfor %}
-                </Item>
-                <Flex column flex={9}>
+
+                </div>
+                <div style={{ '{{' }}flexDirection: 'column', flex: 9{{ '}}' }}>
 
                     {% for visualrow in visuals %}
-                    <Flex row flex={1} display='inline-flex'>
+                    <div style={{ '{{' }}flexDirection: 'row'{{ '}}' }}>
                         {% for visual in visualrow %}
-                        <Item flex={1}>
-                            {{ visual }}
-                        </Item>
+                        {{ visual }}
                         {% endfor %}
-                    </Flex>
+                    </div>
                     {% endfor %}
-                </Flex>
-            </Flex>
+                </div>
+            </div>
         );
     }
 }

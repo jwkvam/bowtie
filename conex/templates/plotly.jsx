@@ -1,6 +1,18 @@
 import React from 'react';
 import Plotly from 'plotly.js';
 
+
+function get_height_width() {
+    var w = window,
+        d = document,
+        e = d.documentElement,
+        g = d.getElementsByTagName('body')[0],
+        x = w.innerWidth || e.clientWidth || g.clientWidth,
+        y = w.innerHeight|| e.clientHeight|| g.clientHeight;
+    return [x, y];
+}
+
+
 export default class PlotlyPlot extends React.Component {
     constructor(props) {
         super(props);
@@ -16,7 +28,12 @@ export default class PlotlyPlot extends React.Component {
 
     componentDidMount() {
         // let {data, layout, config} = this.props;
-        Plotly.newPlot(this.container, this.state.data, this.state.layout); //, config);
+
+        var hw = get_height_width();
+        this.state.layout['height'] = hw[1] / this.props.rows;
+        this.state.layout['width'] = (hw[0] * 9 / 10) / this.props.rows;
+        
+        Plotly.newPlot(this.container, this.state.data, this.state.layout, {autosizable: true, displaylogo: false, fillFrame: true}); //, config);
         // if (this.props.onClick)
         var uuid = this.props.uuid;
         var socket = this.props.socket;
@@ -51,6 +68,7 @@ export default class PlotlyPlot extends React.Component {
         // });
 
         socket.on(this.props.uuid + '#all', (data) => {
+            console.log('doall');
             this.setState(JSON.parse(data));
         });
         // socket.on(this.props.uuid + '#' + 'get', (data) => {
@@ -83,6 +101,12 @@ export default class PlotlyPlot extends React.Component {
         //TODO use minimal update for given changes
         this.container.data = this.state.data;
         this.container.layout = this.state.layout;
+
+        var hw = get_height_width();
+        this.state.layout['height'] = hw[1] / this.props.rows;
+        this.state.layout['width'] = (hw[0] * 9 / 10) / this.props.rows;
+
+        this.container.config = {autosizable: true, fillFrame: true, displaylogo: false};
         // console.log(this.state);
         Plotly.redraw(this.container); //, this.state.data, this.state.layout);
     }
@@ -106,8 +130,12 @@ export default class PlotlyPlot extends React.Component {
 PlotlyPlot.propTypes = {
     uuid: React.PropTypes.string.isRequired,
     socket: React.PropTypes.object.isRequired,
-    initState: React.PropTypes.object
+    initState: React.PropTypes.object,
+    rows: React.PropTypes.number,
+    columns: React.PropTypes.number
 };
+    // height: React.PropTypes.string,
+    // width: React.PropTypes.string,
 
     // onClick: React.PropTypes.func,
     // onBeforeHover: React.PropTypes.func,
