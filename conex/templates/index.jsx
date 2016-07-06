@@ -1,8 +1,7 @@
+import 'normalize.css';
 import React from 'react';
 import {render} from 'react-dom';
 import io from 'socket.io-client';
-
-import 'normalize.css';
 
 {% for component in components %}
 import {{ component.component }} from './{{ component.module }}';

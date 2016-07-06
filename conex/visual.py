@@ -44,6 +44,55 @@ class Visual(with_metaclass(_CommandMeta, Component)):
         super(Visual, self).__init__()
 
 
+class Table(Visual):
+    template = 'datagrid.jsx'
+    component = 'Table'
+    package = 'react-datagrid'
+    tag = ('<Table '
+           'socket={{socket}} '
+           'uuid={{{uuid}}} '
+           '/>')
+
+    def __init__(self):
+        super(Table, self).__init__()
+
+    def instantiate(self, columns, rows):
+        return self.tag.format(
+            uuid="'{}'".format(self._uuid),
+        )
+
+
+    ## Events
+
+    # def on_click(self):
+    #     pass
+    #
+    # def on_beforehover(self):
+    #     pass
+    #
+    # def on_hover(self):
+    #     pass
+    #
+    # def on_unhover(self):
+    #     pass
+    #
+    # def on_selected(self):
+    #     pass
+    #
+    # ## Commands
+    #
+    # def do_all(self, data):
+    #     pass
+    #
+    # def do_data(self, data):
+    #     pass
+    #
+    # def do_layout(self, data):
+    #     pass
+    #
+    # def do_config(self, data):
+    #     pass
+
 class Plotly(Visual):
     template = 'plotly.jsx'
     component = 'PlotlyPlot'
