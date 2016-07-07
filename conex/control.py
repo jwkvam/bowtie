@@ -18,6 +18,30 @@ class Controller(Component):
     pass
 
 
+class DropDown(Controller):
+    template = 'dropdown.jsx'
+    component = 'DropDown'
+    package = 'react-select'
+    tag = ('<DropDown options={{{options}}} '
+           'name={{{name}}} '
+           'socket={{socket}} '
+           'uuid={{{uuid}}} '
+           '/>')
+
+
+    def __init__(self, name, options):
+        super(DropDown, self).__init__()
+
+        options = [dict(value=x, label=str(x)) for x in options]
+
+
+        self.instantiate = self.tag.format(
+            name="'{}'".format(name),
+            options=options,
+            uuid="'{}'".format(self._uuid)
+        )
+
+
 class Nouislider(Controller):
     template = 'nouislider.jsx'
     component = 'Nouislider'

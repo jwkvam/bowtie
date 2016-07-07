@@ -16,10 +16,18 @@ def index():
     return render_template('index.html')
 
 {% for event, functions in subscriptions.items() %}
+{% set outer_loop = loop %}
+{% for func in functions %}
+func_{{ outer_loop.index }}_{{loop.index}} = pickle.loads({{ func }})
+{% endfor %}
+{% endfor %}
+
+{% for event, functions in subscriptions.items() %}
+{% set outer_loop = loop %}
 @socketio.on({{ event }})
 def _(x):
     {% for func in functions %}
-    foo = copy_current_request_context(pickle.loads({{ func }}))
+    foo = copy_current_request_context(func_{{ outer_loop.index }}_{{loop.index}})
     eventlet.spawn(foo, x)
     {% endfor %}
 {% endfor %}

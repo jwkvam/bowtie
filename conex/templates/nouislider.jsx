@@ -2,7 +2,6 @@ import React from 'react';
 import 'nouislider-algolia-fork/src/nouislider.css';
 // import Nouislider from 'react-nouislider';
 
-// import React from 'react';
 import nouislider from 'nouislider-algolia-fork';
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
