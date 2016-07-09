@@ -41,6 +41,9 @@ class DropDown(Controller):
             uuid="'{}'".format(self._uuid)
         )
 
+    def on_change(self):
+        pass
+
 
 class Nouislider(Controller):
     template = 'nouislider.jsx'
