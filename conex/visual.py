@@ -15,7 +15,6 @@ def make_command(command):
     def actualcommand(self, data):
         name = command.__name__[3:]
         signal = '{uuid}#{event}'.format(uuid=self._uuid, event=name)
-        print(signal)
         return emit(signal, json.dumps(data))
 
     actualcommand.__doc__ = command.__doc__
@@ -42,6 +41,85 @@ class Visual(with_metaclass(_CommandMeta, Component)):
     """
     def __init__(self):
         super(Visual, self).__init__()
+
+
+class SmartGrid(Visual):
+    template = 'griddle.jsx'
+    component = 'SmartGrid'
+    package = 'griddle-react'
+    tag = ('<SmartGrid '
+           'socket={{socket}} '
+           'uuid={{{uuid}}} '
+           'rows={{{rows}}} '
+           'columns={{{columns}}} '
+           '/>')
+
+    def __init__(self):
+        super(SmartGrid, self).__init__()
+
+    def instantiate(self, columns, rows):
+        return self.tag.format(
+            uuid="'{}'".format(self._uuid),
+            rows=rows,
+            columns=columns
+        )
+
+class FixedTable(Visual):
+    template = 'fixedtable.jsx'
+    component = 'FixedTable'
+    package = 'fixed-data-table'
+    tag = ('<FixedTable '
+           'socket={{socket}} '
+           'uuid={{{uuid}}} '
+           'rows={{{rows}}} '
+           'columns={{{columns}}} '
+           '/>')
+
+    def __init__(self):
+        super(FixedTable, self).__init__()
+
+    def instantiate(self, columns, rows):
+        return self.tag.format(
+            uuid="'{}'".format(self._uuid),
+            rows=rows,
+            columns=columns
+        )
+
+
+class DataTable(Visual):
+    template = 'datatables.jsx'
+    component = 'JTable'
+    package = 'react-jquery-datatables'
+    tag = ('<JTable '
+           'socket={{socket}} '
+           'uuid={{{uuid}}} '
+           '/>')
+
+    def __init__(self):
+        super(DataTable, self).__init__()
+
+    def instantiate(self, columns, rows):
+        return self.tag.format(
+            uuid="'{}'".format(self._uuid),
+        )
+
+
+class Grid(Visual):
+    template = 'dazzlegrid.jsx'
+    component = 'Grid'
+    package = 'react-data-grid'
+    tag = ('<Grid '
+           'socket={{socket}} '
+           'uuid={{{uuid}}} '
+           '/>')
+
+    def __init__(self):
+        super(Grid, self).__init__()
+
+    def instantiate(self, columns, rows):
+        return self.tag.format(
+            uuid="'{}'".format(self._uuid),
+        )
 
 
 class Table(Visual):
@@ -92,6 +170,7 @@ class Table(Visual):
     #
     # def do_config(self, data):
     #     pass
+
 
 class Plotly(Visual):
     template = 'plotly.jsx'

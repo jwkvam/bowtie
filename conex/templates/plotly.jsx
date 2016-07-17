@@ -47,8 +47,8 @@ export default class PlotlyPlot extends React.Component {
                 x: p0.x,
                 y: p0.y,
             };
-            console.log('clicked');
-            console.log('data');
+            // console.log('clicked');
+            // console.log('data');
             socket.emit(uuid + '#click', datum);
         });
         // if (this.props.onBeforeHover)
@@ -69,7 +69,6 @@ export default class PlotlyPlot extends React.Component {
         // });
 
         socket.on(this.props.uuid + '#all', (data) => {
-            console.log('doall');
             this.setState(JSON.parse(data));
         });
         // socket.on(this.props.uuid + '#' + 'get', (data) => {
@@ -80,12 +79,12 @@ export default class PlotlyPlot extends React.Component {
         //     console.log('done seding');
         // });
         socket.on(this.props.uuid + '#' + 'get', function (data, fn) {
-            console.log('get command!!!');
-            console.log(data);
-            console.log(uuid + '#put');
+            // console.log('get command!!!');
+            // console.log(data);
+            // console.log(uuid + '#put');
             // socket.emit(uuid + '#put'); //this.state);
             fn({hello: 'new data'});
-            console.log('done seding');
+            // console.log('done seding');
         });
         // socket.emit(this.props.uuid + '#put', [3]);
     }
