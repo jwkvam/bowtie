@@ -18,6 +18,28 @@ class Controller(Component):
     pass
 
 
+class Button(Controller):
+    template = 'button.jsx'
+    component = 'SimpleButton'
+    package = 'react-button'
+    tag = ('<SimpleButton '
+           'socket={{socket}} '
+           'uuid={{{uuid}}} '
+           'label={{{label}}} '
+           '/>')
+
+    def __init__(self, label=''):
+        super(Button, self).__init__()
+
+        self.instantiate = self.tag.format(
+            label="'{}'".format(label),
+            uuid="'{}'".format(self._uuid)
+        )
+
+    def on_click(self):
+        pass
+
+
 class DropDown(Controller):
     template = 'dropdown.jsx'
     component = 'DropDown'

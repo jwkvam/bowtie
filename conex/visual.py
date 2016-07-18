@@ -64,6 +64,9 @@ class SmartGrid(Visual):
             columns=columns
         )
 
+    def do_update(self, data):
+        pass
+
 class FixedTable(Visual):
     template = 'fixedtable.jsx'
     component = 'FixedTable'

@@ -1,5 +1,4 @@
 import React from 'react';
-import 'griddle-react/css/griddle.css';
 import Griddle from 'griddle-react';
 
 function get_height_width() {
@@ -22,22 +21,26 @@ export default class SmartGrid extends React.Component {
             { id: '2', firstName: 'Bob', lastName: 'Mclaren'},
             { id: '3', firstName: 'Bob', lastName: 'Mclaren'},
         ];
+    }
 
+    componentDidMount() {
+        this.props.socket.on(this.props.uuid + '#update', (data) => {
+            this.state.data = JSON.parse(data);
+        });
     }
 
     render() {
-        // var hw = get_height_width();
-        // var height = Math.floor(hw[1] / this.props.rows);
-        // var width = Math.floor((hw[0] * 9 / 10) / this.props.columns);
         return (
-            <Griddle results={this.state.data} />
+            <Griddle
+                results={this.state.data}
+                showFilter={true}
+                showSettings={true}
+                />
         );
     }
 }
 
 SmartGrid.propTypes = {
     uuid: React.PropTypes.string.isRequired,
-    socket: React.PropTypes.object.isRequired,
-    rows: React.PropTypes.number,
-    columns: React.PropTypes.number
+    socket: React.PropTypes.object.isRequired
 };
