@@ -18,7 +18,8 @@ def index():
 {% for event, functions in subscriptions.items() %}
 {% set outer_loop = loop %}
 {% for func in functions %}
-func_{{ outer_loop.index }}_{{loop.index}} = pickle.loads({{ func }})
+func_{{ outer_loop.index }}_{{loop.index}} = \
+    pickle.loads({{ func }})
 {% endfor %}
 {% endfor %}
 

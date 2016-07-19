@@ -12,7 +12,8 @@ def make_event(event):
         name = event.__name__[3:]
         return '{uuid}#{event}'.format(uuid=self._uuid, event=name)
 
-    actualevent.__doc__ = event.__doc__
+    # TODO fix this for python 2
+    # actualevent.__doc__ = event.__doc__
 
     return actualevent
 

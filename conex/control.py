@@ -66,6 +66,9 @@ class DropDown(Controller):
     def on_change(self):
         pass
 
+    def do_options(self):
+        pass
+
 
 class Nouislider(Controller):
     template = 'nouislider.jsx'

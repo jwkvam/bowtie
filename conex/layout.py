@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import unicode_literals
+
+from builtins import bytes
+
 import os
 from os import path
 import stat
@@ -7,26 +11,26 @@ from subprocess import Popen
 
 from collections import namedtuple, defaultdict
 
-import dill as pickle
-
 from jinja2 import Environment, FileSystemLoader
 
-from conex.compat import makedirs
+from conex.compat import makedirs, dumps
 from conex.control import Controller
 from conex.visual import Visual
+
+
 
 
 class _Subscription(object):
 
     def __init__(self, event, func):
         self.event = "'{}'".format(event)
-        self.func = pickle.dumps(func)
+        self.func = dumps(func)
 
 class _Function(object):
 
     def __init__(self, func):
         self.name = func.__code__.co_name
-        self.string = pickle.dumps(func)
+        self.string = dumps(func)
 
 
 _Import = namedtuple('_Import', ['module', 'component'])
@@ -97,8 +101,11 @@ class Layout(object):
 
     def subscribe(self, event, func):
         e = "'{}'".format(event)
-        f = pickle.dumps(func)
+        # f = pickle.dumps(func).decode('utf-8')
+        # f = bytes(pickle.dumps(func)).decode('utf-8', 'surrogateescape')
+        f = dumps(func)
         self.subscriptions[e].append(f)
+
 
     def build(self, directory='build', host='0.0.0.0', port=9991,
               debug=False):
@@ -120,6 +127,7 @@ class Layout(object):
 
         server_path = path.join(src, server.name)
         with open(server_path, 'w') as f:
+            print('writing server')
             f.write(
                 server.render(
                     subscriptions=self.subscriptions,
@@ -129,6 +137,7 @@ class Layout(object):
                     debug=debug
                 )
             )
+            print('done writing server')
         perms = os.stat(server_path)
         os.chmod(server_path, perms.st_mode | stat.S_IEXEC)
 

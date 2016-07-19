@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import sys
-
 from os import makedirs
+
+from builtins import bytes
+
+import dill as pickle
 
 if sys.version_info < (3, 0):
     makedirs_lib = makedirs
@@ -12,3 +15,9 @@ if sys.version_info < (3, 0):
         except OSError:
             if not exist_ok:
                 raise
+
+def dumps(x):
+    dump = pickle.dumps(x)
+    if sys.version_info < (3, 0):
+        dump = bytes(dump.encode('string-escape'))
+    return dump
