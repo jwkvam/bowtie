@@ -31,9 +31,18 @@ class _EventMeta(type):
 
 
 class Component(with_metaclass(_EventMeta, object)):
+    _NEXT_UUID = 0
+
+    @classmethod
+    def _next_uuid(cls):
+        cls._NEXT_UUID += 1
+        return cls._NEXT_UUID
 
     def __init__(self):
-        self._uuid = id(self)
+        # TODO wanted to put "self" instead of "Component"
+        # was surprised that didn't work
+        self._uuid = Component._next_uuid()
+        super(Component, self).__init__()
 
     def get(self, block=True, timeout=None):
         event = Event()

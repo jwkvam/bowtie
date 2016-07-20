@@ -8,6 +8,7 @@ import os
 from os import path
 import stat
 from subprocess import Popen
+import inspect
 
 from collections import namedtuple, defaultdict
 
@@ -103,12 +104,15 @@ class Layout(object):
         e = "'{}'".format(event)
         # f = pickle.dumps(func).decode('utf-8')
         # f = bytes(pickle.dumps(func)).decode('utf-8', 'surrogateescape')
-        f = dumps(func)
-        self.subscriptions[e].append(f)
+        # f = dumps(func)
+        # import IPython
+        # IPython.embed()
+        self.subscriptions[e].append(func.__name__)
 
 
     def build(self, directory='build', host='0.0.0.0', port=9991,
               debug=False):
+
         env = Environment(loader=FileSystemLoader(
             path.join(path.dirname(__file__), 'templates')
         ))
@@ -126,12 +130,14 @@ class Layout(object):
             )
 
         server_path = path.join(src, server.name)
+        source_filename = inspect.stack()[1].filename
         with open(server_path, 'w') as f:
             print('writing server')
             f.write(
                 server.render(
+                    source_path=os.path.dirname(os.path.realpath(source_filename)),
+                    source_module=os.path.basename(source_filename)[:-3],
                     subscriptions=self.subscriptions,
-                    functions=self.functions,
                     host="'{}'".format(host),
                     port=port,
                     debug=debug

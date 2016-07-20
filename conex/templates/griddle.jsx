@@ -25,7 +25,7 @@ export default class SmartGrid extends React.Component {
 
     componentDidMount() {
         this.props.socket.on(this.props.uuid + '#update', (data) => {
-            this.state.data = JSON.parse(data);
+            this.setState({data: JSON.parse(data)});
         });
     }
 
