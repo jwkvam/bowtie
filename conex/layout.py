@@ -130,7 +130,8 @@ class Layout(object):
             )
 
         server_path = path.join(src, server.name)
-        source_filename = inspect.stack()[1].filename
+        # [1] grabs the parent stack and [1] grabs the filename
+        source_filename = inspect.stack()[1][1]
         with open(server_path, 'w') as f:
             print('writing server')
             f.write(

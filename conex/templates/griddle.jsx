@@ -16,11 +16,7 @@ export default class SmartGrid extends React.Component {
     constructor(props) {
         super(props);
         this.state = {};
-        this.state.data = [
-            { id: '1', firstName: 'John', lastName: 'Bobson'},
-            { id: '2', firstName: 'Bob', lastName: 'Mclaren'},
-            { id: '3', firstName: 'Bob', lastName: 'Mclaren'},
-        ];
+        this.state.data = [];
     }
 
     componentDidMount() {
