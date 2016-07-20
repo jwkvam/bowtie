@@ -63,10 +63,10 @@ export default class PlotlyPlot extends React.Component {
         // this.container.on('plotly_unhover', function (data) {
         //     socket.emit(uuid + '#unhover', data);
         // });
-        // // if (this.props.onSelected)
-        // this.container.on('plotly_selected', function (data) {
-        //     socket.emit(uuid + '#selected', data);
-        // });
+        // if (this.props.onSelected)
+        this.container.on('plotly_selected', function (data) {
+            socket.emit(uuid + '#select', data);
+        });
 
         socket.on(this.props.uuid + '#all', (data) => {
             this.setState(JSON.parse(data));
@@ -78,7 +78,7 @@ export default class PlotlyPlot extends React.Component {
         //     socket.emit(uuid + '#put', [3]); //this.state);
         //     console.log('done seding');
         // });
-        socket.on(this.props.uuid + '#' + 'get', function (data, fn) {
+        socket.on(this.props.uuid + '#get', function (data, fn) {
             // console.log('get command!!!');
             // console.log(data);
             // console.log(uuid + '#put');

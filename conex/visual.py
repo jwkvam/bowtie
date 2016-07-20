@@ -2,6 +2,7 @@
 
 
 from collections import namedtuple
+from datetime import datetime
 import json
 
 from future.utils import with_metaclass
@@ -10,12 +11,23 @@ from flask_socketio import emit
 from conex.component import Component, _EventMeta
 
 
+def json_conversion(obj):
+
+    if isinstance(obj, datetime):
+        return obj.isoformat()
+    raise TypeError('Not sure how to serialize {} of type {}'.format(obj, type(obj)))
+
+
+def jdumps(data):
+    return json.dumps(data, default=json_conversion)
+
+
 def make_command(command):
 
     def actualcommand(self, data):
         name = command.__name__[3:]
         signal = '{uuid}#{event}'.format(uuid=self._uuid, event=name)
-        return emit(signal, json.dumps(data))
+        return emit(signal, jdumps(data))
 
     actualcommand.__doc__ = command.__doc__
 
@@ -143,38 +155,6 @@ class Table(Visual):
         )
 
 
-    ## Events
-
-    # def on_click(self):
-    #     pass
-    #
-    # def on_beforehover(self):
-    #     pass
-    #
-    # def on_hover(self):
-    #     pass
-    #
-    # def on_unhover(self):
-    #     pass
-    #
-    # def on_selected(self):
-    #     pass
-    #
-    # ## Commands
-    #
-    # def do_all(self, data):
-    #     pass
-    #
-    # def do_data(self, data):
-    #     pass
-    #
-    # def do_layout(self, data):
-    #     pass
-    #
-    # def do_config(self, data):
-    #     pass
-
-
 class Plotly(Visual):
     template = 'plotly.jsx'
     component = 'PlotlyPlot'
@@ -195,7 +175,7 @@ class Plotly(Visual):
     def instantiate(self, columns, rows):
         return self.tag.format(
             uuid="'{}'".format(self._uuid),
-            init=json.dumps(self.init),
+            init=jdumps(self.init),
             rows=rows,
             columns=columns
         )
@@ -215,7 +195,7 @@ class Plotly(Visual):
     def on_unhover(self):
         pass
 
-    def on_selected(self):
+    def on_select(self):
         pass
 
     ## Commands
