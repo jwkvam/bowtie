@@ -8,7 +8,7 @@ import json
 from future.utils import with_metaclass
 
 from flask_socketio import emit
-from conex.component import Component, _EventMeta
+from conex.component import Component
 
 
 def json_conversion(obj):
@@ -22,37 +22,15 @@ def jdumps(data):
     return json.dumps(data, default=json_conversion)
 
 
-def make_command(command):
-
-    def actualcommand(self, data):
-        name = command.__name__[3:]
-        signal = '{uuid}#{event}'.format(uuid=self._uuid, event=name)
-        return emit(signal, jdumps(data))
-
-    actualcommand.__doc__ = command.__doc__
-
-    return actualcommand
-
-
-def is_command(attribute):
-    return attribute.startswith('do_')
-
-
-class _CommandMeta(_EventMeta):
-    def __new__(cls, name, parents, dct):
-        for k in dct:
-            if is_command(k):
-                dct[k] = make_command(dct[k])
-        return super(_CommandMeta, cls).__new__(cls, name, parents, dct)
-
-
-class Visual(with_metaclass(_CommandMeta, Component)):
+ #with_metaclass(_CommandMeta, Component)):
+class Visual(Component):
     """
     Used to test if a an object is a controller.
     All controllers must inherit this class.
     """
-    def __init__(self):
-        super(Visual, self).__init__()
+    pass
+    # def __init__(self):
+    #     super(Visual, self).__init__()
 
 
 class SmartGrid(Visual):

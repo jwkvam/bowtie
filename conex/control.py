@@ -44,7 +44,7 @@ class DropDown(Controller):
     template = 'dropdown.jsx'
     component = 'DropDown'
     package = 'react-select'
-    tag = ('<DropDown options={{{options}}} '
+    tag = ('<DropDown initOptions={{{options}}} '
            'name={{{name}}} '
            'socket={{socket}} '
            'uuid={{{uuid}}} '
@@ -54,7 +54,7 @@ class DropDown(Controller):
     def __init__(self, name, options):
         super(DropDown, self).__init__()
 
-        options = [dict(value=x, label=str(x)) for x in options]
+        # options = [dict(value=x, label=str(x)) for x in options]
 
 
         self.instantiate = self.tag.format(
@@ -66,7 +66,7 @@ class DropDown(Controller):
     def on_change(self):
         pass
 
-    def do_options(self):
+    def do_options(self, data):
         pass
 
 

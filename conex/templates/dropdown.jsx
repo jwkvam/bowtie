@@ -9,7 +9,8 @@ import 'react-select/dist/react-select.css';
 export default class DropDown extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {value: this.props.options[0]};
+        this.state = {value: null};
+        this.state.options = this.props.initOptions;
         this.handleChange = this.handleChange.bind(this);
         this.getValue = this.getValue.bind(this);
     }
@@ -23,6 +24,9 @@ export default class DropDown extends React.Component {
         var socket = this.props.socket;
         var uuid = this.props.uuid;
         socket.on(uuid + '#get', this.getValue);
+        socket.on(uuid + '#options', (data) => {
+            this.setState({value: null, options: JSON.parse(data)});
+        });
     }
 
     getValue(data, fn) {
@@ -34,7 +38,7 @@ export default class DropDown extends React.Component {
             <Select
                 name={this.props.name}
                 value={this.state.value}
-                options={this.props.options}
+                options={this.state.options}
                 onChange={this.handleChange}
             />
         );
@@ -45,5 +49,5 @@ DropDown.propTypes = {
     uuid: React.PropTypes.string.isRequired,
     socket: React.PropTypes.object.isRequired,
     name: React.PropTypes.string,
-    options: React.PropTypes.array.isRequired
+    initOptions: React.PropTypes.array
 };

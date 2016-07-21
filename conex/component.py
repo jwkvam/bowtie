@@ -1,8 +1,22 @@
 # -*- coding: utf-8 -*-
 
+import json
+from datetime import datetime
+
 from flask_socketio import emit
 from future.utils import with_metaclass
 from eventlet.event import Event
+
+
+def json_conversion(obj):
+
+    if isinstance(obj, datetime):
+        return obj.isoformat()
+    raise TypeError('Not sure how to serialize {} of type {}'.format(obj, type(obj)))
+
+
+def jdumps(data):
+    return json.dumps(data, default=json_conversion)
 
 
 def make_event(event):
@@ -21,16 +35,32 @@ def make_event(event):
 def is_event(attribute):
     return attribute.startswith('on_')
 
+def make_command(command):
 
-class _EventMeta(type):
+    def actualcommand(self, data):
+        name = command.__name__[3:]
+        signal = '{uuid}#{event}'.format(uuid=self._uuid, event=name)
+        return emit(signal, jdumps(data))
+
+    actualcommand.__doc__ = command.__doc__
+
+    return actualcommand
+
+
+def is_command(attribute):
+    return attribute.startswith('do_')
+
+class _Maker(type):
     def __new__(cls, name, parents, dct):
         for k in dct:
             if is_event(k):
                 dct[k] = make_event(dct[k])
-        return super(_EventMeta, cls).__new__(cls, name, parents, dct)
+            if is_command(k):
+                dct[k] = make_command(dct[k])
+        return super(_Maker, cls).__new__(cls, name, parents, dct)
 
 
-class Component(with_metaclass(_EventMeta, object)):
+class Component(with_metaclass(_Maker, object)):
     _NEXT_UUID = 0
 
     @classmethod

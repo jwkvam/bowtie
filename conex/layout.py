@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
-
 import os
 from os import path
 import stat
@@ -12,24 +10,9 @@ from collections import namedtuple, defaultdict
 
 from jinja2 import Environment, FileSystemLoader
 
-from conex.compat import makedirs, dumps
+from conex.compat import makedirs
 from conex.control import Controller
 from conex.visual import Visual
-
-
-
-
-class _Subscription(object):
-
-    def __init__(self, event, func):
-        self.event = "'{}'".format(event)
-        self.func = dumps(func)
-
-class _Function(object):
-
-    def __init__(self, func):
-        self.name = func.__code__.co_name
-        self.string = dumps(func)
 
 
 _Import = namedtuple('_Import', ['module', 'component'])
@@ -167,10 +150,6 @@ class Layout(object):
                     rows=len(self.visuals)
                 )
 
-        # print(self.visuals)
-
-
-
         with open(path.join(app, react.name), 'w') as f:
             f.write(
                 react.render(
@@ -179,7 +158,6 @@ class Layout(object):
                     visuals=self.visuals
                 )
             )
-
 
         init = Popen('npm init -f', shell=True, cwd='build').wait()
         assert init == 0, 'Error running "npm init -f"'
