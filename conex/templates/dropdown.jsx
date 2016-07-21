@@ -37,6 +37,7 @@ export default class DropDown extends React.Component {
         return (
             <Select
                 name={this.props.name}
+                multi={this.props.multi}
                 value={this.state.value}
                 options={this.state.options}
                 onChange={this.handleChange}
@@ -48,6 +49,7 @@ export default class DropDown extends React.Component {
 DropDown.propTypes = {
     uuid: React.PropTypes.string.isRequired,
     socket: React.PropTypes.object.isRequired,
+    multi: React.PropTypes.bool.isRequired,
     name: React.PropTypes.string,
     initOptions: React.PropTypes.array
 };

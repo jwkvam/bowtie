@@ -9,6 +9,8 @@ from conex.component import Component
 
 # from event import Event
 
+import json
+
 
 class Controller(Component):
     """
@@ -46,12 +48,13 @@ class DropDown(Controller):
     package = 'react-select'
     tag = ('<DropDown initOptions={{{options}}} '
            'name={{{name}}} '
+           'multi={{{multi}}}'
            'socket={{socket}} '
            'uuid={{{uuid}}} '
            '/>')
 
 
-    def __init__(self, name, options):
+    def __init__(self, name, options, multi=False):
         super(DropDown, self).__init__()
 
         # options = [dict(value=x, label=str(x)) for x in options]
@@ -59,7 +62,8 @@ class DropDown(Controller):
 
         self.instantiate = self.tag.format(
             name="'{}'".format(name),
-            options=options,
+            options=json.dumps(options),
+            multi='true' if multi else 'false',
             uuid="'{}'".format(self._uuid)
         )
 
