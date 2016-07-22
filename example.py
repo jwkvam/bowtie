@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from conex.control import Nouislider, DropDown, Button
-from conex.visual import Plotly, Table, Grid, DataTable, FixedTable, SmartGrid
+from conex.visual import Plotly, Table, SmartGrid
 
 import numpy as np
 import numpy.random as rng
