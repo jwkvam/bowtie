@@ -19,6 +19,14 @@ pip install -r requirements.txt
 ```
 Once I hit an MVP I'll upload it to pypi and this will be much easier...
 
+## Requirements
+
+Install [node](https://nodejs.org/en/) and install `webpack` globally.
+
+```
+npm install -g webpack
+```
+
 ## Example
 
 See `example.py` for an example app.
