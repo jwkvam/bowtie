@@ -1,4 +1,4 @@
-# conex
+# bowtie
 
 ## Install
 
@@ -11,7 +11,7 @@ flit wheel
 You can then pip install the wheel locally, e.g.
 
 ```
-pip install dist/conex-0.0.1_dev-py2.py3-none-any.whl
+pip install dist/bowtie-0.0.1_dev-py2.py3-none-any.whl
 ```
 Then do
 ```
