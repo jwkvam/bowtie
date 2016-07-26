@@ -10,9 +10,9 @@ from collections import namedtuple, defaultdict
 
 from jinja2 import Environment, FileSystemLoader
 
-from conex.compat import makedirs
-from conex.control import Controller
-from conex.visual import Visual
+from bowtie.compat import makedirs
+from bowtie.control import Controller
+from bowtie.visual import Visual
 
 
 _Import = namedtuple('_Import', ['module', 'component'])

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from conex.control import Nouislider, DropDown, Button
-from conex.visual import Plotly, Table, SmartGrid
+from bowtie.control import Nouislider, DropDown, Button
+from bowtie.visual import Plotly, Table, SmartGrid
 
 import numpy as np
 import numpy.random as rng
@@ -57,7 +57,7 @@ def foo3(dd):
 
 if __name__ == "__main__":
 
-    from conex import Layout
+    from bowtie import Layout
     layout = Layout()
     layout.add_controller(slide)
     layout.add_controller(slide2)

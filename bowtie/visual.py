@@ -8,7 +8,7 @@ import json
 from future.utils import with_metaclass
 
 from flask_socketio import emit
-from conex.component import Component
+from bowtie.component import Component
 
 
 def json_conversion(obj):

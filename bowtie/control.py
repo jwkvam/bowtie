@@ -5,7 +5,7 @@ from collections import namedtuple
 import numpy as np
 from enum import Enum
 
-from conex.component import Component
+from bowtie.component import Component
 
 # from event import Event
 
