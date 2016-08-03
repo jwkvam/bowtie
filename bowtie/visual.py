@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
 from collections import namedtuple
 from datetime import datetime
 import json
