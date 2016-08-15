@@ -2,7 +2,6 @@
 
 from collections import namedtuple
 
-import numpy as np
 from enum import Enum
 
 from bowtie.component import Component
@@ -89,7 +88,6 @@ class Nouislider(Controller):
 
     def __init__(self, start=0, minimum=0, maximum=100, tooltips=False):
         super(Nouislider, self).__init__()
-        start = np.atleast_1d(start)
         self.instantiate = self.tag.format(
             uuid="'{}'".format(self._uuid),
             min=minimum,
