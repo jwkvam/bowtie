@@ -35,6 +35,7 @@ class Layout(object):
         'less-loader',
         'node-sass',
         'normalize.css',
+        'postcss-modules-values',
         'react',
         'react-dom',
         'sass-loader',

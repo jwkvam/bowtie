@@ -3,9 +3,6 @@ import Select from 'react-select';
 // Be sure to include styles at some point, probably during your bootstrapping
 import 'react-select/dist/react-select.css';
 
-
-
-
 export default class DropDown extends React.Component {
     constructor(props) {
         super(props);
