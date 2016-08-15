@@ -1,3 +1,4 @@
+click
 eventlet
 flask-socketio
 future
