@@ -68,11 +68,6 @@ class Layout(object):
 
         self.visuals[-1].append(visual)
 
-
-    def add_function(self, func):
-        self.functions.append(_Function(func))
-
-
     def add_controller(self, control):
         assert isinstance(control, Controller)
         self.packages.add(control.package)
@@ -83,11 +78,6 @@ class Layout(object):
 
     def subscribe(self, event, func):
         e = "'{}'".format(event)
-        # f = pickle.dumps(func).decode('utf-8')
-        # f = bytes(pickle.dumps(func)).decode('utf-8', 'surrogateescape')
-        # f = dumps(func)
-        # import IPython
-        # IPython.embed()
         self.subscriptions[e].append(func.__name__)
 
 
@@ -117,7 +107,6 @@ class Layout(object):
             print('writing server')
             f.write(
                 server.render(
-                    source_path=os.path.dirname(os.path.realpath(source_filename)),
                     source_module=os.path.basename(source_filename)[:-3],
                     subscriptions=self.subscriptions,
                     host="'{}'".format(host),
