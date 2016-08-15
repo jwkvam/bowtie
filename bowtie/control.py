@@ -79,7 +79,8 @@ class Nouislider(Controller):
     package = 'react-nouislider'
     tag = ('<Nouislider range={{{{min: {min}, max: {max}}}}} '
            'socket={{socket}} '
-           'start={{{start}}} {tooltips} '
+           'start={{{start}}} '
+           'tooltips={{{tooltips}}} '
            'uuid={{{uuid}}} '
            '/>')
 
@@ -93,7 +94,7 @@ class Nouislider(Controller):
             min=minimum,
             max=maximum,
             start=start,
-            tooltips='tooltips' if tooltips else ''
+            tooltips='true' if tooltips else 'false'
         )
 
     def on_update(self):
