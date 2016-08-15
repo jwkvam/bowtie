@@ -1,13 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
 import sys
 
+import click
 from flask import Flask, render_template, copy_current_request_context
 from flask_socketio import SocketIO, emit
 import eventlet
 
-sys.path.insert(0, '{{source_path}}')
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import {{source_module}}
 
@@ -28,5 +30,11 @@ def _(*args):
     {% endfor %}
 {% endfor %}
 
+@click.command()
+@click.option('--host', '-h', default={{host}}, help='Host IP')
+@click.option('--port', '-p', default={{port}}, help='port number')
+def main(host, port):
+    socketio.run(app, host=host, port=port)
+
 if __name__ == '__main__':
-    socketio.run(app, host={{ host }}, port={{ port }})
+    main()
