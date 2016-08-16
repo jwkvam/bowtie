@@ -1,5 +1,7 @@
 # bowtie
 
+![Demo](https://cloud.githubusercontent.com/assets/86304/17690395/2a89af68-6343-11e6-823f-a9cca9c28ecf.gif)
+
 ## Demo
 
 See a live [example](https://bowtie-demo.herokuapp.com/) generated from this [code](https://github.com/jwkvam/bowtie-demo)!
