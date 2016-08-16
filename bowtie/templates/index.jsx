@@ -13,14 +13,19 @@ class Dashboard extends React.Component {
     render() {
         return (
             <div style={{ '{{' }}display: 'flex', flexFlow: 'row nowrap'{{ '}}' }}>
-                <div style={{ '{{' }}display: 'flex', flexDirection: 'column', flex: 1{{ '}}' }}>
+                <div style={{ '{{' }}display: 'flex', flexDirection: 'column', flex: 1, padding: '7px'{{ '}}' }}>
                     {% for control in controls %}
-                    {{ control }}
+                    <div style={{ '{{' }}paddingBottom: '3px'{{ '}}' }}>
+                    {{ control.caption }}
+                    </div>
+
+                    <div style={{ '{{' }}paddingBottom: '7px'{{ '}}' }}>
+                    {{ control.instantiate }}
+                    </div>
                     {% endfor %}
-
                 </div>
-                <div style={{ '{{' }}display: 'flex', flexDirection: 'column', flex: 9{{ '}}' }}>
 
+                <div style={{ '{{' }}display: 'flex', flexDirection: 'column', flex: 9{{ '}}' }}>
                     {% for visualrow in visuals %}
                     <div style={{ '{{' }}display: 'flex', flexFlow: 'row nowrap'{{ '}}' }}>
                         {% for visual in visualrow %}

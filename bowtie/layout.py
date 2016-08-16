@@ -16,6 +16,7 @@ from bowtie.visual import Visual
 
 
 _Import = namedtuple('_Import', ['module', 'component'])
+_Control = namedtuple('_Control', ['instantiate', 'caption'])
 
 
 class Layout(object):
@@ -75,7 +76,8 @@ class Layout(object):
         self.templates.add(control.template)
         self.imports.add(_Import(component=control.component,
                                  module=control.template[:control.template.find('.')]))
-        self.controllers.append(control.instantiate)
+        self.controllers.append(_Control(instantiate=control.instantiate,
+                                         caption=control.caption))
 
     def subscribe(self, event, func):
         e = "'{}'".format(event)
