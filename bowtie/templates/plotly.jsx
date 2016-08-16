@@ -17,6 +17,9 @@ export default class PlotlyPlot extends React.Component {
     constructor(props) {
         super(props);
         this.state = this.props.initState;
+        this.state['selection'] = null;
+        this.setSelection = this.setSelection.bind(this);
+        this.getSelection = this.getSelection.bind(this);
     }
 
     // changeAll = (all) => {this.setState(all);}
@@ -24,6 +27,15 @@ export default class PlotlyPlot extends React.Component {
 
     shouldComponentUpdate(nextProps) {
         return true;
+    }
+
+    setSelection(data) {
+        this.state.selection = data;
+        this.props.socket.emit(this.props.uuid + '#select', data);
+    }
+    
+    getSelection(data, fn) {
+        fn(this.state.selection);
     }
 
     componentDidMount() {
@@ -64,9 +76,7 @@ export default class PlotlyPlot extends React.Component {
         //     socket.emit(uuid + '#unhover', data);
         // });
         // if (this.props.onSelected)
-        this.container.on('plotly_selected', function (data) {
-            socket.emit(uuid + '#select', data);
-        });
+        this.container.on('plotly_selected', this.setSelection);
 
         socket.on(this.props.uuid + '#all', (data) => {
             this.setState(JSON.parse(data));
@@ -78,14 +88,14 @@ export default class PlotlyPlot extends React.Component {
         //     socket.emit(uuid + '#put', [3]); //this.state);
         //     console.log('done seding');
         // });
-        socket.on(this.props.uuid + '#get', function (data, fn) {
+        socket.on(this.props.uuid + '#get', this.getSelection);
             // console.log('get command!!!');
             // console.log(data);
             // console.log(uuid + '#put');
             // socket.emit(uuid + '#put'); //this.state);
-            fn({hello: 'new data'});
+            // fn(this.state.selection);
             // console.log('done seding');
-        });
+        // });
         // socket.emit(this.props.uuid + '#put', [3]);
     }
 

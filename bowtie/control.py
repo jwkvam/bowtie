@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from collections import namedtuple
+from collections import namedtuple, Iterable
 
 from enum import Enum
 
@@ -47,21 +47,18 @@ class DropDown(Controller):
     component = 'DropDown'
     package = 'react-select'
     tag = ('<DropDown initOptions={{{options}}} '
-           'name={{{name}}} '
            'multi={{{multi}}}'
            'socket={{socket}} '
            'uuid={{{uuid}}} '
            '/>')
 
 
-    def __init__(self, name, options, multi=False, caption=''):
+    def __init__(self, options, multi=False, caption=''):
         super(DropDown, self).__init__()
 
         # options = [dict(value=x, label=str(x)) for x in options]
 
-
         self.instantiate = self.tag.format(
-            name="'{}'".format(name),
             options=json.dumps(options),
             multi='true' if multi else 'false',
             uuid="'{}'".format(self._uuid)
@@ -89,8 +86,11 @@ class Nouislider(Controller):
 
            # 'onChange={{ function(x) {{socket.emit("{uuid}#change", x);}} }} '
 
-    def __init__(self, start=0, minimum=0, maximum=100, tooltips=False, caption=''):
+    def __init__(self, start=0, minimum=0, maximum=100, tooltips=True, caption=''):
         super(Nouislider, self).__init__()
+
+        if not isinstance(start, Iterable):
+            start = [start]
         self.instantiate = self.tag.format(
             uuid="'{}'".format(self._uuid),
             min=minimum,
