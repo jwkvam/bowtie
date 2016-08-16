@@ -29,13 +29,14 @@ class Button(Controller):
            'label={{{label}}} '
            '/>')
 
-    def __init__(self, label=''):
+    def __init__(self, label='', caption=''):
         super(Button, self).__init__()
 
         self.instantiate = self.tag.format(
             label="'{}'".format(label),
             uuid="'{}'".format(self._uuid)
         )
+        self.caption = caption
 
     def on_click(self):
         pass
@@ -53,7 +54,7 @@ class DropDown(Controller):
            '/>')
 
 
-    def __init__(self, name, options, multi=False):
+    def __init__(self, name, options, multi=False, caption=''):
         super(DropDown, self).__init__()
 
         # options = [dict(value=x, label=str(x)) for x in options]
@@ -65,6 +66,7 @@ class DropDown(Controller):
             multi='true' if multi else 'false',
             uuid="'{}'".format(self._uuid)
         )
+        self.caption = caption
 
     def on_change(self):
         pass
@@ -87,7 +89,7 @@ class Nouislider(Controller):
 
            # 'onChange={{ function(x) {{socket.emit("{uuid}#change", x);}} }} '
 
-    def __init__(self, start=0, minimum=0, maximum=100, tooltips=False):
+    def __init__(self, start=0, minimum=0, maximum=100, tooltips=False, caption=''):
         super(Nouislider, self).__init__()
         self.instantiate = self.tag.format(
             uuid="'{}'".format(self._uuid),
@@ -96,6 +98,7 @@ class Nouislider(Controller):
             start=start,
             tooltips='true' if tooltips else 'false'
         )
+        self.caption = caption
 
     def on_update(self):
         pass
