@@ -4,7 +4,7 @@
 
 ## Demo
 
-See a live [example](https://bowtie-demo.herokuapp.com/) generated from this [code](https://github.com/jwkvam/bowtie-demo)!
+See a live [example](https://bowtie-demo.herokuapp.com/) generated from this [code](https://github.com/jwkvam/bowtie-demo/blob/master/example.py)!
 
 ## Install
 
