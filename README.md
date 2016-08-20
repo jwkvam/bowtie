@@ -19,8 +19,3 @@ Install [node](https://nodejs.org/en/) and install `webpack` globally.
 ```
 npm install -g webpack
 ```
-
-## Example
-
-See `example.py` for an example app.
-Run `python example.py` to build the app then run `./build/src/server.py` to launch the webapp.
