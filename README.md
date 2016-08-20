@@ -1,4 +1,4 @@
-# bowtie
+# Bowtie
 
 [![Documentation Status](https://readthedocs.org/projects/bowtie-py/badge/?version=latest)](http://bowtie-py.readthedocs.io/en/latest/?badge=latest)
 
