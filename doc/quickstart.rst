@@ -64,9 +64,11 @@ Now we instantiate the components and configure them::
 Next we'll create a listener to listener that generates a plot on slider changes::
 
     def listener(freq):
+        freq = float(freq[0])
         t = np.linspace(0, 10, 100)
         sine_plot.do_all(pw.line(t, np.sin(freq * t)).to_json())
 
+The :py:class:`bowtie.control.Nouislider` component sends it's values as a list of strings so we had to cast it to a float.
 Lastly we need to build the application by layout the components and connecting listeners to events.
 We do this in the main block::
     
