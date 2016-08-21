@@ -5,3 +5,27 @@
 
 Quick Start
 ===========
+
+This quick start will show how to
+* install everything needed to use Bowtie
+* write an app with sliders and plots
+* how to deploy to Heroku
+
+
+Install Node
+------------
+
+Install Bowtie
+--------------
+
+Write Your First App
+--------------------
+
+First we'll import the components we plan on using,::
+
+    from bowtie.visual import Plotly
+    from bowtie.control import Nouislider
+
+Now we instantiate the components and configure them.::
+
+    
