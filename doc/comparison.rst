@@ -3,5 +3,18 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Comparison
-==========
+Comparison with Other Tools
+===========================
+
+Bowtie is designed to have a simple API to create dashboard applications quickly.
+That being said let's compare this against similar Python libraries.
+
+Pyxley
+------
+.. todo::
+    compare to pyxley
+
+Remi
+----
+.. todo::
+    compare to remi

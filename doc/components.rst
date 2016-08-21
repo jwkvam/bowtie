@@ -6,8 +6,17 @@
 Components
 ==========
 
+Find the list of supported components here and how to use them.
+
 Visuals
 -------
 
+.. todo::
+    reference source code
+
+
 Controllers
 -----------
+
+.. todo::
+    reference source code

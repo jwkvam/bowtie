@@ -5,3 +5,10 @@
 
 Create New Components
 =====================
+
+.. todo::
+    establish skeleton of what needs to happen
+
+* Create new React class
+* Create visual or control class in Python
+* Create events that the React class supports

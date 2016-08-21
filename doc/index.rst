@@ -14,7 +14,9 @@ Easy to deploy so you can share results with others.
     :hidden:
 
     quickstart
+    layout
     components
+    architecture
     newcomponents
     comparison
 
