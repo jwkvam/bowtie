@@ -20,7 +20,7 @@ Bowtie uses `npm <https://www.npmjs.com/>`_ to install the javascript libraries
 and `webpack <https://webpack.github.io/>`_ to compile the application.
 We need to install both of these.
 
-OSX Install
+MacOS Install
 ^^^^^^^^^^^
 
 On MacOS, I recommend using `Homebrew <http://brew.sh/>`_ to get npm::
