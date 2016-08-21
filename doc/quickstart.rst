@@ -9,7 +9,7 @@ Quick Start
 This quick start will show how to do the following.
 
 * Install everything needed to use Bowtie.
-* Write an app connecting sliders and plots.
+* Write an app connecting a slider to a plot.
 * How to deploy to Heroku.
 
 
