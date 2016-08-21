@@ -127,6 +127,7 @@ html_theme_options = {
     'collapse_navigation': False,
     'display_version': False,
     'sticky_navigation': True,
+    'analytics_id': 'UA-45051049-3',
     # 'navigation_depth': 2,
 }
 
