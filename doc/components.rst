@@ -11,12 +11,14 @@ Find the list of supported components here and how to use them.
 Visuals
 -------
 
-.. todo::
-    reference source code
+.. automodule:: bowtie.visual
+    :members:
+    :undoc-members:
 
 
 Controllers
 -----------
 
-.. todo::
-    reference source code
+.. automodule:: bowtie.control
+    :members:
+    :undoc-members:

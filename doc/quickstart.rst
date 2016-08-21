@@ -21,7 +21,7 @@ and `webpack <https://webpack.github.io/>`_ to compile the application.
 We need to install both of these.
 
 MacOS Install
-^^^^^^^^^^^
+^^^^^^^^^^^^^
 
 On MacOS, I recommend using `Homebrew <http://brew.sh/>`_ to get npm::
 
