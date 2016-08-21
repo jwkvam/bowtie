@@ -11,7 +11,6 @@ No javascript required, you build your dashboard in pure Python.
 Easy to deploy so you can share results with others.
 
 .. toctree::
-    :maxdepth: 2
     :hidden:
 
     quickstart
