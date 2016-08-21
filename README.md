@@ -8,6 +8,10 @@
 
 See a live [example](https://bowtie-demo.herokuapp.com/) generated from this [code](https://github.com/jwkvam/bowtie-demo/blob/master/example.py)!
 
+## Documentation
+
+It's a bit sparse for now but check it out [here](http://bowtie-py.readthedocs.io/en/latest/).
+
 ## Install
 
 ```
