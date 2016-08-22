@@ -2,7 +2,7 @@
 
 [![Documentation Status](https://readthedocs.org/projects/bowtie-py/badge/?version=latest)](http://bowtie-py.readthedocs.io/en/latest/?badge=latest)
 
-![Demo](https://cloud.githubusercontent.com/assets/86304/17690395/2a89af68-6343-11e6-823f-a9cca9c28ecf.gif)
+![Demo](https://cloud.githubusercontent.com/assets/86304/17841404/fdd4267c-67cc-11e6-92f2-f5d69107e519.gif)
 
 ## Demo
 
