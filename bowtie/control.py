@@ -75,7 +75,7 @@ class DropDown(Controller):
 class Nouislider(Controller):
     template = 'nouislider.jsx'
     component = 'Nouislider'
-    package = 'react-nouislider'
+    package = 'nouislider'
     tag = ('<Nouislider range={{{{min: {min}, max: {max}}}}} '
            'socket={{socket}} '
            'start={{{start}}} '

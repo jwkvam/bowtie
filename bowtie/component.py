@@ -3,6 +3,7 @@
 import json
 from datetime import datetime
 
+import flask
 from flask_socketio import emit
 from future.utils import with_metaclass
 from eventlet.event import Event
@@ -40,7 +41,11 @@ def make_command(command):
     def actualcommand(self, data):
         name = command.__name__[3:]
         signal = '{uuid}#{event}'.format(uuid=self._uuid, event=name)
-        return emit(signal, jdumps(data))
+        if flask.has_request_context():
+            return emit(signal, jdumps(data))
+        else:
+            sio = flask.current_app.extensions['socketio']
+            return sio.emit(signal, jdumps(data))
 
     actualcommand.__doc__ = command.__doc__
 

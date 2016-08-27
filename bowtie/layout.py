@@ -17,6 +17,7 @@ from bowtie.visual import Visual
 
 _Import = namedtuple('_Import', ['module', 'component'])
 _Control = namedtuple('_Control', ['instantiate', 'caption'])
+_Schedule = namedtuple('_Control', ['seconds', 'function'])
 
 
 class Layout(object):
@@ -53,6 +54,7 @@ class Layout(object):
         self.imports = set()
         self.visuals = [[]]
         self.controllers = []
+        self.schedules = []
         self.functions = []
 
     def add_visual(self, visual,
@@ -83,6 +85,22 @@ class Layout(object):
         e = "'{}'".format(event)
         self.subscriptions[e].append(func.__name__)
 
+    def schedule(self, seconds, func):
+        """Make a function be called periodically
+
+        Parameters
+        ----------
+        seconds : float
+            Minimum interval of function calls.
+        func : method
+            Function to be called
+
+        Returns
+        -------
+        Layout
+
+        """
+        self.schedules.append(_Schedule(seconds, func.__name__))
 
     def build(self, directory='build', host='0.0.0.0', port=9991,
               debug=False):
@@ -112,6 +130,7 @@ class Layout(object):
                 server.render(
                     source_module=os.path.basename(source_filename)[:-3],
                     subscriptions=self.subscriptions,
+                    schedules=self.schedules,
                     host="'{}'".format(host),
                     port=port,
                     debug=debug
