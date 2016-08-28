@@ -81,5 +81,9 @@ class Component(with_metaclass(_Maker, object)):
 
     def get(self, block=True, timeout=None):
         event = Event()
-        emit('{}#get'.format(self._uuid), callback=lambda x: event.send(x))
+        if flask.has_request_context():
+            emit('{}#get'.format(self._uuid), callback=lambda x: event.send(x))
+        else:
+            sio = flask.current_app.extensions['socketio']
+            sio.emit('{}#get'.format(self._uuid), callback=lambda x: event.send(x))
         return event.wait()
