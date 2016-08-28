@@ -3,6 +3,7 @@
 
 import os
 import sys
+import traceback
 
 import click
 from flask import Flask, render_template, copy_current_request_context
@@ -23,6 +24,7 @@ def context(func):
             func()
     return foo
 
+
 class Scheduler(object):
 
     def __init__(self, seconds, func):
@@ -36,7 +38,10 @@ class Scheduler(object):
     def run(self):
         ret = eventlet.spawn(context(self.func))
         eventlet.sleep(self.seconds)
-        ret.wait()
+        try:
+            ret.wait()
+        except:
+            traceback.print_exc()
         self.thread = eventlet.spawn(self.run)
 
     def stop(self):

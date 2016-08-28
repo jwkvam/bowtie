@@ -83,14 +83,13 @@ class Nouislider(Controller):
            'uuid={{{uuid}}} '
            '/>')
 
-
-           # 'onChange={{ function(x) {{socket.emit("{uuid}#change", x);}} }} '
-
     def __init__(self, start=0, minimum=0, maximum=100, tooltips=True, caption=''):
         super(Nouislider, self).__init__()
 
         if not isinstance(start, Iterable):
             start = [start]
+        else:
+            start = list(start)
         self.instantiate = self.tag.format(
             uuid="'{}'".format(self._uuid),
             min=minimum,

@@ -7,6 +7,7 @@ import flask
 from flask_socketio import emit
 from future.utils import with_metaclass
 from eventlet.event import Event
+from eventlet.queue import LightQueue
 
 
 def json_conversion(obj):
@@ -80,10 +81,10 @@ class Component(with_metaclass(_Maker, object)):
         super(Component, self).__init__()
 
     def get(self, block=True, timeout=None):
-        event = Event()
+        event = LightQueue(1)
         if flask.has_request_context():
-            emit('{}#get'.format(self._uuid), callback=lambda x: event.send(x))
+            emit('{}#get'.format(self._uuid), callback=lambda x: event.put(x))
         else:
             sio = flask.current_app.extensions['socketio']
-            sio.emit('{}#get'.format(self._uuid), callback=lambda x: event.send(x))
-        return event.wait()
+            sio.emit('{}#get'.format(self._uuid), callback=lambda x: event.put(x))
+        return event.get(timeout=1)
