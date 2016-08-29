@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
+"""
+Control components
+"""
 
-from collections import namedtuple, Iterable
+from collections import Iterable
 
-from enum import Enum
-
-from bowtie.component import Component
-
-# from event import Event
-
-import json
+from bowtie._component import Component, jdumps
 
 
-class Controller(Component):
+# pylint: disable=too-few-public-methods
+class _Controller(Component):
     """
     Used to test if a an object is a controller.
     All controllers must inherit this class.
@@ -19,11 +17,11 @@ class Controller(Component):
     pass
 
 
-class Button(Controller):
-    template = 'button.jsx'
-    component = 'SimpleButton'
-    package = 'react-button'
-    tag = ('<SimpleButton '
+class Button(_Controller):
+    _TEMPLATE = 'button.jsx'
+    _COMPONENT = 'SimpleButton'
+    _PACKAGE = 'react-button'
+    _TAG = ('<SimpleButton '
            'socket={{socket}} '
            'uuid={{{uuid}}} '
            'label={{{label}}} '
@@ -32,7 +30,7 @@ class Button(Controller):
     def __init__(self, label='', caption=''):
         super(Button, self).__init__()
 
-        self.instantiate = self.tag.format(
+        self._instantiate = self._TAG.format(
             label="'{}'".format(label),
             uuid="'{}'".format(self._uuid)
         )
@@ -42,11 +40,11 @@ class Button(Controller):
         pass
 
 
-class DropDown(Controller):
-    template = 'dropdown.jsx'
-    component = 'DropDown'
-    package = 'react-select'
-    tag = ('<DropDown initOptions={{{options}}} '
+class DropDown(_Controller):
+    _TEMPLATE = 'dropdown.jsx'
+    _COMPONENT = 'DropDown'
+    _PACKAGE = 'react-select'
+    _TAG = ('<DropDown initOptions={{{options}}} '
            'multi={{{multi}}}'
            'socket={{socket}} '
            'uuid={{{uuid}}} '
@@ -58,8 +56,8 @@ class DropDown(Controller):
 
         # options = [dict(value=x, label=str(x)) for x in options]
 
-        self.instantiate = self.tag.format(
-            options=json.dumps(options),
+        self._instantiate = self._TAG.format(
+            options=jdumps(options),
             multi='true' if multi else 'false',
             uuid="'{}'".format(self._uuid)
         )
@@ -72,11 +70,11 @@ class DropDown(Controller):
         pass
 
 
-class Nouislider(Controller):
-    template = 'nouislider.jsx'
-    component = 'Nouislider'
-    package = 'nouislider'
-    tag = ('<Nouislider range={{{{min: {min}, max: {max}}}}} '
+class Nouislider(_Controller):
+    _TEMPLATE = 'nouislider.jsx'
+    _COMPONENT = 'Nouislider'
+    _PACKAGE = 'nouislider'
+    _TAG = ('<Nouislider range={{{{min: {min}, max: {max}}}}} '
            'socket={{socket}} '
            'start={{{start}}} '
            'tooltips={{{tooltips}}} '
@@ -90,7 +88,7 @@ class Nouislider(Controller):
             start = [start]
         else:
             start = list(start)
-        self.instantiate = self.tag.format(
+        self._instantiate = self._TAG.format(
             uuid="'{}'".format(self._uuid),
             min=minimum,
             max=maximum,

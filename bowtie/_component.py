@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+"""
+Bowtie Component classes, all visual and control components inherit these
+"""
 
 import json
 from datetime import datetime

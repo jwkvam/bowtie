@@ -6,7 +6,7 @@
 Quick Start
 ===========
 
-This quick start will show how to do the following.
+This quick start will show how to do the following:
 
 * Install everything needed to use Bowtie.
 * Write an app connecting a slider to a plot.
@@ -61,15 +61,15 @@ Now we instantiate the components and configure them::
     sine_plot = Plotly()
     freq_slider = Nouislider(caption='frequency', mininum=1, maximum=10, start=5)
 
-Next we'll create a listener to listener that generates a plot on slider changes::
+Next we'll create a listener that generates a plot on slider changes::
 
     def listener(freq):
         freq = float(freq[0])
         t = np.linspace(0, 10, 100)
         sine_plot.do_all(pw.line(t, np.sin(freq * t)).to_json())
 
-The :py:class:`bowtie.control.Nouislider` component sends it's values as a list of strings so we had to cast it to a float.
-Lastly we need to build the application by layout the components and connecting listeners to events.
+The :py:class:`bowtie.control.Nouislider` component sends its values as a list of strings so we had to cast it to a float.
+Lastly we need to build the application by laying out the components and connecting listeners to events.
 We do this in the main block::
     
     if __name__ == "__main__":
@@ -97,8 +97,8 @@ Deploy to Heroku
 This isn't streamlined right now but you can try the following approach.
 For example, this was done to create `bowtie-demo <https://github.com/jwkvam/bowtie-demo/>`_ so you may refer to that.
 
-* Create a Procfile, you can see bowtie-demo for an example.
-* Create requirements files, again see bowtie-demo for an example.
+* Create a Procfile, you can see `bowtie-demo <https://github.com/jwkvam/bowtie-demo/>`_ for an example.
+* Create requirements files, again see `bowtie-demo <https://github.com/jwkvam/bowtie-demo/>`_ for an example.
 * Rebuild with production settings with webpack, by default Bowtie uses development::
       
       cd build

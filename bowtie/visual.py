@@ -1,42 +1,25 @@
 # -*- coding: utf-8 -*-
+"""
+Visual components
+"""
 
-from collections import namedtuple
-from datetime import datetime
-import json
-
-from future.utils import with_metaclass
-
-from flask_socketio import emit
-from bowtie.component import Component
+from bowtie._component import Component, jdumps
 
 
-def json_conversion(obj):
-
-    if isinstance(obj, datetime):
-        return obj.isoformat()
-    raise TypeError('Not sure how to serialize {} of type {}'.format(obj, type(obj)))
-
-
-def jdumps(data):
-    return json.dumps(data, default=json_conversion)
-
-
- #with_metaclass(_CommandMeta, Component)):
-class Visual(Component):
+# pylint: disable=too-few-public-methods
+class _Visual(Component):
     """
     Used to test if a an object is a controller.
     All controllers must inherit this class.
     """
     pass
-    # def __init__(self):
-    #     super(Visual, self).__init__()
 
 
-class SmartGrid(Visual):
-    template = 'griddle.jsx'
-    component = 'SmartGrid'
-    package = 'griddle-react'
-    tag = ('<SmartGrid '
+class SmartGrid(_Visual):
+    _TEMPLATE = 'griddle.jsx'
+    _COMPONENT = 'SmartGrid'
+    _PACKAGE = 'griddle-react'
+    _TAG = ('<SmartGrid '
            'socket={{socket}} '
            'uuid={{{uuid}}} '
            'rows={{{rows}}} '
@@ -46,8 +29,8 @@ class SmartGrid(Visual):
     def __init__(self):
         super(SmartGrid, self).__init__()
 
-    def instantiate(self, columns, rows):
-        return self.tag.format(
+    def _instantiate(self, columns, rows):
+        return self._TAG.format(
             uuid="'{}'".format(self._uuid),
             rows=rows,
             columns=columns
@@ -56,87 +39,89 @@ class SmartGrid(Visual):
     def do_update(self, data):
         pass
 
-class FixedTable(Visual):
-    template = 'fixedtable.jsx'
-    component = 'FixedTable'
-    package = 'fixed-data-table'
-    tag = ('<FixedTable '
-           'socket={{socket}} '
-           'uuid={{{uuid}}} '
-           'rows={{{rows}}} '
-           'columns={{{columns}}} '
-           '/>')
+#
+# TODO: these visuals are partially implemented
+# class FixedTable(_Visual):
+#     _TEMPLATE = 'fixedtable.jsx'
+#     _COMPONENT = 'FixedTable'
+#     _PACKAGE = 'fixed-data-table'
+#     _TAG = ('<FixedTable '
+#            'socket={{socket}} '
+#            'uuid={{{uuid}}} '
+#            'rows={{{rows}}} '
+#            'columns={{{columns}}} '
+#            '/>')
+#
+#     def __init__(self):
+#         super(FixedTable, self).__init__()
+#
+#     def _instantiate(self, columns, rows):
+#         return self._TAG.format(
+#             uuid="'{}'".format(self._uuid),
+#             rows=rows,
+#             columns=columns
+#         )
+#
+#
+# class DataTable(_Visual):
+#     _TEMPLATE = 'datatables.jsx'
+#     _COMPONENT = 'JTable'
+#     _PACKAGE = 'react-jquery-datatables'
+#     _TAG = ('<JTable '
+#            'socket={{socket}} '
+#            'uuid={{{uuid}}} '
+#            '/>')
+#
+#     def __init__(self):
+#         super(DataTable, self).__init__()
+#
+#     def _instantiate(self, columns, rows):
+#         return self._TAG.format(
+#             uuid="'{}'".format(self._uuid),
+#         )
+#
+#
+# class Grid(_Visual):
+#     _TEMPLATE = 'dazzlegrid.jsx'
+#     _COMPONENT = 'Grid'
+#     _PACKAGE = 'react-data-grid'
+#     _TAG = ('<Grid '
+#            'socket={{socket}} '
+#            'uuid={{{uuid}}} '
+#            '/>')
+#
+#     def __init__(self):
+#         super(Grid, self).__init__()
+#
+#     def _instantiate(self, columns, rows):
+#         return self._TAG.format(
+#             uuid="'{}'".format(self._uuid),
+#         )
+#
+#
+# class Table(_Visual):
+#     _TEMPLATE = 'datagrid.jsx'
+#     _COMPONENT = 'Table'
+#     _PACKAGE = 'react-datagrid'
+#     _TAG = ('<Table '
+#            'socket={{socket}} '
+#            'uuid={{{uuid}}} '
+#            '/>')
+#
+#     def __init__(self):
+#         super(Table, self).__init__()
+#
+#     def _instantiate(self, columns, rows):
+#         return self._TAG.format(
+#             uuid="'{}'".format(self._uuid),
+#         )
 
-    def __init__(self):
-        super(FixedTable, self).__init__()
 
-    def instantiate(self, columns, rows):
-        return self.tag.format(
-            uuid="'{}'".format(self._uuid),
-            rows=rows,
-            columns=columns
-        )
-
-
-class DataTable(Visual):
-    template = 'datatables.jsx'
-    component = 'JTable'
-    package = 'react-jquery-datatables'
-    tag = ('<JTable '
-           'socket={{socket}} '
-           'uuid={{{uuid}}} '
-           '/>')
-
-    def __init__(self):
-        super(DataTable, self).__init__()
-
-    def instantiate(self, columns, rows):
-        return self.tag.format(
-            uuid="'{}'".format(self._uuid),
-        )
-
-
-class Grid(Visual):
-    template = 'dazzlegrid.jsx'
-    component = 'Grid'
-    package = 'react-data-grid'
-    tag = ('<Grid '
-           'socket={{socket}} '
-           'uuid={{{uuid}}} '
-           '/>')
-
-    def __init__(self):
-        super(Grid, self).__init__()
-
-    def instantiate(self, columns, rows):
-        return self.tag.format(
-            uuid="'{}'".format(self._uuid),
-        )
-
-
-class Table(Visual):
-    template = 'datagrid.jsx'
-    component = 'Table'
-    package = 'react-datagrid'
-    tag = ('<Table '
-           'socket={{socket}} '
-           'uuid={{{uuid}}} '
-           '/>')
-
-    def __init__(self):
-        super(Table, self).__init__()
-
-    def instantiate(self, columns, rows):
-        return self.tag.format(
-            uuid="'{}'".format(self._uuid),
-        )
-
-
-class Plotly(Visual):
-    template = 'plotly.jsx'
-    component = 'PlotlyPlot'
-    package = 'plotly.js'
-    tag = ('<PlotlyPlot initState={{{init}}} '
+class Plotly(_Visual):
+    _TEMPLATE = 'plotly.jsx'
+    _COMPONENT = 'PlotlyPlot'
+    _PACKAGE = 'plotly.js'
+    _TAG = ('<PlotlyPlot initState={{{init}}} '
            'socket={{socket}} '
            'uuid={{{uuid}}} '
            'rows={{{rows}}} '
@@ -149,8 +134,8 @@ class Plotly(Visual):
             init = dict(data=[], layout={'autosize': True})
         self.init = init
 
-    def instantiate(self, columns, rows):
-        return self.tag.format(
+    def _instantiate(self, columns, rows):
+        return self._TAG.format(
             uuid="'{}'".format(self._uuid),
             init=jdumps(self.init),
             rows=rows,

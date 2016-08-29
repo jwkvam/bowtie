@@ -10,9 +10,9 @@ from collections import namedtuple, defaultdict
 
 from jinja2 import Environment, FileSystemLoader
 
-from bowtie.compat import makedirs
-from bowtie.control import Controller
-from bowtie.visual import Visual
+from bowtie._compat import makedirs
+from bowtie.control import _Controller
+from bowtie.visual import _Visual
 
 
 _Import = namedtuple('_Import', ['module', 'component'])
@@ -61,11 +61,11 @@ class Layout(object):
                    width=None, height=None,
                    width_pixels=None, height_pixels=None,
                    next_row=False):
-        assert isinstance(visual, Visual)
-        self.packages.add(visual.package)
-        self.templates.add(visual.template)
-        self.imports.add(_Import(component=visual.component,
-                                 module=visual.template[:visual.template.find('.')]))
+        assert isinstance(visual, _Visual)
+        self.packages.add(visual._PACKAGE)
+        self.templates.add(visual._TEMPLATE)
+        self.imports.add(_Import(component=visual._COMPONENT,
+                                 module=visual._TEMPLATE[:visual._TEMPLATE.find('.')]))
 
         if next_row and self.visuals[-1]:
             self.visuals.append([])
@@ -73,12 +73,12 @@ class Layout(object):
         self.visuals[-1].append(visual)
 
     def add_controller(self, control):
-        assert isinstance(control, Controller)
-        self.packages.add(control.package)
-        self.templates.add(control.template)
-        self.imports.add(_Import(component=control.component,
-                                 module=control.template[:control.template.find('.')]))
-        self.controllers.append(_Control(instantiate=control.instantiate,
+        assert isinstance(control, _Controller)
+        self.packages.add(control._PACKAGE)
+        self.templates.add(control._TEMPLATE)
+        self.imports.add(_Import(component=control._COMPONENT,
+                                 module=control._TEMPLATE[:control._TEMPLATE.find('.')]))
+        self.controllers.append(_Control(instantiate=control._instantiate,
                                          caption=control.caption))
 
     def subscribe(self, event, func):
@@ -156,7 +156,7 @@ class Layout(object):
 
         for i, visualrow in enumerate(self.visuals):
             for j, visual in enumerate(visualrow):
-                self.visuals[i][j] = self.visuals[i][j].instantiate(
+                self.visuals[i][j] = self.visuals[i][j]._instantiate(
                     columns=len(visualrow),
                     rows=len(self.visuals)
                 )
