@@ -3,6 +3,8 @@ eventlet
 flask-socketio
 future
 jinja2
+numpy
+plotlywrapper
 pylint
 pytest
 pytest-cov
