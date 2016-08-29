@@ -19,12 +19,6 @@ Easy to deploy so you can share results with others.
     architecture
     newcomponents
     comparison
+    indices
 
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 
