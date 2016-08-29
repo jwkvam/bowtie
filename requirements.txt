@@ -3,3 +3,7 @@ eventlet
 flask-socketio
 future
 jinja2
+pylint
+pytest
+pytest-cov
+pytest-pylint
