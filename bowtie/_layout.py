@@ -61,6 +61,16 @@ class Layout(object):
                    width=None, height=None,
                    width_pixels=None, height_pixels=None,
                    next_row=False):
+        """Add a visual to the layout.
+
+        Parameters
+        ----------
+        visual : bowtie._Visual
+            A Bowtie visual instance.
+        next_row : bool, optional
+            Add this visual to the next row.
+
+        """
         assert isinstance(visual, _Visual)
         self.packages.add(visual._PACKAGE)
         self.templates.add(visual._TEMPLATE)
@@ -73,6 +83,15 @@ class Layout(object):
         self.visuals[-1].append(visual)
 
     def add_controller(self, control):
+        """Add a controller to the layout.
+
+        Parameters
+        ----------
+        control : bowtie._Controller
+            A Bowtie controller instance.
+
+        """
+        pass
         assert isinstance(control, _Controller)
         self.packages.add(control._PACKAGE)
         self.templates.add(control._TEMPLATE)
@@ -82,28 +101,46 @@ class Layout(object):
                                          caption=control.caption))
 
     def subscribe(self, event, func):
+        """Call a function in response to an event.
+
+        Parameters
+        ----------
+        event : str
+            Name of the event.
+        func : callable
+            Function to be called.
+        """
         e = "'{}'".format(event)
         self.subscriptions[e].append(func.__name__)
 
     def schedule(self, seconds, func):
-        """Make a function be called periodically
+        """Call a function periodically.
 
         Parameters
         ----------
         seconds : float
             Minimum interval of function calls.
-        func : method
-            Function to be called
-
-        Returns
-        -------
-        Layout
-
+        func : callable
+            Function to be called.
         """
         self.schedules.append(_Schedule(seconds, func.__name__))
 
     def build(self, directory='build', host='0.0.0.0', port=9991,
               debug=False):
+        """Compiles the Bowtie application.
+
+        Parameters
+        ----------
+        directory : str, optional
+            Directory where the app will be built.
+        host : str, optional
+            IP address of the host.
+        port : int, optional
+            Port to bind to.
+        debug : bool, optional
+            Enable debugging of the Flask app.
+        """
+        pass
 
         env = Environment(loader=FileSystemLoader(
             path.join(path.dirname(__file__), 'templates')
