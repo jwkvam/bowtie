@@ -6,7 +6,9 @@ python 2/3 compatability
 import sys
 from os import makedirs
 
-if sys.version_info < (3, 0):
+IS_PY2 = sys.version < (3, 0)
+
+if IS_PY2:
     # pylint: disable=invalid-name
     makedirs_lib = makedirs
     # pylint: disable=function-redefined,missing-docstring

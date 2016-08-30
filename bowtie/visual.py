@@ -118,6 +118,9 @@ class SmartGrid(_Visual):
 
 
 class Plotly(_Visual):
+    """
+    Plotly component.
+    """
     _TEMPLATE = 'plotly.jsx'
     _COMPONENT = 'PlotlyPlot'
     _PACKAGE = 'plotly.js'
@@ -146,6 +149,14 @@ class Plotly(_Visual):
     ## Events
 
     def on_click(self):
+        """Plotly click event.
+
+        Returns
+        -------
+        str
+            Name of click event.
+
+        """
         pass
 
     def on_beforehover(self):
