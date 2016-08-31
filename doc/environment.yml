@@ -21,3 +21,5 @@ dependencies:
     - pytest
     - pytest-cov
     - pytest-pylint
+    - sphinx
+    - sphinx_rtd_theme
