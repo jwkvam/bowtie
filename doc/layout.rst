@@ -9,6 +9,6 @@ Layout
 The Layout class defines the structure of the application:
 how things are laid out, subscribing listeners to events, and building the application.
 
-.. autoclass:: bowtie.Layout
+.. autoclass:: bowtie._layout.Layout
     :members:
     :undoc-members:

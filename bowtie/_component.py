@@ -82,7 +82,7 @@ class Component(with_metaclass(_Maker, object)):
         return cls._NEXT_UUID
 
     def __init__(self):
-        # TODO wanted to put "self" instead of "Component"
+        # wanted to put "self" instead of "Component"
         # was surprised that didn't work
         self._uuid = Component._next_uuid()
         super(Component, self).__init__()
