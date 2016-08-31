@@ -12,7 +12,7 @@ from future.utils import with_metaclass
 from eventlet.event import Event
 from eventlet.queue import LightQueue
 
-from bowtie._compat import IS_PY2
+from bowtie._compat import IS_PY35
 
 
 def json_conversion(obj):
@@ -33,7 +33,7 @@ def make_event(event):
         name = event.__name__[3:]
         return '{uuid}#{event}'.format(uuid=self._uuid, event=name)
 
-    if not IS_PY2:
+    if not IS_PY35:
         # can't set docstring on properties in python 2 like this
         actualevent.__doc__ = event.__doc__
 

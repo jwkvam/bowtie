@@ -7,6 +7,7 @@ import sys
 from os import makedirs
 
 IS_PY2 = sys.version_info < (3, 0)
+IS_PY35 = sys.version_info > (3, 4)
 
 if IS_PY2:
     # pylint: disable=invalid-name
