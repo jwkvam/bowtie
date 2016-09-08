@@ -162,7 +162,6 @@ class Layout(object):
         # [1] grabs the parent stack and [1] grabs the filename
         source_filename = inspect.stack()[1][1]
         with open(server_path, 'w') as f:
-            print('writing server')
             f.write(
                 server.render(
                     source_module=os.path.basename(source_filename)[:-3],
@@ -173,7 +172,6 @@ class Layout(object):
                     debug=debug
                 )
             )
-            print('done writing server')
         perms = os.stat(server_path)
         os.chmod(server_path, perms.st_mode | stat.S_IEXEC)
 
