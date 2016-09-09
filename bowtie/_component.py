@@ -4,7 +4,7 @@ Bowtie Component classes, all visual and control components inherit these
 """
 
 import json
-from datetime import datetime
+from datetime import datetime, time
 
 import flask
 from flask_socketio import emit
@@ -17,7 +17,7 @@ from bowtie._compat import IS_PY35
 
 def json_conversion(obj):
 
-    if isinstance(obj, datetime):
+    if isinstance(obj, datetime) or isinstance(obj, time):
         return obj.isoformat()
     raise TypeError('Not sure how to serialize {} of type {}'.format(obj, type(obj)))
 
