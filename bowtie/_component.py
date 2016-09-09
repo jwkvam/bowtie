@@ -33,7 +33,7 @@ def make_event(event):
         name = event.__name__[3:]
         return '{uuid}#{event}'.format(uuid=self._uuid, event=name)
 
-    if not IS_PY35:
+    if IS_PY35:
         # can't set docstring on properties in python 2 like this
         actualevent.__doc__ = event.__doc__
 
