@@ -123,7 +123,7 @@ class Plotly(_Visual):
     """
     _TEMPLATE = 'plotly.jsx'
     _COMPONENT = 'PlotlyPlot'
-    _PACKAGE = 'plotly.js@1.16'
+    _PACKAGE = 'plotly.js'
     _TAG = ('<PlotlyPlot initState={{{init}}} '
            'socket={{socket}} '
            'uuid={{{uuid}}} '
