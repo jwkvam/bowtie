@@ -1,5 +1,6 @@
 import React from 'react';
 import Plotly from 'plotly.js';
+import cloneDeep from 'lodash.clonedeep';
 
 
 function get_height_width() {
@@ -20,6 +21,7 @@ export default class PlotlyPlot extends React.Component {
         this.state['selection'] = null;
         this.setSelection = this.setSelection.bind(this);
         this.getSelection = this.getSelection.bind(this);
+        this.resize = this.resize.bind(this);
     }
 
     // changeAll = (all) => {this.setState(all);}
@@ -38,15 +40,23 @@ export default class PlotlyPlot extends React.Component {
         fn(this.state.selection);
     }
 
+    resize() {
+        Plotly.Plots.resize(this.container);
+    }
+
     componentDidMount() {
         // let {data, layout, config} = this.props;
 
-        var hw = get_height_width();
-        this.state.layout['height'] = Math.floor(hw[1] / this.props.rows);
-        this.state.layout['width'] = Math.floor((hw[0] * 9 / 10) / this.props.columns);
+        // var hw = get_height_width();
+        // this.state.layout['height'] = Math.floor(hw[1] / this.props.rows);
+        // this.state.layout['width'] = Math.floor((hw[0] * 9 / 10) / this.props.columns);
+        var parent = window.getComputedStyle(this.container.parentElement);
         this.state.layout['autosize'] = false;
+        this.state.layout['height'] = parseFloat(parent.height);
+        this.state.layout['width'] = parseFloat(parent.width);
+        Plotly.newPlot(this.container, this.state.data, cloneDeep(this.state.layout),
+            {autosizable: false, displaylogo: false, fillFrame: true}); //, config);
         
-        Plotly.newPlot(this.container, this.state.data, this.state.layout, {autosizable: false, displaylogo: false, fillFrame: true}); //, config);
         // if (this.props.onClick)
         var uuid = this.props.uuid;
         var socket = this.props.socket;
@@ -59,8 +69,6 @@ export default class PlotlyPlot extends React.Component {
                 x: p0.x,
                 y: p0.y,
             };
-            // console.log('clicked');
-            // console.log('data');
             socket.emit(uuid + '#click', datum);
         });
         // if (this.props.onBeforeHover)
@@ -109,25 +117,26 @@ export default class PlotlyPlot extends React.Component {
 
     componentDidUpdate() {
         //TODO use minimal update for given changes
-        this.container.data = this.state.data;
-        this.container.layout = this.state.layout;
+        // this.container.data = this.state.data;
+        // this.container.layout = this.state.layout;
 
-        var hw = get_height_width();
-        this.state.layout = this.state.layout || {};
-        this.state.layout['height'] = hw[1] / this.props.rows;
-        this.state.layout['width'] = (hw[0] * 9 / 10) / this.props.columns;
-
-        this.container.config = {autosizable: true, fillFrame: true, displaylogo: false};
-        // console.log(this.state);
-        Plotly.redraw(this.container); //, this.state.data, this.state.layout);
+        // var hw = get_height_width();
+        // this.state.layout = this.state.layout || {};
+        // this.state.layout['height'] = hw[1] / this.props.rows;
+        // this.state.layout['width'] = (hw[0] * 9 / 10) / this.props.columns;
+        
+        //this.container.config = {autosizable: true, fillFrame: true, displaylogo: false};
+        var parent = window.getComputedStyle(this.container.parentElement);
+        this.state.layout['autosize'] = false;
+        this.state.layout['height'] = parseFloat(parent.height);
+        this.state.layout['width'] = parseFloat(parent.width);
+        Plotly.newPlot(this.container, this.state.data, cloneDeep(this.state.layout),
+            {autosizable: false, displaylogo: false, fillFrame: true}); //, config);
+        // window.addEventListener('resize', this.resize);
     }
 
     componentWillUnmount() {
-        this.container.removeAllListeners('plotly_click');
-        this.container.removeAllListeners('plotly_beforehover');
-        this.container.removeAllListeners('plotly_hover');
-        this.container.removeAllListeners('plotly_unhover');
-        this.container.removeAllListeners('plotly_selected');
+        Plotly.purge(this.container);
     }
 
     render() {

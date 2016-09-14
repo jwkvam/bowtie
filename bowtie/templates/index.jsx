@@ -12,8 +12,8 @@ var socket = io();
 class Dashboard extends React.Component {
     render() {
         return (
-            <div style={{ '{{' }}display: 'flex', flexFlow: 'row nowrap'{{ '}}' }}>
-                <div style={{ '{{' }}display: 'flex', flexDirection: 'column', flex: 1, padding: '7px'{{ '}}' }}>
+            <div style={{ '{{' }}display: 'flex', flexFlow: 'row nowrap', width: '100vw', height: '100vh', maxHeight: '100%', maxWidth: '100%'{{ '}}' }}>
+                <div style={{ '{{' }}display: 'flex', flexFlow: 'column nowrap', flex: '0 0 15em', padding: '7px'{{ '}}' }}>
                     {{ description }}
 
                     {% for control in controls %}
@@ -27,9 +27,9 @@ class Dashboard extends React.Component {
                     {% endfor %}
                 </div>
 
-                <div style={{ '{{' }}display: 'flex', flexDirection: 'column', flex: 9{{ '}}' }}>
+                <div style={{ '{{' }}display: 'flex', flexFlow: 'column nowrap', flex: '1 1 0'{{ '}}' }}>
                     {% for visualrow in visuals %}
-                    <div style={{ '{{' }}display: 'flex', flexFlow: 'row nowrap'{{ '}}' }}>
+                    <div style={{ '{{' }}display: 'flex', flexFlow: 'row nowrap', flex: '1 1 0'{{ '}}' }}>
                         {% for visual in visualrow %}
                         {{ visual }}
                         {% endfor %}

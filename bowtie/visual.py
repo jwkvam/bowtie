@@ -134,7 +134,7 @@ class Plotly(_Visual):
     def __init__(self, init=None):
         super(Plotly, self).__init__()
         if init is None:
-            init = dict(data=[], layout={'autosize': True})
+            init = dict(data=[], layout={'autosize': False})
         self.init = init
 
     def _instantiate(self, columns, rows):

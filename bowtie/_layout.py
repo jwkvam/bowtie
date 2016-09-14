@@ -56,6 +56,7 @@ class Layout(object):
         'css-loader',
         'extract-text-webpack-plugin',
         'less-loader',
+        'lodash.clonedeep',
         'node-sass',
         'normalize.css',
         'postcss-modules-values',
