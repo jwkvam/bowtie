@@ -24,6 +24,24 @@ _Schedule = namedtuple('_Control', ['seconds', 'function'])
 
 
 class Layout(object):
+    """Create a Bowtie App.
+
+    Parameters
+    ----------
+    title : str, optional
+        Title of the HTML.
+    description : str, optional
+        Describe the app in Markdown, inserted in control pane.
+    directory : str, optional
+        Location where app is compiled.
+    host : str, optional
+        Host IP address.
+    port : int, optional
+        Host port number.
+    debug : bool, optional
+        Enable debugging in Flask.
+
+    """
 
     _packages = [
         'babel-core',

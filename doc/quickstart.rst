@@ -78,7 +78,7 @@ We do this in the main block::
         layout.add_controller(freq_slider)
         layout.add_visual(sine_plot)
         layout.subscribe(freq_slider.on_change, listener)
-        layout.build(debug=False)
+        layout.build()
 
 Now we just need to execute the python script we wrote::
 
