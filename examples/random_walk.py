@@ -24,9 +24,9 @@ def walk():
 
 if __name__ == "__main__":
     from bowtie import Layout
-    layout = Layout()
+    layout = Layout(debug=False)
     layout.add_controller(sigma)
     layout.add_visual(mainplot)
     layout.schedule(0.1, walk)
 
-    layout.build(debug=False)
+    layout.build()
