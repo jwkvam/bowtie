@@ -69,9 +69,13 @@ class Layout(object):
     ]
 
     def __init__(self, title='Bowtie App', description='Bowtie App\n---',
+                 basic_auth=False, username='username', password='password',
                  directory='build', host='0.0.0.0', port=9991, debug=False):
         self.title = title
         self.description = Markup(markdown(description))
+        self.basic_auth = basic_auth
+        self.username = username
+        self.password = password
         self.directory = directory
         self.host = host
         self.port = port
@@ -178,6 +182,9 @@ class Layout(object):
         with open(server_path, 'w') as f:
             f.write(
                 server.render(
+                    basic_auth=self.basic_auth,
+                    username=self.username,
+                    password=self.password,
                     source_module=os.path.basename(source_filename)[:-3],
                     subscriptions=self.subscriptions,
                     schedules=self.schedules,
