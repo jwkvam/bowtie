@@ -6,9 +6,12 @@ import stat
 from subprocess import Popen
 import inspect
 
+from flask import Markup
+
 from collections import namedtuple, defaultdict
 
 from jinja2 import Environment, FileSystemLoader
+from markdown import markdown
 
 from bowtie._compat import makedirs
 from bowtie.control import _Controller
@@ -46,8 +49,14 @@ class Layout(object):
         'webpack',
     ]
 
-    def __init__(self, title=None):
+    def __init__(self, title='Bowtie App', description='Bowtie App\n---',
+                 directory='build', host='0.0.0.0', port=9991, debug=False):
         self.title = title
+        self.description = Markup(markdown(description))
+        self.directory = directory
+        self.host = host
+        self.port = port
+        self.debug = debug
         self.subscriptions = defaultdict(list)
         self.packages = set()
         self.templates = set()
@@ -125,23 +134,9 @@ class Layout(object):
         """
         self.schedules.append(_Schedule(seconds, func.__name__))
 
-    def build(self, directory='build', host='0.0.0.0', port=9991,
-              debug=False):
+    def build(self):
         """Compiles the Bowtie application.
-
-        Parameters
-        ----------
-        directory : str, optional
-            Directory where the app will be built.
-        host : str, optional
-            IP address of the host.
-        port : int, optional
-            Port to bind to.
-        debug : bool, optional
-            Enable debugging of the Flask app.
         """
-        pass
-
         env = Environment(loader=FileSystemLoader(
             path.join(path.dirname(__file__), 'templates')
         ))
@@ -151,9 +146,9 @@ class Layout(object):
         index = env.get_template('index.html')
         react = env.get_template('index.jsx')
 
-        src, app, templates = create_directories(directory=directory)
+        src, app, templates = create_directories(directory=self.directory)
 
-        with open(path.join(directory, webpack.name), 'w') as f:
+        with open(path.join(self.directory, webpack.name), 'w') as f:
             f.write(
                 webpack.render()
             )
@@ -167,9 +162,9 @@ class Layout(object):
                     source_module=os.path.basename(source_filename)[:-3],
                     subscriptions=self.subscriptions,
                     schedules=self.schedules,
-                    host="'{}'".format(host),
-                    port=port,
-                    debug=debug
+                    host="'{}'".format(self.host),
+                    port=self.port,
+                    debug=self.debug
                 )
             )
         perms = os.stat(server_path)
@@ -199,6 +194,7 @@ class Layout(object):
         with open(path.join(app, react.name), 'w') as f:
             f.write(
                 react.render(
+                    description=self.description,
                     components=self.imports,
                     controls=self.controllers,
                     visuals=self.visuals

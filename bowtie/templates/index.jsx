@@ -14,6 +14,8 @@ class Dashboard extends React.Component {
         return (
             <div style={{ '{{' }}display: 'flex', flexFlow: 'row nowrap'{{ '}}' }}>
                 <div style={{ '{{' }}display: 'flex', flexDirection: 'column', flex: 1, padding: '7px'{{ '}}' }}>
+                    {{ description }}
+
                     {% for control in controls %}
                     <div style={{ '{{' }}paddingBottom: '3px'{{ '}}' }}>
                     {{ control.caption }}
