@@ -2,7 +2,7 @@
 Bowtie
 """
 
-__version__ = '0.0.7-dev'
+__version__ = '0.0.7'
 
 from flask_socketio import emit
 from bowtie._layout import Layout
