@@ -32,6 +32,14 @@ class Layout(object):
         Title of the HTML.
     description : str, optional
         Describe the app in Markdown, inserted in control pane.
+    basic_auth : bool, optional
+        Enable basic authentication.
+    username : str, optional
+        Username for basic authentication.
+    password : str, optional
+        Password for basic authentication.
+    background_color : str, optional
+        Background color of the control pane.
     directory : str, optional
         Location where app is compiled.
     host : str, optional
@@ -70,12 +78,14 @@ class Layout(object):
 
     def __init__(self, title='Bowtie App', description='Bowtie App\n---',
                  basic_auth=False, username='username', password='password',
-                 directory='build', host='0.0.0.0', port=9991, debug=False):
+                 background_color='White', directory='build',
+                 host='0.0.0.0', port=9991, debug=False):
         self.title = title
         self.description = Markup(markdown(description))
         self.basic_auth = basic_auth
         self.username = username
         self.password = password
+        self.background_color = background_color
         self.directory = directory
         self.host = host
         self.port = port
@@ -221,6 +231,7 @@ class Layout(object):
             f.write(
                 react.render(
                     description=self.description,
+                    background_color=self.background_color,
                     components=self.imports,
                     controls=self.controllers,
                     visuals=self.visuals
