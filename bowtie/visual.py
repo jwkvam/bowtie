@@ -16,24 +16,38 @@ class _Visual(Component):
 
 
 class SmartGrid(_Visual):
+    """Table Component with filtering and sorting
+
+    Parameters
+    ----------
+    columns : list, optional
+        List of column names to display.
+    results_per_page : int, optional
+        Number of rows on each pagination of the table.
+
+    """
     _TEMPLATE = 'griddle.jsx'
     _COMPONENT = 'SmartGrid'
     _PACKAGE = 'griddle-react'
     _TAG = ('<SmartGrid '
            'socket={{socket}} '
            'uuid={{{uuid}}} '
-           'rows={{{rows}}} '
            'columns={{{columns}}} '
+           'resultsPerPage={{{results_per_page}}}'
            '/>')
 
-    def __init__(self):
+    def __init__(self, columns=None, results_per_page=10):
+        if columns is None:
+            columns = []
+        self.columns = columns
+        self.results_per_page = results_per_page
         super(SmartGrid, self).__init__()
 
-    def _instantiate(self, columns, rows):
+    def _instantiate(self):
         return self._TAG.format(
             uuid="'{}'".format(self._uuid),
-            rows=rows,
-            columns=columns
+            columns=self.columns,
+            results_per_page=self.results_per_page
         )
 
     def do_update(self, data):
@@ -127,8 +141,6 @@ class Plotly(_Visual):
     _TAG = ('<PlotlyPlot initState={{{init}}} '
            'socket={{socket}} '
            'uuid={{{uuid}}} '
-           'rows={{{rows}}} '
-           'columns={{{columns}}} '
            '/>')
 
     def __init__(self, init=None):
@@ -137,12 +149,10 @@ class Plotly(_Visual):
             init = dict(data=[], layout={'autosize': False})
         self.init = init
 
-    def _instantiate(self, columns, rows):
+    def _instantiate(self):
         return self._TAG.format(
             uuid="'{}'".format(self._uuid),
             init=jdumps(self.init),
-            rows=rows,
-            columns=columns
         )
 
 

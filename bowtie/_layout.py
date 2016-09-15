@@ -47,7 +47,7 @@ class Layout(object):
     port : int, optional
         Host port number.
     debug : bool, optional
-        Enable debugging in Flask.
+        Enable debugging in Flask. Disable in production!
 
     """
 
@@ -222,10 +222,10 @@ class Layout(object):
 
         for i, visualrow in enumerate(self.visuals):
             for j, visual in enumerate(visualrow):
-                self.visuals[i][j] = self.visuals[i][j]._instantiate(
-                    columns=len(visualrow),
-                    rows=len(self.visuals)
-                )
+                self.visuals[i][j] = self.visuals[i][j]._instantiate()
+                    # columns=len(visualrow),
+                    # rows=len(self.visuals)
+                # )
 
         with open(path.join(app, react.name), 'w') as f:
             f.write(

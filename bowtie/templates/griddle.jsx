@@ -17,12 +17,22 @@ export default class SmartGrid extends React.Component {
         super(props);
         this.state = {};
         this.state.data = [];
+        this.getData = this.getData.bind(this);
+    }
+
+    getData(data, fn) {
+        fn(this.state.data);
     }
 
     componentDidMount() {
-        this.props.socket.on(this.props.uuid + '#update', (data) => {
+        var socket = this.props.socket;
+
+        socket.on(this.props.uuid + '#update', (data) => {
             this.setState({data: JSON.parse(data)});
         });
+
+        socket.on(this.props.uuid + '#get', this.getData);
+
     }
 
     render() {
@@ -31,6 +41,9 @@ export default class SmartGrid extends React.Component {
                 results={this.state.data}
                 showFilter={true}
                 showSettings={true}
+                useGriddleStyles={true}
+                columns={this.props.columns}
+                resultsPerPage={this.props.resultsPerPage}
                 />
         );
     }
@@ -38,5 +51,7 @@ export default class SmartGrid extends React.Component {
 
 SmartGrid.propTypes = {
     uuid: React.PropTypes.string.isRequired,
-    socket: React.PropTypes.object.isRequired
+    socket: React.PropTypes.object.isRequired,
+    columns: React.PropTypes.array.isRequired,
+    resultsPerPage: React.PropTypes.number.isRequired
 };
