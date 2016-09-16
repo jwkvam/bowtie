@@ -46,7 +46,7 @@ class SmartGrid(_Visual):
     def _instantiate(self):
         return self._TAG.format(
             uuid="'{}'".format(self._uuid),
-            columns=self.columns,
+            columns=jdumps(self.columns),
             results_per_page=self.results_per_page
         )
 
