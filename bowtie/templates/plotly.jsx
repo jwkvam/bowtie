@@ -44,23 +44,7 @@ export default class PlotlyPlot extends React.Component {
         Plotly.Plots.resize(this.container);
     }
 
-    componentDidMount() {
-        // let {data, layout, config} = this.props;
-
-        // var hw = get_height_width();
-        // this.state.layout['height'] = Math.floor(hw[1] / this.props.rows);
-        // this.state.layout['width'] = Math.floor((hw[0] * 9 / 10) / this.props.columns);
-        var parent = window.getComputedStyle(this.container.parentElement);
-        this.state.layout['autosize'] = false;
-        this.state.layout['height'] = parseFloat(parent.height);
-        this.state.layout['width'] = parseFloat(parent.width);
-        Plotly.newPlot(this.container, this.state.data, cloneDeep(this.state.layout),
-            {autosizable: false, displaylogo: false, fillFrame: true}); //, config);
-        
-        // if (this.props.onClick)
-        var uuid = this.props.uuid;
-        var socket = this.props.socket;
-        // if (this.props.onClick)
+    addListeners() {
         this.container.on('plotly_click', function (data) {
 
             var p0 = data.points[0];
@@ -85,6 +69,25 @@ export default class PlotlyPlot extends React.Component {
         // });
         // if (this.props.onSelected)
         this.container.on('plotly_selected', this.setSelection);
+    }
+
+    componentDidMount() {
+        // let {data, layout, config} = this.props;
+
+        // var hw = get_height_width();
+        // this.state.layout['height'] = Math.floor(hw[1] / this.props.rows);
+        // this.state.layout['width'] = Math.floor((hw[0] * 9 / 10) / this.props.columns);
+        var parent = window.getComputedStyle(this.container.parentElement);
+        this.state.layout['autosize'] = false;
+        this.state.layout['height'] = parseFloat(parent.height);
+        this.state.layout['width'] = parseFloat(parent.width);
+        Plotly.newPlot(this.container, this.state.data, cloneDeep(this.state.layout),
+            {autosizable: false, displaylogo: false, fillFrame: true}); //, config);
+        
+        // if (this.props.onClick)
+        var uuid = this.props.uuid;
+        var socket = this.props.socket;
+        // if (this.props.onClick)
 
         socket.on(this.props.uuid + '#all', (data) => {
             this.setState(JSON.parse(data));
@@ -97,6 +100,7 @@ export default class PlotlyPlot extends React.Component {
         //     console.log('done seding');
         // });
         socket.on(this.props.uuid + '#get', this.getSelection);
+        this.addListeners();
             // console.log('get command!!!');
             // console.log(data);
             // console.log(uuid + '#put');
@@ -132,6 +136,8 @@ export default class PlotlyPlot extends React.Component {
         this.state.layout['width'] = parseFloat(parent.width);
         Plotly.newPlot(this.container, this.state.data, cloneDeep(this.state.layout),
             {autosizable: false, displaylogo: false, fillFrame: true}); //, config);
+        this.addListeners();
+
         // window.addEventListener('resize', this.resize);
     }
 
@@ -154,11 +160,3 @@ PlotlyPlot.propTypes = {
     rows: React.PropTypes.number,
     columns: React.PropTypes.number
 };
-    // height: React.PropTypes.string,
-    // width: React.PropTypes.string,
-
-    // onClick: React.PropTypes.func,
-    // onBeforeHover: React.PropTypes.func,
-    // onHover: React.PropTypes.func,
-    // onUnHover: React.PropTypes.func,
-    // onSelected: React.PropTypes.func
