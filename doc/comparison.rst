@@ -32,3 +32,11 @@ From Plotly is `Dash <https://github.com/plotly/dash>`_
 
 .. todo::
     compare to dash
+
+Shiny
+-----
+
+Not a Python library but is the gold standard in the R world.
+
+.. todo::
+    should try using shiny so I know what it's like
