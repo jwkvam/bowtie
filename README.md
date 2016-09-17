@@ -27,3 +27,8 @@ Install [node](https://nodejs.org/en/) and install `webpack` globally.
 ```
 npm install -g webpack
 ```
+
+## The Goal
+
+![image](https://cloud.githubusercontent.com/assets/86304/18606859/8ced55a6-7c70-11e6-8b5e-fba0ffcd78da.png)
+
