@@ -8,6 +8,13 @@ Architecture
 
 Read this section if you are interested in hacking on Bowtie or understanding how it works. Essentially, Bowtie works by using SocketIO to communicate between React and Python.
 
+.. graphviz::
+
+    digraph foo {
+        "Bowtie App" -> {"Browser";"Browser";"Browser";Browser1} [dir="both"];
+        bgcolor="transparent";
+    }
+
 React
 -----
 .. todo::
