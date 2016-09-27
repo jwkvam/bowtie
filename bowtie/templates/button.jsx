@@ -1,6 +1,4 @@
 import React from 'react';
-import Button from 'react-button';
-
 
 export default class SimpleButton extends React.Component {
 
@@ -15,10 +13,11 @@ export default class SimpleButton extends React.Component {
 
     render() {
         return (
-            <Button 
-                label={this.props.label} 
-                onClick={this.handleClick}
-                />
+            <button
+            className='simple-button'
+            onClick={this.handleClick}
+            >{this.props.label}
+            </button>
         );
     }
 }

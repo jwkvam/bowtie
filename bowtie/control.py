@@ -20,7 +20,7 @@ class _Controller(Component):
 class Button(_Controller):
     _TEMPLATE = 'button.jsx'
     _COMPONENT = 'SimpleButton'
-    _PACKAGE = 'react-button'
+    _PACKAGE = None
     _TAG = ('<SimpleButton '
            'socket={{socket}} '
            'uuid={{{uuid}}} '

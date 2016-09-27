@@ -72,8 +72,7 @@ class Layout(object):
         'react-dom',
         'sass-loader',
         'socket.io-client',
-        'style-loader',
-        'webpack',
+        'style-loader'
     ]
 
     def __init__(self, title='Bowtie App', description='Bowtie App\n---',
@@ -240,6 +239,7 @@ class Layout(object):
 
         init = Popen('npm init -f', shell=True, cwd='build').wait()
         assert init == 0, 'Error running "npm init -f"'
+        self.packages.discard(None)
         packages = ' '.join(self._packages + list(self.packages))
         install = Popen('npm install -S {}'.format(packages),
                         shell=True, cwd='build').wait()
