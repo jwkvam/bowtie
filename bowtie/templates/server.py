@@ -82,6 +82,18 @@ class Scheduler(object):
 def index():
     return render_template('index.html')
 
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        success = {{ source_module }}.{{ login }}()
+        if success:
+            return redirect(url_for('index'))
+        else:
+            return redirect(url_for('login'))
+    return {{ loginpage }}
+
+
 {% for event, functions in subscriptions.items() %}
 @socketio.on({{ event }})
 def _(*args):
