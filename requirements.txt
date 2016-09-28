@@ -1,4 +1,5 @@
 click
+codecov
 eventlet
 flask-socketio
 future
