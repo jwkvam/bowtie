@@ -4,8 +4,11 @@ python:
     - "2.7"
     - "3.4"
     - "3.5"
+node_js:
+    - "6.1"
 
 install:
+    - npm install -g webpack
     - sudo apt-get update
       # We do this conditionally because it saves us some downloading if the
       # version is the same.
