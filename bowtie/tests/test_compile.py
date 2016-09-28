@@ -31,4 +31,3 @@ def test_build(remove_build):
     layout.add_visual(viz)
     layout.subscribe(ctrl.on_change, callback)
     layout.build()
-    assert True

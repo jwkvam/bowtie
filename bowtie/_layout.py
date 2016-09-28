@@ -23,6 +23,13 @@ _Control = namedtuple('_Control', ['instantiate', 'caption'])
 _Schedule = namedtuple('_Control', ['seconds', 'function'])
 
 
+class NPMError(Exception):
+    pass
+
+class WebpackError(Exception):
+    pass
+
+
 class Layout(object):
     """Create a Bowtie App.
 
@@ -239,14 +246,17 @@ class Layout(object):
             )
 
         init = Popen('npm init -f', shell=True, cwd='build').wait()
-        assert init == 0, 'Error running "npm init -f"'
+        if init != 0:
+            raise NPMError('Error running "npm init -f"')
         self.packages.discard(None)
         packages = ' '.join(self._packages + list(self.packages))
         install = Popen('npm install -S {}'.format(packages),
                         shell=True, cwd='build').wait()
-        assert install == 0, 'Error install node packages'
+        if install != 0:
+            raise NPMError('Error install node packages')
         dev = Popen('webpack -d', shell=True, cwd='build').wait()
-        assert dev == 0, 'Error building with webpack'
+        if dev != 0:
+            raise WebpackError('Error building with webpack')
 
 
 def create_directories(directory='build'):
