@@ -5,7 +5,8 @@ python:
     - "3.4"
     - "3.5"
 
-TRAVIS_NODE_VERSION="6.1"
+env:
+    - TRAVIS_NODE_VERSION="6.1"
 
 install:
     - rm -rf ~/.nvm
