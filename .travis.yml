@@ -6,10 +6,7 @@ python:
     - "3.5"
 
 install:
-    # - rm -rf ~/.nvm
-    # - git clone https://github.com/creationix/nvm.git ~/.nvm
-    # - cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`
-    # - source ~/.nvm/nvm.sh
+    # get latest version of node
     - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.32.0/install.sh | bash
     - source ~/.nvm/nvm.sh
     - nvm install node
@@ -29,8 +26,6 @@ install:
     - conda update -q conda
       # Useful for debugging any issues with conda
     - conda info -a
-
-      # Replace dep1 dep2 ... with your dependencies
     - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
     - source activate test-environment
     - pip install -r requirements.txt
