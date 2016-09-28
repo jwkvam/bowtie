@@ -5,16 +5,14 @@ python:
     - "3.4"
     - "3.5"
 
-env:
-    - TRAVIS_NODE_VERSION="6.1"
-
 install:
-    - rm -rf ~/.nvm
-    - git clone https://github.com/creationix/nvm.git ~/.nvm
-    - cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`
-    - source ~/.nvm/nvm.sh
+    # - rm -rf ~/.nvm
+    # - git clone https://github.com/creationix/nvm.git ~/.nvm
+    # - cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`
+    # - source ~/.nvm/nvm.sh
+    - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.32.0/install.sh | bash
     - nvm install $TRAVIS_NODE_VERSION
-    - nvm install npm
+    - nvm install node
     - npm install -g webpack
     - sudo apt-get update
       # We do this conditionally because it saves us some downloading if the
