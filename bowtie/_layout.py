@@ -72,7 +72,8 @@ class Layout(object):
         'react-dom',
         'sass-loader',
         'socket.io-client',
-        'style-loader'
+        'style-loader',
+        'webpack@1.13.2'
     ]
 
     def __init__(self, title='Bowtie App', description='Bowtie App\n---',
