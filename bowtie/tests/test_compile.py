@@ -12,8 +12,6 @@ from bowtie.visual import Plotly
 
 @pytest.fixture
 def remove_build(request):
-    import os
-    print(os.getcwd())
     yield
     shutil.rmtree('build')
 
