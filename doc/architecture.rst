@@ -34,7 +34,8 @@ gets generated during the build phase.
 SocketIO
 --------
 SocketIO binds the Python backend code to the React frontend.
-Python uses the Flask-SocketIO extension and the frontend uses socket.io-client.
+Python uses the `Flask-SocketIO <https://flask-socketio.readthedocs.io/en/latest/>`_
+extension and the frontend uses `socket.io-client <https://www.npmjs.com/package/socket.io-client>`_.
 
 Events
 ------
