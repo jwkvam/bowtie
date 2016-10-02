@@ -38,11 +38,15 @@ To install the latest version::
 
     pip install bowtie
 
-To install bleeding edge you can create a wheel with
-`flit <http://flit.readthedocs.io/en/latest/index.html>`_, then install it with pip::
+To install bleeding edge, if you are using Python 3 you can use `flit <http://flit.readthedocs.io/en/latest/index.html>`_,  to install::
 
-    flit wheel
-    pip install dist/bowtie*.whl
+    flit install
+
+If you are on Python 2, create a wheel with flit in Python 3, then
+install that wheel with Python 2::
+
+    py3> flit wheel
+    py2> pip install dist/bowtie*.whl
 
 Creating Your First App
 -----------------------
