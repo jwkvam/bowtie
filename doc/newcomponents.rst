@@ -121,10 +121,10 @@ First we'll define the class::
         _COMPONENT = 'DropDown'
         _PACKAGE = 'react-select'
         _TAG = ('<DropDown initOptions={{{options}}} '
-               'multi={{{multi}}}'
-               'socket={{socket}} '
-               'uuid={{{uuid}}} '
-               '/>')
+                'multi={{{multi}}}'
+                'socket={{socket}} '
+                'uuid={{{uuid}}} '
+                '/>')
 
 We have defined a few component specific constants:
 
