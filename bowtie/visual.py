@@ -30,11 +30,11 @@ class SmartGrid(_Visual):
     _COMPONENT = 'SmartGrid'
     _PACKAGE = 'griddle-react'
     _TAG = ('<SmartGrid '
-           'socket={{socket}} '
-           'uuid={{{uuid}}} '
-           'columns={{{columns}}} '
-           'resultsPerPage={{{results_per_page}}}'
-           '/>')
+            'socket={{socket}} '
+            'uuid={{{uuid}}} '
+            'columns={{{columns}}} '
+            'resultsPerPage={{{results_per_page}}}'
+            '/>')
 
     def __init__(self, columns=None, results_per_page=10):
         if columns is None:
@@ -139,9 +139,9 @@ class Plotly(_Visual):
     _COMPONENT = 'PlotlyPlot'
     _PACKAGE = 'plotly.js'
     _TAG = ('<PlotlyPlot initState={{{init}}} '
-           'socket={{socket}} '
-           'uuid={{{uuid}}} '
-           '/>')
+            'socket={{socket}} '
+            'uuid={{{uuid}}} '
+            '/>')
 
     def __init__(self, init=None):
         super(Plotly, self).__init__()

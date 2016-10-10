@@ -22,10 +22,10 @@ class Button(_Controller):
     _COMPONENT = 'SimpleButton'
     _PACKAGE = None
     _TAG = ('<SimpleButton '
-           'socket={{socket}} '
-           'uuid={{{uuid}}} '
-           'label={{{label}}} '
-           '/>')
+            'socket={{socket}} '
+            'uuid={{{uuid}}} '
+            'label={{{label}}} '
+            '/>')
 
     def __init__(self, label='', caption=''):
         super(Button, self).__init__()
@@ -45,10 +45,10 @@ class DropDown(_Controller):
     _COMPONENT = 'DropDown'
     _PACKAGE = 'react-select'
     _TAG = ('<DropDown initOptions={{{options}}} '
-           'multi={{{multi}}}'
-           'socket={{socket}} '
-           'uuid={{{uuid}}} '
-           '/>')
+            'multi={{{multi}}}'
+            'socket={{socket}} '
+            'uuid={{{uuid}}} '
+            '/>')
 
 
     def __init__(self, options, multi=False, caption=''):
@@ -75,11 +75,11 @@ class Nouislider(_Controller):
     _COMPONENT = 'Nouislider'
     _PACKAGE = 'nouislider'
     _TAG = ('<Nouislider range={{{{min: {min}, max: {max}}}}} '
-           'socket={{socket}} '
-           'start={{{start}}} '
-           'tooltips={{{tooltips}}} '
-           'uuid={{{uuid}}} '
-           '/>')
+            'socket={{socket}} '
+            'start={{{start}}} '
+            'tooltips={{{tooltips}}} '
+            'uuid={{{uuid}}} '
+            '/>')
 
     def __init__(self, start=0, minimum=0, maximum=100, tooltips=True, caption=''):
         super(Nouislider, self).__init__()
