@@ -5,7 +5,8 @@
 [![PyPI version](https://badge.fury.io/py/bowtie.svg)](https://badge.fury.io/py/bowtie)
 [![codecov](https://codecov.io/gh/jwkvam/bowtie/branch/master/graph/badge.svg)](https://codecov.io/gh/jwkvam/bowtie)
 
-![Demo](https://cloud.githubusercontent.com/assets/86304/17841404/fdd4267c-67cc-11e6-92f2-f5d69107e519.gif)
+![Demo](https://cloud.githubusercontent.com/assets/86304/20045988/69e5678a-a45a-11e6-853b-7f60a615c9da.gif)
+
 
 ## Demo
 
