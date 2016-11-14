@@ -42,7 +42,7 @@ import {{source_module}}
 
 app = Flask(__name__)
 app.debug = {{ debug|default(False) }}
-socketio = SocketIO(app)
+socketio = SocketIO(app, binary=True)
 
 def context(func):
     def foo():
@@ -83,6 +83,7 @@ def index():
     return render_template('index.html')
 
 
+{% if login %}
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -92,6 +93,7 @@ def login():
         else:
             return redirect(url_for('login'))
     return {{ loginpage }}
+{% endif %}
 
 
 {% for event, functions in subscriptions.items() %}

@@ -51,10 +51,14 @@ class DropDown(_Controller):
             '/>')
 
 
-    def __init__(self, options, multi=False, caption=''):
+    def __init__(self, labels=None, values=None, multi=False, caption=''):
         super(DropDown, self).__init__()
 
-        # options = [dict(value=x, label=str(x)) for x in options]
+        if labels is None and values is None:
+            labels = []
+            values = []
+
+        options = [dict(value=value, label=str(label)) for value, label in zip(values, labels)]
 
         self._instantiate = self._TAG.format(
             options=jdumps(options),
@@ -64,6 +68,11 @@ class DropDown(_Controller):
         self.caption = caption
 
     def on_change(self):
+        """Emits an event when the selection changes.
+
+        | **Payload:** `dict` with keys "value" and "label".
+
+        """
         pass
 
     def do_options(self, data):
