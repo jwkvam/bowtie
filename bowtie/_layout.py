@@ -61,17 +61,18 @@ class Layout(object):
     _packages = [
         'babel-core',
         'babel-loader',
+        'babel-plugin-transform-object-rest-spread',
         'babel-polyfill',
         'babel-preset-es2015',
         'babel-preset-react',
         'babel-preset-stage-0',
-        'babel-plugin-transform-object-rest-spread',
         'classnames',
         'core-js',
         'css-loader',
         'extract-text-webpack-plugin',
         'less-loader',
         'lodash.clonedeep',
+        'msgpack-lite',
         'node-sass',
         'normalize.css',
         'postcss-modules-values',
@@ -245,16 +246,18 @@ class Layout(object):
                 )
             )
 
-        init = Popen('npm init -f', shell=True, cwd='build').wait()
+        init = Popen('npm init -f', shell=True, cwd=self.directory).wait()
         if init != 0:
             raise NPMError('Error running "npm init -f"')
         self.packages.discard(None)
         packages = ' '.join(self._packages + list(self.packages))
-        install = Popen('npm install -S {}'.format(packages),
-                        shell=True, cwd='build').wait()
+        install = Popen('yarn add {}'.format(packages),
+                        shell=True, cwd=self.directory).wait()
+        # install = Popen('npm install -S {}'.format(packages),
+        #                 shell=True, cwd='build').wait()
         if install != 0:
             raise NPMError('Error install node packages')
-        dev = Popen('webpack -d', shell=True, cwd='build').wait()
+        dev = Popen('webpack -d', shell=True, cwd=self.directory).wait()
         if dev != 0:
             raise WebpackError('Error building with webpack')
 

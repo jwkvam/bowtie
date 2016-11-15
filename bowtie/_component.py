@@ -3,8 +3,13 @@
 Bowtie Component classes, all visual and control components inherit these
 """
 
+from __future__ import unicode_literals
+
+from builtins import bytes
+
 import json
-from datetime import datetime, time
+import msgpack
+from datetime import datetime, date, time
 
 import flask
 from flask_socketio import emit
@@ -17,13 +22,23 @@ from bowtie._compat import IS_PY35
 
 def json_conversion(obj):
 
-    if isinstance(obj, datetime) or isinstance(obj, time):
+    if isinstance(obj, datetime) or isinstance(obj, time) or isinstance(obj, date):
         return obj.isoformat()
     raise TypeError('Not sure how to serialize {} of type {}'.format(obj, type(obj)))
 
 
 def jdumps(data):
     return json.dumps(data, default=json_conversion)
+
+
+def encoders(obj):
+    if isinstance(obj, datetime) or isinstance(obj, time) or isinstance(obj, date):
+        return obj.isoformat()
+    return obj
+
+
+def pack(x):
+    return bytes(msgpack.packb(x, default=encoders))
 
 
 def make_event(event):
@@ -50,10 +65,13 @@ def make_command(command):
         name = command.__name__[3:]
         signal = '{uuid}#{event}'.format(uuid=self._uuid, event=name)
         if flask.has_request_context():
-            return emit(signal, jdumps(data))
+            # return emit(signal, jdumps(data))
+            print(signal)
+            return emit(signal, {'data': pack(data)})
         else:
             sio = flask.current_app.extensions['socketio']
-            return sio.emit(signal, jdumps(data))
+            # return sio.emit(signal, jdumps(data))
+            return sio.emit(signal, {'data': pack(data)})
 
     actualcommand.__doc__ = command.__doc__
 
@@ -87,11 +105,24 @@ class Component(with_metaclass(_Maker, object)):
         self._uuid = Component._next_uuid()
         super(Component, self).__init__()
 
+
+
     def get(self, block=True, timeout=None):
         event = LightQueue(1)
+
+        def putt(x):
+            print('GETTING!')
+            print(x)
+            # print(x)
+            # xx = umsgpack.unpackb(bytes(x))
+            # print('acknowledged!')
+            # print(x)
+            # print(umsgpack.unpackb(x))
+            event.put(msgpack.unpackb(bytes(x['data'])))
         if flask.has_request_context():
-            emit('{}#get'.format(self._uuid), callback=lambda x: event.put(x))
+            # emit('{}#get'.format(self._uuid), callback=lambda x: event.put(x))
+            emit('{}#get'.format(self._uuid), callback=putt)
         else:
             sio = flask.current_app.extensions['socketio']
             sio.emit('{}#get'.format(self._uuid), callback=lambda x: event.put(x))
-        return event.get(timeout=1)
+        return event.get(timeout=10)

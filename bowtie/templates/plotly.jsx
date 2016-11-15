@@ -2,6 +2,7 @@ import React from 'react';
 import Plotly from 'plotly.js';
 import cloneDeep from 'lodash.clonedeep';
 
+var msgpack = require('msgpack-lite');
 
 function get_height_width() {
     var w = window,
@@ -15,29 +16,28 @@ function get_height_width() {
 
 
 export default class PlotlyPlot extends React.Component {
+    selection = 'inital';
+
     constructor(props) {
         super(props);
         this.state = this.props.initState;
-        this.state['selection'] = null;
-        this.setSelection = this.setSelection.bind(this);
-        this.getSelection = this.getSelection.bind(this);
         this.resize = this.resize.bind(this);
     }
-
-    // changeAll = (all) => {this.setState(all);}
-    //
 
     shouldComponentUpdate(nextProps) {
         return true;
     }
 
-    setSelection(data) {
-        this.state.selection = data;
+    setSelection = data => {
+        this.selection = data;
         this.props.socket.emit(this.props.uuid + '#select', data);
     }
     
-    getSelection(data, fn) {
-        fn(this.state.selection);
+    getSelection = (data, fn) => {
+        console.log(this.props.uuid);
+        console.log(this.selection);
+        console.log(msgpack.encode(this.selection));
+        fn(msgpack.encode(this.selection));
     }
 
     resize() {
@@ -74,9 +74,6 @@ export default class PlotlyPlot extends React.Component {
     componentDidMount() {
         // let {data, layout, config} = this.props;
 
-        // var hw = get_height_width();
-        // this.state.layout['height'] = Math.floor(hw[1] / this.props.rows);
-        // this.state.layout['width'] = Math.floor((hw[0] * 9 / 10) / this.props.columns);
         var parent = window.getComputedStyle(this.container.parentElement);
         this.state.layout['autosize'] = false;
         this.state.layout['height'] = parseFloat(parent.height);
@@ -90,7 +87,9 @@ export default class PlotlyPlot extends React.Component {
         // if (this.props.onClick)
 
         socket.on(this.props.uuid + '#all', (data) => {
-            this.setState(JSON.parse(data));
+            var arr = new Uint8Array(data['data']);
+            this.setState(msgpack.decode(arr));
+            // this.setState(JSON.parse(data));
         });
         // socket.on(this.props.uuid + '#' + 'get', (data) => {
         //     console.log('get command!!!');

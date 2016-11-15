@@ -7,6 +7,8 @@ import 'nouislider/src/nouislider.css';
 // import nouislider from 'nouislider-algolia-fork';
 import nouislider from 'nouislider';
 
+var msgpack = require('msgpack-lite');
+
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
 export default class Nouislider extends React.Component {
@@ -57,7 +59,7 @@ export default class Nouislider extends React.Component {
     }
 
     getValue(data, fn) {
-        fn(this.slider.get());
+        fn(msgpack.encode(this.slider.get()));
     }
 
     componentDidUpdate() {
