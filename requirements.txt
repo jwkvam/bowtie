@@ -12,3 +12,4 @@ pylint
 pytest
 pytest-cov
 pytest-pylint
+selenium
