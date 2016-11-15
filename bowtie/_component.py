@@ -32,7 +32,7 @@ def jdumps(data):
 
 
 def encoders(obj):
-    if isinstance(obj, datetime):
+    if isinstance(obj, datetime) or isinstance(obj, time):
         return obj.isoformat()
     return obj
 
