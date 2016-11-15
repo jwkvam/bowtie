@@ -9,7 +9,7 @@ from builtins import bytes
 
 import json
 import msgpack
-from datetime import datetime, time
+from datetime import datetime, date, time
 
 import flask
 from flask_socketio import emit
@@ -22,7 +22,7 @@ from bowtie._compat import IS_PY35
 
 def json_conversion(obj):
 
-    if isinstance(obj, datetime) or isinstance(obj, time):
+    if isinstance(obj, datetime) or isinstance(obj, time) or isinstance(obj, date):
         return obj.isoformat()
     raise TypeError('Not sure how to serialize {} of type {}'.format(obj, type(obj)))
 
@@ -32,7 +32,7 @@ def jdumps(data):
 
 
 def encoders(obj):
-    if isinstance(obj, datetime) or isinstance(obj, time):
+    if isinstance(obj, datetime) or isinstance(obj, time) or isinstance(obj, date):
         return obj.isoformat()
     return obj
 

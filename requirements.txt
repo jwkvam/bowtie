@@ -5,6 +5,7 @@ flask-socketio
 future
 jinja2
 markdown
+msgpack-python
 numpy
 plotlywrapper
 pylint
