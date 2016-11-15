@@ -6,7 +6,7 @@ import shutil
 import subprocess
 
 import pytest
-import selenium
+from selenium.webdriver import PhantomJS, ActionChains
 
 from bowtie import Layout
 from bowtie.control import Nouislider
@@ -16,7 +16,7 @@ from bowtie.visual import Plotly
 @pytest.fixture
 def remove_build(request):
     yield
-    # shutil.rmtree('build')
+    shutil.rmtree('build')
 
 
 def callback(*args):
@@ -37,10 +37,9 @@ def test_plotly(remove_build):
 
     rv = subprocess.Popen(os.path.join(path, 'src/server.py'))
 
-    import IPython
-    IPython.embed()
+    driver = PhantomJS()
+    driver.get('http://localhost:9991')
 
-    ret = selenium.get('localhost:9991')
-    print(ret)
+    assert driver.title == 'Bowtie App'
 
     rv.kill()
