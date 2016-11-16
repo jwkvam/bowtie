@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-import sys
 import shutil
 import subprocess
 
@@ -30,22 +29,15 @@ def test_plotly(remove_build):
     viz = Plotly()
 
     path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'build')
-    print(path)
     layout = Layout(directory=path)
     layout.add_controller(ctrl)
     layout.add_visual(viz)
     layout.subscribe(ctrl.on_change, callback)
     layout.build()
 
-    # print(os.environ['PYTHONPATH'])
-    print(os.getcwd())
-
     env = os.environ
     env['PYTHONPATH'] = '{}:{}'.format(os.getcwd(), os.environ.get('PYTHONPATH', ''))
-
-    # sys.path.insert(0, os.getcwd())
     rv = subprocess.Popen(os.path.join(path, 'src/server.py'), env=env)
-
 
     driver = PhantomJS()
     driver.get('http://localhost:9991')
