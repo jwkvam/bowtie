@@ -10,7 +10,7 @@ install:
     - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.32.0/install.sh | bash
     - source ~/.nvm/nvm.sh
     - nvm install node
-    - npm install -g webpack
+    - npm install -g webpack yarn
     - sudo apt-get update
       # We do this conditionally because it saves us some downloading if the
       # version is the same.
