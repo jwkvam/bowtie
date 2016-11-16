@@ -17,7 +17,7 @@ export default class DropDown extends React.Component {
 
     handleChange(value) {
         this.setState({value});
-        this.props.socket.emit(this.props.uuid + '#change', value);
+        this.props.socket.emit(this.props.uuid + '#change', msgpack.encode(value));
     }
 
     newOptions(data) {

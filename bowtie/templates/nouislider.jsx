@@ -53,9 +53,6 @@ export default class Nouislider extends React.Component {
         var socket = this.props.socket;
 
         socket.on(uuid + '#get', this.getValue);
-        //     console.log(this.state);
-        //     fn(this.state);
-        // });
     }
 
     getValue(data, fn) {
