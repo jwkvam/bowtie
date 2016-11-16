@@ -21,6 +21,14 @@ from bowtie._compat import IS_PY35
 
 
 def json_conversion(obj):
+    try:
+        # numpy isn't an explicit dependency of bowtie
+        # so we can't assume it's available
+        import numpy as np
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+    except ImportError:
+        pass
 
     if isinstance(obj, datetime) or isinstance(obj, time) or isinstance(obj, date):
         return obj.isoformat()
@@ -32,8 +40,18 @@ def jdumps(data):
 
 
 def encoders(obj):
+    try:
+        # numpy isn't an explicit dependency of bowtie
+        # so we can't assume it's available
+        import numpy as np
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+    except ImportError:
+        pass
+
     if isinstance(obj, datetime) or isinstance(obj, time) or isinstance(obj, date):
         return obj.isoformat()
+
     return obj
 
 
@@ -65,12 +83,9 @@ def make_command(command):
         name = command.__name__[3:]
         signal = '{uuid}#{event}'.format(uuid=self._uuid, event=name)
         if flask.has_request_context():
-            # return emit(signal, jdumps(data))
-            print(signal)
             return emit(signal, {'data': pack(data)})
         else:
             sio = flask.current_app.extensions['socketio']
-            # return sio.emit(signal, jdumps(data))
             return sio.emit(signal, {'data': pack(data)})
 
     actualcommand.__doc__ = command.__doc__
