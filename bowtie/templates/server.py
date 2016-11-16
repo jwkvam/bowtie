@@ -35,6 +35,7 @@ def requires_auth(f):
         return f(*args, **kwargs)
     return decorated
 
+print(os.environ['PYTHONPATH'])
 
 # import the user created module
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
