@@ -35,7 +35,6 @@ export default class SmartGrid extends React.Component {
         });
 
         socket.on(this.props.uuid + '#get', this.getData);
-
     }
 
     render() {

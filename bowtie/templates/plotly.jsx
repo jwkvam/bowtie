@@ -30,13 +30,10 @@ export default class PlotlyPlot extends React.Component {
 
     setSelection = data => {
         this.selection = data;
-        this.props.socket.emit(this.props.uuid + '#select', data);
+        this.props.socket.emit(this.props.uuid + '#select', msgpack.encode(data));
     }
     
     getSelection = (data, fn) => {
-        console.log(this.props.uuid);
-        console.log(this.selection);
-        console.log(msgpack.encode(this.selection));
         fn(msgpack.encode(this.selection));
     }
 
@@ -53,7 +50,7 @@ export default class PlotlyPlot extends React.Component {
                 x: p0.x,
                 y: p0.y,
             };
-            socket.emit(uuid + '#click', datum);
+            socket.emit(uuid + '#click', msgpack.encode(datum));
         });
         // if (this.props.onBeforeHover)
         // this.container.on('plotly_beforehover', function (data) {
@@ -89,7 +86,6 @@ export default class PlotlyPlot extends React.Component {
         socket.on(this.props.uuid + '#all', (data) => {
             var arr = new Uint8Array(data['data']);
             this.setState(msgpack.decode(arr));
-            // this.setState(JSON.parse(data));
         });
         // socket.on(this.props.uuid + '#' + 'get', (data) => {
         //     console.log('get command!!!');

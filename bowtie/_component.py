@@ -105,24 +105,13 @@ class Component(with_metaclass(_Maker, object)):
         self._uuid = Component._next_uuid()
         super(Component, self).__init__()
 
-
-
     def get(self, block=True, timeout=None):
         event = LightQueue(1)
-
-        def putt(x):
-            print('GETTING!')
-            print(x)
-            # print(x)
-            # xx = umsgpack.unpackb(bytes(x))
-            # print('acknowledged!')
-            # print(x)
-            # print(umsgpack.unpackb(x))
-            event.put(msgpack.unpackb(bytes(x['data'])))
         if flask.has_request_context():
-            # emit('{}#get'.format(self._uuid), callback=lambda x: event.put(x))
-            emit('{}#get'.format(self._uuid), callback=putt)
+            emit('{}#get'.format(self._uuid),
+                 callback=lambda x: event.put(msgpack.unpackb(bytes(x['data']))))
         else:
             sio = flask.current_app.extensions['socketio']
-            sio.emit('{}#get'.format(self._uuid), callback=lambda x: event.put(x))
+            sio.emit('{}#get'.format(self._uuid),
+                     callback=lambda x: event.put(msgpack.unpackb(bytes(x['data']))))
         return event.get(timeout=10)
