@@ -37,7 +37,7 @@ def test_plotly(remove_build):
     layout.subscribe(ctrl.on_change, callback)
     layout.build()
 
-    print(os.environ['PYTHONPATH'])
+    # print(os.environ['PYTHONPATH'])
     print(os.getcwd())
 
     env = os.environ
