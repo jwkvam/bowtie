@@ -22,11 +22,13 @@ React Class
 The dropdown component leverages a popular
 `react dropdown component <http://jedwatson.github.io/react-select/>`_
 to do the heavy lifting.
-First we start by importing react and the component::
+First we start by importing react, msgpack and the component::
 
     import React from 'react';
     import Select from 'react-select';
     import 'react-select/dist/react-select.css';
+    var msgpack = require('msgpack-lite');
+
 
 We also imported the default styling so it looks reasonable.
 We can do this because we're using `webpack <https://webpack.github.io>`_
@@ -81,7 +83,8 @@ We do this after the component is created in the ``componentDidMount`` function:
         var uuid = this.props.uuid;
         socket.on(uuid + '#get', this.getValue);
         socket.on(uuid + '#options', (data) => {
-            this.setState({value: null, options: JSON.parse(data)});
+            var arr = new Uint8Array(data['data']);
+            this.setState({value: null, options: msgpack.decode(arr)});
         });
     }
 
