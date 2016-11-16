@@ -1,6 +1,5 @@
 all: test
  
-
 test:
 	py.test --cov=./ --pylint --pylint-rcfile=pylintrc --pylint-error-types=EF --ignore=doc
 
