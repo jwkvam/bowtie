@@ -38,10 +38,14 @@ def test_plotly(remove_build):
     layout.build()
 
     print(os.environ['PYTHONPATH'])
+    print(os.getcwd())
 
-    sys.path.insert(0, os.getcwd())
-    rv = subprocess.Popen(os.path.join(path, 'src/server.py'))
-                          #env=dict(PYTHONPATH='{}:{}'.format(os.getcwd(), os.environ['PYTHONPATH'])))
+    env = os.environ
+    env['PYTHONPATH'] = '{}:{}'.format(os.getcwd(), os.environ['PYTHONPATH'])
+
+    # sys.path.insert(0, os.getcwd())
+    rv = subprocess.Popen(os.path.join(path, 'src/server.py'), env=env)
+
 
     driver = PhantomJS()
     driver.get('http://localhost:9991')

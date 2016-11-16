@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import os
+print(os.environ['PYTHONPATH'])
 import sys
+print(sys.path)
 import traceback
 from functools import wraps
 

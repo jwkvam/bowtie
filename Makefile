@@ -2,7 +2,7 @@ all: test
  
 
 test:
-	PYTHONPATH=$(pwd) py.test -s --cov=./ --pylint --pylint-rcfile=pylintrc --pylint-error-types=EF --ignore=doc
+	py.test -s --cov=./ --pylint --pylint-rcfile=pylintrc --pylint-error-types=EF --ignore=doc
 
 coverage:
 	PYTHONPATH=$(pwd) py.test --cov=./ --cov-report html --ignore=doc
