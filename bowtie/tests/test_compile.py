@@ -26,7 +26,8 @@ def test_build(remove_build):
     ctrl = Nouislider()
     viz = Plotly()
 
-    layout = Layout()
+    path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'build')
+    layout = Layout(directory=path)
     layout.add_controller(ctrl)
     layout.add_visual(viz)
     layout.subscribe(ctrl.on_change, callback)
