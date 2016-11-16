@@ -1,4 +1,5 @@
 language: python
+cache: pip
 python:
     # We don't actually use the Travis Python, but this keeps it organized.
     - "2.7"
@@ -7,10 +8,10 @@ python:
 
 install:
     # get latest version of node
-    - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.32.0/install.sh | bash
+    - curl -o- https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
     - source ~/.nvm/nvm.sh
     - nvm install node
-    - npm install -g webpack
+    - npm install -g webpack yarn@0.16.1
     - sudo apt-get update
       # We do this conditionally because it saves us some downloading if the
       # version is the same.

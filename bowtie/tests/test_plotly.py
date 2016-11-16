@@ -16,7 +16,8 @@ from bowtie.visual import Plotly
 @pytest.fixture
 def remove_build(request):
     yield
-    shutil.rmtree('build')
+    path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'build')
+    shutil.rmtree(path)
 
 
 def callback(*args):
@@ -28,14 +29,15 @@ def test_plotly(remove_build):
     viz = Plotly()
 
     path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'build')
-    print(path)
     layout = Layout(directory=path)
     layout.add_controller(ctrl)
     layout.add_visual(viz)
     layout.subscribe(ctrl.on_change, callback)
     layout.build()
 
-    rv = subprocess.Popen(os.path.join(path, 'src/server.py'))
+    env = os.environ
+    env['PYTHONPATH'] = '{}:{}'.format(os.getcwd(), os.environ.get('PYTHONPATH', ''))
+    rv = subprocess.Popen(os.path.join(path, 'src/server.py'), env=env)
 
     driver = PhantomJS()
     driver.get('http://localhost:9991')
