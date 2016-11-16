@@ -16,7 +16,8 @@ from bowtie.visual import Plotly
 @pytest.fixture
 def remove_build(request):
     yield
-    shutil.rmtree('build')
+    path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'build')
+    shutil.rmtree(path)
 
 
 def callback(*args):
