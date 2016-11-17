@@ -16,7 +16,8 @@ This quick start will show how to do the following:
 Install Node
 ------------
 
-Bowtie uses `npm <https://www.npmjs.com/>`_ to install the javascript libraries
+Bowtie uses `npm <https://www.npmjs.com/>`_ and
+`yarn <https://yarnpkg.com/_` to install the javascript libraries
 and `webpack <https://webpack.github.io/>`_ to compile the application.
 We need to install both of these.
 
@@ -27,14 +28,14 @@ On MacOS, I recommend using `Homebrew <http://brew.sh/>`_ to get npm::
 
     brew install node
 
-Then we can use npm to install webpack globally::
+Then we can use npm to install webpack and yarn globally::
 
-    npm install -g webpack
+    npm install -g webpack yarn
 
 Install Bowtie
 --------------
 
-To install the latest version::
+To install the latest release::
 
     pip install bowtie
 
@@ -75,7 +76,7 @@ Next we'll create a listener that generates a plot on slider changes::
 The :py:class:`bowtie.control.Nouislider` component sends its values as a list of strings so we had to cast it to a float.
 Lastly we need to build the application by laying out the components and connecting listeners to events.
 We do this in the main block::
-    
+
     if __name__ == "__main__":
         from bowtie import Layout
         layout = Layout()
@@ -104,12 +105,12 @@ For example, this was done to create `bowtie-demo <https://github.com/jwkvam/bow
 * Create a Procfile, you can see `bowtie-demo <https://github.com/jwkvam/bowtie-demo/>`_ for an example.
 * Create requirements files, again see `bowtie-demo <https://github.com/jwkvam/bowtie-demo/>`_ for an example.
 * Rebuild with production settings with webpack, by default Bowtie uses development::
-      
+
       cd build
       webpack -p
 
 * Commit the following files to your repo::
-      
+
       build/src/server.py
       build/src/templates
       build/src/static
