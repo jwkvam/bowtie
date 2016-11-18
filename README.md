@@ -24,10 +24,10 @@ pip install bowtie
 
 ## Requirements
 
-Install [node](https://nodejs.org/en/) and install `webpack` globally.
+Install [node](https://nodejs.org/en/) and install `webpack` and `yarn` globally.
 
 ```
-npm install -g webpack
+npm install -g webpack yarn
 ```
 
 ## The Goal
