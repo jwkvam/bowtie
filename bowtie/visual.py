@@ -14,7 +14,7 @@ class _Progress(Component):
             'socket={{socket}} '
             'uuid={{{uuid}}} '
             'color={{{color}}} '
-            '/>')
+            '>')
 
     def __init__(self, color='#91a8d0'):
         self.color = color

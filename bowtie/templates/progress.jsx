@@ -1,7 +1,6 @@
 import React from 'react';
-import 'rc-progress/assets/index.css';
-
 import {Circle} from 'rc-progress';
+import 'rc-progress/assets/index.css';
 
 var msgpack = require('msgpack-lite');
 

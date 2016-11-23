@@ -36,6 +36,7 @@ class Dashboard extends React.Component {
                         <div style={{ '{{' }}display: 'flex', flex: '1 1 0'{{ '}}' }}>
                             {{ progress }}
                             {{ visual }}
+                            </Progress>
                         </div>
                         {% endfor %}
                     </div>
