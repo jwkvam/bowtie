@@ -34,8 +34,8 @@ class Dashboard extends React.Component {
                     <div style={{ '{{' }}display: 'flex', flexFlow: 'row nowrap', flex: '1 1 0'{{ '}}' }}>
                         {% for visual, progress in visualrow %}
                         <div style={{ '{{' }}display: 'flex', flex: '1 1 0'{{ '}}' }}>
-                            {{ visual }}
                             {{ progress }}
+                            {{ visual }}
                         </div>
                         {% endfor %}
                     </div>

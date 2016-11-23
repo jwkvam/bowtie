@@ -32,9 +32,7 @@ export default class Progress extends React.Component {
     }
 
     render() {
-        if (!this.state.visible) {
-            return null;
-        } else {
+        if (this.state.visible) {
             return (
                 <Circle
                     percent={this.state.percent}
@@ -42,6 +40,10 @@ export default class Progress extends React.Component {
                     strokeLinecap="square"
                     strokeColor={this.props.color}
                 />
+            );
+        } else {
+            return (
+                this.props.children
             );
         }
     }
