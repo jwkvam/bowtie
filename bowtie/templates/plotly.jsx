@@ -2,12 +2,9 @@ import React from 'react';
 import Plotly from 'plotly.js';
 import cloneDeep from 'lodash.clonedeep';
 
-import Progress from './progress';
-
 var msgpack = require('msgpack-lite');
 
-
-export default class PlotlyPlot extends Progress {
+export default class PlotlyPlot extends React.Component {
     selection = 'inital';
 
     constructor(props) {
