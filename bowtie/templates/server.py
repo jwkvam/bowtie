@@ -103,7 +103,7 @@ def login():
 def _(*args):
     {% for func in functions %}
     foo = copy_current_request_context({{ source_module }}.{{ func }})
-    eventlet.spawn(foo, *(msgpack.unpackb(bytes(a['data'])) for a in args))
+    eventlet.spawn(foo, *(msgpack.unpackb(bytes(a['data']), encoding='utf8') for a in args))
     {% endfor %}
 {% endfor %}
 

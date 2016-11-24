@@ -3,8 +3,6 @@
 Bowtie Component classes, all visual and control components inherit these
 """
 
-from __future__ import unicode_literals
-
 from builtins import bytes
 
 import json
@@ -124,9 +122,9 @@ class Component(with_metaclass(_Maker, object)):
         event = LightQueue(1)
         if flask.has_request_context():
             emit('{}#get'.format(self._uuid),
-                 callback=lambda x: event.put(msgpack.unpackb(bytes(x['data']))))
+                 callback=lambda x: event.put(msgpack.unpackb(bytes(x['data']), encoding='utf8')))
         else:
             sio = flask.current_app.extensions['socketio']
             sio.emit('{}#get'.format(self._uuid),
-                     callback=lambda x: event.put(msgpack.unpackb(bytes(x['data']))))
+                     callback=lambda x: event.put(msgpack.unpackb(bytes(x['data']), encoding='utf8')))
         return event.get(timeout=10)
