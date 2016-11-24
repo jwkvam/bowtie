@@ -9,7 +9,7 @@ export default class Progress extends React.Component {
         super(props);
         this.state = {};
         this.state.percent = 0;
-        this.state.visible = true;
+        this.state.visible = false;
     }
 
     percent = data => {
