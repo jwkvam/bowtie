@@ -6,13 +6,45 @@ Visual components
 from bowtie._component import Component, jdumps
 
 
+class _Progress(Component):
+    _TEMPLATE = 'progress.jsx'
+    _COMPONENT = 'Progress'
+    _PACKAGE = 'rc-progress'
+    _TAG = ('<Progress '
+            'socket={{socket}} '
+            'uuid={{{uuid}}} '
+            'color={{{color}}} '
+            '>')
+
+    def __init__(self, color='#91a8d0'):
+        self.color = color
+        super(_Progress, self).__init__()
+
+    def _instantiate(self):
+        return self._TAG.format(
+            uuid="'{}'".format(self._uuid),
+            color="'{}'".format(self.color)
+        )
+
+    def do_percent(self, data):
+        pass
+
+    def do_visible(self, data):
+        pass
+
+
 # pylint: disable=too-few-public-methods
 class _Visual(Component):
     """
     Used to test if a an object is a controller.
     All controllers must inherit this class.
     """
-    pass
+    def __init__(self, progress_color):
+        progress_args = {}
+        if progress_color:
+            progress_args['color'] = progress_color
+        self.progress = _Progress(**progress_args)
+        super(_Visual, self).__init__()
 
 
 class SmartGrid(_Visual):
@@ -36,12 +68,13 @@ class SmartGrid(_Visual):
             'resultsPerPage={{{results_per_page}}}'
             '/>')
 
-    def __init__(self, columns=None, results_per_page=10):
+    def __init__(self, columns=None, results_per_page=10,
+                 progress_color=None):
         if columns is None:
             columns = []
         self.columns = columns
         self.results_per_page = results_per_page
-        super(SmartGrid, self).__init__()
+        super(SmartGrid, self).__init__(progress_color=progress_color)
 
     def _instantiate(self):
         return self._TAG.format(
@@ -143,11 +176,11 @@ class Plotly(_Visual):
             'uuid={{{uuid}}} '
             '/>')
 
-    def __init__(self, init=None):
-        super(Plotly, self).__init__()
+    def __init__(self, init=None, progress_color=None):
         if init is None:
             init = dict(data=[], layout={'autosize': False})
         self.init = init
+        super(Plotly, self).__init__(progress_color=progress_color)
 
     def _instantiate(self):
         return self._TAG.format(

@@ -3,6 +3,8 @@ import React from 'react';
 import {render} from 'react-dom';
 import io from 'socket.io-client';
 
+import Progress from './progress';
+
 {% for component in components %}
 import {{ component.component }} from './{{ component.module }}';
 {% endfor %}
@@ -30,9 +32,11 @@ class Dashboard extends React.Component {
                 <div style={{ '{{' }}display: 'flex', flexFlow: 'column nowrap', flex: '1 1 0'{{ '}}' }}>
                     {% for visualrow in visuals %}
                     <div style={{ '{{' }}display: 'flex', flexFlow: 'row nowrap', flex: '1 1 0'{{ '}}' }}>
-                        {% for visual in visualrow %}
+                        {% for visual, progress in visualrow %}
                         <div style={{ '{{' }}display: 'flex', flex: '1 1 0'{{ '}}' }}>
+                            {{ progress }}
                             {{ visual }}
+                            </Progress>
                         </div>
                         {% endfor %}
                     </div>

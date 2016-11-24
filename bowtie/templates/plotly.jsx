@@ -4,17 +4,6 @@ import cloneDeep from 'lodash.clonedeep';
 
 var msgpack = require('msgpack-lite');
 
-function get_height_width() {
-    var w = window,
-        d = document,
-        e = d.documentElement,
-        g = d.getElementsByTagName('body')[0],
-        x = w.innerWidth || e.clientWidth || g.clientWidth,
-        y = w.innerHeight|| e.clientHeight|| g.clientHeight;
-    return [x, y];
-}
-
-
 export default class PlotlyPlot extends React.Component {
     selection = 'inital';
 
@@ -119,10 +108,6 @@ export default class PlotlyPlot extends React.Component {
         // this.container.data = this.state.data;
         // this.container.layout = this.state.layout;
 
-        // var hw = get_height_width();
-        // this.state.layout = this.state.layout || {};
-        // this.state.layout['height'] = hw[1] / this.props.rows;
-        // this.state.layout['width'] = (hw[0] * 9 / 10) / this.props.columns;
         
         //this.container.config = {autosizable: true, fillFrame: true, displaylogo: false};
         var parent = window.getComputedStyle(this.container.parentElement);

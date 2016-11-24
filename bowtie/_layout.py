@@ -99,8 +99,8 @@ class Layout(object):
         self.port = port
         self.debug = debug
         self.subscriptions = defaultdict(list)
-        self.packages = set()
-        self.templates = set()
+        self.packages = set(['rc-progress'])
+        self.templates = set(['progress.jsx'])
         self.imports = set()
         self.visuals = [[]]
         self.controllers = []
@@ -230,7 +230,8 @@ class Layout(object):
 
         for i, visualrow in enumerate(self.visuals):
             for j, visual in enumerate(visualrow):
-                self.visuals[i][j] = self.visuals[i][j]._instantiate()
+                self.visuals[i][j] = (self.visuals[i][j]._instantiate(),
+                                      self.visuals[i][j].progress._instantiate())
                     # columns=len(visualrow),
                     # rows=len(self.visuals)
                 # )
