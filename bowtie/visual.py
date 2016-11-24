@@ -29,6 +29,9 @@ class _Progress(Component):
     def do_percent(self, data):
         pass
 
+    def do_inc(self, data):
+        pass
+
     def do_visible(self, data):
         pass
 

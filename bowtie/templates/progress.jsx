@@ -17,6 +17,11 @@ export default class Progress extends React.Component {
         this.setState({percent: msgpack.decode(arr)});
     }
 
+    increment = data => {
+        var arr = new Uint8Array(data['data']);
+        this.setState({percent: this.state.percent + msgpack.decode(arr)});
+    }
+
     visible = data => {
         var arr = new Uint8Array(data['data']);
         this.setState({visible: msgpack.decode(arr)});
@@ -28,6 +33,7 @@ export default class Progress extends React.Component {
 
         socket.on(uuid + '#percent', this.percent);
         socket.on(uuid + '#visible', this.visible);
+        socket.on(uuid + '#inc', this.increment);
     }
 
     render() {
