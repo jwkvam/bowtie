@@ -49,7 +49,14 @@ var config = {
     },
     plugins: [
         extractCSS,
-        extractLESS
+        extractLESS,
+        // https://facebook.github.io/react/docs/optimizing-performance.html
+        new webpack.DefinePlugin({
+            'process.env': {
+                NODE_ENV: JSON.stringify('production')
+            }
+        }),
+        new webpack.optimize.UglifyJsPlugin()
     ],
     resolve: {
         extensions: ['', '.jsx', '.js', '.json'],
@@ -61,12 +68,5 @@ var config = {
     }
 };
 
-// https://facebook.github.io/react/docs/optimizing-performance.html
-new webpack.DefinePlugin({
-  'process.env': {
-    NODE_ENV: JSON.stringify('production')
-  }
-}),
-new webpack.optimize.UglifyJsPlugin()
 
 module.exports = config;
