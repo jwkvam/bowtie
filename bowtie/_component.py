@@ -3,6 +3,9 @@
 Bowtie Component classes, all visual and control components inherit these
 """
 
+# need this for get commands on python2
+from __future__ import unicode_literals
+
 from builtins import bytes
 
 import json
