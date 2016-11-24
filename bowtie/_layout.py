@@ -103,7 +103,6 @@ class Layout(object):
         self.templates = set(['progress.jsx'])
         self.imports = set()
         self.visuals = [[]]
-        self.progress = [[]]
         self.controllers = []
         self.schedules = []
         self.functions = []
@@ -130,10 +129,8 @@ class Layout(object):
 
         if next_row and self.visuals[-1]:
             self.visuals.append([])
-            self.progress.append([])
 
         self.visuals[-1].append(visual)
-        self.progress[-1].append(visual.progress)
 
     def add_controller(self, control):
         """Add a controller to the layout.
