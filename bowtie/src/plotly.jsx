@@ -36,6 +36,9 @@ export default class PlotlyPlot extends React.Component {
     }
 
     addListeners() {
+        var uuid = this.props.uuid;
+        var socket = this.props.socket;
+
         this.container.on('plotly_click', function (data) {
             var p0 = data.points[0];
             var datum = {
@@ -71,9 +74,6 @@ export default class PlotlyPlot extends React.Component {
         Plotly.newPlot(this.container, this.state.data, cloneDeep(this.state.layout),
             {autosizable: false, displaylogo: false, fillFrame: true}); //, config);
         
-        var uuid = this.props.uuid;
-        var socket = this.props.socket;
-
         this.addListeners();
     }
 

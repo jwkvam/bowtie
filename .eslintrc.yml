@@ -30,3 +30,7 @@ rules:
     semi:
         - error
         - always
+globals:
+    console: true
+    require: true
+    Uint8Array: true
