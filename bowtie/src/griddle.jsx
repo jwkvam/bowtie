@@ -31,7 +31,7 @@ export default class SmartGrid extends React.Component {
 
         socket.on(this.props.uuid + '#update', (data) => {
             var arr = new Uint8Array(data['data']);
-            this.setState({data: msgpack.decode(data)});
+            this.setState({data: msgpack.decode(arr)});
         });
 
         socket.on(this.props.uuid + '#get', this.getData);
