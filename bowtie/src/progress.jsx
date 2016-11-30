@@ -7,9 +7,7 @@ var msgpack = require('msgpack-lite');
 export default class Progress extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {};
-        this.state.percent = 0;
-        this.state.visible = false;
+        this.state = {percent: 0, visible: false};
     }
 
     percent = data => {
@@ -39,13 +37,13 @@ export default class Progress extends React.Component {
     render() {
         if (this.state.visible) {
             return (
-                <div style={{'{{'}}display: 'flex', flex: '1 1 0', alignItems: 'center', justifyContent: 'center', alignContent: 'center'{{'}}'}}>
+                <div style={{display: 'flex', flex: '1 1 0', alignItems: 'center', justifyContent: 'center', alignContent: 'center'}}>
                 <Circle
                     percent={this.state.percent}
                     strokeWidth="6"
                     strokeLinecap="round"
                     strokeColor={this.props.color}
-                    style={{'{{'}}width: '70%', height: '70%', alignSelf: 'center'{{'}}'}}
+                    style={{width: '70%', height: '70%', alignSelf: 'center'}}
                 />
                 </div>
             );
@@ -61,4 +59,5 @@ Progress.propTypes = {
     uuid: React.PropTypes.string.isRequired,
     socket: React.PropTypes.object.isRequired,
     color: React.PropTypes.string.isRequired,
+    children: React.PropTypes.any
 };

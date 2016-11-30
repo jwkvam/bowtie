@@ -1,0 +1,43 @@
+env:
+    browser: true
+es6: true
+commonjs: true
+extends:
+    - 'eslint:recommended'
+    - 'plugin:react/recommended'
+installedESLint: true
+parser: babel-eslint
+parserOptions:
+    ecmaVersion: 7
+    sourceType: module
+    ecmaFeatures:
+        experimentalObjectRestSpread: true
+        jsx: true
+        arrowFunctions: true
+        impliedStrict: true
+plugins:
+    - react
+rules:
+    indent:
+        - error
+        - 4
+    linebreak-style:
+        - error
+        - unix
+    quotes:
+        - error
+        - single
+    semi:
+        - error
+        - always
+    no-unused-vars:
+        - 2
+        - args: none
+    react/no-did-mount-set-state: error
+globals:
+    console: true
+    require: true
+    Uint8Array: true
+    module: true
+    process: true
+    __dirname: true

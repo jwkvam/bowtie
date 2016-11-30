@@ -5,16 +5,17 @@ import cloneDeep from 'lodash.clonedeep';
 var msgpack = require('msgpack-lite');
 
 export default class PlotlyPlot extends React.Component {
-    selection = 'inital';
 
     constructor(props) {
         super(props);
+        this.selection = null;
         this.state = this.props.initState;
         this.resize = this.resize.bind(this);
-    }
-
-    shouldComponentUpdate(nextProps) {
-        return true;
+        this.props.socket.on(this.props.uuid + '#all', (data) => {
+            var arr = new Uint8Array(data['data']);
+            this.setState(msgpack.decode(arr));
+        });
+        this.props.socket.on(this.props.uuid + '#get', this.getSelection);
     }
 
     setSelection = data => {
@@ -31,8 +32,10 @@ export default class PlotlyPlot extends React.Component {
     }
 
     addListeners() {
-        this.container.on('plotly_click', function (data) {
+        var uuid = this.props.uuid;
+        var socket = this.props.socket;
 
+        this.container.on('plotly_click', function (data) {
             var p0 = data.points[0];
             var datum = {
                 n: p0.pointNumber,
@@ -61,59 +64,32 @@ export default class PlotlyPlot extends React.Component {
         // let {data, layout, config} = this.props;
 
         var parent = window.getComputedStyle(this.container.parentElement);
-        this.state.layout['autosize'] = false;
-        this.state.layout['height'] = parseFloat(parent.height);
-        this.state.layout['width'] = parseFloat(parent.width);
-        Plotly.newPlot(this.container, this.state.data, cloneDeep(this.state.layout),
+        // this.state.layout['autosize'] = false;
+        // this.state.layout['height'] = parseFloat(parent.height);
+        // this.state.layout['width'] = parseFloat(parent.width);
+        var layout = this.state.layout;
+        layout['autosize'] = false;
+        layout['height'] = parseFloat(parent.height);
+        layout['width'] = parseFloat(parent.width);
+        Plotly.newPlot(this.container, this.state.data, cloneDeep(layout),
             {autosizable: false, displaylogo: false, fillFrame: true}); //, config);
         
-        // if (this.props.onClick)
-        var uuid = this.props.uuid;
-        var socket = this.props.socket;
-        // if (this.props.onClick)
-
-        socket.on(this.props.uuid + '#all', (data) => {
-            var arr = new Uint8Array(data['data']);
-            this.setState(msgpack.decode(arr));
-        });
-        // socket.on(this.props.uuid + '#' + 'get', (data) => {
-        //     console.log('get command!!!');
-        //     console.log(data);
-        //     console.log(uuid + '#put');
-        //     socket.emit(uuid + '#put', [3]); //this.state);
-        //     console.log('done seding');
-        // });
-        socket.on(this.props.uuid + '#get', this.getSelection);
         this.addListeners();
-            // console.log('get command!!!');
-            // console.log(data);
-            // console.log(uuid + '#put');
-            // socket.emit(uuid + '#put'); //this.state);
-            // fn(this.state.selection);
-            // console.log('done seding');
-        // });
-        // socket.emit(this.props.uuid + '#put', [3]);
+        // this.setState({layout: layout});
     }
-
-    // updateState(state) {
-    //     console.log('updating...');
-    //     this.state = state;
-    // }
-
-    // updateState = (ev) => this.setState({ text: ev.target.value });
-    
 
     componentDidUpdate() {
         //TODO use minimal update for given changes
         // this.container.data = this.state.data;
         // this.container.layout = this.state.layout;
-
-        
         //this.container.config = {autosizable: true, fillFrame: true, displaylogo: false};
         var parent = window.getComputedStyle(this.container.parentElement);
-        this.state.layout['autosize'] = false;
-        this.state.layout['height'] = parseFloat(parent.height);
-        this.state.layout['width'] = parseFloat(parent.width);
+        var layout = this.state.layout;
+        layout['autosize'] = false;
+        layout['height'] = parseFloat(parent.height);
+        layout['width'] = parseFloat(parent.width);
+
+        // this.setState({layout: layout});
         Plotly.newPlot(this.container, this.state.data, cloneDeep(this.state.layout),
             {autosizable: false, displaylogo: false, fillFrame: true}); //, config);
         this.addListeners();
@@ -122,6 +98,8 @@ export default class PlotlyPlot extends React.Component {
     }
 
     componentWillUnmount() {
+        this.props.socket.off(this.props.uuid + '#all');
+        this.props.socket.off(this.props.uuid + '#get');
         Plotly.purge(this.container);
     }
 

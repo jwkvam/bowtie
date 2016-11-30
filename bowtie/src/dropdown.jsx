@@ -8,8 +8,7 @@ var msgpack = require('msgpack-lite');
 export default class DropDown extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {value: null};
-        this.state.options = this.props.initOptions;
+        this.state = {value: null, options: this.props.initOptions};
         this.handleChange = this.handleChange.bind(this);
         // this.getValue = this.getValue.bind(this);
         this.newOptions = this.newOptions.bind(this);

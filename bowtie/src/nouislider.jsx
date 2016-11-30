@@ -1,15 +1,8 @@
 import React from 'react';
-// import 'nouislider-algolia-fork/src/nouislider.css';
-// import 'nouislider-algolia-fork/src/nouislider.css';
 import 'nouislider/src/nouislider.css';
-// import Nouislider from 'react-nouislider';
-
-// import nouislider from 'nouislider-algolia-fork';
 import nouislider from 'nouislider';
 
 var msgpack = require('msgpack-lite');
-
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
 export default class Nouislider extends React.Component {
     constructor(props) {
@@ -27,21 +20,14 @@ export default class Nouislider extends React.Component {
         var socket = this.props.socket;
 
         slider.on('update', function (data) {
-            socket.emit(uuid + '#update', data);
+            socket.emit(uuid + '#update', msgpack.encode(data));
         });
-
-        // if (this.props.onChange) {
         slider.on('change', function (data) {
-            socket.emit(uuid + '#change', data);
+            socket.emit(uuid + '#change', msgpack.encode(data));
         });
-        //
-        // // if (this.props.onSlide) {
         slider.on('slide', function (data) {
-            socket.emit(uuid + '#slide', data);
+            socket.emit(uuid + '#slide', msgpack.encode(data));
         });
-
-            // {..._objectWithoutProperties(this.props, ["uuid"])}
-        // if (this.props.onUpdate) {
     }
 
     componentDidMount() {

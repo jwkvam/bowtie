@@ -2,14 +2,13 @@
 
 import os
 from os import path
-import stat
-from subprocess import Popen
 import inspect
+import shutil
+import stat
+from collections import namedtuple, defaultdict
+from subprocess import Popen
 
 from flask import Markup
-
-from collections import namedtuple, defaultdict
-
 from jinja2 import Environment, FileSystemLoader
 from markdown import markdown
 
@@ -25,6 +24,7 @@ _Schedule = namedtuple('_Control', ['seconds', 'function'])
 
 class NPMError(Exception):
     pass
+
 
 class WebpackError(Exception):
     pass
@@ -178,21 +178,20 @@ class Layout(object):
     def build(self):
         """Compiles the Bowtie application.
         """
+        file_dir = path.dirname(__file__)
+
         env = Environment(loader=FileSystemLoader(
-            path.join(path.dirname(__file__), 'templates')
+            path.join(file_dir, 'templates')
         ))
 
-        webpack = env.get_template('webpack.config.js')
         server = env.get_template('server.py')
         index = env.get_template('index.html')
         react = env.get_template('index.jsx')
 
         src, app, templates = create_directories(directory=self.directory)
 
-        with open(path.join(self.directory, webpack.name), 'w') as f:
-            f.write(
-                webpack.render()
-            )
+        webpack_src = path.join(file_dir, 'src/webpack.config.js')
+        shutil.copy(webpack_src, self.directory)
 
         server_path = path.join(src, server.name)
         # [1] grabs the parent stack and [1] grabs the filename
@@ -219,22 +218,13 @@ class Layout(object):
                 index.render(title=self.title)
             )
 
-        # components = [env.get_template(t).render() for t in self.templates]
-
         for template in self.templates:
-            temp = env.get_template(template)
-            with open(path.join(app, temp.name), 'w') as f:
-                f.write(
-                    temp.render()
-                )
+            template_src = path.join(file_dir, 'src', template)
+            shutil.copy(template_src, app)
 
         for i, visualrow in enumerate(self.visuals):
             for j, visual in enumerate(visualrow):
-                self.visuals[i][j] = (self.visuals[i][j]._instantiate(),
-                                      self.visuals[i][j].progress._instantiate())
-                    # columns=len(visualrow),
-                    # rows=len(self.visuals)
-                # )
+                self.visuals[i][j] = visual._instantiate(), visual.progress._instantiate()
 
         with open(path.join(app, react.name), 'w') as f:
             f.write(
@@ -254,8 +244,6 @@ class Layout(object):
         packages = ' '.join(self._packages + list(self.packages))
         install = Popen('yarn add {}'.format(packages),
                         shell=True, cwd=self.directory).wait()
-        # install = Popen('npm install -S {}'.format(packages),
-        #                 shell=True, cwd='build').wait()
         if install != 0:
             raise NPMError('Error install node packages')
         dev = Popen('webpack -d', shell=True, cwd=self.directory).wait()

@@ -3,22 +3,11 @@ import Griddle from 'griddle-react';
 
 var msgpack = require('msgpack-lite');
 
-function get_height_width() {
-    var w = window,
-        d = document,
-        e = d.documentElement,
-        g = d.getElementsByTagName('body')[0],
-        x = w.innerWidth || e.clientWidth || g.clientWidth,
-        y = w.innerHeight|| e.clientHeight|| g.clientHeight;
-    return [x, y];
-}
-
 export default class SmartGrid extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {};
-        this.state.data = [];
+        this.state = {data: []};
         this.getData = this.getData.bind(this);
     }
 
@@ -31,7 +20,7 @@ export default class SmartGrid extends React.Component {
 
         socket.on(this.props.uuid + '#update', (data) => {
             var arr = new Uint8Array(data['data']);
-            this.setState({data: msgpack.decode(data)});
+            this.setState({data: msgpack.decode(arr)});
         });
 
         socket.on(this.props.uuid + '#get', this.getData);
