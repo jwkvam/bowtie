@@ -1,5 +1,4 @@
 import React from 'react';
-import { DataTable } from 'react-jquery-datatables';
 
 import 'fixed-data-table/dist/fixed-data-table.css';
 import {Table, Column, Cell} from 'fixed-data-table';
@@ -18,13 +17,12 @@ export default class FixedTable extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {};
-        this.state.columns = ['id', 'first', 'last'];
-        this.state.data = [
-            [1, 2, 3],
-            ['John', 'Bob', 'Bob'],
-            ['Bobson', 'Mclaren', 'Mclaren']
-        ];
+        this.state = {columns: ['id', 'first', 'last'],
+            data: [
+                [1, 2, 3],
+                ['John', 'Bob', 'Bob'],
+                ['Bobson', 'Mclaren', 'Mclaren']
+            ]};
     }
 
     render() {
@@ -44,7 +42,7 @@ export default class FixedTable extends React.Component {
                     return (
                         <Column
                             header={<Cell>{name}</Cell>}
-                            cell={<TextCell data={columns[i]} />}
+                            cell={<Cell data={columns[i]} />}
                             width={100}
                         />
                     );
