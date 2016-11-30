@@ -7,9 +7,7 @@ var msgpack = require('msgpack-lite');
 export default class Progress extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {};
-        this.state.percent = 0;
-        this.state.visible = false;
+        this.state = {percent: 0, visible: false};
     }
 
     percent = data => {
@@ -61,4 +59,5 @@ Progress.propTypes = {
     uuid: React.PropTypes.string.isRequired,
     socket: React.PropTypes.object.isRequired,
     color: React.PropTypes.string.isRequired,
+    children: React.PropTypes.any
 };

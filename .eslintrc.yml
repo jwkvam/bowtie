@@ -30,7 +30,14 @@ rules:
     semi:
         - error
         - always
+    no-unused-vars:
+        - 2
+        - args: none
+    react/no-did-mount-set-state: error
 globals:
     console: true
     require: true
     Uint8Array: true
+    module: true
+    process: true
+    __dirname: true
