@@ -15,6 +15,13 @@ Visuals
     :members:
     :undoc-members:
 
+Progress
+--------
+
+.. automodule:: bowtie._progress
+    :members:
+    :undoc-members:
+
 
 Controllers
 -----------
