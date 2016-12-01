@@ -4,36 +4,7 @@ Visual components
 """
 
 from bowtie._component import Component, jdumps
-
-
-class _Progress(Component):
-    _TEMPLATE = 'progress.jsx'
-    _COMPONENT = 'Progress'
-    _PACKAGE = 'rc-progress'
-    _TAG = ('<Progress '
-            'socket={{socket}} '
-            'uuid={{{uuid}}} '
-            'color={{{color}}} '
-            '>')
-
-    def __init__(self, color='#91a8d0'):
-        self.color = color
-        super(_Progress, self).__init__()
-
-    def _instantiate(self):
-        return self._TAG.format(
-            uuid="'{}'".format(self._uuid),
-            color="'{}'".format(self.color)
-        )
-
-    def do_percent(self, data):
-        pass
-
-    def do_inc(self, data):
-        pass
-
-    def do_visible(self, data):
-        pass
+from bowtie._progress import Progress
 
 
 # pylint: disable=too-few-public-methods
@@ -46,7 +17,7 @@ class _Visual(Component):
         progress_args = {}
         if progress_color:
             progress_args['color'] = progress_color
-        self.progress = _Progress(**progress_args)
+        self.progress = Progress(**progress_args)
         super(_Visual, self).__init__()
 
 
