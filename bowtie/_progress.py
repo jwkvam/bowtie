@@ -51,5 +51,18 @@ class Progress(Component):
     def do_inc(self, data):
         pass
 
-    def do_visible(self, data):
+    def do_visible(self, visible):
+        """Hides and shows the progress indicator.
+
+        Parameters
+        ----------
+        visible : bool
+            If `True` shows the progress indicator
+            otherwise it is hidden.
+
+        Returns
+        -------
+        None
+
+        """
         pass
