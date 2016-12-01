@@ -1,4 +1,5 @@
-var webpack = require('webpack');
+const webpack = require('webpack');
+const prod = process.argv.indexOf('-p') !== -1;
 var path = require('path');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
@@ -61,7 +62,9 @@ var config = {
     }
 };
 
-if (process.env.NODE_ENV === 'production') {
+// for production
+// https://github.com/webpack/webpack/issues/2537#issuecomment-250950677
+if (prod) {
     config.plugins.push(
         // https://facebook.github.io/react/docs/optimizing-performance.html
         new webpack.DefinePlugin({
