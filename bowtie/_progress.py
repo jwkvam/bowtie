@@ -45,11 +45,48 @@ class Progress(Component):
             color="'{}'".format(self.color)
         )
 
-    def do_percent(self, data):
+    def do_percent(self, percent):
+        """Set the percentage of the progress.
+
+        Parameters
+        ----------
+        percent : number
+            Sets the progress to this percentage.
+
+        Returns
+        -------
+        None
+
+        """
         pass
 
-    def do_inc(self, data):
+    def do_inc(self, inc):
+        """Increments the progress indicator.
+
+        Parameters
+        ----------
+        inc : number
+            Value to increment the progress.
+
+        Returns
+        -------
+        None
+
+        """
         pass
 
-    def do_visible(self, data):
+    def do_visible(self, visible):
+        """Hides and shows the progress indicator.
+
+        Parameters
+        ----------
+        visible : bool
+            If `True` shows the progress indicator
+            otherwise it is hidden.
+
+        Returns
+        -------
+        None
+
+        """
         pass
