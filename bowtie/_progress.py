@@ -21,9 +21,9 @@ class Progress(Component):
 
     >>> plotly = Plotly()
     >>> def callback(x):
-    >>>     plotly.do_visible(True)
-    >>>     plotly.do_inc(3)
-    >>>     plotly.do_visible(False)
+    >>>     plotly.progress.do_visible(True)
+    >>>     plotly.progress.do_inc(3)
+    >>>     plotly.progress.do_visible(False)
 
     """
     _TEMPLATE = 'progress.jsx'
@@ -58,7 +58,7 @@ class Progress(Component):
         None
 
         """
-        pass
+        return percent
 
     def do_inc(self, inc):
         """Increments the progress indicator.
@@ -73,7 +73,7 @@ class Progress(Component):
         None
 
         """
-        pass
+        return inc
 
     def do_visible(self, visible):
         """Hides and shows the progress indicator.
@@ -89,4 +89,4 @@ class Progress(Component):
         None
 
         """
-        pass
+        return visible

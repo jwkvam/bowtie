@@ -58,7 +58,7 @@ class SmartGrid(_Visual):
         )
 
     def do_update(self, data):
-        pass
+        return data
 
 #
 # TODO: these visuals are partially implemented
@@ -191,13 +191,13 @@ class Plotly(_Visual):
     ## Commands
 
     def do_all(self, data):
-        pass
+        return data
 
     def do_data(self, data):
-        pass
+        return data
 
     def do_layout(self, data):
-        pass
+        return data
 
     def do_config(self, data):
-        pass
+        return data

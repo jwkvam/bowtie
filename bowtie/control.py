@@ -76,7 +76,7 @@ class DropDown(_Controller):
         pass
 
     def do_options(self, data):
-        pass
+        return data
 
 
 class Nouislider(_Controller):
