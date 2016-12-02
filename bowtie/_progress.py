@@ -21,9 +21,9 @@ class Progress(Component):
 
     >>> plotly = Plotly()
     >>> def callback(x):
-    >>>     plotly.do_visible(True)
-    >>>     plotly.do_inc(3)
-    >>>     plotly.do_visible(False)
+    >>>     plotly.progress.do_visible(True)
+    >>>     plotly.progress.do_inc(3)
+    >>>     plotly.progress.do_visible(False)
 
     """
     _TEMPLATE = 'progress.jsx'
