@@ -58,7 +58,7 @@ class Progress(Component):
         None
 
         """
-        pass
+        return percent
 
     def do_inc(self, inc):
         """Increments the progress indicator.
@@ -73,7 +73,7 @@ class Progress(Component):
         None
 
         """
-        pass
+        return inc
 
     def do_visible(self, visible):
         """Hides and shows the progress indicator.
@@ -89,4 +89,4 @@ class Progress(Component):
         None
 
         """
-        pass
+        return visible

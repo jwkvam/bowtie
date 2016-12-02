@@ -8,6 +8,7 @@ from __future__ import unicode_literals
 
 from builtins import bytes
 
+from functools import wraps
 import json
 import msgpack
 from datetime import datetime, date, time
@@ -63,13 +64,14 @@ def pack(x):
 def make_event(event):
 
     @property
+    @wraps(event)
     def actualevent(self):
         name = event.__name__[3:]
         return '{uuid}#{event}'.format(uuid=self._uuid, event=name)
 
-    if IS_PY35:
-        # can't set docstring on properties in python 2 like this
-        actualevent.__doc__ = event.__doc__
+    # if IS_PY35:
+    #     # can't set docstring on properties in python 2 like this
+    #     actualevent.__doc__ = event.__doc__
 
     return actualevent
 
@@ -80,7 +82,9 @@ def is_event(attribute):
 
 def make_command(command):
 
-    def actualcommand(self, data):
+    @wraps(command)
+    def actualcommand(self, *args, **kwds):
+        data = self.command(*args, **kwds)
         name = command.__name__[3:]
         signal = '{uuid}#{event}'.format(uuid=self._uuid, event=name)
         if flask.has_request_context():
@@ -89,7 +93,7 @@ def make_command(command):
             sio = flask.current_app.extensions['socketio']
             return sio.emit(signal, {'data': pack(data)})
 
-    actualcommand.__doc__ = command.__doc__
+    # actualcommand.__doc__ = command.__doc__
 
     return actualcommand
 
