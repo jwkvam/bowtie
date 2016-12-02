@@ -75,8 +75,8 @@ class DropDown(_Controller):
         """
         pass
 
-    def do_options(self, data):
-        return data
+    def do_options(self, labels, values):
+        return [dict(label=l, value=v) for l, v in zip(labels, values)]
 
 
 class Nouislider(_Controller):
