@@ -1,47 +1,48 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+Plotly testing
+"""
 
 import os
-import shutil
 import subprocess
 
-import pytest
-from selenium.webdriver import PhantomJS, ActionChains
+from selenium.webdriver import PhantomJS
+# from selenium.webdriver import ActionChains
 
 from bowtie import Layout
 from bowtie.control import Nouislider
 from bowtie.visual import Plotly
 
 
-@pytest.fixture
-def remove_build(request):
-    yield
-    path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'build')
-    shutil.rmtree(path)
-
-
 def callback(*args):
+    """dummy function"""
+    # pylint: disable=unused-argument
     pass
 
 
+# pylint: disable=unused-argument
 def test_plotly(remove_build):
-    ctrl = Nouislider()
+    """
+    Tests plotly.
+    """
     viz = Plotly()
+    ctrl = Nouislider()
 
     path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'build')
     layout = Layout(directory=path)
-    layout.add_controller(ctrl)
     layout.add_visual(viz)
+    layout.add_controller(ctrl)
     layout.subscribe(ctrl.on_change, callback)
     layout.build()
 
     env = os.environ
     env['PYTHONPATH'] = '{}:{}'.format(os.getcwd(), os.environ.get('PYTHONPATH', ''))
-    rv = subprocess.Popen(os.path.join(path, 'src/server.py'), env=env)
+    server = subprocess.Popen(os.path.join(path, 'src/server.py'), env=env)
 
     driver = PhantomJS()
     driver.get('http://localhost:9991')
 
     assert driver.title == 'Bowtie App'
 
-    rv.kill()
+    server.kill()

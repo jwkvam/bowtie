@@ -1,28 +1,27 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+Compile tests
+"""
 
 import os
-import shutil
-
-import pytest
 
 from bowtie import Layout
 from bowtie.control import Nouislider
 from bowtie.visual import Plotly
 
 
-@pytest.fixture
-def remove_build(request):
-    yield
-    path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'build')
-    shutil.rmtree(path)
-
-
 def callback(*args):
+    """dummy function"""
+    # pylint: disable=unused-argument
     pass
 
 
+# pylint: disable=unused-argument
 def test_build(remove_build):
+    """
+    Tests the build process.
+    """
     ctrl = Nouislider()
     viz = Plotly()
 

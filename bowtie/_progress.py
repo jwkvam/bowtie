@@ -45,6 +45,7 @@ class Progress(Component):
             color="'{}'".format(self.color)
         )
 
+    # pylint: disable=no-self-use
     def do_percent(self, percent):
         """Set the percentage of the progress.
 

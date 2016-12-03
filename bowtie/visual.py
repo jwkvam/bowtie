@@ -57,11 +57,27 @@ class SmartGrid(_Visual):
             results_per_page=self.results_per_page
         )
 
+    # pylint: disable=no-self-use
     def do_update(self, data):
+        """Updates the data of the table
+
+        Parameters
+        ----------
+        data : list of dicts
+            Each entry in the list must be a dict
+            with the same keys which are the columns
+            of the table.
+
+        Returns
+        -------
+        None
+
+        """
         return data
 
+
+# These visuals are partially implemented
 #
-# TODO: these visuals are partially implemented
 # class FixedTable(_Visual):
 #     _TEMPLATE = 'fixedtable.jsx'
 #     _COMPONENT = 'FixedTable'
@@ -168,36 +184,127 @@ class Plotly(_Visual):
     def on_click(self):
         """Plotly click event.
 
+        | **Payload:** TODO.
+
         Returns
         -------
         str
-            Name of click event.
+            Name of event.
 
         """
         pass
 
     def on_beforehover(self):
+        """Emits an event before hovering over a point.
+
+        | **Payload:** TODO.
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
         pass
 
     def on_hover(self):
+        """Emits an event after hovering over a point.
+
+        | **Payload:** TODO.
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
         pass
 
     def on_unhover(self):
+        """Emits an event when hover is removed.
+
+        | **Payload:** TODO.
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
         pass
 
     def on_select(self):
+        """Emits an event when points are selected with a tool.
+
+        | **Payload:** TODO.
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
         pass
 
     ## Commands
 
-    def do_all(self, data):
-        return data
+    # pylint: disable=no-self-use
+    def do_all(self, plot):
+        """Replaces the entire plot.
+
+        Parameters
+        ----------
+        plot : dict
+            Dict that can be plotted with Plotly.
+
+        Returns
+        -------
+        None
+
+        """
+        return plot
 
     def do_data(self, data):
+        """Replaces the data portion of the plot.
+
+        Parameters
+        ----------
+        data : list of traces
+            List of data to replace the old data.
+
+        Returns
+        -------
+        None
+
+        """
         return data
 
-    def do_layout(self, data):
-        return data
+    def do_layout(self, layout):
+        """Updates the layout.
 
-    def do_config(self, data):
-        return data
+        Parameters
+        ----------
+        layout : dict
+            Contains layout information.
+
+        Returns
+        -------
+        None
+
+        """
+        return layout
+
+    def do_config(self, config):
+        """Updates the configuration of the plot.
+
+        Parameters
+        ----------
+        config : dict
+            Plotly config information.
+
+        Returns
+        -------
+        None
+
+        """
+        return config

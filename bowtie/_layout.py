@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+"""
+Defines the Layout class.
+"""
 
 import os
 from os import path
@@ -22,11 +25,17 @@ _Control = namedtuple('_Control', ['instantiate', 'caption'])
 _Schedule = namedtuple('_Control', ['seconds', 'function'])
 
 
-class NPMError(Exception):
+class YarnError(Exception):
+    """
+    Errors from ``Yarn``.
+    """
     pass
 
 
 class WebpackError(Exception):
+    """
+    Errors from ``Webpack``.
+    """
     pass
 
 
@@ -107,10 +116,7 @@ class Layout(object):
         self.schedules = []
         self.functions = []
 
-    def add_visual(self, visual,
-                   width=None, height=None,
-                   width_pixels=None, height_pixels=None,
-                   next_row=False):
+    def add_visual(self, visual, next_row=False):
         """Add a visual to the layout.
 
         Parameters
@@ -122,6 +128,7 @@ class Layout(object):
 
         """
         assert isinstance(visual, _Visual)
+        # pylint: disable=protected-access
         self.packages.add(visual._PACKAGE)
         self.templates.add(visual._TEMPLATE)
         self.imports.add(_Import(component=visual._COMPONENT,
@@ -141,8 +148,8 @@ class Layout(object):
             A Bowtie controller instance.
 
         """
-        pass
         assert isinstance(control, _Controller)
+        # pylint: disable=protected-access
         self.packages.add(control._PACKAGE)
         self.templates.add(control._TEMPLATE)
         self.imports.add(_Import(component=control._COMPONENT,
@@ -160,8 +167,8 @@ class Layout(object):
         func : callable
             Function to be called.
         """
-        e = "'{}'".format(event)
-        self.subscriptions[e].append(func.__name__)
+        quoted = "'{}'".format(event)
+        self.subscriptions[quoted].append(func.__name__)
 
     def schedule(self, seconds, func):
         """Call a function periodically.
@@ -224,6 +231,7 @@ class Layout(object):
 
         for i, visualrow in enumerate(self.visuals):
             for j, visual in enumerate(visualrow):
+                # pylint: disable=protected-access
                 self.visuals[i][j] = visual._instantiate(), visual.progress._instantiate()
 
         with open(path.join(app, react.name), 'w') as f:
@@ -237,21 +245,24 @@ class Layout(object):
                 )
             )
 
-        init = Popen('npm init -f', shell=True, cwd=self.directory).wait()
+        init = Popen('yarn init -y', shell=True, cwd=self.directory).wait()
         if init != 0:
-            raise NPMError('Error running "npm init -f"')
+            raise YarnError('Error running "yarn init -y"')
         self.packages.discard(None)
         packages = ' '.join(self._packages + list(self.packages))
         install = Popen('yarn add {}'.format(packages),
                         shell=True, cwd=self.directory).wait()
         if install != 0:
-            raise NPMError('Error install node packages')
+            raise YarnError('Error install node packages')
         dev = Popen('webpack -d', shell=True, cwd=self.directory).wait()
         if dev != 0:
             raise WebpackError('Error building with webpack')
 
 
 def create_directories(directory='build'):
+    """
+    Create all the necessary subdirectories for the build.
+    """
     src = path.join(directory, 'src')
     templates = path.join(src, 'templates')
     app = path.join(src, 'app')
