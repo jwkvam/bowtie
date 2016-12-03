@@ -18,6 +18,16 @@ class _Controller(Component):
 
 
 class Button(_Controller):
+    """Create a button.
+
+    Parameters
+    ----------
+    label : str, optional
+        Label on the button.
+    caption : str, optional
+        Heading text.
+
+    """
     _TEMPLATE = 'button.jsx'
     _COMPONENT = 'SimpleButton'
     _PACKAGE = None
@@ -37,10 +47,34 @@ class Button(_Controller):
         self.caption = caption
 
     def on_click(self):
+        """Emits an event when the button is clicked.
+
+        | **Payload:** ``None``.
+
+        Returns
+        -------
+        str
+            Name of click event.
+
+        """
         pass
 
 
 class DropDown(_Controller):
+    """Create a drop down.
+
+    Parameters
+    ----------
+    labels : array-like, optional
+        List of strings which will be visible to the user.
+    values : array-like, optional
+        List of values associated with the labels that are hidden from the user.
+    multi : bool, optional
+        If multiple selections are allowed.
+    caption : str, optional
+        Heading text.
+
+    """
     _TEMPLATE = 'dropdown.jsx'
     _COMPONENT = 'DropDown'
     _PACKAGE = 'react-select'
@@ -70,16 +104,52 @@ class DropDown(_Controller):
     def on_change(self):
         """Emits an event when the selection changes.
 
-        | **Payload:** `dict` with keys "value" and "label".
+        | **Payload:** ``dict`` with keys "value" and "label".
 
         """
         pass
 
+    # pylint: disable=no-self-use
     def do_options(self, labels, values):
+        """Replaces the drop down fields.
+
+        Parameters
+        ----------
+        labels : array-like
+            List of strings which will be visible to the user.
+        values : array-like
+            List of values associated with the labels that are hidden from the user.
+
+        Returns
+        -------
+        None
+
+        """
         return [dict(label=l, value=v) for l, v in zip(labels, values)]
 
 
 class Nouislider(_Controller):
+    """Create a slider.
+
+    Parameters
+    ----------
+    start : number or list with two values, optional
+        Determines the starting value.
+        If a list of two values are given it will be a range slider.
+    minimum : number, optional
+        Minimum value of the slider.
+    maximum : number, optional
+        Maximum value of the slider.
+    tooltips : bool, optional
+        Show a popup text box.
+    caption : str, optional
+        Heading text.
+
+    References
+    ----------
+    https://refreshless.com/nouislider/events-callbacks/
+
+    """
     _TEMPLATE = 'nouislider.jsx'
     _COMPONENT = 'Nouislider'
     _PACKAGE = 'nouislider'
@@ -107,19 +177,91 @@ class Nouislider(_Controller):
         self.caption = caption
 
     def on_update(self):
+        """Emits an event when the slider is moved.
+
+        https://refreshless.com/nouislider/events-callbacks/
+
+        | **Payload:** ``list`` of values.
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
         pass
 
     def on_slide(self):
+        """Emits an event when the slider is moved.
+
+        https://refreshless.com/nouislider/events-callbacks/
+
+        | **Payload:** ``list`` of values.
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
         pass
 
     def on_set(self):
+        """Emits an event when the slider is moved.
+
+        https://refreshless.com/nouislider/events-callbacks/
+
+        | **Payload:** ``list`` of values.
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
         pass
 
     def on_change(self):
+        """Emits an event when the slider is moved.
+
+        https://refreshless.com/nouislider/events-callbacks/
+
+        | **Payload:** ``list`` of values.
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
         pass
 
     def on_start(self):
+        """Emits an event when the slider is moved.
+
+        https://refreshless.com/nouislider/events-callbacks/
+
+        | **Payload:** ``list`` of values.
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
         pass
 
-    def on_en(self):
+    def on_end(self):
+        """Emits an event when the slider is moved.
+
+        https://refreshless.com/nouislider/events-callbacks/
+
+        | **Payload:** ``list`` of values.
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
         pass

@@ -28,6 +28,15 @@ export default class Nouislider extends React.Component {
         slider.on('slide', function (data) {
             socket.emit(uuid + '#slide', msgpack.encode(data));
         });
+        slider.on('set', function (data) {
+            socket.emit(uuid + '#set', msgpack.encode(data));
+        });
+        slider.on('start', function (data) {
+            socket.emit(uuid + '#start', msgpack.encode(data));
+        });
+        slider.on('end', function (data) {
+            socket.emit(uuid + '#end', msgpack.encode(data));
+        });
     }
 
     componentDidMount() {
