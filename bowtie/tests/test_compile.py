@@ -1,28 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+Compile tests
+"""
 
 import os
-import shutil
-
-import pytest
 
 from bowtie import Layout
 from bowtie.control import Nouislider
 from bowtie.visual import Plotly
 
 
-@pytest.fixture
-def remove_build(request):
-    yield
-    path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'build')
-    shutil.rmtree(path)
-
-
-def callback(*args):
-    pass
-
-
+# pylint: disable=unused-argument
 def test_build(remove_build):
+    """
+    Tests the build process.
+    """
     ctrl = Nouislider()
     viz = Plotly()
 
@@ -30,5 +23,5 @@ def test_build(remove_build):
     layout = Layout(directory=path)
     layout.add_controller(ctrl)
     layout.add_visual(viz)
-    layout.subscribe(ctrl.on_change, callback)
+    layout.subscribe(ctrl.on_change, lambda: None)
     layout.build()
