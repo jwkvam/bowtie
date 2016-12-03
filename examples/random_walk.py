@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+Example Bowtie App.
+"""
 
 from bowtie.control import Nouislider
 from bowtie.visual import Plotly

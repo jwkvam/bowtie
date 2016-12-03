@@ -15,6 +15,12 @@ from bowtie.control import Nouislider
 from bowtie.visual import Plotly
 
 
+def callback(*args):
+    """dummy function"""
+    # pylint: disable=unused-argument
+    pass
+
+
 # pylint: disable=unused-argument
 def test_plotly(remove_build):
     """
@@ -27,7 +33,7 @@ def test_plotly(remove_build):
     layout = Layout(directory=path)
     layout.add_visual(viz)
     layout.add_controller(ctrl)
-    layout.subscribe(ctrl.on_change, lambda: None)
+    layout.subscribe(ctrl.on_change, callback)
     layout.build()
 
     env = os.environ
