@@ -15,7 +15,7 @@ class Progress(Component):
     without using the progress indicators at all.
 
     It is useful for indicating progress to the user for long-running processes.
-    It can be accessed through the `.progress` accessor.
+    It can be accessed through the ``.progress`` accessor.
 
     For example:
 
@@ -82,7 +82,7 @@ class Progress(Component):
         Parameters
         ----------
         visible : bool
-            If `True` shows the progress indicator
+            If ``True`` shows the progress indicator
             otherwise it is hidden.
 
         Returns
