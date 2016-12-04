@@ -131,7 +131,7 @@ class DropDown(_Controller):
 def _jsbool(x):
     """Convert Python bool to JS bool.
     """
-    return 'true' if x else 'false'
+    return repr(x).lower()
 
 
 class _DatePickers(_Controller):
