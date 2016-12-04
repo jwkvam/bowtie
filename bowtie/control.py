@@ -128,6 +128,84 @@ class DropDown(_Controller):
         return [dict(label=l, value=v) for l, v in zip(labels, values)]
 
 
+def _jsbool(x):
+    """Convert Python bool to JS bool.
+    """
+    return 'true' if x else 'false'
+
+
+class _DatePickers(_Controller):
+    """Specific Date Pickers inherit this class.
+    """
+    _TEMPLATE = 'date.jsx'
+    _COMPONENT = 'PickDates'
+    _PACKAGE = 'antd'
+    _TAG = ('<PickDates '
+            'date={{{date_type}}} '
+            'month={{{month_type}}} '
+            'range={{{range_type}}} '
+            'socket={{socket}} '
+            'uuid={{{uuid}}} '
+            '/>')
+
+    def __init__(self, date_type=False, month_type=False, range_type=False,
+                 caption=''):
+        super(_DatePickers, self).__init__()
+        self._instantiate = self._TAG.format(
+            uuid="'{}'".format(self._uuid),
+            date_type=_jsbool(date_type),
+            month_type=_jsbool(month_type),
+            range_type=_jsbool(range_type)
+        )
+        self.caption = caption
+
+    def on_change(self):
+        pass
+
+
+class DatePicker(_DatePickers):
+    """Date Picker
+
+    Parameters
+    ----------
+    caption : str, optional
+        Heading text.
+
+    """
+
+    def __init__(self, caption=''):
+        super(DatePicker, self).__init__(date_type=True, caption=caption)
+
+
+
+class MonthPicker(_DatePickers):
+    """Date Picker
+
+    Parameters
+    ----------
+    caption : str, optional
+        Heading text.
+
+    """
+
+    def __init__(self, caption=''):
+        super(MonthPicker, self).__init__(month_type=True, caption=caption)
+
+
+class RangePicker(_DatePickers):
+    """Date Picker
+
+    Parameters
+    ----------
+    caption : str, optional
+        Heading text.
+
+    """
+
+    def __init__(self, caption=''):
+        super(RangePicker, self).__init__(range_type=True, caption=caption)
+
+
 class Nouislider(_Controller):
     """Create a slider.
 

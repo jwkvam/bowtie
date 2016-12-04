@@ -79,6 +79,7 @@ class Layout(object):
         'core-js',
         'css-loader',
         'extract-text-webpack-plugin',
+        'less',
         'less-loader',
         'lodash.clonedeep',
         'msgpack-lite',
