@@ -22,7 +22,10 @@ class Progress(Component):
     >>> plotly = Plotly()
     >>> def callback(x):
     >>>     plotly.progress.do_visible(True)
-    >>>     plotly.progress.do_inc(3)
+    >>>     plotly.progress.do_percent(0)
+    >>>     compute1()
+    >>>     plotly.progress.do_inc(50)
+    >>>     compute2()
     >>>     plotly.progress.do_visible(False)
 
     """
