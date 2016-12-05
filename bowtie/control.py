@@ -128,6 +128,119 @@ class DropDown(_Controller):
         return [dict(label=l, value=v) for l, v in zip(labels, values)]
 
 
+def _jsbool(x):
+    """Convert Python bool to JS bool.
+    """
+    return repr(x).lower()
+
+
+class _DatePickers(_Controller):
+    """Specific Date Pickers inherit this class.
+    """
+    _TEMPLATE = 'date.jsx'
+    _COMPONENT = 'PickDates'
+    _PACKAGE = 'antd'
+    _TAG = ('<PickDates '
+            'date={{{date_type}}} '
+            'month={{{month_type}}} '
+            'range={{{range_type}}} '
+            'socket={{socket}} '
+            'uuid={{{uuid}}} '
+            '/>')
+
+    def __init__(self, date_type=False, month_type=False, range_type=False,
+                 caption=''):
+        super(_DatePickers, self).__init__()
+        self._instantiate = self._TAG.format(
+            uuid="'{}'".format(self._uuid),
+            date_type=_jsbool(date_type),
+            month_type=_jsbool(month_type),
+            range_type=_jsbool(range_type)
+        )
+        self.caption = caption
+
+
+class DatePicker(_DatePickers):
+    """Date Picker
+
+    Parameters
+    ----------
+    caption : str, optional
+        Heading text.
+
+    """
+
+    def __init__(self, caption=''):
+        super(DatePicker, self).__init__(date_type=True, caption=caption)
+
+    def on_change(self):
+        """Emits an event when a date is selected.
+
+        | **Payload:** ``str`` of the form ``"yyyy-mm-dd"``.
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
+        pass
+
+
+class MonthPicker(_DatePickers):
+    """Date Picker
+
+    Parameters
+    ----------
+    caption : str, optional
+        Heading text.
+
+    """
+
+    def __init__(self, caption=''):
+        super(MonthPicker, self).__init__(month_type=True, caption=caption)
+
+    def on_change(self):
+        """Emits an event when a month is selected.
+
+        | **Payload:** ``str`` of the form ``"yyyy-mm"``.
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
+        pass
+
+
+class RangePicker(_DatePickers):
+    """Date Picker
+
+    Parameters
+    ----------
+    caption : str, optional
+        Heading text.
+
+    """
+
+    def __init__(self, caption=''):
+        super(RangePicker, self).__init__(range_type=True, caption=caption)
+
+    def on_change(self):
+        """Emits an event when a range is selected.
+
+        | **Payload:** ``list`` of two dates ``["yyyy-mm-dd", "yyyy-mm-dd"]``.
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
+        pass
+
+
 class Nouislider(_Controller):
     """Create a slider.
 

@@ -68,6 +68,7 @@ class Layout(object):
     """
 
     _packages = [
+        'antd',
         'babel-core',
         'babel-loader',
         'babel-plugin-transform-object-rest-spread',
@@ -79,6 +80,7 @@ class Layout(object):
         'core-js',
         'css-loader',
         'extract-text-webpack-plugin',
+        'less',
         'less-loader',
         'lodash.clonedeep',
         'msgpack-lite',
