@@ -7,6 +7,11 @@
 
 ![Demo](https://cloud.githubusercontent.com/assets/86304/20045988/69e5678a-a45a-11e6-853b-7f60a615c9da.gif)
 
+## Introduction
+
+Bowtie is a library for writing dashboards in Python.
+With minimal boilerplate necessary, you can focus on building functionality.
+Interactively explore your data in new ways!
 
 ## Demo
 
@@ -14,7 +19,7 @@ See a live [example](https://bowtie-demo.herokuapp.com/) generated from this [co
 
 ## Documentation
 
-It's a bit sparse for now but check it out [here](http://bowtie-py.readthedocs.io/en/latest/).
+Available [here](http://bowtie-py.readthedocs.io/en/latest/).
 
 ## Install
 
