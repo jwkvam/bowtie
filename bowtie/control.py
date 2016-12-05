@@ -134,6 +134,40 @@ def _jsbool(x):
     return repr(x).lower()
 
 
+class Switch(_Controller):
+    """Specific Date Pickers inherit this class.
+    """
+    _TEMPLATE = 'switch.jsx'
+    _COMPONENT = 'Toggle'
+    _PACKAGE = 'antd'
+    _TAG = ('<Toggle '
+            'defaultChecked={{{defaultChecked}}} '
+            'socket={{socket}} '
+            'uuid={{{uuid}}} '
+            '/>')
+
+    def __init__(self, initial=False, caption=''):
+        super(Switch, self).__init__()
+        self._instantiate = self._TAG.format(
+            uuid="'{}'".format(self._uuid),
+            defaultChecked=_jsbool(initial)
+        )
+        self.caption = caption
+
+    def on_switch(self):
+        """Emits an event when the switch is toggled.
+
+        | **Payload:** ``bool`` status of the switch.
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
+        pass
+
+
 class _DatePickers(_Controller):
     """Specific Date Pickers inherit this class.
     """
