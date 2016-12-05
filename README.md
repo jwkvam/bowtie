@@ -10,8 +10,9 @@
 ## Introduction
 
 Bowtie is a library for writing dashboards in Python.
-With minimal boilerplate necessary, you can focus on building functionality.
+Knowledge of neither JavaScript or Flask is required, you can focus on building functionality in Python.
 Interactively explore your data in new ways!
+Deploy and share with others!
 
 ## Demo
 
