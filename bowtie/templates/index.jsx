@@ -2,6 +2,7 @@ import 'normalize.css';
 import React from 'react';
 import {render} from 'react-dom';
 import io from 'socket.io-client';
+import 'antd/dist/antd.css'
 
 import Progress from './progress';
 
@@ -15,7 +16,7 @@ class Dashboard extends React.Component {
     render() {
         return (
             <div style={{ '{{' }}display: 'flex', flexFlow: 'row nowrap', width: '100vw', height: '100vh', maxHeight: '100%', maxWidth: '100%'{{ '}}' }}>
-                <div style={{ '{{' }}display: 'flex', flexFlow: 'column nowrap', flex: '0 0 15em', padding: '7px', backgroundColor: '{{background_color}}'{{ '}}' }}>
+                <div style={{ '{{' }}display: 'flex', flexFlow: 'column nowrap', flex: '0 0 18em', padding: '7px', backgroundColor: '{{background_color}}'{{ '}}' }}>
                     {{ description }}
 
                     {% for control in controls %}

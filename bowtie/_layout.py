@@ -68,6 +68,7 @@ class Layout(object):
     """
 
     _packages = [
+        'antd',
         'babel-core',
         'babel-loader',
         'babel-plugin-transform-object-rest-spread',
