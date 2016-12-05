@@ -159,9 +159,6 @@ class _DatePickers(_Controller):
         )
         self.caption = caption
 
-    def on_change(self):
-        pass
-
 
 class DatePicker(_DatePickers):
     """Date Picker
@@ -176,6 +173,18 @@ class DatePicker(_DatePickers):
     def __init__(self, caption=''):
         super(DatePicker, self).__init__(date_type=True, caption=caption)
 
+    def on_change(self):
+        """Emits an event when a date is selected.
+
+        | **Payload:** ``str`` of the form ``"yyyy-mm-dd"``.
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
+        pass
 
 
 class MonthPicker(_DatePickers):
@@ -191,6 +200,19 @@ class MonthPicker(_DatePickers):
     def __init__(self, caption=''):
         super(MonthPicker, self).__init__(month_type=True, caption=caption)
 
+    def on_change(self):
+        """Emits an event when a month is selected.
+
+        | **Payload:** ``str`` of the form ``"yyyy-mm"``.
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
+        pass
+
 
 class RangePicker(_DatePickers):
     """Date Picker
@@ -204,6 +226,19 @@ class RangePicker(_DatePickers):
 
     def __init__(self, caption=''):
         super(RangePicker, self).__init__(range_type=True, caption=caption)
+
+    def on_change(self):
+        """Emits an event when a range is selected.
+
+        | **Payload:** ``list`` of two dates ``["yyyy-mm-dd", "yyyy-mm-dd"]``.
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
+        pass
 
 
 class Nouislider(_Controller):
