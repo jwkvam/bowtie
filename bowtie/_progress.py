@@ -17,8 +17,8 @@ class Progress(Component):
     It is useful for indicating progress to the user for long-running processes.
     It can be accessed through the ``.progress`` accessor.
 
-    For example:
-
+    Examples
+    --------
     >>> plotly = Plotly()
     >>> def callback(x):
     >>>     plotly.progress.do_visible(True)

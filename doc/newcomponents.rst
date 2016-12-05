@@ -38,8 +38,7 @@ Next we will define the properties that the React class will hold.
 This defines how the Python code can initialize the component.
 We always need ``uuid`` and ``socket`` properties since they make
 it possible for the Python backend to communicate with the React object.
-This component has allows for multiple selection so that will be a ``bool``
-property.
+This component supports multiple selection and that will be a ``bool`` property.
 We'll also make an ``initOptions`` property which will let us set an
 initial list of options to populate the dropdown.
 Now that we have that defined let's write it in code::
