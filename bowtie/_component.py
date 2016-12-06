@@ -18,6 +18,7 @@ import msgpack
 import flask
 from flask_socketio import emit
 from future.utils import with_metaclass
+import eventlet
 from eventlet.queue import LightQueue
 
 
@@ -115,10 +116,11 @@ def make_command(command):
         # pylint: disable=protected-access
         signal = '{uuid}#{event}'.format(uuid=self._uuid, event=name)
         if flask.has_request_context():
-            return emit(signal, {'data': pack(data)})
+            emit(signal, {'data': pack(data)})
         else:
             sio = flask.current_app.extensions['socketio']
-            return sio.emit(signal, {'data': pack(data)})
+            sio.emit(signal, {'data': pack(data)})
+        eventlet.sleep()
 
     return actualcommand
 
