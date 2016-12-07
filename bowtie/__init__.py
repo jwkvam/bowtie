@@ -2,6 +2,6 @@
 Bowtie
 """
 
-__version__ = '0.0.15-dev'
+__version__ = '0.0.15'
 
 from bowtie._layout import Layout
