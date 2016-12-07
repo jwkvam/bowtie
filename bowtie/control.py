@@ -337,7 +337,7 @@ class Slider(_Controller):
     def on_change(self):
         """Emits an event when the slider's value changes.
 
-        | **Payload:** ``list`` of values.
+        | **Payload:** ``number`` or ``list`` of values.
 
         Returns
         -------
@@ -350,7 +350,7 @@ class Slider(_Controller):
     def on_after_change(self):
         """Emits an event when the slider control is released.
 
-        | **Payload:** ``list`` of values.
+        | **Payload:** ``number`` or ``list`` of values.
 
         Returns
         -------
@@ -359,8 +359,6 @@ class Slider(_Controller):
 
         """
         pass
-
-
 
 
 class Nouislider(_Controller):

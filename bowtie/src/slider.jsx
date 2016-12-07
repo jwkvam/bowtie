@@ -8,37 +8,7 @@ export default class AntSlider extends React.Component {
     constructor(props) {
         super(props);
         this.state = {value: this.props.start};
-        // this.createSlider = this.createSlider.bind(this);
-        // this.getValue = this.getValue.bind(this);
     }
-
-    // createSlider() {
-    //     var slider = this.slider = nouislider.create(this.sliderContainer,
-    //         {...this.props}
-    //     );
-    //
-    //     var uuid = this.props.uuid;
-    //     var socket = this.props.socket;
-    //
-    //     slider.on('update', function (data) {
-    //         socket.emit(uuid + '#update', msgpack.encode(data));
-    //     });
-    //     slider.on('change', function (data) {
-    //         socket.emit(uuid + '#change', msgpack.encode(data));
-    //     });
-    //     slider.on('slide', function (data) {
-    //         socket.emit(uuid + '#slide', msgpack.encode(data));
-    //     });
-    //     slider.on('set', function (data) {
-    //         socket.emit(uuid + '#set', msgpack.encode(data));
-    //     });
-    //     slider.on('start', function (data) {
-    //         socket.emit(uuid + '#start', msgpack.encode(data));
-    //     });
-    //     slider.on('end', function (data) {
-    //         socket.emit(uuid + '#end', msgpack.encode(data));
-    //     });
-    // }
 
     componentDidMount() {
         var uuid = this.props.uuid;
@@ -49,17 +19,6 @@ export default class AntSlider extends React.Component {
     getValue = (data, fn) => {
         fn(msgpack.encode(this.state.value));
     }
-
-    // componentDidUpdate() {
-    //     if (this.props.disabled) this.sliderContainer.setAttribute('disabled', true);
-    //     else this.sliderContainer.removeAttribute('disabled');
-    //     this.slider.destroy();
-    //     this.createSlider();
-    // }
-
-    // componentWillUnmount() {
-    //     this.slider.destroy();
-    // }
 
     onChange = value => {
         this.setState({value: value});
