@@ -39,7 +39,7 @@ class SmartGrid(_Visual):
             'resultsPerPage={{{results_per_page}}}'
             '/>')
 
-    def __init__(self, columns=None, results_per_page=10)
+    def __init__(self, columns=None, results_per_page=10):
         if columns is None:
             columns = []
         self.columns = columns
@@ -91,7 +91,7 @@ class SVG(_Visual):
             'preserve_aspect_ratio={{{preserve_aspect_ratio}}} '
             '/>')
 
-    def __init__(self, preserve_aspect_ratio=False)
+    def __init__(self, preserve_aspect_ratio=False):
         self.preserve_aspect_ratio = preserve_aspect_ratio
         super(SVG, self).__init__()
 
@@ -226,7 +226,7 @@ class Plotly(_Visual):
             'uuid={{{uuid}}} '
             '/>')
 
-    def __init__(self, init=None)
+    def __init__(self, init=None):
         if init is None:
             init = dict(data=[], layout={'autosize': False})
         self.init = init
