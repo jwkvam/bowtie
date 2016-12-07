@@ -1,23 +1,24 @@
 import React from 'react';
+import { Button } from 'antd';
+import 'antd/dist/antd.css';
 
 export default class SimpleButton extends React.Component {
 
     constructor(props) {
         super(props);
-        this.handleClick = this.handleClick.bind(this);
     }
 
-    handleClick(event) {
+    handleClick = event => {
         this.props.socket.emit(this.props.uuid + '#click');
     }
 
     render() {
         return (
-            <button
-            className='simple-button'
-            onClick={this.handleClick}
-            >{this.props.label}
-            </button>
+            <Button
+            type="primary"
+            onClick={this.handleClick} >
+            {this.props.label}
+            </Button>
         );
     }
 }

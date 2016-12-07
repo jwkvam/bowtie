@@ -13,11 +13,8 @@ class _Visual(Component):
     Used to test if a an object is a controller.
     All controllers must inherit this class.
     """
-    def __init__(self, progress_color):
-        progress_args = {}
-        if progress_color:
-            progress_args['color'] = progress_color
-        self.progress = Progress(**progress_args)
+    def __init__(self):
+        self.progress = Progress()
         super(_Visual, self).__init__()
 
 
@@ -42,13 +39,12 @@ class SmartGrid(_Visual):
             'resultsPerPage={{{results_per_page}}}'
             '/>')
 
-    def __init__(self, columns=None, results_per_page=10,
-                 progress_color=None):
+    def __init__(self, columns=None, results_per_page=10):
         if columns is None:
             columns = []
         self.columns = columns
         self.results_per_page = results_per_page
-        super(SmartGrid, self).__init__(progress_color=progress_color)
+        super(SmartGrid, self).__init__()
 
     def _instantiate(self):
         return self._TAG.format(
@@ -95,10 +91,9 @@ class SVG(_Visual):
             'preserve_aspect_ratio={{{preserve_aspect_ratio}}} '
             '/>')
 
-    def __init__(self, preserve_aspect_ratio=False,
-                 progress_color=None):
+    def __init__(self, preserve_aspect_ratio=False):
         self.preserve_aspect_ratio = preserve_aspect_ratio
-        super(SVG, self).__init__(progress_color=progress_color)
+        super(SVG, self).__init__()
 
     def _instantiate(self):
         return self._TAG.format(
@@ -231,11 +226,11 @@ class Plotly(_Visual):
             'uuid={{{uuid}}} '
             '/>')
 
-    def __init__(self, init=None, progress_color=None):
+    def __init__(self, init=None):
         if init is None:
             init = dict(data=[], layout={'autosize': False})
         self.init = init
-        super(Plotly, self).__init__(progress_color=progress_color)
+        super(Plotly, self).__init__()
 
     def _instantiate(self):
         return self._TAG.format(

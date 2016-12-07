@@ -275,6 +275,92 @@ class RangePicker(_DatePickers):
         pass
 
 
+class Slider(_Controller):
+    """Create a slider.
+
+    Parameters
+    ----------
+    start : number or list with two values, optional
+        Determines the starting value.
+        If a list of two values are given it will be a range slider.
+    ranged : bool, optional
+        If this is a range slider.
+    minimum : number, optional
+        Minimum value of the slider.
+    maximum : number, optional
+        Maximum value of the slider.
+    step : number, optional
+        Step size.
+    caption : str, optional
+        Heading text.
+
+    References
+    ----------
+    https://ant.design/components/slider/
+
+    """
+    _TEMPLATE = 'slider.jsx'
+    _COMPONENT = 'AntSlider'
+    _PACKAGE = 'antd'
+    _TAG = ('<AntSlider '
+            'range={{{range}}} '
+            'min={{{minimum}}} '
+            'max={{{maximum}}} '
+            'step={{{step}}} '
+            'start={{{start}}} '
+            'marks={{{marks}}} '
+            'socket={{socket}} '
+            'uuid={{{uuid}}} '
+            '/>')
+
+    def __init__(self, start=None, ranged=False, minimum=0, maximum=100, step=1,
+                 caption=''):
+        super(Slider, self).__init__()
+
+        if not start:
+            start = [0, 0] if ranged else 0
+        elif isinstance(start, Iterable):
+            start = list(start)
+            ranged = True
+
+        self._instantiate = self._TAG.format(
+            uuid="'{}'".format(self._uuid),
+            range=_jsbool(ranged),
+            minimum=minimum,
+            maximum=maximum,
+            start=start,
+            step=step,
+            marks={minimum: str(minimum), maximum: str(maximum)}
+        )
+        self.caption = caption
+
+    def on_change(self):
+        """Emits an event when the slider's value changes.
+
+        | **Payload:** ``number`` or ``list`` of values.
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
+        pass
+
+    def on_after_change(self):
+        """Emits an event when the slider control is released.
+
+        | **Payload:** ``number`` or ``list`` of values.
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
+        pass
+
+
 class Nouislider(_Controller):
     """Create a slider.
 
