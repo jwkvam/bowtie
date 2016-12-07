@@ -1,13 +1,13 @@
 import React from 'react';
-import {Circle} from 'rc-progress';
-import 'rc-progress/assets/index.css';
+import { Progress } from 'antd';
+import 'antd/dist/antd.css';
 
 var msgpack = require('msgpack-lite');
 
-export default class Progress extends React.Component {
+export default class CProgress extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {percent: 0, visible: false};
+        this.state = {percent: 0, visible: false, status: 'active'};
     }
 
     percent = data => {
@@ -25,6 +25,18 @@ export default class Progress extends React.Component {
         this.setState({visible: msgpack.decode(arr)});
     }
 
+    active = data => {
+        this.setState({status: 'active'});
+    }
+
+    success = data => {
+        this.setState({status: 'success'});
+    }
+
+    error = data => {
+        this.setState({status: 'exception'});
+    }
+
     componentDidMount() {
         var uuid = this.props.uuid;
         var socket = this.props.socket;
@@ -32,18 +44,21 @@ export default class Progress extends React.Component {
         socket.on(uuid + '#percent', this.percent);
         socket.on(uuid + '#visible', this.visible);
         socket.on(uuid + '#inc', this.increment);
+        socket.on(uuid + '#active', this.active);
+        socket.on(uuid + '#success', this.success);
+        socket.on(uuid + '#error', this.error);
     }
 
     render() {
         if (this.state.visible) {
             return (
                 <div style={{display: 'flex', flex: '1 1 0', alignItems: 'center', justifyContent: 'center', alignContent: 'center'}}>
-                <Circle
+                <Progress
+                    type="circle"
+                    showInfo
+                    status={this.state.status}
                     percent={this.state.percent}
-                    strokeWidth="6"
-                    strokeLinecap="round"
-                    strokeColor={this.props.color}
-                    style={{width: '70%', height: '70%', alignSelf: 'center'}}
+                    style={{alignSelf: 'center'}}
                 />
                 </div>
             );
@@ -55,9 +70,8 @@ export default class Progress extends React.Component {
     }
 }
 
-Progress.propTypes = {
+CProgress.propTypes = {
     uuid: React.PropTypes.string.isRequired,
     socket: React.PropTypes.object.isRequired,
-    color: React.PropTypes.string.isRequired,
     children: React.PropTypes.any
 };

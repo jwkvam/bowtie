@@ -30,22 +30,16 @@ class Progress(Component):
 
     """
     _TEMPLATE = 'progress.jsx'
-    _COMPONENT = 'Progress'
-    _PACKAGE = 'rc-progress'
-    _TAG = ('<Progress '
+    _COMPONENT = 'CProgress'
+    _PACKAGE = 'antd'
+    _TAG = ('<CProgress '
             'socket={{socket}} '
             'uuid={{{uuid}}} '
-            'color={{{color}}} '
             '>')
-
-    def __init__(self, color='#91a8d0'):
-        self.color = color
-        super(Progress, self).__init__()
 
     def _instantiate(self):
         return self._TAG.format(
-            uuid="'{}'".format(self._uuid),
-            color="'{}'".format(self.color)
+            uuid="'{}'".format(self._uuid)
         )
 
     # pylint: disable=no-self-use
@@ -94,3 +88,33 @@ class Progress(Component):
 
         """
         return visible
+
+    def do_active(self):
+        """Hides and shows the progress indicator.
+
+        Returns
+        -------
+        None
+
+        """
+        pass
+
+    def do_success(self):
+        """Hides and shows the progress indicator.
+
+        Returns
+        -------
+        None
+
+        """
+        pass
+
+    def do_error(self):
+        """Hides and shows the progress indicator.
+
+        Returns
+        -------
+        None
+
+        """
+        pass

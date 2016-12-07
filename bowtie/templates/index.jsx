@@ -4,7 +4,7 @@ import {render} from 'react-dom';
 import io from 'socket.io-client';
 import 'antd/dist/antd.css'
 
-import Progress from './progress';
+import CProgress from './progress';
 
 {% for component in components %}
 import {{ component.component }} from './{{ component.module }}';
@@ -37,7 +37,7 @@ class Dashboard extends React.Component {
                         <div style={{ '{{' }}display: 'flex', flex: '1 1 0'{{ '}}' }}>
                             {{ progress }}
                             {{ visual }}
-                            </Progress>
+                            </CProgress>
                         </div>
                         {% endfor %}
                     </div>
