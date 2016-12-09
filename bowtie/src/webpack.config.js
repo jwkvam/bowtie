@@ -3,56 +3,109 @@ const prod = process.argv.indexOf('-p') !== -1;
 var path = require('path');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-var extractCSS = new ExtractTextPlugin('stylesheets/[name].css');
-var extractLESS = new ExtractTextPlugin('stylesheets/[name].less');
+// var extractCSS = new ExtractTextPlugin('stylesheets/[name].css');
+// var extractLESS = new ExtractTextPlugin('stylesheets/[name].less');
 
+
+function root(__path = '.') {
+    return path.join(__dirname, __path);
+}
 
 var BUILD_DIR = path.resolve(__dirname, 'src/static');
 var APP_DIR = path.resolve(__dirname, 'src/app');
 
 var config = {
-    entry: APP_DIR + '/index.jsx',
+    entry: APP_DIR + '/index',
     output: {
         path: BUILD_DIR,
         filename: 'bundle.js'
     },
+    target: 'web',
     module: {
-        loaders: [
+        rules: [
+            // {
+            //     test: /\.(js|jsx)$/,
+            //     include: APP_DIR,
+            //     loader: 'babel-loader',
+            //     // exclude: /nodemodules/,
+            //     query: {
+            //         presets: [
+            //             ['es2015', { 'modules': false}],
+            //             'react', 'stage-0'],
+            //         plugins: ['transform-object-rest-spread']
+            //     }
             {
-                test: /\.jsx?/,
+                test: /\.(js|jsx)$/,
+                include: /nodemodules/,
+                exclude: APP_DIR,
+                loader: 'babel-loader',
+                query: {
+                    presets: ['react']
+                }
+            }, {
+                test: /\.(js|jsx)$/,
                 include: APP_DIR,
-                loader: 'babel',
+                loader: 'babel-loader',
                 exclude: /nodemodules/,
                 query: {
-                    presets: ['es2015', 'react', 'stage-0'],
+                    presets: [
+                        ['es2015', { 'modules': false}],
+                        'react', 'stage-0'],
                     plugins: ['transform-object-rest-spread']
                 }
             }, {
                 test: /\.scss$/,
-                loaders: ['style', 'css', 'sass'],
+// <<<<<<< HEAD
+//                 loaders: ['style', 'css', 'sass'],
+//             }, {
+//                 test: /\.css$/,
+//                 loader: extractCSS.extract(['css', 'sass']),
+//             }, {
+//                 test: /\.less$/,
+//                 loader: extractLESS.extract(['less', 'sass']),
+// =======
+                loaders: ['style-loader', 'css-loader', 'sass-loader'],
             }, {
                 test: /\.css$/,
-                loader: extractCSS.extract(['css', 'sass']),
+                // loader: extractCSS.extract(['css-loader', 'sass-loader']),
+                // loader: extractCSS.extract(['css-loader', 'sass-loader']),
+                loader: "style-loader!css-loader!sass-loader",
             }, {
                 test: /\.less$/,
-                loader: extractLESS.extract(['less', 'sass']),
+                loader: "style-loader!css-loader!less-loader?strictMath&noIeCompat&"
+                // loader: extractLESS.extract(['less-loader', 'sass-loader']),
+            }, {
+                test: /\.json$/,
+                loader: "json-loader"
+            }, {
+                include: /node_modules\/mapbox-gl-shaders/,
+                enforce: 'post',
+                loader: 'transform-loader',
+                query: 'brfs'
+// >>>>>>> webpack2 experiments
             }
         ],
         noParse: [
             /plotly\.js$/
         ]
     },
-    plugins: [
-        extractCSS,
-        extractLESS,
-    ],
+    // plugins: [
+    //     extractCSS,
+    //     extractLESS,
+    // ],
     resolve: {
-        extensions: ['', '.jsx', '.js', '.json'],
-        modulesDirectories: [
-            'node_modules',
-            path.resolve(__dirname, './node_modules')
-        ]
-
+        extensions: ['.jsx', '.js', '.json'], //, '.web.js'],
+        // modules: [ root('node_modules') ],
+        // moduleExtensions: ['-loader'],
+        // aliasFields: ['browser', 'index']
+        // enforceExtension: true,
+        // modules: [
+        //     path.resolve(__dirname, "app"), "node_modules"
+        //     // 'node_modules',
+        //     // 'src',
+        //     // path.resolve(__dirname, 'src'),
+        //     // path.resolve(__dirname, './node_modules')
+        // ]
     }
 };
 
