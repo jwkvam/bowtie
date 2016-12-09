@@ -92,7 +92,7 @@ class Layout(object):
         'sass-loader',
         'socket.io-client',
         'style-loader',
-        'webpack@1.13.2'
+        'webpack@1.14.0'
     ]
 
     def __init__(self, title='Bowtie App', description='Bowtie App\n---',

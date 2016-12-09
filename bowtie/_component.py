@@ -30,7 +30,7 @@ def json_conversion(obj):
         # numpy isn't an explicit dependency of bowtie
         # so we can't assume it's available
         import numpy as np
-        if isinstance(obj, np.ndarray):
+        if isinstance(obj, np.ndarray) or isinstance(obj, np.generic):
             return obj.tolist()
     except ImportError:
         pass
@@ -55,7 +55,8 @@ def encoders(obj):
         # numpy isn't an explicit dependency of bowtie
         # so we can't assume it's available
         import numpy as np
-        if isinstance(obj, np.ndarray):
+        if isinstance(obj, np.ndarray) or isinstance(obj, np.generic):
+            # https://docs.scipy.org/doc/numpy/reference/arrays.scalars.html
             return obj.tolist()
     except ImportError:
         pass
