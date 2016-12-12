@@ -11,9 +11,34 @@ Find the list of supported components here and how to use them.
 Visuals
 -------
 
-.. automodule:: bowtie.visual
+Plotly
+~~~~~~
+
+.. autoclass:: bowtie.visual.Plotly
     :members:
     :undoc-members:
+
+Table
+~~~~~
+
+.. autoclass:: bowtie.visual.Table
+    :members:
+    :undoc-members:
+
+SVG
+~~~
+
+.. autoclass:: bowtie.visual.SVG
+    :members:
+    :undoc-members:
+
+SmartGrid
+~~~~~~~~~
+
+.. autoclass:: bowtie.visual.SmartGrid
+    :members:
+    :undoc-members:
+
 
 Progress
 --------
@@ -26,6 +51,51 @@ Progress
 Controllers
 -----------
 
-.. automodule:: bowtie.control
+DropDown
+~~~~~~~~
+
+.. autoclass:: bowtie.control.DropDown
+    :members:
+    :undoc-members:
+
+Switch
+~~~~~~
+
+.. autoclass:: bowtie.control.Switch
+    :members:
+    :undoc-members:
+
+DatePicker
+~~~~~~~~~~
+
+.. autoclass:: bowtie.control.DatePicker
+    :members:
+    :undoc-members:
+
+MonthPicker
+~~~~~~~~~~~
+
+.. autoclass:: bowtie.control.MonthPicker
+    :members:
+    :undoc-members:
+
+RangePicker
+~~~~~~~~~~~
+
+.. autoclass:: bowtie.control.RangePicker
+    :members:
+    :undoc-members:
+
+Slider
+~~~~~~
+
+.. autoclass:: bowtie.control.Slider
+    :members:
+    :undoc-members:
+
+NoUISlider
+~~~~~~~~~~
+
+.. autoclass:: bowtie.control.Nouislider
     :members:
     :undoc-members:

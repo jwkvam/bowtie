@@ -30,18 +30,12 @@ var config = {
             }, {
                 test: /\.scss$/,
                 loaders: ['style', 'css', 'sass'],
-                exclude: /flexboxgrid/
             }, {
                 test: /\.css$/,
                 loader: extractCSS.extract(['css', 'sass']),
-                exclude: /flexboxgrid/
             }, {
                 test: /\.less$/,
                 loader: extractLESS.extract(['less', 'sass']),
-            }, {
-                test: /\.(css|scss)$/,
-                loader: 'style!css?modules',
-                include: /flexboxgrid/
             }
         ],
         noParse: [

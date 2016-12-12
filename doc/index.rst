@@ -7,11 +7,11 @@ Bowtie: Interactive Dashboard Toolkit
 =====================================
 
 Bowtie helps you visualize your data interactively.
-No javascript required, you build your dashboard in pure Python. 
+No Javascript required, you build your dashboard in pure Python.
 Easy to deploy so you can share results with others.
 
 .. toctree::
-    :hidden:
+    :maxdepth: 2
 
     quickstart
     layout
@@ -20,5 +20,3 @@ Easy to deploy so you can share results with others.
     newcomponents
     comparison
     indices
-
-

@@ -18,6 +18,100 @@ class _Visual(Component):
         super(_Visual, self).__init__()
 
 
+class Table(_Visual):
+    """Table Component with filtering and sorting
+
+    Parameters
+    ----------
+    columns : list, optional
+        List of column names to display.
+    results_per_page : int, optional
+        Number of rows on each pagination of the table.
+
+    """
+    _TEMPLATE = 'table.jsx'
+    _COMPONENT = 'AntTable'
+    _PACKAGE = 'antd'
+    _TAG = ('<AntTable '
+            'socket={{socket}} '
+            'uuid={{{uuid}}} '
+            'columns={{{columns}}} '
+            'resultsPerPage={{{results_per_page}}} '
+            '/>')
+
+    def __init__(self, data=None, columns=None, results_per_page=10):
+        self.data = []
+        self.columns = []
+        if data:
+            self.data, self.columns = self._make_data(data)
+        elif columns:
+            self.columns = self._make_columns(columns)
+
+        self.results_per_page = results_per_page
+        super(Table, self).__init__()
+
+    def _instantiate(self):
+        return self._TAG.format(
+            uuid="'{}'".format(self._uuid),
+            columns=self.columns,
+            results_per_page=self.results_per_page
+        )
+
+    @staticmethod
+    def _make_columns(columns):
+        """
+        doc
+        """
+        return [dict(title=str(c),
+                     dataIndex=str(c),
+                     key=str(c))
+                for c in columns]
+
+    @staticmethod
+    def _make_data(data):
+        """
+        doc
+        """
+        jsdata = []
+        for idx, row in data.iterrows():
+            row.index = row.index.astype(str)
+            rdict = row.to_dict()
+            rdict.update(dict(key=str(idx)))
+            jsdata.append(rdict)
+
+        return jsdata, Table._make_columns(data.columns)
+
+    # pylint: disable=no-self-use
+    def do_data(self, data):
+        """Replaces the columns and data of the table.
+
+        Parameters
+        ----------
+        data : pandas.DataFrame
+
+        Returns
+        -------
+        None
+
+        """
+        return self._make_data(data)
+
+    def do_columns(self, columns):
+        """Updates the columns of the table
+
+        Parameters
+        ----------
+        columns : array-like
+            List of strings.
+
+        Returns
+        -------
+        None
+
+        """
+        return self._make_columns(columns)
+
+
 class SmartGrid(_Visual):
     """Table Component with filtering and sorting
 
@@ -134,84 +228,6 @@ class SVG(_Visual):
 
         """
         return image
-
-
-# These visuals are partially implemented
-#
-# class FixedTable(_Visual):
-#     _TEMPLATE = 'fixedtable.jsx'
-#     _COMPONENT = 'FixedTable'
-#     _PACKAGE = 'fixed-data-table'
-#     _TAG = ('<FixedTable '
-#            'socket={{socket}} '
-#            'uuid={{{uuid}}} '
-#            'rows={{{rows}}} '
-#            'columns={{{columns}}} '
-#            '/>')
-#
-#     def __init__(self):
-#         super(FixedTable, self).__init__()
-#
-#     def _instantiate(self, columns, rows):
-#         return self._TAG.format(
-#             uuid="'{}'".format(self._uuid),
-#             rows=rows,
-#             columns=columns
-#         )
-#
-#
-# class DataTable(_Visual):
-#     _TEMPLATE = 'datatables.jsx'
-#     _COMPONENT = 'JTable'
-#     _PACKAGE = 'react-jquery-datatables'
-#     _TAG = ('<JTable '
-#            'socket={{socket}} '
-#            'uuid={{{uuid}}} '
-#            '/>')
-#
-#     def __init__(self):
-#         super(DataTable, self).__init__()
-#
-#     def _instantiate(self, columns, rows):
-#         return self._TAG.format(
-#             uuid="'{}'".format(self._uuid),
-#         )
-#
-#
-# class Grid(_Visual):
-#     _TEMPLATE = 'dazzlegrid.jsx'
-#     _COMPONENT = 'Grid'
-#     _PACKAGE = 'react-data-grid'
-#     _TAG = ('<Grid '
-#            'socket={{socket}} '
-#            'uuid={{{uuid}}} '
-#            '/>')
-#
-#     def __init__(self):
-#         super(Grid, self).__init__()
-#
-#     def _instantiate(self, columns, rows):
-#         return self._TAG.format(
-#             uuid="'{}'".format(self._uuid),
-#         )
-#
-#
-# class Table(_Visual):
-#     _TEMPLATE = 'datagrid.jsx'
-#     _COMPONENT = 'Table'
-#     _PACKAGE = 'react-datagrid'
-#     _TAG = ('<Table '
-#            'socket={{socket}} '
-#            'uuid={{{uuid}}} '
-#            '/>')
-#
-#     def __init__(self):
-#         super(Table, self).__init__()
-#
-#     def _instantiate(self, columns, rows):
-#         return self._TAG.format(
-#             uuid="'{}'".format(self._uuid),
-#         )
 
 
 class Plotly(_Visual):

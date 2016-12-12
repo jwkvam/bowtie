@@ -13,6 +13,11 @@ import {{ component.component }} from './{{ component.module }}';
 var socket = io();
 
 class Dashboard extends React.Component {
+    constructor(props) {
+        super(props);
+        socket.emit('INITIALIZE');
+    }
+
     render() {
         return (
             <div style={{ '{{' }}display: 'flex', flexFlow: 'row nowrap', width: '100vw', height: '100vh', maxHeight: '100%', maxWidth: '100%'{{ '}}' }}>
