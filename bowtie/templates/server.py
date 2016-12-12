@@ -98,6 +98,14 @@ def login():
 {% endif %}
 
 
+{% if initial %}
+@socketio.on('INITIALIZE')
+def _():
+    foo = copy_current_request_context({{ source_module }}.{{ initial }})
+    eventlet.spawn(foo)
+{% endif %}
+
+
 {% for event, functions in subscriptions.items() %}
 @socketio.on({{ event }})
 def _(*args):

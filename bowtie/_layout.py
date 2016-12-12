@@ -99,24 +99,25 @@ class Layout(object):
                  basic_auth=False, username='username', password='password',
                  background_color='White', directory='build',
                  host='0.0.0.0', port=9991, debug=False):
-        self.title = title
-        self.description = Markup(markdown(description))
-        self.basic_auth = basic_auth
-        self.username = username
-        self.password = password
         self.background_color = background_color
-        self.directory = directory
-        self.host = host
-        self.port = port
-        self.debug = debug
-        self.subscriptions = defaultdict(list)
-        self.packages = set(['rc-progress'])
-        self.templates = set(['progress.jsx'])
-        self.imports = set()
-        self.visuals = [[]]
+        self.basic_auth = basic_auth
         self.controllers = []
-        self.schedules = []
+        self.debug = debug
+        self.description = Markup(markdown(description))
+        self.directory = directory
         self.functions = []
+        self.host = host
+        self.imports = set()
+        self.init = None
+        self.packages = set([])
+        self.password = password
+        self.port = port
+        self.schedules = []
+        self.subscriptions = defaultdict(list)
+        self.templates = set(['progress.jsx'])
+        self.title = title
+        self.username = username
+        self.visuals = [[]]
 
     def add_visual(self, visual, next_row=False):
         """Add a visual to the layout.
@@ -172,6 +173,16 @@ class Layout(object):
         quoted = "'{}'".format(event)
         self.subscriptions[quoted].append(func.__name__)
 
+    def load(self, func):
+        """Call a function on load.
+
+        Parameters
+        ----------
+        func : callable
+            Function to be called.
+        """
+        self.init = func.__name__
+
     def schedule(self, seconds, func):
         """Call a function periodically.
 
@@ -214,6 +225,7 @@ class Layout(object):
                     source_module=os.path.basename(source_filename)[:-3],
                     subscriptions=self.subscriptions,
                     schedules=self.schedules,
+                    initial=self.init,
                     host="'{}'".format(self.host),
                     port=self.port,
                     debug=self.debug
