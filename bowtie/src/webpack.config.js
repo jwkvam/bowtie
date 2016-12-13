@@ -75,9 +75,6 @@ var config = {
                 loader: "style-loader!css-loader!less-loader?strictMath&noIeCompat&"
                 // loader: extractLESS.extract(['less-loader', 'sass-loader']),
             }, {
-                test: /\.json$/,
-                loader: "json-loader"
-            }, {
                 include: /node_modules\/mapbox-gl-shaders/,
                 enforce: 'post',
                 loader: 'transform-loader',
