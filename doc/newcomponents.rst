@@ -165,3 +165,5 @@ We can also preprocess the data to present an easier interface for the programme
 
     def do_options(self, labels, values):
         return [dict(label=l, value=v) for l, v in zip(labels, values)]
+
+The main caveat here is we must ensure the data is serializable by msgpack.
