@@ -75,24 +75,30 @@ Next we'll create a listener that generates a plot on slider changes::
 
 The :py:class:`bowtie.control.Nouislider` component sends its values as a list of strings so we had to cast it to a float.
 Lastly we need to build the application by laying out the components and connecting listeners to events.
-We do this in the main block::
+We do this a function we'll turn into a command line interface::
 
-    if __name__ == "__main__":
+    from bowtie import command
+    @command
+    def construct(path)
         from bowtie import Layout
-        layout = Layout()
+        layout = Layout(directory=path)
         layout.add_controller(freq_slider)
         layout.add_visual(sine_plot)
         layout.subscribe(freq_slider.on_change, listener)
         layout.build()
 
-Now we just need to execute the python script we wrote::
+Take a look at the CLI we just created by running this script::
 
     python app.py
 
-This will construct the app, install the javascript libraries and compile your project.
+To construct the app, we run the script with the ``build`` command::
+
+    python app.py build
+
+This will construct the app, install the JavaScript libraries and compile your project.
 Once it's done you should be able to run the following to launch your app::
 
-    ./build/src/server.py
+    python app.py serve
 
 That will launch the app locally and you should be able to access it at http://localhost:9991.
 
