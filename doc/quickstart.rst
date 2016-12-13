@@ -74,8 +74,11 @@ Next we'll create a listener that generates a plot on slider changes::
         sine_plot.do_all(pw.line(t, np.sin(freq * t)).to_json())
 
 The :py:class:`bowtie.control.Nouislider` component sends its values as a list of strings so we had to cast it to a float.
+
 Lastly we need to build the application by laying out the components and connecting listeners to events.
-We do this a function we'll turn into a command line interface::
+The ``Layout`` class handles this and we put this logic into a function.
+Bowtie provides a decorator, ``command``, which we'll use to make a simple command line interface.
+To finish, we simply wrap the function with the ``command`` decorator::
 
     from bowtie import command
     @command
@@ -90,6 +93,22 @@ We do this a function we'll turn into a command line interface::
 Take a look at the CLI we just created by running this script::
 
     python app.py
+
+The output should look something like this::
+
+    Usage: app.py [-p <path>] [--help] COMMAND [ARGS]...
+
+      Bowtie CLI to help build and run your app.
+
+    Options:
+      -p, --path TEXT  Path to build the app.
+      --help           Show this message and exit.
+
+    Commands:
+      build  Writes the app, downloads the packages, and...
+      dev    Recompiles the app for development.
+      prod   Recompiles the app for production.
+      serve  Serves the Bowtie app locally.
 
 To construct the app, we run the script with the ``build`` command::
 
