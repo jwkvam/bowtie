@@ -156,5 +156,12 @@ metaclasses handle the rest::
     def on_change(self):
         pass
 
+For the commands, we have the ability to just pass the data through to the React component::
+
     def do_options(self, data):
-        pass
+        return data
+
+We can also preprocess the data to present an easier interface for the programmer::
+
+    def do_options(self, labels, values):
+        return [dict(label=l, value=v) for l, v in zip(labels, values)]
