@@ -90,7 +90,9 @@ To finish, we simply wrap the function with the ``command`` decorator::
         layout.subscribe(freq_slider.on_change, listener)
         layout.build()
 
-Take a look at the CLI we just created by running this script::
+The ``path`` argument is optional, but it allows you to specify a directory through command line arguments.
+
+Now take a look at the CLI we just created by running this script::
 
     python app.py
 
