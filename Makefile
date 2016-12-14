@@ -3,6 +3,9 @@ all: test
 test:
 	py.test --cov=./ --pylint --pylint-rcfile=pylintrc --pylint-error-types=RCWEF --ignore=doc
 
+lint:
+	py.test --pylint -m pylint --pylint-rcfile=pylintrc --pylint-error-types=RCWEF --ignore=doc
+
 coverage:
 	py.test --cov=./ --cov-report html --ignore=doc
 

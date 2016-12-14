@@ -238,6 +238,7 @@ class DatePicker(_DatePickers):
         """
         pass
 
+    # pylint: disable=no-self-use
     def get(self, data):
         """
         Gets the currently selected date.
@@ -276,6 +277,7 @@ class MonthPicker(_DatePickers):
         """
         pass
 
+    # pylint: disable=no-self-use
     def get(self, data):
         """
         Gets the currently selected month.
@@ -314,6 +316,7 @@ class RangePicker(_DatePickers):
         """
         pass
 
+    # pylint: disable=no-self-use
     def get(self, data):
         """
         Gets the currently selected date range.
@@ -411,6 +414,7 @@ class Slider(_Controller):
         """
         pass
 
+    # pylint: disable=no-self-use
     def get(self, data):
         """
         Gets the currently selected value(s).
@@ -561,6 +565,7 @@ class Nouislider(_Controller):
         """
         pass
 
+    # pylint: disable=no-self-use
     def get(self, data):
         """
         Gets the currently selected value(s).

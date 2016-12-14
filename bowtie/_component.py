@@ -141,6 +141,7 @@ def make_getter(getter):
     # pylint: disable=missing-docstring
     def get(self, timeout=10):
         name = getter.__name__
+        # pylint: disable=protected-access
         signal = '{uuid}#{event}'.format(uuid=self._uuid, event=name)
         event = LightQueue(1)
         if flask.has_request_context():
@@ -176,7 +177,7 @@ class _Maker(type):
                 dct[k] = make_getter(dct[k])
         return super(_Maker, mcs).__new__(mcs, name, parents, dct)
 
-
+# pylint: disable=too-few-public-methods
 class Component(with_metaclass(_Maker, object)):
     """
     All visual and control classes subclass this so their events
