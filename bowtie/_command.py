@@ -32,7 +32,7 @@ def command(func):
         ctx.obj = path
 
     # pylint: disable=unused-variable
-    @cmd.command()
+    @cmd.command(add_help_option=False)
     @click.pass_context
     def build(ctx):
         """
@@ -43,7 +43,8 @@ def command(func):
         except TypeError:
             func()
 
-    @cmd.command(context_settings=dict(ignore_unknown_options=True))
+    @cmd.command(context_settings=dict(ignore_unknown_options=True),
+                 add_help_option=False)
     @click.argument('extra', nargs=-1, type=click.UNPROCESSED)
     @click.pass_context
     def serve(ctx, extra):
@@ -53,7 +54,8 @@ def command(func):
         line = ('./{}/src/server.py'.format(ctx.obj),) + extra
         call(line)
 
-    @cmd.command(context_settings=dict(ignore_unknown_options=True))
+    @cmd.command(context_settings=dict(ignore_unknown_options=True),
+                 add_help_option=False)
     @click.argument('extra', nargs=-1, type=click.UNPROCESSED)
     @click.pass_context
     def dev(ctx, extra):
@@ -63,7 +65,8 @@ def command(func):
         line = ('webpack', '-d') + extra
         call(line, cwd=ctx.obj)
 
-    @cmd.command(context_settings=dict(ignore_unknown_options=True))
+    @cmd.command(context_settings=dict(ignore_unknown_options=True),
+                 add_help_option=False)
     @click.argument('extra', nargs=-1, type=click.UNPROCESSED)
     @click.pass_context
     def prod(ctx, extra):
