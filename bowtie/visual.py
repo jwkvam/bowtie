@@ -165,6 +165,17 @@ class SmartGrid(_Visual):
         """
         return data
 
+    def get(self, data):
+        """
+        Gets the table data.
+
+        Returns
+        -------
+        list
+            Each entry in the list is a dict of labels and values for a row.
+        """
+        return data
+
 
 class SVG(_Visual):
     """SVG image, mainly for matplotlib plots.
@@ -384,3 +395,13 @@ class Plotly(_Visual):
 
         """
         return config
+
+    def get(self, data):
+        """
+        Gets the current selection of points.
+
+        Returns
+        -------
+        list
+        """
+        return data
