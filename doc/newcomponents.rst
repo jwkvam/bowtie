@@ -1,14 +1,8 @@
-.. Bowtie documentation master file, created by
-   sphinx-quickstart on Fri Aug 19 23:07:25 2016.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Create New Components
 =====================
 
 Bowtie is designed to not make it terribly onerous to make new components.
-That being said, we need to write a little bit of code in different places
-so an end user can use it.
+We need to write two new classes.
 
 #. Create new React class
 #. Create visual or control class in Python
@@ -149,7 +143,9 @@ In Bowtie, this gets assigned to the ``_instantiate`` field::
         )
         self.caption = caption
 
-Lastly we have one *event* (named "change") and one *command* (named "options").
+Lastly we have one *event* (named "change"),
+one *command* (named "options"),
+and one *getter* (named "get").
 We can create those by defining functions with the appropriate name and arguments,
 metaclasses handle the rest::
 
@@ -167,3 +163,34 @@ We can also preprocess the data to present an easier interface for the programme
         return [dict(label=l, value=v) for l, v in zip(labels, values)]
 
 The main caveat here is we must ensure the data is serializable by msgpack.
+
+For the getter we can write::
+
+    def get(self, data):
+        return data
+
+We can use this getter to do post processing,
+but here I just return the data as given to me from the React component.
+
+Metaclass Parsing
+~~~~~~~~~~~~~~~~~
+
+A note about how commands, events, and getters are transformed into messages.
+
+Events
+######
+
+Anything function that begins with ``on_`` is an event.
+The message that ends up getting sent is ``on_{name}`` is ``{uuid}#name``.
+
+Commands
+########
+
+Anything function that begins with ``do_`` is a command.
+The message that ends up getting sent is ``do_{name}`` is ``{uuid}#name``.
+
+Getters
+#######
+
+Anything function that begins with ``get_`` or is ``get`` is a getter.
+The message that ends up getting sent is ``get_{name}`` is ``{uuid}#get`` or ``{uuid}#get_{name}``.
