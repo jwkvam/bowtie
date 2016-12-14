@@ -8,6 +8,12 @@ from collections import Iterable
 from bowtie._component import Component, jdumps
 
 
+def _jsbool(x):
+    """Convert Python bool to JS bool.
+    """
+    return repr(x).lower()
+
+
 # pylint: disable=too-few-public-methods
 class _Controller(Component):
     """
@@ -127,11 +133,11 @@ class DropDown(_Controller):
         """
         return [dict(label=l, value=v) for l, v in zip(labels, values)]
 
-
-def _jsbool(x):
-    """Convert Python bool to JS bool.
-    """
-    return repr(x).lower()
+    def get(self, data):
+        """
+        Returns currently selected value(s).
+        """
+        return data
 
 
 class Switch(_Controller):
@@ -166,6 +172,18 @@ class Switch(_Controller):
 
         """
         pass
+
+    # pylint: disable=no-self-use
+    def get(self, data):
+        """
+        Gets the state of the switch.
+
+        Returns
+        -------
+        bool
+            True if the switch is enabled.
+        """
+        return data
 
 
 class _DatePickers(_Controller):
@@ -220,6 +238,18 @@ class DatePicker(_DatePickers):
         """
         pass
 
+    # pylint: disable=no-self-use
+    def get(self, data):
+        """
+        Gets the currently selected date.
+
+        Returns
+        -------
+        str
+            Date in the format "YYYY-MM-DD"
+        """
+        return data
+
 
 class MonthPicker(_DatePickers):
     """Date Picker
@@ -247,6 +277,18 @@ class MonthPicker(_DatePickers):
         """
         pass
 
+    # pylint: disable=no-self-use
+    def get(self, data):
+        """
+        Gets the currently selected month.
+
+        Returns
+        -------
+        str
+            Month in the format "YYYY-MM"
+        """
+        return data
+
 
 class RangePicker(_DatePickers):
     """Date Picker
@@ -273,6 +315,18 @@ class RangePicker(_DatePickers):
 
         """
         pass
+
+    # pylint: disable=no-self-use
+    def get(self, data):
+        """
+        Gets the currently selected date range.
+
+        Returns
+        -------
+        list
+            A list of two strings ``["yyyy-mm-dd", "yyyy-mm-dd"]``.
+        """
+        return data
 
 
 class Slider(_Controller):
@@ -359,6 +413,18 @@ class Slider(_Controller):
 
         """
         pass
+
+    # pylint: disable=no-self-use
+    def get(self, data):
+        """
+        Gets the currently selected value(s).
+
+        Returns
+        -------
+        list or number
+            List if it's a range slider and gives two values.
+        """
+        return data
 
 
 class Nouislider(_Controller):
@@ -498,3 +564,15 @@ class Nouislider(_Controller):
 
         """
         pass
+
+    # pylint: disable=no-self-use
+    def get(self, data):
+        """
+        Gets the currently selected value(s).
+
+        Returns
+        -------
+        list or number
+            List if it's a range slider and gives two values.
+        """
+        return data

@@ -133,6 +133,39 @@ def is_command(attribute):
     return attribute.startswith('do_')
 
 
+def make_getter(getter):
+    """
+    Creates an command from a method signature.
+    """
+
+    # pylint: disable=missing-docstring
+    def get(self, timeout=10):
+        name = getter.__name__
+        # pylint: disable=protected-access
+        signal = '{uuid}#{event}'.format(uuid=self._uuid, event=name)
+        event = LightQueue(1)
+        if flask.has_request_context():
+            emit(signal, callback=lambda x: event.put(unpack(x)))
+        else:
+            sio = flask.current_app.extensions['socketio']
+            sio.emit(signal, callback=lambda x: event.put(unpack(x)))
+        data = event.get(timeout=timeout)
+        return getter(self, data)
+
+    # don't want to copy the signature in this case
+    get.__doc__ = getter.__doc__
+
+    return get
+
+
+def is_getter(attribute):
+    """
+    Test if a method is a getter.
+    It can be `get` or `get_*`.
+    """
+    return attribute.startswith('get')
+
+
 class _Maker(type):
     def __new__(mcs, name, parents, dct):
         for k in dct:
@@ -140,9 +173,11 @@ class _Maker(type):
                 dct[k] = make_event(dct[k])
             if is_command(k):
                 dct[k] = make_command(dct[k])
+            if is_getter(k):
+                dct[k] = make_getter(dct[k])
         return super(_Maker, mcs).__new__(mcs, name, parents, dct)
 
-
+# pylint: disable=too-few-public-methods
 class Component(with_metaclass(_Maker, object)):
     """
     All visual and control classes subclass this so their events
@@ -160,16 +195,3 @@ class Component(with_metaclass(_Maker, object)):
         # was surprised that didn't work
         self._uuid = Component._next_uuid()
         super(Component, self).__init__()
-
-    def get(self, timeout=10):
-        """
-        Sends a ``get`` command to the react component.
-        Returns the the retreived data.
-        """
-        event = LightQueue(1)
-        if flask.has_request_context():
-            emit('{}#get'.format(self._uuid), callback=lambda x: event.put(unpack(x)))
-        else:
-            sio = flask.current_app.extensions['socketio']
-            sio.emit('{}#get'.format(self._uuid), callback=lambda x: event.put(unpack(x)))
-        return event.get(timeout=timeout)
