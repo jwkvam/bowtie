@@ -41,6 +41,7 @@ export default class PlotlyPlot extends React.Component {
                 n: p0.pointNumber,
                 x: p0.x,
                 y: p0.y,
+                hover: p0.data.text[p0.pointNumber]
             };
             socket.emit(uuid + '#click', msgpack.encode(datum));
         });
