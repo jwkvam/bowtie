@@ -133,8 +133,7 @@ For example, this was done to create `bowtie-demo <https://github.com/jwkvam/bow
 * Create requirements files, again see `bowtie-demo <https://github.com/jwkvam/bowtie-demo/>`_ for an example.
 * Rebuild with production settings with webpack, by default Bowtie uses development::
 
-      cd build
-      webpack -p
+      python app.py prod
 
 * Commit the following files to your repo::
 
