@@ -51,6 +51,13 @@ Progress
 Controllers
 -----------
 
+Button
+~~~~~~
+
+.. autoclass:: bowtie.control.Button
+    :members:
+    :undoc-members:
+
 DropDown
 ~~~~~~~~
 
@@ -83,6 +90,13 @@ RangePicker
 ~~~~~~~~~~~
 
 .. autoclass:: bowtie.control.RangePicker
+    :members:
+    :undoc-members:
+
+Textbox
+~~~~~~~
+
+.. autoclass:: bowtie.control.Textbox
     :members:
     :undoc-members:
 
