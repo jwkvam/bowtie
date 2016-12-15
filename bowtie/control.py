@@ -329,6 +329,82 @@ class RangePicker(_DatePickers):
         return data
 
 
+class Textbox(_Controller):
+    """Create a textbox.
+
+    Parameters
+    ----------
+    placeholder : str, optional
+        Initial text that appears.
+    size : 'default', 'large', 'small', optional
+        Size of the textbox.
+    caption : str, optional
+        Heading text.
+
+    References
+    ----------
+    https://ant.design/components/input/
+
+    """
+    _TEMPLATE = 'textbox.jsx'
+    _COMPONENT = 'Textbox'
+    _PACKAGE = 'antd'
+    _TAG = ('<Textbox '
+            'placeholder={{{placeholder}}} '
+            'size={{{size}}} '
+            'socket={{socket}} '
+            'uuid={{{uuid}}} '
+            '/>')
+
+    def __init__(self, placeholder='Enter text', size='default', caption=''):
+        super(Textbox, self).__init__()
+
+        self._instantiate = self._TAG.format(
+            uuid="'{}'".format(self._uuid),
+            placeholder="'{}'".format(placeholder),
+            size="'{}'".format(size)
+        )
+        self.caption = caption
+
+    def on_enter(self):
+        """Emits an event when enter is pressed in the textbox.
+
+        | **Payload:** ``str``
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
+        pass
+
+    def on_change(self):
+        """Emits an event when the text is changed.
+
+        | **Payload:** ``str``
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
+        pass
+
+    # pylint: disable=no-self-use
+    def get(self, data):
+        """
+        Gets the current text.
+
+        Returns
+        -------
+        str
+
+        """
+        return data
+
+
 class Slider(_Controller):
     """Create a slider.
 
