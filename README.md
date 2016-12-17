@@ -41,3 +41,7 @@ npm install -g webpack yarn
 
 ![image](https://cloud.githubusercontent.com/assets/86304/18606859/8ced55a6-7c70-11e6-8b5e-fba0ffcd78da.png)
 
+## Gallery
+
+Check out the [gallery](https://github.com/jwkvam/bowtie/wiki/Gallery) and feel free to add your own creations!
+
