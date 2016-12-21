@@ -6,6 +6,7 @@ Example Bowtie App.
 
 from bowtie.control import Nouislider
 from bowtie.visual import Plotly
+from bowtie import command
 
 import numpy as np
 from numpy import random as rng
@@ -25,9 +26,10 @@ def walk():
     mainplot.do_all(pw.line(data).to_json())
 
 
-if __name__ == "__main__":
+@command
+def construct():
     from bowtie import Layout
-    layout = Layout(debug=False)
+    layout = Layout(debug=True)
     layout.add_controller(sigma)
     layout.add_visual(mainplot)
     layout.schedule(0.1, walk)
