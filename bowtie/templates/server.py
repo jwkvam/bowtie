@@ -151,8 +151,8 @@ def _(*args):
         {% endif %}
 
         {% for support in supports %}
-            {% if post is not none %}
         user_args = []
+            {% if post is not none %}
                 {% for ev in support[0] %}
         user_args.append(event_data['{{ ev[0] }}'])
                 {% endfor %}
