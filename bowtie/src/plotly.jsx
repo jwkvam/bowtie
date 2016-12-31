@@ -116,6 +116,9 @@ export default class PlotlyPlot extends React.Component {
     componentWillUnmount() {
         this.props.socket.off(this.props.uuid + '#all');
         this.props.socket.off(this.props.uuid + '#get');
+        this.props.socket.off(this.props.uuid + '#get_select');
+        this.props.socket.off(this.props.uuid + '#get_click');
+        this.props.socket.off(this.props.uuid + '#get_hover');
         Plotly.purge(this.container);
     }
 
