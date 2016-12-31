@@ -33,7 +33,7 @@ def test_plotly(remove_build):
     layout = Layout(directory=path)
     layout.add_visual(viz)
     layout.add_controller(ctrl)
-    layout.subscribe(ctrl.on_change, callback)
+    layout.subscribe(callback, ctrl.on_change)
     layout.build()
 
     env = os.environ

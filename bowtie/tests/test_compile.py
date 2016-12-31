@@ -29,5 +29,5 @@ def test_build(remove_build):
     layout = Layout(directory=path)
     layout.add_controller(ctrl)
     layout.add_visual(viz)
-    layout.subscribe(ctrl.on_change, callback)
+    layout.subscribe(callback, ctrl.on_change)
     layout.build()
