@@ -13,6 +13,14 @@ from subprocess import call
 
 import click
 
+from bowtie._compat import numargs
+
+
+class WrongNumberOfArguments(TypeError):
+    """The "build" function accepts an incorrect number of arguments.
+    """
+    pass
+
 
 def command(func):
     """
@@ -38,10 +46,16 @@ def command(func):
         """
         Writes the app, downloads the packages, and bundles it with Webpack.
         """
-        try:
-            func(ctx.obj)
-        except TypeError:
+        nargs = numargs(func)
+        if nargs == 0:
             func()
+        elif nargs == 1:
+            func(ctx.obj)
+        else:
+            raise WrongNumberOfArguments(
+                'Function "{}" should have 0 or 1 argument, it has {}.'
+                .format(func.__name__, nargs)
+            )
 
     @cmd.command(context_settings=dict(ignore_unknown_options=True),
                  add_help_option=False)

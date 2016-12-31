@@ -3,6 +3,7 @@
 python 2/3 compatability
 """
 
+import inspect
 import sys
 from os import makedirs
 
@@ -18,3 +19,16 @@ if IS_PY2:
         except OSError:
             if not exist_ok:
                 raise
+
+def numargs(func):
+    """Gets number of arguments in python 3.
+    """
+    return len(inspect.signature(func).parameters)
+
+if IS_PY2:
+    # pylint: disable=function-redefined
+    def numargs(func):
+        """Gets number of arguments in python 2.
+        """
+        # pylint: disable=deprecated-method
+        return sum(map(len, inspect.getargspec(func)[:2]))

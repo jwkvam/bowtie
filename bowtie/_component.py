@@ -6,10 +6,10 @@ Bowtie Component classes, all visual and control components inherit these
 # need this for get commands on python2
 from __future__ import unicode_literals
 
-
 # pylint: disable=redefined-builtin
 from builtins import bytes
 
+import inspect
 from functools import wraps
 import json
 from datetime import datetime, date, time
@@ -20,6 +20,18 @@ from flask_socketio import emit
 from future.utils import with_metaclass
 import eventlet
 from eventlet.queue import LightQueue
+
+
+def varname(variable):
+    """Returns the name of the given variable.
+    """
+    frame = inspect.stack()[2][0]
+    for name, var in frame.f_locals.items():
+        if variable is var:
+            return name
+    for name, var in frame.f_globals.items():
+        if variable is var:
+            return name
 
 
 def json_conversion(obj):
@@ -110,7 +122,15 @@ def make_event(event):
     def actualevent(self):
         name = event.__name__[3:]
         # pylint: disable=protected-access
-        return '{uuid}#{event}'.format(uuid=self._uuid, event=name)
+        ename = '{uuid}#{event}'.format(uuid=self._uuid, event=name)
+        objname = varname(self)
+        try:
+            # the getter post processing function
+            # is preserved with an underscore
+            getter = event(self).__name__
+        except AttributeError:
+            getter = None
+        return ename, objname, getter
 
     return actualevent
 
@@ -186,14 +206,17 @@ def is_getter(attribute):
 
 class _Maker(type):
     def __new__(mcs, name, parents, dct):
-        for k in dct:
+        for k in list(dct.keys()):
             if is_event(k):
                 dct[k] = make_event(dct[k])
             if is_command(k):
                 dct[k] = make_command(dct[k])
             if is_getter(k):
+                # preserve the post-processor with an underscore
+                dct['_' + k] = dct[k]
                 dct[k] = make_getter(dct[k])
         return super(_Maker, mcs).__new__(mcs, name, parents, dct)
+
 
 # pylint: disable=too-few-public-methods
 class Component(with_metaclass(_Maker, object)):

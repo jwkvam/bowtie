@@ -90,7 +90,6 @@ class DropDown(_Controller):
             'uuid={{{uuid}}} '
             '/>')
 
-
     def __init__(self, labels=None, values=None, multi=False, caption=''):
         super(DropDown, self).__init__()
 
@@ -113,7 +112,7 @@ class DropDown(_Controller):
         | **Payload:** ``dict`` with keys "value" and "label".
 
         """
-        pass
+        return self.get
 
     # pylint: disable=no-self-use
     def do_options(self, labels, values):
@@ -171,7 +170,7 @@ class Switch(_Controller):
             Name of event.
 
         """
-        pass
+        return self.get
 
     # pylint: disable=no-self-use
     def get(self, data):
@@ -236,7 +235,7 @@ class DatePicker(_DatePickers):
             Name of event.
 
         """
-        pass
+        return self.get
 
     # pylint: disable=no-self-use
     def get(self, data):
@@ -275,7 +274,7 @@ class MonthPicker(_DatePickers):
             Name of event.
 
         """
-        pass
+        return self.get
 
     # pylint: disable=no-self-use
     def get(self, data):
@@ -314,7 +313,7 @@ class RangePicker(_DatePickers):
             Name of event.
 
         """
-        pass
+        return self.get
 
     # pylint: disable=no-self-use
     def get(self, data):
@@ -325,6 +324,80 @@ class RangePicker(_DatePickers):
         -------
         list
             A list of two strings ``["yyyy-mm-dd", "yyyy-mm-dd"]``.
+        """
+        return data
+
+
+class Number(_Controller):
+    """Create a number input.
+
+    Parameters
+    ----------
+    start : number, optional
+        Starting number
+    minimum : number, optional
+        Lower bound
+    maximum : number, optional
+        Upper bound
+    size : 'default', 'large', 'small', optional
+        Size of the textbox.
+    caption : str, optional
+        Heading text.
+
+    References
+    ----------
+    https://ant.design/components/input/
+
+    """
+    _TEMPLATE = 'number.jsx'
+    _COMPONENT = 'AntNumber'
+    _PACKAGE = 'antd'
+    _TAG = ('<AntNumber '
+            'start={{{start}}} '
+            'min={{{minimum}}} '
+            'max={{{maximum}}} '
+            'step={{{step}}} '
+            'size={{{size}}} '
+            'socket={{socket}} '
+            'uuid={{{uuid}}} '
+            '/>')
+
+    def __init__(self, start=0, minimum=-1e100, maximum=1e100,
+                 step=1, size='default', caption=''):
+        super(Number, self).__init__()
+
+        self._instantiate = self._TAG.format(
+            uuid="'{}'".format(self._uuid),
+            start=start,
+            minimum=minimum,
+            maximum=maximum,
+            step=step,
+            size="'{}'".format(size)
+        )
+        self.caption = caption
+
+    def on_change(self):
+        """Emits an event when the number is changed.
+
+        | **Payload:** ``number``
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
+        return self.get
+
+    # pylint: disable=no-self-use
+    def get(self, data):
+        """
+        Gets the current number.
+
+        Returns
+        -------
+        number
+
         """
         return data
 
@@ -377,7 +450,7 @@ class Textbox(_Controller):
             Name of event.
 
         """
-        pass
+        return self.get
 
     def on_change(self):
         """Emits an event when the text is changed.
@@ -390,7 +463,7 @@ class Textbox(_Controller):
             Name of event.
 
         """
-        pass
+        return self.get
 
     # pylint: disable=no-self-use
     def get(self, data):
@@ -475,7 +548,7 @@ class Slider(_Controller):
             Name of event.
 
         """
-        pass
+        return self.get
 
     def on_after_change(self):
         """Emits an event when the slider control is released.
@@ -488,7 +561,7 @@ class Slider(_Controller):
             Name of event.
 
         """
-        pass
+        return self.get
 
     # pylint: disable=no-self-use
     def get(self, data):
@@ -564,7 +637,7 @@ class Nouislider(_Controller):
             Name of event.
 
         """
-        pass
+        return self.get
 
     def on_slide(self):
         """Emits an event when the slider is moved.
@@ -579,7 +652,7 @@ class Nouislider(_Controller):
             Name of event.
 
         """
-        pass
+        return self.get
 
     def on_set(self):
         """Emits an event when the slider is moved.
@@ -594,7 +667,7 @@ class Nouislider(_Controller):
             Name of event.
 
         """
-        pass
+        return self.get
 
     def on_change(self):
         """Emits an event when the slider is moved.
@@ -609,7 +682,7 @@ class Nouislider(_Controller):
             Name of event.
 
         """
-        pass
+        return self.get
 
     def on_start(self):
         """Emits an event when the slider is moved.
@@ -624,7 +697,7 @@ class Nouislider(_Controller):
             Name of event.
 
         """
-        pass
+        return self.get
 
     def on_end(self):
         """Emits an event when the slider is moved.
@@ -639,7 +712,7 @@ class Nouislider(_Controller):
             Name of event.
 
         """
-        pass
+        return self.get
 
     # pylint: disable=no-self-use
     def get(self, data):

@@ -9,6 +9,8 @@ export default class PlotlyPlot extends React.Component {
     constructor(props) {
         super(props);
         this.selection = null;
+        this.click = null;
+        this.hover = null;
         this.state = this.props.initState;
         this.resize = this.resize.bind(this);
         this.props.socket.on(this.props.uuid + '#all', (data) => {
@@ -16,6 +18,9 @@ export default class PlotlyPlot extends React.Component {
             this.setState(msgpack.decode(arr));
         });
         this.props.socket.on(this.props.uuid + '#get', this.getSelection);
+        this.props.socket.on(this.props.uuid + '#get_select', this.getSelection);
+        this.props.socket.on(this.props.uuid + '#get_click', this.getClick);
+        this.props.socket.on(this.props.uuid + '#get_hover', this.getHover);
     }
 
     setSelection = data => {
@@ -27,38 +32,50 @@ export default class PlotlyPlot extends React.Component {
         fn(msgpack.encode(this.selection));
     }
 
+    setClick = data => {
+        var p0 = data.points[0];
+        var datum = {
+            curve: p0.curveNumber,
+            point: p0.pointNumber,
+            x: p0.x,
+            y: p0.y,
+            hover: p0.data.text[p0.pointNumber]
+        };
+        this.click = datum;
+        this.props.socket.emit(this.props.uuid + '#click', msgpack.encode(datum));
+    }
+
+    getClick = (data, fn) => {
+        fn(msgpack.encode(this.click));
+    }
+
+    setHover = data => {
+        var p0 = data.points[0];
+        var datum = {
+            curve: p0.curveNumber,
+            point: p0.pointNumber,
+            x: p0.x,
+            y: p0.y,
+            hover: p0.data.text[p0.pointNumber]
+        };
+        this.hover = datum;
+        this.props.socket.emit(this.props.uuid + '#hover', msgpack.encode(datum));
+    }
+
+    getHover = (data, fn) => {
+        fn(msgpack.encode(this.hover));
+    }
+
     resize() {
         Plotly.Plots.resize(this.container);
     }
 
     addListeners() {
-        var uuid = this.props.uuid;
-        var socket = this.props.socket;
-
-        this.container.on('plotly_click', function (data) {
-            var p0 = data.points[0];
-            var datum = {
-                n: p0.pointNumber,
-                x: p0.x,
-                y: p0.y,
-                hover: p0.data.text[p0.pointNumber]
-            };
-            socket.emit(uuid + '#click', msgpack.encode(datum));
-        });
-        // if (this.props.onBeforeHover)
         // this.container.on('plotly_beforehover', function (data) {
-        //     socket.emit(uuid + '#beforehover', data);
-        // });
-        // // if (this.props.onHover)
-        // this.container.on('plotly_hover', function (data) {
-        //     socket.emit(uuid + '#hover', data);
-        // });
-        // // if (this.props.onUnHover)
         // this.container.on('plotly_unhover', function (data) {
-        //     socket.emit(uuid + '#unhover', data);
-        // });
-        // if (this.props.onSelected)
         this.container.on('plotly_selected', this.setSelection);
+        this.container.on('plotly_click', this.setClick);
+        this.container.on('plotly_hover', this.setHover);
     }
 
     componentDidMount() {
@@ -101,6 +118,9 @@ export default class PlotlyPlot extends React.Component {
     componentWillUnmount() {
         this.props.socket.off(this.props.uuid + '#all');
         this.props.socket.off(this.props.uuid + '#get');
+        this.props.socket.off(this.props.uuid + '#get_select');
+        this.props.socket.off(this.props.uuid + '#get_click');
+        this.props.socket.off(this.props.uuid + '#get_hover');
         Plotly.purge(this.container);
     }
 

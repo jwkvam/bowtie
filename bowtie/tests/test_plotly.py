@@ -11,8 +11,9 @@ from selenium.webdriver import PhantomJS
 # from selenium.webdriver import ActionChains
 
 from bowtie import Layout
-from bowtie.control import Nouislider
+from bowtie.control import Nouislider, Button
 from bowtie.visual import Plotly
+
 
 
 def callback(*args):
@@ -28,12 +29,15 @@ def test_plotly(remove_build):
     """
     viz = Plotly()
     ctrl = Nouislider()
+    ctrl2 = Button()
 
     path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'build')
     layout = Layout(directory=path)
     layout.add_visual(viz)
     layout.add_controller(ctrl)
-    layout.subscribe(ctrl.on_change, callback)
+    layout.add_controller(ctrl2)
+    layout.subscribe(callback, ctrl.on_change)
+    layout.subscribe(callback, ctrl2.on_click)
     layout.build()
 
     env = os.environ

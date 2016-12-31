@@ -15,6 +15,10 @@ from flask_socketio import SocketIO, emit
 import eventlet
 
 
+class GetterNotDefined(AttributeError):
+    pass
+
+
 def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
@@ -45,6 +49,8 @@ import {{source_module}}
 app = Flask(__name__)
 app.debug = {{ debug|default(False) }}
 socketio = SocketIO(app, binary=True)
+# not sure if this is secure or how much it matters
+app.secret_key = os.urandom(256)
 
 def context(func):
     def foo():
@@ -106,13 +112,57 @@ def _():
 {% endif %}
 
 
-{% for event, functions in subscriptions.items() %}
-@socketio.on({{ event }})
+{#
+# {% for event, functions in subscriptions.items() %}
+# @socketio.on({{ event }})
+# def _(*args):
+#     {% for func in functions %}
+#     foo = copy_current_request_context({{ source_module }}.{{ func }})
+#     eventlet.spawn(foo, *(msgpack.unpackb(bytes(a['data']), encoding='utf8') for a in args))
+#     {% endfor %}
+# {% endfor %}
+    #}
+
+{# {% for event, (events, functions) in subscriptions.items() %} #}
+{% for event, supports in subscriptions.items() %}
+@socketio.on('{{ event[0] }}')
 def _(*args):
-    {% for func in functions %}
-    foo = copy_current_request_context({{ source_module }}.{{ func }})
-    eventlet.spawn(foo, *(msgpack.unpackb(bytes(a['data']), encoding='utf8') for a in args))
-    {% endfor %}
+    def wrapuser():
+        uniq_events = set()
+        {% for support in supports %}
+        uniq_events.update({{ support[0] }})
+        {% endfor %}
+        uniq_events.remove({{ event }})
+        {% set post = event[2] %}
+        event_data = {}
+        for ev in uniq_events:
+            comp = getattr({{ source_module }}, ev[1])
+            if ev[2] is None:
+                ename = ev[0]
+                raise GetterNotDefined('{ctype} has no getter associated with event "on_{ename}"'
+                                       .format(ctype=type(comp), ename=ename[ename.find('#') + 1:]))
+            getter = getattr(comp, ev[2])
+            event_data[ev[0]] = getter()
+
+        {% if post is not none %}
+        event_data['{{ event[0] }}'] = {{ source_module }}.{{event[1]}}.{{ '_' ~ post }}(
+            msgpack.unpackb(bytes(args[0]['data']), encoding='utf8')
+        )
+        {% endif %}
+
+        {% for support in supports %}
+        user_args = []
+            {% if post is not none %}
+                {% for ev in support[0] %}
+        user_args.append(event_data['{{ ev[0] }}'])
+                {% endfor %}
+            {% endif %}
+        {{ source_module }}.{{ support[1] }}(*user_args)
+        {% endfor %}
+
+    foo = copy_current_request_context(wrapuser)
+    eventlet.spawn(foo)
+
 {% endfor %}
 
 @click.command()
