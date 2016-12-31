@@ -35,7 +35,8 @@ export default class PlotlyPlot extends React.Component {
     setClick = data => {
         var p0 = data.points[0];
         var datum = {
-            n: p0.pointNumber,
+            curve: p0.curveNumber,
+            point: p0.pointNumber,
             x: p0.x,
             y: p0.y,
             hover: p0.data.text[p0.pointNumber]
@@ -51,7 +52,8 @@ export default class PlotlyPlot extends React.Component {
     setHover = data => {
         var p0 = data.points[0];
         var datum = {
-            n: p0.pointNumber,
+            curve: p0.curveNumber,
+            point: p0.pointNumber,
             x: p0.x,
             y: p0.y,
             hover: p0.data.text[p0.pointNumber]
