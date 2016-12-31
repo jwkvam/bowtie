@@ -265,7 +265,6 @@ class Plotly(_Visual):
             init=jdumps(self.init),
         )
 
-
     ## Events
 
     def on_click(self):
@@ -279,7 +278,7 @@ class Plotly(_Visual):
             Name of event.
 
         """
-        pass
+        return self.get
 
     def on_beforehover(self):
         """Emits an event before hovering over a point.
@@ -331,7 +330,7 @@ class Plotly(_Visual):
             Name of event.
 
         """
-        pass
+        return self.get
 
     ## Commands
 

@@ -160,18 +160,26 @@ class Layout(object):
         self.controllers.append(_Control(instantiate=control._instantiate,
                                          caption=control.caption))
 
-    def subscribe(self, event, func):
+    def subscribe(self, func, event, *events):
         """Call a function in response to an event.
 
         Parameters
         ----------
-        event : str
-            Name of the event.
         func : callable
             Function to be called.
+        event : event
+            A Bowtie event.
+        *events : Each is an event, optional
+            Additional events.
         """
-        quoted = "'{}'".format(event)
-        self.subscriptions[quoted].append(func.__name__)
+        # print(event)
+
+        all_events = [event]
+        all_events.extend(events)
+
+        for ev in all_events:
+            # quoted = "'{}'".format(ev)
+            self.subscriptions[ev].append((all_events, func.__name__))
 
     def load(self, func):
         """Call a function on load.
@@ -200,9 +208,11 @@ class Layout(object):
         """
         file_dir = path.dirname(__file__)
 
-        env = Environment(loader=FileSystemLoader(
-            path.join(file_dir, 'templates')
-        ))
+        env = Environment(
+            loader=FileSystemLoader(path.join(file_dir, 'templates')),
+            trim_blocks=True,
+            lstrip_blocks=True
+        )
 
         server = env.get_template('server.py')
         index = env.get_template('index.html')
@@ -216,6 +226,7 @@ class Layout(object):
         server_path = path.join(src, server.name)
         # [1] grabs the parent stack and [1] grabs the filename
         source_filename = inspect.stack()[1][1]
+        # print(self.subscriptions)
         with open(server_path, 'w') as f:
             f.write(
                 server.render(
@@ -264,10 +275,12 @@ class Layout(object):
             raise YarnError('Error running "yarn init -y"')
         self.packages.discard(None)
         packages = ' '.join(self._packages + list(self.packages))
-        install = Popen('yarn add {}'.format(packages),
+        install = Popen('yarn add --offline {}'.format(packages),
                         shell=True, cwd=self.directory).wait()
-        if install != 0:
+        if install > 1:
             raise YarnError('Error install node packages')
+        elif install == 1:
+            print('Yarn error but trying to continue build')
         dev = Popen('webpack -d', shell=True, cwd=self.directory).wait()
         if dev != 0:
             raise WebpackError('Error building with webpack')

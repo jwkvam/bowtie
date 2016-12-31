@@ -49,10 +49,17 @@ export default class PlotlyPlot extends React.Component {
         // this.container.on('plotly_beforehover', function (data) {
         //     socket.emit(uuid + '#beforehover', data);
         // });
-        // // if (this.props.onHover)
-        // this.container.on('plotly_hover', function (data) {
-        //     socket.emit(uuid + '#hover', data);
-        // });
+        this.container.on('plotly_hover', function (data) {
+            var p0 = data.points[0];
+            var datum = {
+                n: p0.pointNumber,
+                x: p0.x,
+                y: p0.y,
+                hover: p0.data.text[p0.pointNumber]
+            };
+            socket.emit(uuid + '#hover', msgpack.encode(datum));
+        });
+
         // // if (this.props.onUnHover)
         // this.container.on('plotly_unhover', function (data) {
         //     socket.emit(uuid + '#unhover', data);

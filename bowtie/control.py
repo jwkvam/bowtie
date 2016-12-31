@@ -90,7 +90,6 @@ class DropDown(_Controller):
             'uuid={{{uuid}}} '
             '/>')
 
-
     def __init__(self, labels=None, values=None, multi=False, caption=''):
         super(DropDown, self).__init__()
 
@@ -113,7 +112,7 @@ class DropDown(_Controller):
         | **Payload:** ``dict`` with keys "value" and "label".
 
         """
-        pass
+        return self.get
 
     # pylint: disable=no-self-use
     def do_options(self, labels, values):
@@ -329,6 +328,82 @@ class RangePicker(_DatePickers):
         return data
 
 
+class Number(_Controller):
+    """Create a number input.
+
+    Parameters
+    ----------
+    start : number, optional
+        Starting number
+    minimum : number, optional
+        Lower bound
+    maximum : number, optional
+        Upper bound
+    size : 'default', 'large', 'small', optional
+        Size of the textbox.
+    caption : str, optional
+        Heading text.
+
+    References
+    ----------
+    https://ant.design/components/input/
+
+    """
+    _TEMPLATE = 'number.jsx'
+    _COMPONENT = 'AntNumber'
+    _PACKAGE = 'antd'
+    _TAG = ('<AntNumber '
+            'start={{{start}}} '
+            'min={{{minimum}}} '
+            'max={{{maximum}}} '
+            'step={{{step}}} '
+            'size={{{size}}} '
+            'socket={{socket}} '
+            'uuid={{{uuid}}} '
+            '/>')
+
+    def __init__(self, start=0, minimum=-1e100, maximum=1e100,
+                 step=1, size='default', caption=''):
+        super(Number, self).__init__()
+
+        self._instantiate = self._TAG.format(
+            uuid="'{}'".format(self._uuid),
+            start=start,
+            minimum=minimum,
+            maximum=maximum,
+            step=step,
+            size="'{}'".format(size)
+        )
+        self.caption = caption
+
+    def on_change(self):
+        """Emits an event when the number is changed.
+
+        | **Payload:** ``number``
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
+        return get
+
+    # _on_change = get
+
+    # pylint: disable=no-self-use
+    def get(self, data):
+        """
+        Gets the current number.
+
+        Returns
+        -------
+        number
+
+        """
+        return data
+
+
 class Textbox(_Controller):
     """Create a textbox.
 
@@ -475,7 +550,7 @@ class Slider(_Controller):
             Name of event.
 
         """
-        pass
+        return self.get
 
     def on_after_change(self):
         """Emits an event when the slider control is released.
@@ -488,7 +563,7 @@ class Slider(_Controller):
             Name of event.
 
         """
-        pass
+        return self.get
 
     # pylint: disable=no-self-use
     def get(self, data):
