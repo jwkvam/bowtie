@@ -278,7 +278,7 @@ class Plotly(_Visual):
             Name of event.
 
         """
-        return self.get
+        return self.get_click
 
     def on_beforehover(self):
         """Emits an event before hovering over a point.
@@ -291,7 +291,7 @@ class Plotly(_Visual):
             Name of event.
 
         """
-        pass
+        return self.get_hover
 
     def on_hover(self):
         """Emits an event after hovering over a point.
@@ -304,7 +304,7 @@ class Plotly(_Visual):
             Name of event.
 
         """
-        pass
+        return self.get_hover
 
     def on_unhover(self):
         """Emits an event when hover is removed.
@@ -317,7 +317,7 @@ class Plotly(_Visual):
             Name of event.
 
         """
-        pass
+        return self.get_hover
 
     def on_select(self):
         """Emits an event when points are selected with a tool.
@@ -330,7 +330,7 @@ class Plotly(_Visual):
             Name of event.
 
         """
-        return self.get
+        return self.get_select
 
     ## Commands
 
@@ -396,6 +396,36 @@ class Plotly(_Visual):
         return config
 
     def get(self, data):
+        """
+        Gets the current selection of points.
+
+        Returns
+        -------
+        list
+        """
+        return data
+
+    def get_select(self, data):
+        """
+        Gets the current selection of points.
+
+        Returns
+        -------
+        list
+        """
+        return data
+
+    def get_click(self, data):
+        """
+        Gets the current selection of points.
+
+        Returns
+        -------
+        list
+        """
+        return data
+
+    def get_hover(self, data):
         """
         Gets the current selection of points.
 

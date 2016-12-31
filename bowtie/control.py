@@ -170,7 +170,7 @@ class Switch(_Controller):
             Name of event.
 
         """
-        pass
+        return self.get
 
     # pylint: disable=no-self-use
     def get(self, data):
@@ -235,7 +235,7 @@ class DatePicker(_DatePickers):
             Name of event.
 
         """
-        pass
+        return self.get
 
     # pylint: disable=no-self-use
     def get(self, data):
@@ -274,7 +274,7 @@ class MonthPicker(_DatePickers):
             Name of event.
 
         """
-        pass
+        return self.get
 
     # pylint: disable=no-self-use
     def get(self, data):
@@ -313,7 +313,7 @@ class RangePicker(_DatePickers):
             Name of event.
 
         """
-        pass
+        return self.get
 
     # pylint: disable=no-self-use
     def get(self, data):
@@ -450,7 +450,7 @@ class Textbox(_Controller):
             Name of event.
 
         """
-        pass
+        return self.get
 
     def on_change(self):
         """Emits an event when the text is changed.
@@ -463,7 +463,7 @@ class Textbox(_Controller):
             Name of event.
 
         """
-        pass
+        return self.get
 
     # pylint: disable=no-self-use
     def get(self, data):
@@ -637,7 +637,7 @@ class Nouislider(_Controller):
             Name of event.
 
         """
-        pass
+        return self.get
 
     def on_slide(self):
         """Emits an event when the slider is moved.
@@ -652,7 +652,7 @@ class Nouislider(_Controller):
             Name of event.
 
         """
-        pass
+        return self.get
 
     def on_set(self):
         """Emits an event when the slider is moved.
@@ -667,7 +667,7 @@ class Nouislider(_Controller):
             Name of event.
 
         """
-        pass
+        return self.get
 
     def on_change(self):
         """Emits an event when the slider is moved.
@@ -682,7 +682,7 @@ class Nouislider(_Controller):
             Name of event.
 
         """
-        pass
+        return self.get
 
     def on_start(self):
         """Emits an event when the slider is moved.
@@ -697,7 +697,7 @@ class Nouislider(_Controller):
             Name of event.
 
         """
-        pass
+        return self.get
 
     def on_end(self):
         """Emits an event when the slider is moved.
@@ -712,7 +712,7 @@ class Nouislider(_Controller):
             Name of event.
 
         """
-        pass
+        return self.get
 
     # pylint: disable=no-self-use
     def get(self, data):

@@ -275,7 +275,7 @@ class Layout(object):
             raise YarnError('Error running "yarn init -y"')
         self.packages.discard(None)
         packages = ' '.join(self._packages + list(self.packages))
-        install = Popen('yarn add --prefer-offline {}'.format(packages),
+        install = Popen('yarn add {}'.format(packages),
                         shell=True, cwd=self.directory).wait()
         if install > 1:
             raise YarnError('Error install node packages')
