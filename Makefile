@@ -3,6 +3,9 @@ all: test
 test:
 	py.test --cov=./ --pylint --pylint-rcfile=pylintrc --pylint-error-types=RCWEF --ignore=doc
 
+unit:
+	py.test --cov=./
+
 lint:
 	py.test --pylint -m pylint --pylint-rcfile=pylintrc --pylint-error-types=RCWEF --ignore=doc
 
