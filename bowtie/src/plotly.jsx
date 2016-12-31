@@ -73,7 +73,7 @@ export default class PlotlyPlot extends React.Component {
         // this.container.on('plotly_unhover', function (data) {
         this.container.on('plotly_selected', this.setSelection);
         this.container.on('plotly_click', this.setClick);
-        this.container.on('plotly_hover', this.setClick);
+        this.container.on('plotly_hover', this.setHover);
     }
 
     componentDidMount() {
