@@ -9,13 +9,16 @@ https://gist.github.com/carlsmith/800cbe3e11f630ac8aa0
 
 import sys
 import inspect
-from bowtie._compat import numargs
 from subprocess import call
 
 import click
 
+from bowtie._compat import numargs
+
 
 class WrongNumberOfArguments(TypeError):
+    """The "build" function accepts an incorrect number of arguments.
+    """
     pass
 
 

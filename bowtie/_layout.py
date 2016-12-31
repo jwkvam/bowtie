@@ -177,9 +177,9 @@ class Layout(object):
         all_events = [event]
         all_events.extend(events)
 
-        for ev in all_events:
+        for evt in all_events:
             # quoted = "'{}'".format(ev)
-            self.subscriptions[ev].append((all_events, func.__name__))
+            self.subscriptions[evt].append((all_events, func.__name__))
 
     def load(self, func):
         """Call a function on load.

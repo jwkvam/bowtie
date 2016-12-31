@@ -21,29 +21,14 @@ if IS_PY2:
                 raise
 
 def numargs(func):
+    """Gets number of arguments in python 3.
+    """
     return len(inspect.signature(func).parameters)
 
 if IS_PY2:
-    # pylint: disable=function-redefined,missing-docstring
+    # pylint: disable=function-redefined
     def numargs(func):
+        """Gets number of arguments in python 2.
+        """
+        # pylint: disable=deprecated-method
         return sum(map(len, inspect.getargspec(func)[:2]))
-
-# def var_name(x):
-#     gen = globals().items()
-#     # print(globals())
-#     for k, v in gen:
-#         print(k)
-#         if x is v:
-#             return k
-
-
-# def varname(var):
-#     import inspect
-#     frame = inspect.stack()[0][0].f_globals
-#     var_id = id(var)
-#     for name in frame.f_back.f_locals.keys():
-#         try:
-#             if id(eval(name)) == var_id:
-#                 return(name)
-#         except:
-#             pass

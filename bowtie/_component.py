@@ -23,6 +23,8 @@ from eventlet.queue import LightQueue
 
 
 def varname(variable):
+    """Returns the name of the given variable.
+    """
     locs = inspect.stack()[-1][0].f_locals
     for name, var in locs.items():
         if variable is var:

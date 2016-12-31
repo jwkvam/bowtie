@@ -6,6 +6,9 @@ test:
 lint:
 	py.test --pylint -m pylint --pylint-rcfile=pylintrc --pylint-error-types=RCWEF --ignore=doc
 
+eslint:
+	eslint bowtie/src/*.js*
+
 coverage:
 	py.test --cov=./ --cov-report html --ignore=doc
 

@@ -387,9 +387,7 @@ class Number(_Controller):
             Name of event.
 
         """
-        return get
-
-    # _on_change = get
+        return self.get
 
     # pylint: disable=no-self-use
     def get(self, data):
