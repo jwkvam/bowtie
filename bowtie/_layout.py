@@ -172,8 +172,6 @@ class Layout(object):
         *events : Each is an event, optional
             Additional events.
         """
-        # print(event)
-
         all_events = [event]
         all_events.extend(events)
 
@@ -226,7 +224,6 @@ class Layout(object):
         server_path = path.join(src, server.name)
         # [1] grabs the parent stack and [1] grabs the filename
         source_filename = inspect.stack()[1][1]
-        # print(self.subscriptions)
         with open(server_path, 'w') as f:
             f.write(
                 server.render(
