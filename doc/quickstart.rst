@@ -87,7 +87,7 @@ To finish, we simply wrap the function with the ``command`` decorator::
         layout = Layout(directory=path)
         layout.add_controller(freq_slider)
         layout.add_visual(sine_plot)
-        layout.subscribe(freq_slider.on_change, listener)
+        layout.subscribe(listener, freq_slider.on_change)
         layout.build()
 
 The ``path`` argument is optional, but it allows you to specify a directory through command line arguments.
@@ -129,16 +129,20 @@ Deploy to Heroku
 This isn't streamlined right now but you can try the following approach.
 For example, this was done to create `bowtie-demo <https://github.com/jwkvam/bowtie-demo/>`_ so you may refer to that.
 
-* Create a Procfile, you can see `bowtie-demo <https://github.com/jwkvam/bowtie-demo/>`_ for an example.
+* Create the Procfile, try the following::
+
+    web: python app.py serve -p $PORT
+
 * Create requirements files, again see `bowtie-demo <https://github.com/jwkvam/bowtie-demo/>`_ for an example.
-* Rebuild with production settings with webpack, by default Bowtie uses development::
+* Rebuild with production settings with webpack, by default Bowtie makes a development build::
 
       python app.py prod
 
 * Commit the following files to your repo::
 
       build/src/server.py
-      build/src/templates
-      build/src/static
+      build/src/templates/index.html
+      build/src/static/bundle.js
+      build/src/static/stylesheets/main.css
 
 * Finally push your repo to Heroku!

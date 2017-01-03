@@ -100,6 +100,13 @@ Textbox
     :members:
     :undoc-members:
 
+Number
+~~~~~~
+
+.. autoclass:: bowtie.control.Number
+    :members:
+    :undoc-members:
+
 Slider
 ~~~~~~
 

@@ -55,7 +55,7 @@ and Plotly will update it's chart with the data and layout options defined in th
 
 Bowtie Application
 ------------------
-There are a few aspects to any Bowtie application.
+There are a few key parts to any Bowtie application.
 
 1. Define the components in the app and any global state, e.g.::
 
@@ -70,10 +70,14 @@ There are a few aspects to any Bowtie application.
         data = cool_stuff(global_dataset, dropdown_item)
         plotly.do_all(data)
 
-3. Define the layout and connect events to callbacks::
+3. Define the layout and connect events to callbacks.
+   I encourage using a function decorated with ``command``::
 
-    layout = Layout()
-    layout.add_controller(dropdown)
-    layout.add_visual(plotly)
-    layout.subscribe(dropdown.on_change, callback)
-    layout.build()
+    from bowtie import command
+    @command
+    def construct():
+        layout = Layout()
+        layout.add_controller(dropdown)
+        layout.add_visual(plotly)
+        layout.subscribe(callback, dropdown.on_change)
+        layout.build()
