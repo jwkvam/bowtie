@@ -20,7 +20,9 @@ class Dashboard extends React.Component {
 
     render() {
         return (
-            <div style={{ '{{' }}display: 'flex', flexFlow: 'row nowrap', width: '100vw', height: '100vh', maxHeight: '100%', maxWidth: '100%'{{ '}}' }}>
+            <div style={{ '{{' }}display: 'flex', flexFlow: 'row nowrap', width: '100%', height: '100%',
+                    minHeight: '100vh', maxHeight: '100%',
+                    minWidth: '100vw', maxWidth: '100%'{{ '}}' }}>
                 <div style={{ '{{' }}display: 'flex', flexFlow: 'column nowrap', flex: '0 0 18em', padding: '7px', backgroundColor: '{{background_color}}'{{ '}}' }}>
                     {{ description }}
 
@@ -36,10 +38,12 @@ class Dashboard extends React.Component {
                 </div>
 
                 <div style={{ '{{' }}display: 'flex', flexFlow: 'column nowrap', flex: '1 1 0'{{ '}}' }}>
-                    {% for visualrow in visuals %}
-                    <div style={{ '{{' }}display: 'flex', flexFlow: 'row nowrap', flex: '1 1 0'{{ '}}' }}>
-                        {% for visual, progress in visualrow %}
-                        <div style={{ '{{' }}display: 'flex', flex: '1 1 0'{{ '}}' }}>
+                    {% for visualrow, min_height in visuals %}
+                    <div style={{ '{{' }}display: 'flex', minHeight: '{{ min_height }}px',
+                            flexFlow: 'row nowrap', flex: '1 1 0'{{ '}}' }}>
+                        {% for visual, progress, min_width in visualrow %}
+                        <div style={{ '{{' }}display: 'flex', minWidth: '{{ min_width }}px',
+                                flex: '1 1 0'{{ '}}' }}>
                             {{ progress }}
                             {{ visual }}
                             </CProgress>

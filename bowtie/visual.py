@@ -342,6 +342,7 @@ class Plotly(_Visual):
         ----------
         plot : dict
             Dict that can be plotted with Plotly.
+            It should have this structure: ``{data: [], layout: {}}``.
 
         Returns
         -------
