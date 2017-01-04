@@ -119,9 +119,10 @@ class Layout(object):
         self.templates = set(['progress.jsx'])
         self.title = title
         self.username = username
-        self.visuals = [[]]
+        self.visuals = [([], 0)]
 
-    def add_visual(self, visual, next_row=False):
+    def add_visual(self, visual, next_row=False,
+                   min_width=0, min_height=0):
         """Add a visual to the layout.
 
         Parameters
@@ -130,6 +131,10 @@ class Layout(object):
             A Bowtie visual instance.
         next_row : bool, optional
             Add this visual to the next row.
+        min_width : number, optional
+            Minimum width of the visual in pixels.
+        min_height : number, optional
+            Minimum height of the visual in pixels.
 
         """
         assert isinstance(visual, _Visual)
@@ -140,9 +145,12 @@ class Layout(object):
                                  module=visual._TEMPLATE[:visual._TEMPLATE.find('.')]))
 
         if next_row and self.visuals[-1]:
-            self.visuals.append([])
+            self.visuals.append(([], 0))
 
-        self.visuals[-1].append(visual)
+        if self.visuals[-1][1] < min_height:
+            self.visuals[-1] = self.visuals[-1][0], min_height
+
+        self.visuals[-1][0].append((visual, min_width))
 
     def add_controller(self, control):
         """Add a controller to the layout.
@@ -164,6 +172,8 @@ class Layout(object):
 
     def subscribe(self, func, event, *events):
         """Call a function in response to an event.
+        If more than one event is given, `func` will be given
+        as many arguments as there are events.
 
         Parameters
         ----------
@@ -173,6 +183,15 @@ class Layout(object):
             A Bowtie event.
         *events : Each is an event, optional
             Additional events.
+
+        Examples
+        --------
+        >>> dd = DropDown()
+        >>> slide = Slider()
+        >>> def callback(dd_item, slide_value):
+        >>>     pass
+        >>> layout.subscribe(callback, dd.on_change, slide.on_change)
+
         """
         all_events = [event]
         all_events.extend(events)
@@ -182,7 +201,7 @@ class Layout(object):
             self.subscriptions[evt].append((all_events, func.__name__))
 
     def load(self, func):
-        """Call a function on load.
+        """Call a function on page load.
 
         Parameters
         ----------
@@ -253,10 +272,14 @@ class Layout(object):
             template_src = path.join(file_dir, 'src', template)
             shutil.copy(template_src, app)
 
-        for i, visualrow in enumerate(self.visuals):
-            for j, visual in enumerate(visualrow):
+        for i, (visualrow, _) in enumerate(self.visuals):
+            for j, (visual, min_width) in enumerate(visualrow):
                 # pylint: disable=protected-access
-                self.visuals[i][j] = visual._instantiate(), visual.progress._instantiate()
+                self.visuals[i][0][j] = (
+                    visual._instantiate(),
+                    visual.progress._instantiate(),
+                    min_width
+                )
 
         with open(path.join(app, react.name), 'w') as f:
             f.write(
