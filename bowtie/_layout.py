@@ -272,10 +272,14 @@ class Layout(object):
             template_src = path.join(file_dir, 'src', template)
             shutil.copy(template_src, app)
 
-        for i, (visualrow, min_height) in enumerate(self.visuals):
+        for i, (visualrow, _) in enumerate(self.visuals):
             for j, (visual, min_width) in enumerate(visualrow):
                 # pylint: disable=protected-access
-                self.visuals[i][0][j] = visual._instantiate(), visual.progress._instantiate(), min_width
+                self.visuals[i][0][j] = (
+                    visual._instantiate(),
+                    visual.progress._instantiate(),
+                    min_width
+                )
 
         with open(path.join(app, react.name), 'w') as f:
             f.write(
