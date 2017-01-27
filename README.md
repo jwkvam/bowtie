@@ -45,3 +45,9 @@ npm install -g webpack yarn
 
 Check out the [gallery](https://github.com/jwkvam/bowtie/wiki/Gallery) and feel free to add your own creations!
 
+## Contributing
+
+You can help Bowtie in many ways including:
+- Trying it out and reporting bugs or simply what was difficult to use or get working.
+- Helping improve the documentation.
+- Writing new widgets.
