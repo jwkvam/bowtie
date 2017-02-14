@@ -30,5 +30,11 @@ if IS_PY2:
     def numargs(func):
         """Gets number of arguments in python 2.
         """
+        count = 0
         # pylint: disable=deprecated-method
-        return sum(map(len, inspect.getargspec(func)[:2]))
+        for args in inspect.getargspec(func)[:2]:
+            try:
+                count += len(args)
+            except TypeError:
+                pass
+        return count
