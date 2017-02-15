@@ -39,7 +39,7 @@ npm install -g webpack yarn
 
 ## The Goal
 
-![image](https://cloud.githubusercontent.com/assets/86304/18606859/8ced55a6-7c70-11e6-8b5e-fba0ffcd78da.png)
+![@astrobiased @treycausey @vagabondjack the lack of a comprehensive production-grade Shiny-alike for Python is a Big Problem](https://cloud.githubusercontent.com/assets/86304/18606859/8ced55a6-7c70-11e6-8b5e-fba0ffcd78da.png)
 
 ## Gallery
 
