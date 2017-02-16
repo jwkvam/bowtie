@@ -86,11 +86,12 @@ class DropDown(_Controller):
     _PACKAGE = 'react-select'
     _TAG = ('<DropDown initOptions={{{options}}} '
             'multi={{{multi}}}'
+            'default={{{default}}}'
             'socket={{socket}} '
             'uuid={{{uuid}}} '
             '/>')
 
-    def __init__(self, labels=None, values=None, multi=False, caption=''):
+    def __init__(self, labels=None, values=None, multi=False, default=None, caption=''):
         super(DropDown, self).__init__()
 
         if labels is None and values is None:
@@ -102,6 +103,7 @@ class DropDown(_Controller):
         self._instantiate = self._TAG.format(
             options=jdumps(options),
             multi='true' if multi else 'false',
+            default=jdumps(default),
             uuid="'{}'".format(self._uuid)
         )
         self.caption = caption
@@ -131,6 +133,22 @@ class DropDown(_Controller):
 
         """
         return [dict(label=l, value=v) for l, v in zip(labels, values)]
+
+    # pylint: disable=no-self-use
+    def do_choose(self, value):
+        """Replaces the drop down fields.
+
+        Parameters
+        ----------
+        values : str or int
+            Value of drop down item to be selected.
+
+        Returns
+        -------
+        None
+
+        """
+        return value
 
     def get(self, data):
         """
