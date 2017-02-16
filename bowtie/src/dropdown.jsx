@@ -8,18 +8,20 @@ var msgpack = require('msgpack-lite');
 export default class DropDown extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {value: null, options: this.props.initOptions};
-        this.handleChange = this.handleChange.bind(this);
-        // this.getValue = this.getValue.bind(this);
-        this.newOptions = this.newOptions.bind(this);
+        this.state = {value: this.props.default, options: this.props.initOptions};
     }
 
-    handleChange(value) {
+    handleChange = value => {
         this.setState({value});
         this.props.socket.emit(this.props.uuid + '#change', msgpack.encode(value));
     }
 
-    newOptions(data) {
+    choose = data => {
+        var arr = new Uint8Array(data['data']);
+        this.setState({value: arr});
+    }
+
+    newOptions = data => {
         var arr = new Uint8Array(data['data']);
         this.setState({value: null, options: msgpack.decode(arr)});
     }
@@ -29,6 +31,7 @@ export default class DropDown extends React.Component {
         var uuid = this.props.uuid;
         socket.on(uuid + '#get', this.getValue);
         socket.on(uuid + '#options', this.newOptions);
+        socket.on(uuid + '#choose', this.choose);
     }
 
     getValue = (data, fn) => {
@@ -51,5 +54,6 @@ DropDown.propTypes = {
     uuid: React.PropTypes.string.isRequired,
     socket: React.PropTypes.object.isRequired,
     multi: React.PropTypes.bool.isRequired,
+    default: React.PropTypes.any,
     initOptions: React.PropTypes.array
 };
