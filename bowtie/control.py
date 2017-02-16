@@ -135,20 +135,20 @@ class DropDown(_Controller):
         return [dict(label=l, value=v) for l, v in zip(labels, values)]
 
     # pylint: disable=no-self-use
-    def do_choose(self, value):
+    def do_choose(self, values):
         """Replaces the drop down fields.
 
         Parameters
         ----------
-        values : str or int
-            Value of drop down item to be selected.
+        values : list or str or int
+            Value(s) of drop down item(s) to be selected.
 
         Returns
         -------
         None
 
         """
-        return value
+        return values
 
     def get(self, data):
         """
