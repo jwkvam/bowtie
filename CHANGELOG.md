@@ -1,18 +1,28 @@
 # CHANGELOG
 
-## 0.2.1 - 2017-01-14
+## 0.2.2 / 2017-02-20
 
 ### Added
 
-- `min_width` and `min_height` parameters for laying out visual components
+  * add default parameter and choose command to dropdown (#91)
 
-## 0.2.0 - 2017-01-01
+### Fixed
+
+  * fix argument counting in python 2 (#89)
+
+## 0.2.1 / 2017-01-14
+
+### Added
+
+  * `min_width` and `min_height` parameters for laying out visual components
+
+## 0.2.0 / 2017-01-01
 
 ### Breaking
 
-- Changed order of arguments to `subscribe`.
+  * Changed order of arguments to `subscribe`.
 
 ### Added
 
-- Number input widget.
-- Able to subscribe a function to multiple events
+  * Number input widget.
+  * Able to subscribe a function to multiple events
