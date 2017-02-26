@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 0.2.3 / 2017-02-26
+
+### Fixed
+
+  * pin js packages to make bowtie stable
+
 ## 0.2.2 / 2017-02-20
 
 ### Added
