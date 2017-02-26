@@ -13,7 +13,7 @@ install:
     - nvm install node
     - npm install -g webpack@1.14.0 yarn
     - npm install -g eslint babel-eslint eslint-plugin-react
-    - eslint bowtie/src/*.js*
+    - make eslint
     - sudo apt-get update
       # We do this conditionally because it saves us some downloading if the
       # version is the same.

@@ -10,7 +10,7 @@ lint:
 	py.test --pylint -m pylint --pylint-rcfile=pylintrc --pylint-error-types=RCWEF --ignore=doc
 
 eslint:
-	eslint bowtie/src/*.js*
+	eslint bowtie/src/*.js{,x}
 
 coverage:
 	py.test --cov=./ --cov-report html --ignore=doc

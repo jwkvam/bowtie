@@ -69,34 +69,6 @@ class Layout(object):
 
     """
 
-    _packages = [
-        'antd',
-        'babel-core',
-        'babel-loader',
-        'babel-plugin-transform-object-rest-spread',
-        'babel-polyfill',
-        'babel-preset-es2015',
-        'babel-preset-react',
-        'babel-preset-stage-0',
-        'classnames',
-        'core-js',
-        'css-loader',
-        'extract-text-webpack-plugin',
-        'less',
-        'less-loader',
-        'lodash.clonedeep',
-        'msgpack-lite',
-        'node-sass',
-        'normalize.css',
-        'postcss-modules-values',
-        'react',
-        'react-dom',
-        'sass-loader',
-        'socket.io-client',
-        'style-loader',
-        'webpack@1.14.0'
-    ]
-
     def __init__(self, title='Bowtie App', description='Bowtie App\n---',
                  basic_auth=False, username='username', password='password',
                  background_color='White', directory='build',
@@ -296,11 +268,21 @@ class Layout(object):
         if init != 0:
             raise YarnError('Error running "yarn init -y"')
         self.packages.discard(None)
-        packages = ' '.join(self._packages + list(self.packages))
+
+        packages = path.join(file_dir, 'src/package.json')
+        shutil.copy(packages, self.directory)
+
+
+        install = Popen('yarn add package.json', shell=True, cwd=self.directory).wait()
+        if install > 1:
+            raise YarnError('Error install node packages')
+
+        packages = ' '.join(self.packages)
         install = Popen('yarn add {}'.format(packages),
                         shell=True, cwd=self.directory).wait()
         if install > 1:
             raise YarnError('Error install node packages')
+
         elif install == 1:
             print('Yarn error but trying to continue build')
         dev = Popen('webpack -d', shell=True, cwd=self.directory).wait()
