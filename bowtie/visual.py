@@ -125,7 +125,7 @@ class SmartGrid(_Visual):
     """
     _TEMPLATE = 'griddle.jsx'
     _COMPONENT = 'SmartGrid'
-    _PACKAGE = 'griddle-react'
+    _PACKAGE = 'griddle-react@version0'
     _TAG = ('<SmartGrid '
             'socket={{socket}} '
             'uuid={{{uuid}}} '
