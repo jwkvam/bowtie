@@ -83,7 +83,7 @@ class DropDown(_Controller):
     """
     _TEMPLATE = 'dropdown.jsx'
     _COMPONENT = 'DropDown'
-    _PACKAGE = 'react-select'
+    _PACKAGE = 'react-select@1.0.0-rc.3'
     _TAG = ('<DropDown initOptions={{{options}}} '
             'multi={{{multi}}}'
             'default={{{default}}}'
@@ -618,7 +618,7 @@ class Nouislider(_Controller):
     """
     _TEMPLATE = 'nouislider.jsx'
     _COMPONENT = 'Nouislider'
-    _PACKAGE = 'nouislider'
+    _PACKAGE = 'nouislider@9.2.0'
     _TAG = ('<Nouislider range={{{{min: {min}, max: {max}}}}} '
             'socket={{socket}} '
             'start={{{start}}} '
