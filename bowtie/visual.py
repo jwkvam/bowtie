@@ -31,7 +31,7 @@ class Table(_Visual):
     """
     _TEMPLATE = 'table.jsx'
     _COMPONENT = 'AntTable'
-    _PACKAGE = 'antd'
+    _PACKAGE = None
     _TAG = ('<AntTable '
             'socket={{socket}} '
             'uuid={{{uuid}}} '
