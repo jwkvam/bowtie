@@ -16,6 +16,7 @@ Easy to deploy so you can share results with others.
     quickstart
     layout
     components
+    cache
     architecture
     newcomponents
     comparison

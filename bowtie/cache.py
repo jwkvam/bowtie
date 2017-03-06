@@ -18,7 +18,9 @@ def save(key, value):
     Parameters
     ----------
     key : object
+        The key to determine where it's stored, you'll need this to load the value later.
     value : object
+        The value to store in the cache.
 
     Returns
     -------
@@ -40,10 +42,12 @@ def load(key):
     Parameters
     ----------
     key : object
+        The key to lookup the value stored.
 
     Returns
     -------
-    The value if the key exists, otherwise None.
+    object
+        The value if the key exists in the cache, otherwise None.
 
     """
     signal = 'cache_load'
