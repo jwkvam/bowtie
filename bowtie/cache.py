@@ -9,7 +9,7 @@ import eventlet
 from eventlet.queue import LightQueue
 import msgpack
 
-from bowtie._component import pack, unpack
+from bowtie._component import pack
 
 
 def save(key, value):

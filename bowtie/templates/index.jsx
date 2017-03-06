@@ -34,6 +34,7 @@ class Dashboard extends React.Component {
         } else {
             var buffer = new ArrayBuffer(1);
             var x = new DataView(buffer, 0);
+            // msgpack encodes null to 0xc0
             x.setUint8(0, 0xc0);
             fn(buffer);
         }
