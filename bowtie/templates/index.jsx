@@ -10,12 +10,31 @@ import CProgress from './progress';
 import {{ component.component }} from './{{ component.module }}';
 {% endfor %}
 
+var msgpack = require('msgpack-lite');
 var socket = io();
 
 class Dashboard extends React.Component {
     constructor(props) {
         super(props);
+        this.cache = {};
         socket.emit('INITIALIZE');
+    }
+
+    saveValue = data => {
+        var arr = new Uint8Array(data['data']);
+        var keyvalue = msgpack.decode(arr);
+        this.cache[keyvalue[0]] = keyvalue[1];
+    }
+
+    loadValue = (data, fn) => {
+        var arr = new Uint8Array(data['data']);
+        var key = msgpack.decode(arr);
+        fn(msgpack.encode(this.cache[key]));
+    }
+
+    componentDidMount() {
+        socket.on('cache_save', this.saveValue);
+        socket.on('cache_load', this.loadValue);
     }
 
     render() {
