@@ -7,6 +7,7 @@ import flask
 from flask_socketio import emit
 import eventlet
 from eventlet.queue import LightQueue
+import msgpack
 
 from bowtie._component import pack, unpack
 
@@ -26,10 +27,10 @@ def save(key, value):
     """
     signal = 'cache_save'
     if flask.has_request_context():
-        emit(signal, {'data': pack((key, value))})
+        emit(signal, {'key': pack(key), 'data': pack(value)})
     else:
         sio = flask.current_app.extensions['socketio']
-        sio.emit(signal, {'data': pack((key, value))})
+        sio.emit(signal, {'key': pack(key), 'data': pack(value)})
     eventlet.sleep()
 
 
@@ -48,8 +49,8 @@ def load(key):
     signal = 'cache_load'
     event = LightQueue(1)
     if flask.has_request_context():
-        emit(signal, {'data': pack(key)}, callback=lambda x: event.put(unpack(x)))
+        emit(signal, {'data': pack(key)}, callback=event.put)
     else:
         sio = flask.current_app.extensions['socketio']
-        sio.emit(signal, {'data': pack(key)}, callback=lambda x: event.put(unpack(x)))
-    return event.get(timeout=10)
+        sio.emit(signal, {'data': pack(key)}, callback=event.put)
+    return msgpack.unpackb(bytes(event.get(timeout=10)), encoding='utf8')
