@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 0.2.4 / 2017-03-06
+
+### Added
+
+  * add cache feature (#98)
+
 ## 0.2.3 / 2017-02-26
 
 ### Fixed
