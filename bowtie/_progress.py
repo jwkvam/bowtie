@@ -28,6 +28,10 @@ class Progress(Component):
     >>>     compute2()
     >>>     plotly.progress.do_visible(False)
 
+    Reference
+    ---------
+    https://ant.design/components/progress/
+
     """
     _TEMPLATE = 'progress.jsx'
     _COMPONENT = 'CProgress'
@@ -90,7 +94,7 @@ class Progress(Component):
         return visible
 
     def do_active(self):
-        """Hides and shows the progress indicator.
+        """Resets the progress to active (in progress) status.
 
         Returns
         -------
@@ -100,7 +104,7 @@ class Progress(Component):
         pass
 
     def do_success(self):
-        """Hides and shows the progress indicator.
+        """Display the progress indicator as done.
 
         Returns
         -------
@@ -110,7 +114,7 @@ class Progress(Component):
         pass
 
     def do_error(self):
-        """Hides and shows the progress indicator.
+        """Display an error in the progress indicator.
 
         Returns
         -------
