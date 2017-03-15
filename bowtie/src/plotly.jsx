@@ -1,5 +1,5 @@
 import React from 'react';
-import Plotly from 'plotly.js';
+import Plotly from 'plotly.js/dist/plotly.min.js';
 import cloneDeep from 'lodash.clonedeep';
 
 var msgpack = require('msgpack-lite');
@@ -51,12 +51,14 @@ export default class PlotlyPlot extends React.Component {
 
     setHover = data => {
         var p0 = data.points[0];
+        var text = p0.data.text;
         var datum = {
             curve: p0.curveNumber,
             point: p0.pointNumber,
             x: p0.x,
             y: p0.y,
-            hover: p0.data.text[p0.pointNumber]
+            // TODO this indexing needs to be checked
+            hover: (text == null) ? null : text[p0.pointNumber]
         };
         this.hover = datum;
         this.props.socket.emit(this.props.uuid + '#hover', msgpack.encode(datum));
