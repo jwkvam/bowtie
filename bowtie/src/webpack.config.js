@@ -15,12 +15,17 @@ var BUILD_DIR = path.resolve(__dirname, 'src/static');
 var APP_DIR = path.resolve(__dirname, 'src/app');
 
 var config = {
-    entry: APP_DIR + '/index',
+    // context: path.resolve(__dirname, './src'),
+    context: __dirname,
+    entry: APP_DIR + '/index.jsx',
     output: {
         path: BUILD_DIR,
         filename: 'bundle.js'
     },
     target: 'web',
+    node: {
+        fs: "empty"
+    },
     module: {
         rules: [
             // {
@@ -34,70 +39,98 @@ var config = {
             //             'react', 'stage-0'],
             //         plugins: ['transform-object-rest-spread']
             //     }
+            //     test: /\.(js|jsx)$/,
+            //     include: /node_modules/,
+            //     exclude: APP_DIR,
+            //     loader: 'babel-loader',
+            //     query: {
+            //         presets: ['react']
+            //     }
+            // }, {
+            // {
+            //     // test:
+            //     test: /\.(js|jsx)$/,
+            //     include: /glslify/,
+            //     loader: "transform-loader?glslify",
+            //     enforce: "post",
+            // },
             {
-                test: /\.(js|jsx)$/,
-                include: /nodemodules/,
-                exclude: APP_DIR,
-                loader: 'babel-loader',
-                query: {
-                    presets: ['react']
-                }
-            }, {
+            //     test: /\.js$/,
+            //     include: /node_modules/,
+            //     loader: "transform-loader",
+            //     // enforce: "post"
+            // }, {
+            //     test: /\.js$/,
+            //     include: /node_modules/,
+            //     loader: "transform-loader?brfs",
+            //     enforce: "post"
+            // }, {
                 test: /\.(js|jsx)$/,
                 include: APP_DIR,
                 loader: 'babel-loader',
-                exclude: /nodemodules/,
+                exclude: /node_modules/,
                 query: {
                     presets: [
                         ['es2015', { 'modules': false}],
                         'react', 'stage-0'],
-                    plugins: ['transform-object-rest-spread']
+                    plugins: [
+                        'transform-object-rest-spread',
+                        // 'babel-import-plugin'
+                    ]
                 }
             }, {
                 test: /\.scss$/,
-// <<<<<<< HEAD
-//                 loaders: ['style', 'css', 'sass'],
-//             }, {
-//                 test: /\.css$/,
-//                 loader: extractCSS.extract(['css', 'sass']),
-//             }, {
-//                 test: /\.less$/,
-//                 loader: extractLESS.extract(['less', 'sass']),
-// =======
                 loaders: ['style-loader', 'css-loader', 'sass-loader'],
             }, {
                 test: /\.css$/,
-                // loader: extractCSS.extract(['css-loader', 'sass-loader']),
-                // loader: extractCSS.extract(['css-loader', 'sass-loader']),
                 loader: "style-loader!css-loader!sass-loader",
             }, {
                 test: /\.less$/,
-                loader: "style-loader!css-loader!less-loader?strictMath&noIeCompat&"
+                loader: "style-loader!css-loader!less-loader?strictMath&noIeCompat&",
                 // loader: extractLESS.extract(['less-loader', 'sass-loader']),
-            }, {
-                include: /node_modules\/mapbox-gl-shaders/,
-                enforce: 'post',
-                loader: 'transform-loader',
-                query: 'brfs'
-// >>>>>>> webpack2 experiments
-            }
+            // }, {
+            //     test: /\.(js|jsx)$/,
+            //     include: /node_modules/,
+            //     // enforce: 'post',
+            //     loader: 'transform-loader/cacheable?brfs'
+            // }, {
+            //     loader: "transform-loader?brfs",
+            //     enforce: "post"
+            // }, {
+            //     test: /\.(glsl|frag|vert)$/,
+            //     loader: "transform-loader/cacheable?glslify",
+            },
         ],
         noParse: [
             /plotly\.js$/
-        ]
+        ],
     },
-    // plugins: [
+    plugins: [
+        new webpack.LoaderOptionsPlugin({
+            options: {
+                transforms: [
+                    function(file) {
+                        return through(function(buf) {
+                            this.queue(buf.split("").map(function(s) {
+                                return String.fromCharCode(127-s.charCodeAt(0));
+                            }).join(""));
+                        }, function() { this.queue(null); });
+                    }
+                ]
+            }
+        })
     //     extractCSS,
     //     extractLESS,
-    // ],
+    ],
     resolve: {
         extensions: ['.jsx', '.js', '.json'], //, '.web.js'],
         // modules: [ root('node_modules') ],
         // moduleExtensions: ['-loader'],
         // aliasFields: ['browser', 'index']
         // enforceExtension: true,
-        // modules: [
-        //     path.resolve(__dirname, "app"), "node_modules"
+        modules: [
+            path.resolve(__dirname, APP_DIR), "node_modules"
+        ]
         //     // 'node_modules',
         //     // 'src',
         //     // path.resolve(__dirname, 'src'),
