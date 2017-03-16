@@ -32,24 +32,7 @@ export default class PlotlyPlot extends React.Component {
         fn(msgpack.encode(this.selection));
     }
 
-    setClick = data => {
-        var p0 = data.points[0];
-        var datum = {
-            curve: p0.curveNumber,
-            point: p0.pointNumber,
-            x: p0.x,
-            y: p0.y,
-            hover: p0.data.text[p0.pointNumber]
-        };
-        this.click = datum;
-        this.props.socket.emit(this.props.uuid + '#click', msgpack.encode(datum));
-    }
-
-    getClick = (data, fn) => {
-        fn(msgpack.encode(this.click));
-    }
-
-    setHover = data => {
+    processPoint = data => {
         var p0 = data.points[0];
         var text = p0.data.text;
         var datum = {
@@ -60,6 +43,21 @@ export default class PlotlyPlot extends React.Component {
             // TODO this indexing needs to be checked
             hover: (text == null) ? null : text[p0.pointNumber]
         };
+        return datum;
+    }
+
+    setClick = data => {
+        var datum = this.processPoint(data);
+        this.click = datum;
+        this.props.socket.emit(this.props.uuid + '#click', msgpack.encode(datum));
+    }
+
+    getClick = (data, fn) => {
+        fn(msgpack.encode(this.click));
+    }
+
+    setHover = data => {
+        var datum = this.processPoint(data);
         this.hover = datum;
         this.props.socket.emit(this.props.uuid + '#hover', msgpack.encode(datum));
     }
