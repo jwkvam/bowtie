@@ -1,5 +1,5 @@
 import React from 'react';
-import 'nouislider/src/nouislider.css';
+import 'nouislider/distribute/nouislider.css';
 import nouislider from 'nouislider';
 
 var msgpack = require('msgpack-lite');
