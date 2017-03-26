@@ -87,7 +87,7 @@ def command(func):
         """
         Recompiles the app for production.
         """
-        line = ('webpack', '-p') + extra
+        line = ('webpack', '--define', 'process.env.NODE_ENV="production"', '--progress') + extra
         call(line, cwd=ctx.obj)
 
     locale = inspect.stack()[1][0].f_locals

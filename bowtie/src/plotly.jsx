@@ -1,5 +1,5 @@
 import React from 'react';
-import Plotly from 'plotly.js/dist/plotly.min.js';
+import Plotly from 'plotly.js/dist/plotly.js';
 import cloneDeep from 'lodash.clonedeep';
 
 var msgpack = require('msgpack-lite');

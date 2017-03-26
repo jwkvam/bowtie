@@ -9,6 +9,7 @@ from functools import wraps
 from builtins import bytes
 import click
 import msgpack
+import flask
 from flask import Flask, render_template, copy_current_request_context
 from flask import request, Response
 from flask_socketio import SocketIO, emit
@@ -102,6 +103,21 @@ def login():
             return redirect(url_for('login'))
     return {{ loginpage }}
 {% endif %}
+
+
+@app.route('/static/bundle.js')
+def getbundle():
+    basedir = os.path.dirname(os.path.realpath(__file__))
+    bundle_path = basedir + '/static/bundle.js'
+    if os.path.isfile(bundle_path + '.gz'):
+        bundle = open(bundle_path + '.gz', 'rb').read()
+        response = flask.make_response(bundle)
+        response.headers['Content-Encoding'] = 'gzip'
+        response.headers['Vary'] = 'Accept-Encoding'
+        response.headers['Content-Length'] = len(response.data)
+        return response
+    else:
+        return open(bundle_path, 'r').read()
 
 
 {% if initial %}
