@@ -136,13 +136,12 @@ For example, this was done to create `bowtie-demo <https://github.com/jwkvam/bow
 * Create requirements files, again see `bowtie-demo <https://github.com/jwkvam/bowtie-demo/>`_ for an example.
 * Rebuild with production settings with webpack, by default Bowtie makes a development build::
 
-      python app.py prod
+    python app.py prod
 
 * Commit the following files to your repo::
 
-      build/src/server.py
-      build/src/templates/index.html
-      build/src/static/bundle.js
-      build/src/static/stylesheets/main.css
+    build/src/server.py
+    build/src/templates/index.html
+    build/src/static/bundle.js.gz
 
 * Finally push your repo to Heroku!
