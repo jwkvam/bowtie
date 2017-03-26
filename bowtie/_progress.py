@@ -28,8 +28,8 @@ class Progress(Component):
     >>>     compute2()
     >>>     plotly.progress.do_visible(False)
 
-    Reference
-    ---------
+    References
+    ----------
     https://ant.design/components/progress/
 
     """
