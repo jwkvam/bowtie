@@ -6,6 +6,7 @@ Plotly testing
 
 import os
 import subprocess
+import time
 
 from selenium.webdriver import PhantomJS
 # from selenium.webdriver import ActionChains
@@ -43,6 +44,7 @@ def test_plotly(remove_build):
     env = os.environ
     env['PYTHONPATH'] = '{}:{}'.format(os.getcwd(), os.environ.get('PYTHONPATH', ''))
     server = subprocess.Popen(os.path.join(path, 'src/server.py'), env=env)
+    time.sleep(5)
 
     driver = PhantomJS()
     driver.get('http://localhost:9991')
