@@ -18,7 +18,7 @@ Install Node
 
 Bowtie uses `npm <https://www.npmjs.com/>`_ and
 `yarn <https://yarnpkg.com/>`_ to install the javascript libraries
-and `webpack <https://webpack.github.io/>`_ to compile the application.
+and `webpack <https://webpack.js.org/>`_ to compile the application.
 We need to install both of these.
 
 MacOS Install
