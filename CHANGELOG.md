@@ -1,5 +1,10 @@
-
 # CHANGELOG
+
+## 0.2.6 / 2017-03-27
+
+### Added
+
+  * Upgraded to webpack2 and compressing bundle.js (#59)
 
 ## 0.2.5 / 2017-03-16
 
