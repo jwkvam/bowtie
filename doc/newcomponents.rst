@@ -25,7 +25,7 @@ First we start by importing react, msgpack and the component::
 
 
 We also imported the default styling so it looks reasonable.
-We can do this because we're using `webpack <https://webpack.github.io>`_
+We can do this because we're using `webpack <https://webpack.js.org/>`_
 to compile the application.
 
 Next we will define the properties that the React class will hold.
