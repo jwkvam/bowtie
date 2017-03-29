@@ -8,7 +8,7 @@ markdown
 msgpack-python
 numpy
 plotlywrapper
-pylint
+git+git://github.com/PyCQA/pylint.git#egg=pylint
 pytest
 pytest-cov
 pytest-pylint
