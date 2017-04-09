@@ -56,6 +56,12 @@ class NoUnusedCellsError(Exception):
     pass
 
 
+class NoSidebarError(Exception):
+    """Cannot add to the sidebar when it doesn't exist."""
+
+    pass
+
+
 def raise_not_number(x):
     """Raise ``SizeError`` if ``x`` is not a number``."""
     try:
@@ -264,7 +270,11 @@ class Layout(object):
             A Bowtie controller instance.
 
         """
+        if not self.sidebar:
+            raise NoSidebarError('Set sidebar=True if you want to use the sidebar.')
+
         assert isinstance(control, _Controller)
+
         # pylint: disable=protected-access
         self.packages.add(control._PACKAGE)
         self.templates.add(control._TEMPLATE)
