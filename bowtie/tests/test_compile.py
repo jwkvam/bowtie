@@ -27,7 +27,7 @@ def test_build(remove_build):
 
     path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'build')
     layout = Layout(directory=path)
-    layout.add_controller(ctrl)
-    layout.add_visual(viz)
+    layout.add_sidebar(ctrl)
+    layout.add(viz)
     layout.subscribe(callback, ctrl.on_change)
     layout.build()
