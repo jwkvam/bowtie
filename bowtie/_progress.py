@@ -38,9 +38,9 @@ class Progress(Component):
     """
 
     _TEMPLATE = 'progress.jsx'
-    _COMPONENT = 'CProgress'
+    _COMPONENT = 'AntProgress'
     _PACKAGE = None
-    _TAG = ('<CProgress '
+    _TAG = ('<AntProgress '
             'socket={{socket}} '
             'uuid={{{uuid}}} '
             '>')

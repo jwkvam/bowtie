@@ -4,7 +4,7 @@ import 'antd/dist/antd.css';
 
 var msgpack = require('msgpack-lite');
 
-export default class CProgress extends React.Component {
+export default class AntProgress extends React.Component {
     constructor(props) {
         super(props);
         this.state = {percent: 0, visible: false, status: 'active'};
@@ -72,9 +72,8 @@ export default class CProgress extends React.Component {
         }
     }
 }
-//<div style={{display: 'flex', flex: '1 1 0', alignItems: 'center', justifyContent: 'center', alignContent: 'center'}}>
 
-CProgress.propTypes = {
+AntProgress.propTypes = {
     uuid: React.PropTypes.string.isRequired,
     socket: React.PropTypes.object.isRequired,
     children: React.PropTypes.any

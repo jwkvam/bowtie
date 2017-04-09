@@ -392,7 +392,7 @@ class Layout(object):
             if isinstance(widget, _Visual):
                 progress = widget.progress._instantiate()
                 wstr = widget._instantiate()
-                close_progress = '</CProgress>'
+                close_progress = '</AntProgress>'
                 self.widgets[i] = ''.join((progress, wstr, close_progress))
             else:
                 self.widgets[i] = widget._instantiate()

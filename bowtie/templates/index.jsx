@@ -4,7 +4,7 @@ import {render} from 'react-dom';
 import io from 'socket.io-client';
 import 'antd/dist/antd.css'
 
-import CProgress from './progress';
+import AntProgress from './progress';
 
 {% for component in components %}
 import {{ component.component }} from './{{ component.module }}';
