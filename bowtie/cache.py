@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Bowtie cache functions
-"""
+"""Bowtie cache functions."""
 
 import flask
 from flask_socketio import emit
@@ -13,7 +11,7 @@ from bowtie._component import pack
 
 
 def save(key, value):
-    """Stores the key value pair.
+    """Store the key value pair.
 
     Parameters
     ----------
@@ -37,7 +35,7 @@ def save(key, value):
 
 
 def load(key):
-    """Loads the value stored with the key.
+    """Load the value stored with the key.
 
     Parameters
     ----------

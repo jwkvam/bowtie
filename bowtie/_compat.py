@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-python 2/3 compatability
-"""
+"""Python 2/3 compatability."""
 
 import inspect
 import sys
@@ -14,6 +12,7 @@ if IS_PY2:
     makedirs_lib = makedirs
     # pylint: disable=function-redefined,missing-docstring
     def makedirs(name, mode=0o777, exist_ok=False):
+        """Create directories recursively."""
         try:
             makedirs_lib(name, mode=mode)
         except OSError:
@@ -21,15 +20,13 @@ if IS_PY2:
                 raise
 
 def numargs(func):
-    """Gets number of arguments in python 3.
-    """
+    """Get number of arguments in Python 3."""
     return len(inspect.signature(func).parameters)
 
 if IS_PY2:
     # pylint: disable=function-redefined
     def numargs(func):
-        """Gets number of arguments in python 2.
-        """
+        """Get number of arguments in Python 2."""
         count = 0
         # pylint: disable=deprecated-method
         for args in inspect.getargspec(func)[:2]:

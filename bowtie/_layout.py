@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-"""
-Defines the Layout class.
-"""
+"""Defines the Layout class."""
 
 from __future__ import print_function
 
 import os
 from os import path
+from itertools import product
 import inspect
 import shutil
 import stat
@@ -28,17 +27,126 @@ _Schedule = namedtuple('_Control', ['seconds', 'function'])
 
 
 class YarnError(Exception):
-    """
-    Errors from ``Yarn``.
-    """
+    """Errors from ``Yarn``."""
+
     pass
 
 
 class WebpackError(Exception):
-    """
-    Errors from ``Webpack``.
-    """
+    """Errors from ``Webpack``."""
+
     pass
+
+
+class SizeError(Exception):
+    """Size values must be a number."""
+
+    pass
+
+
+class IndexError(Exception):
+    """Invalid index into the grid layout."""
+
+    pass
+
+
+class NoUnusedCellsError(Exception):
+    """All cells are used."""
+
+    pass
+
+
+def raise_not_number(x):
+    """Raise ``SizeError`` if ``x`` is not a number``."""
+    try:
+        float(x)
+    except ValueError:
+        raise SizeError('Must pass a number, received {}'.format(x))
+
+
+class Span(object):
+    """Size of rows and columns in grid.
+
+    This uses CSS's minmax function.
+
+    The minmax() CSS function defines a size range greater than or equal
+    to min and less than or equal to max. If max < min, then max is ignored
+    and minmax(min,max) is treated as min. As a maximum, a <flex> value
+    sets the flex factor of a grid track; it is invalid as a minimum.
+
+    """
+
+    def __init__(self, row_start, column_start, row_end=None, column_end=None):
+        """TODO: Docstring for __init__.
+
+        Parameters
+        ----------
+        arg1 : TODO
+
+        Returns
+        -------
+        TODO
+
+        """
+        self.row_start = row_start + 1
+        self.column_start = column_start + 1
+        if row_end is None:
+            self.row_end = row_start + 2
+        else:
+            self.row_end = row_end + 1
+        if column_end is None:
+            self.column_end = column_start + 2
+        else:
+            self.column_end = column_end + 1
+
+
+class Size(object):
+    """Size of rows and columns in grid.
+
+    This uses CSS's minmax function.
+
+    The minmax() CSS function defines a size range greater than or equal
+    to min and less than or equal to max. If max < min, then max is ignored
+    and minmax(min,max) is treated as min. As a maximum, a <flex> value
+    sets the flex factor of a grid track; it is invalid as a minimum.
+
+    """
+
+    def __init__(self):
+        self.minimum = None
+        self.fraction(1)
+
+    def auto(self):
+        self.maximum = 'auto'
+
+    def min_auto(self):
+        self.minimum = 'auto'
+
+    def pixels(self, value):
+        raise_not_number(value)
+        self.maximum = '{}px'.format(value)
+
+    def min_pixels(self, value):
+        raise_not_number(value)
+        self.minimum = '{}px'.format(value)
+
+    def fraction(self, value):
+        raise_not_number(value)
+        self.maximum = '{}fr'.format(int(value))
+
+    def percent(self, value):
+        raise_not_number(value)
+        self.maximum = '{}%'.format(value)
+
+    def min_percent(self, value):
+        raise_not_number(value)
+        self.minimum = '{}%'.format(value)
+
+    def __repr__(self):
+        if self.minimum:
+            return 'minmax({}, {})'.format(self.minimum, self.maximum)
+        return self.maximum
+
 
 
 class Layout(object):
@@ -69,7 +177,8 @@ class Layout(object):
 
     """
 
-    def __init__(self, title='Bowtie App', description='Bowtie App\n---',
+    def __init__(self, rows=1, columns=1, sidebar=True,
+                 title='Bowtie App', description='Bowtie App\n---',
                  basic_auth=False, username='username', password='password',
                  background_color='White', directory='build',
                  host='0.0.0.0', port=9991, debug=False):
@@ -91,16 +200,21 @@ class Layout(object):
         self.templates = set(['progress.jsx'])
         self.title = title
         self.username = username
-        self.visuals = [([], 0)]
+        self.used = {key: False for key in product(range(rows), range(columns))}
+        self.widgets = []
+        self.spans = []
+        self.rows = [Size() for _ in range(rows)]
+        self.columns = [Size() for _ in range(columns)]
+        self.sidebar = sidebar
 
-    def add_visual(self, visual, next_row=False,
-                   min_width=0, min_height=0):
-        """Add a visual to the layout.
+    def add(self, widget, row_start=None, column_start=None,
+            row_end=None, column_end=None):
+        """Add a widget to the grid.
 
         Parameters
         ----------
-        visual : bowtie._Visual
-            A Bowtie visual instance.
+        visual : bowtie._Component
+            A Bowtie widget instance.
         next_row : bool, optional
             Add this visual to the next row.
         min_width : number, optional
@@ -109,23 +223,40 @@ class Layout(object):
             Minimum height of the visual in pixels.
 
         """
-        assert isinstance(visual, _Visual)
+        for index in [row_start, row_end]:
+            if index is not None and (index < 0 or index >= len(self.rows)):
+                raise IndexError('Invalid Row Index')
+        for index in [column_start, column_end]:
+            if index is not None and (index < 0 or index >= len(self.columns)):
+                raise IndexError('Invalid Column Index')
+
+        if row_start is not None and row_end is not None and row_start > row_end:
+            raise IndexError('Invalid Column Index')
+        if column_start is not None and column_end is not None and column_start > column_end:
+            raise IndexError('Invalid Column Index')
+
         # pylint: disable=protected-access
-        self.packages.add(visual._PACKAGE)
-        self.templates.add(visual._TEMPLATE)
-        self.imports.add(_Import(component=visual._COMPONENT,
-                                 module=visual._TEMPLATE[:visual._TEMPLATE.find('.')]))
+        self.packages.add(widget._PACKAGE)
+        self.templates.add(widget._TEMPLATE)
+        self.imports.add(_Import(component=widget._COMPONENT,
+                                 module=widget._TEMPLATE[:widget._TEMPLATE.find('.')]))
 
-        if next_row and self.visuals[-1]:
-            self.visuals.append(([], 0))
+        if row_start is None:
+            for (row, col), use in self.used.items():
+                if not use:
+                    break
+            else:
+                raise NoUnusedCellsError()
+            span = Span(row, col)
+            self.used[row, col] = True
+        else:
+            pass
 
-        if self.visuals[-1][1] < min_height:
-            self.visuals[-1] = self.visuals[-1][0], min_height
+        self.widgets.append(widget)
+        self.spans.append(span)
 
-        self.visuals[-1][0].append((visual, min_width))
-
-    def add_controller(self, control):
-        """Add a controller to the layout.
+    def add_sidebar(self, control):
+        """Add a controller to the sidebar.
 
         Parameters
         ----------
@@ -144,6 +275,7 @@ class Layout(object):
 
     def subscribe(self, func, event, *events):
         """Call a function in response to an event.
+
         If more than one event is given, `func` will be given
         as many arguments as there are events.
 
@@ -195,8 +327,7 @@ class Layout(object):
         self.schedules.append(_Schedule(seconds, func.__name__))
 
     def build(self):
-        """Compiles the Bowtie application.
-        """
+        """Compile the Bowtie application."""
         file_dir = path.dirname(__file__)
 
         env = Environment(
@@ -244,23 +375,40 @@ class Layout(object):
             template_src = path.join(file_dir, 'src', template)
             shutil.copy(template_src, app)
 
-        for i, (visualrow, _) in enumerate(self.visuals):
-            for j, (visual, min_width) in enumerate(visualrow):
-                # pylint: disable=protected-access
-                self.visuals[i][0][j] = (
-                    visual._instantiate(),
-                    visual.progress._instantiate(),
-                    min_width
-                )
+        # for i, (visualrow, _) in enumerate(self.visuals):
+        #     for j, (visual, min_width) in enumerate(visualrow):
+        #         # pylint: disable=protected-access
+        #         self.visuals[i][0][j] = (
+        #             visual._instantiate(),
+        #             visual.progress._instantiate(),
+        #             min_width
+        #         )
+
+        for i, widget in enumerate(self.widgets):
+            if isinstance(widget, _Visual):
+                progress = widget.progress._instantiate()
+                wstr = widget._instantiate()
+                close_progress = '</CProgress>'
+                self.widgets[i] = ''.join((progress, wstr, close_progress))
+            else:
+                self.widgets[i] = widget._instantiate()
+
+        columns = []
+        if self.sidebar:
+            columns.append('18em')
+        columns += self.columns
 
         with open(path.join(app, react.name), 'w') as f:
             f.write(
                 react.render(
                     description=self.description,
+                    sidebar=self.sidebar,
+                    columns=columns,
+                    rows=self.rows,
                     background_color=self.background_color,
                     components=self.imports,
                     controls=self.controllers,
-                    visuals=self.visuals
+                    widgets=zip(self.widgets, self.spans)
                 )
             )
 
@@ -291,9 +439,7 @@ class Layout(object):
 
 
 def create_directories(directory='build'):
-    """
-    Create all the necessary subdirectories for the build.
-    """
+    """Create all the necessary subdirectories for the build."""
     src = path.join(directory, 'src')
     templates = path.join(src, 'templates')
     app = path.join(src, 'app')

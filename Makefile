@@ -12,6 +12,9 @@ lint:
 eslint:
 	eslint bowtie/src/*.js{,x}
 
+checkdocs:
+	pydocstyle --count
+
 coverage:
 	py.test --cov=./ --cov-report html --ignore=doc
 

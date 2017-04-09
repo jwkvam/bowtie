@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-"""
-Bowtie Component classes, all visual and control components inherit these
+"""Bowtie abstract component classes.
+
+All visual and control components inherit these.
 """
 
 # need this for get commands on python2
@@ -23,8 +24,7 @@ from eventlet.queue import LightQueue
 
 
 def varname(variable):
-    """Returns the name of the given variable.
-    """
+    """Return the name of the given variable."""
     frame = inspect.stack()[2][0]
     for name, var in frame.f_locals.items():
         if variable is var:
@@ -35,9 +35,7 @@ def varname(variable):
 
 
 def json_conversion(obj):
-    """
-    Encode additional objects to JSON.
-    """
+    """Encode additional objects to JSON."""
     try:
         # numpy isn't an explicit dependency of bowtie
         # so we can't assume it's available
@@ -62,16 +60,12 @@ def json_conversion(obj):
 
 
 def jdumps(data):
-    """
-    Encoding Python object to JSON string with additional encoders.
-    """
+    """Encode Python object to JSON with additional encoders."""
     return json.dumps(data, default=json_conversion)
 
 
 def encoders(obj):
-    """
-    Convert objects to msgpack encodable ones.
-    """
+    """Convert Python object to msgpack encodable ones."""
     try:
         # numpy isn't an explicit dependency of bowtie
         # so we can't assume it's available
@@ -98,24 +92,17 @@ def encoders(obj):
 
 
 def pack(x):
-    """
-    Encode ``x`` into msgpack with additional encoders.
-    """
+    """Encode ``x`` into msgpack with additional encoders."""
     return bytes(msgpack.packb(x, default=encoders))
 
 
 def unpack(x):
-    """
-    Decode ``x`` from msgpack into a string.
-    """
+    """Decode ``x`` from msgpack into Python object."""
     return msgpack.unpackb(bytes(x['data']), encoding='utf8')
 
 
 def make_event(event):
-    """
-    Creates an event from a method signature.
-    """
-
+    """Create an event from a method signature."""
     # pylint: disable=missing-docstring
     @property
     @wraps(event)
@@ -136,17 +123,12 @@ def make_event(event):
 
 
 def is_event(attribute):
-    """
-    Test if a method is an event.
-    """
+    """Test if a method is an event."""
     return attribute.startswith('on_')
 
 
 def make_command(command):
-    """
-    Creates an command from a method signature.
-    """
-
+    """Create an command from a method signature."""
     # pylint: disable=missing-docstring
     @wraps(command)
     def actualcommand(self, *args, **kwds):
@@ -165,17 +147,12 @@ def make_command(command):
 
 
 def is_command(attribute):
-    """
-    Test if a method is an command.
-    """
+    """Test if a method is an command."""
     return attribute.startswith('do_')
 
 
 def make_getter(getter):
-    """
-    Creates an command from a method signature.
-    """
-
+    """Create an command from a method signature."""
     # pylint: disable=missing-docstring
     def get(self, timeout=10):
         name = getter.__name__
@@ -197,8 +174,8 @@ def make_getter(getter):
 
 
 def is_getter(attribute):
-    """
-    Test if a method is a getter.
+    """Test if a method is a getter.
+
     It can be `get` or `get_*`.
     """
     return attribute.startswith('get')
@@ -220,10 +197,12 @@ class _Maker(type):
 
 # pylint: disable=too-few-public-methods
 class Component(with_metaclass(_Maker, object)):
-    """
+    """Abstract class for all components.
+
     All visual and control classes subclass this so their events
     and commands get transformed by the metaclass.
     """
+
     _NEXT_UUID = 0
 
     @classmethod
@@ -232,6 +211,7 @@ class Component(with_metaclass(_Maker, object)):
         return cls._NEXT_UUID
 
     def __init__(self):
+        """Give the component a unique ID."""
         # wanted to put "self" instead of "Component"
         # was surprised that didn't work
         self._uuid = Component._next_uuid()

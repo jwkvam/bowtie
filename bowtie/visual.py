@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Visual components
-"""
+"""Visual components."""
 
 from bowtie._component import Component, jdumps
 from bowtie._progress import Progress
@@ -9,17 +7,18 @@ from bowtie._progress import Progress
 
 # pylint: disable=too-few-public-methods
 class _Visual(Component):
+    """Abstract class all visual components inherit.
+
+    Used to test if a an object is a visual component.
     """
-    Used to test if a an object is a controller.
-    All controllers must inherit this class.
-    """
+
     def __init__(self):
         self.progress = Progress()
         super(_Visual, self).__init__()
 
 
 class Table(_Visual):
-    """Table Component with filtering and sorting
+    """Table Component with filtering and sorting.
 
     Parameters
     ----------
@@ -29,6 +28,7 @@ class Table(_Visual):
         Number of rows on each pagination of the table.
 
     """
+
     _TEMPLATE = 'table.jsx'
     _COMPONENT = 'AntTable'
     _PACKAGE = None
@@ -59,9 +59,7 @@ class Table(_Visual):
 
     @staticmethod
     def _make_columns(columns):
-        """
-        doc
-        """
+        """Transform list of columns into AntTable format."""
         return [dict(title=str(c),
                      dataIndex=str(c),
                      key=str(c))
@@ -69,9 +67,7 @@ class Table(_Visual):
 
     @staticmethod
     def _make_data(data):
-        """
-        doc
-        """
+        """Transform table data into JSON."""
         jsdata = []
         for idx, row in data.iterrows():
             row.index = row.index.astype(str)
@@ -83,7 +79,7 @@ class Table(_Visual):
 
     # pylint: disable=no-self-use
     def do_data(self, data):
-        """Replaces the columns and data of the table.
+        """Replace the columns and data of the table.
 
         Parameters
         ----------
@@ -97,7 +93,7 @@ class Table(_Visual):
         return self._make_data(data)
 
     def do_columns(self, columns):
-        """Updates the columns of the table
+        """Update the columns of the table.
 
         Parameters
         ----------
@@ -113,7 +109,7 @@ class Table(_Visual):
 
 
 class SmartGrid(_Visual):
-    """Table Component with filtering and sorting
+    """Table Component with filtering and sorting.
 
     Parameters
     ----------
@@ -123,6 +119,7 @@ class SmartGrid(_Visual):
         Number of rows on each pagination of the table.
 
     """
+
     _TEMPLATE = 'griddle.jsx'
     _COMPONENT = 'SmartGrid'
     _PACKAGE = 'griddle-react@version0'
@@ -149,7 +146,7 @@ class SmartGrid(_Visual):
 
     # pylint: disable=no-self-use
     def do_update(self, data):
-        """Updates the data of the table
+        """Update the data of the table.
 
         Parameters
         ----------
@@ -167,7 +164,7 @@ class SmartGrid(_Visual):
 
     def get(self, data):
         """
-        Gets the table data.
+        Get the table data.
 
         Returns
         -------
@@ -187,6 +184,7 @@ class SVG(_Visual):
         it will stretch to fill up the space available.
 
     """
+
     _TEMPLATE = 'svg.jsx'
     _COMPONENT = 'SVG'
     _PACKAGE = None
@@ -208,7 +206,7 @@ class SVG(_Visual):
 
     # pylint: disable=no-self-use
     def do_image(self, image):
-        """Replaces the image.
+        """Replace the image.
 
         Parameters
         ----------
@@ -242,9 +240,15 @@ class SVG(_Visual):
 
 
 class Plotly(_Visual):
+    """Plotly component.
+
+    Parameters
+    ----------
+    init : dict, optional
+        Initial Plotly data to plot.
+
     """
-    Plotly component.
-    """
+
     _TEMPLATE = 'plotly.jsx'
     _COMPONENT = 'PlotlyPlot'
     _PACKAGE = 'plotly.js'
@@ -281,7 +285,7 @@ class Plotly(_Visual):
         return self.get_click
 
     def on_beforehover(self):
-        """Emits an event before hovering over a point.
+        """Emit an event before hovering over a point.
 
         | **Payload:** TODO.
 
@@ -294,7 +298,7 @@ class Plotly(_Visual):
         return self.get_hover
 
     def on_hover(self):
-        """Emits an event after hovering over a point.
+        """Emit an event after hovering over a point.
 
         | **Payload:** TODO.
 
@@ -307,7 +311,7 @@ class Plotly(_Visual):
         return self.get_hover
 
     def on_unhover(self):
-        """Emits an event when hover is removed.
+        """Emit an event when hover is removed.
 
         | **Payload:** TODO.
 
@@ -320,7 +324,7 @@ class Plotly(_Visual):
         return self.get_hover
 
     def on_select(self):
-        """Emits an event when points are selected with a tool.
+        """Emit an event when points are selected with a tool.
 
         | **Payload:** TODO.
 
@@ -336,7 +340,7 @@ class Plotly(_Visual):
 
     # pylint: disable=no-self-use
     def do_all(self, plot):
-        """Replaces the entire plot.
+        """Replace the entire plot.
 
         Parameters
         ----------
@@ -352,7 +356,7 @@ class Plotly(_Visual):
         return plot
 
     def do_data(self, data):
-        """Replaces the data portion of the plot.
+        """Replace the data portion of the plot.
 
         Parameters
         ----------
@@ -367,7 +371,7 @@ class Plotly(_Visual):
         return data
 
     def do_layout(self, layout):
-        """Updates the layout.
+        """Update the layout.
 
         Parameters
         ----------
@@ -382,7 +386,7 @@ class Plotly(_Visual):
         return layout
 
     def do_config(self, config):
-        """Updates the configuration of the plot.
+        """Update the configuration of the plot.
 
         Parameters
         ----------
@@ -398,7 +402,7 @@ class Plotly(_Visual):
 
     def get(self, data):
         """
-        Gets the current selection of points.
+        Get the current selection of points.
 
         Returns
         -------
@@ -408,7 +412,7 @@ class Plotly(_Visual):
 
     def get_select(self, data):
         """
-        Gets the current selection of points.
+        Get the current selection of points.
 
         Returns
         -------
@@ -418,7 +422,7 @@ class Plotly(_Visual):
 
     def get_click(self, data):
         """
-        Gets the current selection of points.
+        Get the current selection of points.
 
         Returns
         -------
@@ -428,7 +432,7 @@ class Plotly(_Visual):
 
     def get_hover(self, data):
         """
-        Gets the current selection of points.
+        Get the current selection of points.
 
         Returns
         -------
