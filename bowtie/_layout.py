@@ -9,7 +9,7 @@ from itertools import product
 import inspect
 import shutil
 import stat
-from collections import namedtuple, defaultdict
+from collections import namedtuple, defaultdict, OrderedDict
 from subprocess import Popen
 
 from flask import Markup
@@ -200,7 +200,7 @@ class Layout(object):
         self.templates = set(['progress.jsx'])
         self.title = title
         self.username = username
-        self.used = {key: False for key in product(range(rows), range(columns))}
+        self.used = OrderedDict(((key, False) for key in product(range(rows), range(columns))))
         self.widgets = []
         self.spans = []
         self.rows = [Size() for _ in range(rows)]
