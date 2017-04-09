@@ -44,7 +44,7 @@ class SizeError(Exception):
     pass
 
 
-class IndexError(Exception):
+class GridIndexError(Exception):
     """Invalid index into the grid layout."""
 
     pass
@@ -71,29 +71,14 @@ def raise_not_number(x):
 
 
 class Span(object):
-    """Size of rows and columns in grid.
+    """Define the location of a widget.
 
-    This uses CSS's minmax function.
-
-    The minmax() CSS function defines a size range greater than or equal
-    to min and less than or equal to max. If max < min, then max is ignored
-    and minmax(min,max) is treated as min. As a maximum, a <flex> value
-    sets the flex factor of a grid track; it is invalid as a minimum.
+    Indexing starts at 0 and both start and end are inclusive.
 
     """
 
+    # pylint: disable=too-few-public-methods
     def __init__(self, row_start, column_start, row_end=None, column_end=None):
-        """TODO: Docstring for __init__.
-
-        Parameters
-        ----------
-        arg1 : TODO
-
-        Returns
-        -------
-        TODO
-
-        """
         self.row_start = row_start + 1
         self.column_start = column_start + 1
         if row_end is None:
@@ -120,31 +105,39 @@ class Size(object):
 
     def __init__(self):
         self.minimum = None
+        self.maximum = None
         self.fraction(1)
 
     def auto(self):
+        """Set the size to auto or content based."""
         self.maximum = 'auto'
 
     def min_auto(self):
+        """Set the minimum size to auto or content based."""
         self.minimum = 'auto'
 
     def pixels(self, value):
+        """Set the size in pixels."""
         raise_not_number(value)
         self.maximum = '{}px'.format(value)
 
     def min_pixels(self, value):
+        """Set the minimum size in pixels."""
         raise_not_number(value)
         self.minimum = '{}px'.format(value)
 
     def fraction(self, value):
+        """Set the fraction of free space to use as an integer."""
         raise_not_number(value)
         self.maximum = '{}fr'.format(int(value))
 
     def percent(self, value):
+        """Set the percentage of free space to use."""
         raise_not_number(value)
         self.maximum = '{}%'.format(value)
 
     def min_percent(self, value):
+        """Set the minimum percentage of free space to use."""
         raise_not_number(value)
         self.minimum = '{}%'.format(value)
 
@@ -231,15 +224,15 @@ class Layout(object):
         """
         for index in [row_start, row_end]:
             if index is not None and (index < 0 or index >= len(self.rows)):
-                raise IndexError('Invalid Row Index')
+                raise GridIndexError('Invalid Row Index')
         for index in [column_start, column_end]:
             if index is not None and (index < 0 or index >= len(self.columns)):
-                raise IndexError('Invalid Column Index')
+                raise GridIndexError('Invalid Column Index')
 
         if row_start is not None and row_end is not None and row_start > row_end:
-            raise IndexError('Invalid Column Index')
+            raise GridIndexError('Invalid Column Index')
         if column_start is not None and column_end is not None and column_start > column_end:
-            raise IndexError('Invalid Column Index')
+            raise GridIndexError('Invalid Column Index')
 
         # pylint: disable=protected-access
         self.packages.add(widget._PACKAGE)
@@ -248,6 +241,7 @@ class Layout(object):
                                  module=widget._TEMPLATE[:widget._TEMPLATE.find('.')]))
 
         if row_start is None:
+            row, col = None, None
             for (row, col), use in self.used.items():
                 if not use:
                     break
