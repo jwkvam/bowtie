@@ -49,6 +49,8 @@ export default class AntProgress extends React.Component {
         socket.on(uuid + '#error', this.error);
     }
 
+    // Centering this component
+    // http://stackoverflow.com/a/42934918/744520
     render() {
         if (this.state.visible) {
             return (
