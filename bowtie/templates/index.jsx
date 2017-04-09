@@ -76,7 +76,8 @@ class Dashboard extends React.Component {
                 {% for widget, span in widgets %}
                 <div style={{ '{{' }}
                         gridColumn: '{{ span.column_start + sidebar }} / {{ span.column_end + sidebar }}',
-                        gridRow: '{{ span.row_start }} / {{ span.row_end }}'
+                        gridRow: '{{ span.row_start }} / {{ span.row_end }}',
+                        position: 'relative'
                         {{ '}}' }}>
                     {{ widget }}
                 </div>

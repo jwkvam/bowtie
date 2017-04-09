@@ -52,7 +52,10 @@ export default class CProgress extends React.Component {
     render() {
         if (this.state.visible) {
             return (
-                <div style={{display: 'flex', flex: '1 1 0', alignItems: 'center', justifyContent: 'center', alignContent: 'center'}}>
+                <div style={{position: 'absolute',
+                    top: '50%', left: '50%',
+                    transform: 'translate(-50%, -50%)'
+                }}>
                 <Progress
                     type="circle"
                     showInfo
@@ -69,6 +72,7 @@ export default class CProgress extends React.Component {
         }
     }
 }
+//<div style={{display: 'flex', flex: '1 1 0', alignItems: 'center', justifyContent: 'center', alignContent: 'center'}}>
 
 CProgress.propTypes = {
     uuid: React.PropTypes.string.isRequired,
