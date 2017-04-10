@@ -56,6 +56,12 @@ class NoUnusedCellsError(Exception):
     pass
 
 
+class UsedCellsError(Exception):
+    """All cells are used."""
+
+    pass
+
+
 class NoSidebarError(Exception):
     """Cannot add to the sidebar when it doesn't exist."""
 
@@ -81,14 +87,16 @@ class Span(object):
     def __init__(self, row_start, column_start, row_end=None, column_end=None):
         self.row_start = row_start + 1
         self.column_start = column_start + 1
+        # add 2 to then ends because they start counting from 1
+        # and they are exclusive
         if row_end is None:
             self.row_end = row_start + 2
         else:
-            self.row_end = row_end + 1
+            self.row_end = row_end + 2
         if column_end is None:
             self.column_end = column_start + 2
         else:
-            self.column_end = column_end + 1
+            self.column_end = column_end + 2
 
 
 class Size(object):
@@ -240,7 +248,7 @@ class Layout(object):
         self.imports.add(_Import(component=widget._COMPONENT,
                                  module=widget._TEMPLATE[:widget._TEMPLATE.find('.')]))
 
-        if row_start is None:
+        if row_start is None or column_start is None:
             row, col = None, None
             for (row, col), use in self.used.items():
                 if not use:
@@ -249,8 +257,26 @@ class Layout(object):
                 raise NoUnusedCellsError()
             span = Span(row, col)
             self.used[row, col] = True
+        elif row_end is None and column_end is None:
+            if self.used[row_start, column_start]:
+                raise UsedCellsError('Cell at {}, {} is already used.'.format(row_start, row_column))
+            span = Span(row_start, column_start)
+            self.used[row_start, column_start] = True
         else:
-            pass
+            if row_end is None:
+                row_end = row_start
+            if column_end is None:
+                column_end = column_end
+
+            for row, col in product(range(row_start, row_end + 1),
+                                    range(column_start, column_end + 1)):
+                if self.used[row, col]:
+                    raise UsedCellsError('Cell at {}, {} is already used.'.format(row, col))
+
+            for row, col in product(range(row_start, row_end + 1),
+                                    range(column_start, column_end + 1)):
+                self.used[row_start, column_start] = True
+            span = Span(row_start, column_start, row_end, column_end)
 
         self.widgets.append(widget)
         self.spans.append(span)
@@ -305,7 +331,6 @@ class Layout(object):
         all_events.extend(events)
 
         for evt in all_events:
-            # quoted = "'{}'".format(ev)
             self.subscriptions[evt].append((all_events, func.__name__))
 
     def load(self, func):
@@ -378,15 +403,6 @@ class Layout(object):
         for template in self.templates:
             template_src = path.join(file_dir, 'src', template)
             shutil.copy(template_src, app)
-
-        # for i, (visualrow, _) in enumerate(self.visuals):
-        #     for j, (visual, min_width) in enumerate(visualrow):
-        #         # pylint: disable=protected-access
-        #         self.visuals[i][0][j] = (
-        #             visual._instantiate(),
-        #             visual.progress._instantiate(),
-        #             min_width
-        #         )
 
         for i, widget in enumerate(self.widgets):
             if isinstance(widget, _Visual):
