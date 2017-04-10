@@ -259,7 +259,8 @@ class Layout(object):
             self.used[row, col] = True
         elif row_end is None and column_end is None:
             if self.used[row_start, column_start]:
-                raise UsedCellsError('Cell at {}, {} is already used.'.format(row_start, row_column))
+                raise UsedCellsError('Cell at {}, {} is already used.'
+                                     .format(row_start, column_start))
             span = Span(row_start, column_start)
             self.used[row_start, column_start] = True
         else:
@@ -405,13 +406,14 @@ class Layout(object):
             shutil.copy(template_src, app)
 
         for i, widget in enumerate(self.widgets):
+            # pylint: disable=protected-access
+            winst = widget._instantiate()
             if isinstance(widget, _Visual):
                 progress = widget.progress._instantiate()
-                wstr = widget._instantiate()
                 close_progress = '</AntProgress>'
-                self.widgets[i] = ''.join((progress, wstr, close_progress))
+                self.widgets[i] = ''.join((progress, winst, close_progress))
             else:
-                self.widgets[i] = widget._instantiate()
+                self.widgets[i] = winst
 
         columns = []
         if self.sidebar:
