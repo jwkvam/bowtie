@@ -37,7 +37,7 @@ We'll also make an ``initOptions`` property which will let us set an
 initial list of options to populate the dropdown.
 Now that we have that defined let's write it in code::
 
-    DropDown.propTypes = {
+    Dropdown.propTypes = {
         uuid: React.PropTypes.string.isRequired,
         socket: React.PropTypes.object.isRequired,
         multi: React.PropTypes.bool.isRequired,
@@ -46,7 +46,7 @@ Now that we have that defined let's write it in code::
 
 Now we will create the class::
 
-    export default class DropDown extends React.Component {
+    export default class Dropdown extends React.Component {
         ...
     }
 
@@ -112,11 +112,11 @@ We don't need to write much here, it's a little glue code.
 
 First we'll define the class::
 
-    class DropDown(_Controller):
+    class Dropdown(_Controller):
         _TEMPLATE = 'dropdown.jsx'
-        _COMPONENT = 'DropDown'
+        _COMPONENT = 'Dropdown'
         _PACKAGE = 'react-select'
-        _TAG = ('<DropDown initOptions={{{options}}} '
+        _TAG = ('<Dropdown initOptions={{{options}}} '
                 'multi={{{multi}}}'
                 'socket={{socket}} '
                 'uuid={{{uuid}}} '
@@ -134,7 +134,7 @@ the component in Javascript.
 In Bowtie, this gets assigned to the ``_instantiate`` field::
 
     def __init__(self, options, multi=False, caption=''):
-        super(DropDown, self).__init__()
+        super(Dropdown, self).__init__()
 
         self._instantiate = self._TAG.format(
             options=json.dumps(options),

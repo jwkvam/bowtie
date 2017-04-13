@@ -60,7 +60,7 @@ There are a few key parts to any Bowtie application.
 1. Define the components in the app and any global state, e.g.::
 
     plotly = Plotly()
-    dropdown = DropDown(*config)
+    dropdown = Dropdown(*config)
     global_dataset = SQLQuery(cool_data)
 
 2. Create what should happen in response to events::

@@ -58,10 +58,10 @@ Button
     :members:
     :undoc-members:
 
-DropDown
+Dropdown
 ~~~~~~~~
 
-.. autoclass:: bowtie.control.DropDown
+.. autoclass:: bowtie.control.Dropdown
     :members:
     :undoc-members:
 
