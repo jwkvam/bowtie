@@ -405,8 +405,8 @@ class Number(_Controller):
             Size of the textbox.
         caption : str, optional
             Heading text.
-            super(Number, self).__init__()
         """
+        super(Number, self).__init__()
         self._instantiate = self._TAG.format(
             uuid="'{}'".format(self._uuid),
             start=start,
