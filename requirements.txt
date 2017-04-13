@@ -8,6 +8,7 @@ markdown
 msgpack-python
 numpy
 plotlywrapper
+pydocstyle
 pylint
 pytest
 pytest-cov
