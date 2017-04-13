@@ -18,16 +18,7 @@ class _Visual(Component):
 
 
 class Table(_Visual):
-    """Table Component with filtering and sorting.
-
-    Parameters
-    ----------
-    columns : list, optional
-        List of column names to display.
-    results_per_page : int, optional
-        Number of rows on each pagination of the table.
-
-    """
+    """Ant Design table with filtering and sorting."""
 
     _TEMPLATE = 'table.jsx'
     _COMPONENT = 'AntTable'
@@ -40,6 +31,16 @@ class Table(_Visual):
             '/>')
 
     def __init__(self, data=None, columns=None, results_per_page=10):
+        """Create a table and optionally intialize the data.
+
+        Parameters
+        ----------
+        columns : list, optional
+            List of column names to display.
+        results_per_page : int, optional
+            Number of rows on each pagination of the table.
+
+        """
         self.data = []
         self.columns = []
         if data:
@@ -109,16 +110,7 @@ class Table(_Visual):
 
 
 class SmartGrid(_Visual):
-    """Table Component with filtering and sorting.
-
-    Parameters
-    ----------
-    columns : list, optional
-        List of column names to display.
-    results_per_page : int, optional
-        Number of rows on each pagination of the table.
-
-    """
+    """Griddle table with filtering and sorting."""
 
     _TEMPLATE = 'griddle.jsx'
     _COMPONENT = 'SmartGrid'
@@ -131,6 +123,16 @@ class SmartGrid(_Visual):
             '/>')
 
     def __init__(self, columns=None, results_per_page=10):
+        """Create the table, optionally set the columns.
+
+        Parameters
+        ----------
+        columns : list, optional
+            List of column names to display.
+        results_per_page : int, optional
+            Number of rows on each pagination of the table.
+
+        """
         if columns is None:
             columns = []
         self.columns = columns
@@ -175,14 +177,9 @@ class SmartGrid(_Visual):
 
 
 class SVG(_Visual):
-    """SVG image, mainly for matplotlib plots.
+    """SVG image.
 
-    Parameters
-    ----------
-    preserve_aspect_ratio : bool, optional
-        If ``True`` it preserves the aspect ratio otherwise
-        it will stretch to fill up the space available.
-
+    Mainly for matplotlib plots.
     """
 
     _TEMPLATE = 'svg.jsx'
@@ -195,6 +192,15 @@ class SVG(_Visual):
             '/>')
 
     def __init__(self, preserve_aspect_ratio=False):
+        """Create SVG component.
+
+        Parameters
+        ----------
+        preserve_aspect_ratio : bool, optional
+            If ``True`` it preserves the aspect ratio otherwise
+            it will stretch to fill up the space available.
+
+        """
         self.preserve_aspect_ratio = preserve_aspect_ratio
         super(SVG, self).__init__()
 
@@ -242,11 +248,7 @@ class SVG(_Visual):
 class Plotly(_Visual):
     """Plotly component.
 
-    Parameters
-    ----------
-    init : dict, optional
-        Initial Plotly data to plot.
-
+    Useful for many kinds of plots.
     """
 
     _TEMPLATE = 'plotly.jsx'
@@ -258,6 +260,14 @@ class Plotly(_Visual):
             '/>')
 
     def __init__(self, init=None):
+        """Create a Plotly component.
+
+        Parameters
+        ----------
+        init : dict, optional
+            Initial Plotly data to plot.
+
+        """
         if init is None:
             init = dict(data=[], layout={'autosize': False})
         self.init = init

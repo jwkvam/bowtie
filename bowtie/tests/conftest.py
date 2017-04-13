@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Pytest configuration.
-"""
+"""Pytest configuration."""
 
 import os
 import shutil

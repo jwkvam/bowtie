@@ -22,16 +22,7 @@ class _Controller(Component):
 
 
 class Button(_Controller):
-    """Create a button.
-
-    Parameters
-    ----------
-    label : str, optional
-        Label on the button.
-    caption : str, optional
-        Heading text.
-
-    """
+    """An Ant design button."""
 
     _TEMPLATE = 'button.jsx'
     _COMPONENT = 'SimpleButton'
@@ -43,6 +34,15 @@ class Button(_Controller):
             '/>')
 
     def __init__(self, label='', caption=''):
+        """Create a button.
+
+        Parameters
+        ----------
+        label : str, optional
+            Label on the button.
+        caption : str, optional
+            Heading text.
+        """
         super(Button, self).__init__()
 
         self._instantiate = self._TAG.format(
@@ -65,26 +65,13 @@ class Button(_Controller):
         pass
 
 
-class DropDown(_Controller):
-    """Create a drop down.
-
-    Parameters
-    ----------
-    labels : array-like, optional
-        List of strings which will be visible to the user.
-    values : array-like, optional
-        List of values associated with the labels that are hidden from the user.
-    multi : bool, optional
-        If multiple selections are allowed.
-    caption : str, optional
-        Heading text.
-
-    """
+class Dropdown(_Controller):
+    """Dropdown based on react-select."""
 
     _TEMPLATE = 'dropdown.jsx'
     _COMPONENT = 'DropDown'
     _PACKAGE = 'react-select@1.0.0-rc.3'
-    _TAG = ('<DropDown initOptions={{{options}}} '
+    _TAG = ('<Dropdown initOptions={{{options}}} '
             'multi={{{multi}}}'
             'default={{{default}}}'
             'socket={{socket}} '
@@ -92,6 +79,20 @@ class DropDown(_Controller):
             '/>')
 
     def __init__(self, labels=None, values=None, multi=False, default=None, caption=''):
+        """Create a drop down.
+
+        Parameters
+        ----------
+        labels : array-like, optional
+            List of strings which will be visible to the user.
+        values : array-like, optional
+            List of values associated with the labels that are hidden from the user.
+        multi : bool, optional
+            If multiple selections are allowed.
+        caption : str, optional
+            Heading text.
+
+        """
         super(DropDown, self).__init__()
 
         if labels is None and values is None:
@@ -168,6 +169,16 @@ class Switch(_Controller):
             '/>')
 
     def __init__(self, initial=False, caption=''):
+        """Create a toggle switch.
+
+        Parameters
+        ----------
+        initial : bool, optional
+            Starting state of the switch.
+        caption : str, optional
+            Label appearing above the widget.
+
+        """
         super(Switch, self).__init__()
         self._instantiate = self._TAG.format(
             uuid="'{}'".format(self._uuid),
@@ -230,14 +241,18 @@ class _DatePickers(_Controller):
 class DatePicker(_DatePickers):
     """A Date Picker.
 
-    Parameters
-    ----------
-    caption : str, optional
-        Heading text.
-
+    Let's you choose an individual day.
     """
 
     def __init__(self, caption=''):
+        """Create a date picker.
+
+        Parameters
+        ----------
+        caption : str, optional
+            Heading text.
+
+        """
         super(DatePicker, self).__init__(date_type=True, caption=caption)
 
     def on_change(self):
@@ -269,14 +284,18 @@ class DatePicker(_DatePickers):
 class MonthPicker(_DatePickers):
     """A Month Picker.
 
-    Parameters
-    ----------
-    caption : str, optional
-        Heading text.
-
+    Let's you choose a month and year.
     """
 
     def __init__(self, caption=''):
+        """Create month picker.
+
+        Parameters
+        ----------
+        caption : str, optional
+            Heading text.
+
+        """
         super(MonthPicker, self).__init__(month_type=True, caption=caption)
 
     def on_change(self):
@@ -308,14 +327,18 @@ class MonthPicker(_DatePickers):
 class RangePicker(_DatePickers):
     """A Date Range Picker.
 
-    Parameters
-    ----------
-    caption : str, optional
-        Heading text.
-
+    Choose two dates to use as a range.
     """
 
     def __init__(self, caption=''):
+        """Create a date range picker.
+
+        Parameters
+        ----------
+        caption : str, optional
+            Heading text.
+
+        """
         super(RangePicker, self).__init__(range_type=True, caption=caption)
 
     def on_change(self):
@@ -345,20 +368,7 @@ class RangePicker(_DatePickers):
 
 
 class Number(_Controller):
-    """Create a number input.
-
-    Parameters
-    ----------
-    start : number, optional
-        Starting number
-    minimum : number, optional
-        Lower bound
-    maximum : number, optional
-        Upper bound
-    size : 'default', 'large', 'small', optional
-        Size of the textbox.
-    caption : str, optional
-        Heading text.
+    """A number input widget with increment and decrement buttons.
 
     References
     ----------
@@ -381,8 +391,22 @@ class Number(_Controller):
 
     def __init__(self, start=0, minimum=-1e100, maximum=1e100,
                  step=1, size='default', caption=''):
-        super(Number, self).__init__()
+        """Create a number input.
 
+        Parameters
+        ----------
+        start : number, optional
+            Starting number
+        minimum : number, optional
+            Lower bound
+        maximum : number, optional
+            Upper bound
+        size : 'default', 'large', 'small', optional
+            Size of the textbox.
+        caption : str, optional
+            Heading text.
+            super(Number, self).__init__()
+        """
         self._instantiate = self._TAG.format(
             uuid="'{}'".format(self._uuid),
             start=start,
@@ -420,16 +444,7 @@ class Number(_Controller):
 
 
 class Textbox(_Controller):
-    """Create a textbox.
-
-    Parameters
-    ----------
-    placeholder : str, optional
-        Initial text that appears.
-    size : 'default', 'large', 'small', optional
-        Size of the textbox.
-    caption : str, optional
-        Heading text.
+    """A single line text box.
 
     References
     ----------
@@ -448,6 +463,18 @@ class Textbox(_Controller):
             '/>')
 
     def __init__(self, placeholder='Enter text', size='default', caption=''):
+        """Create a textbox.
+
+        Parameters
+        ----------
+        placeholder : str, optional
+            Initial text that appears.
+        size : 'default', 'large', 'small', optional
+            Size of the textbox.
+        caption : str, optional
+            Heading text.
+
+        """
         super(Textbox, self).__init__()
 
         self._instantiate = self._TAG.format(
@@ -497,23 +524,7 @@ class Textbox(_Controller):
 
 
 class Slider(_Controller):
-    """Create a slider.
-
-    Parameters
-    ----------
-    start : number or list with two values, optional
-        Determines the starting value.
-        If a list of two values are given it will be a range slider.
-    ranged : bool, optional
-        If this is a range slider.
-    minimum : number, optional
-        Minimum value of the slider.
-    maximum : number, optional
-        Maximum value of the slider.
-    step : number, optional
-        Step size.
-    caption : str, optional
-        Heading text.
+    """Ant Design slider.
 
     References
     ----------
@@ -537,6 +548,25 @@ class Slider(_Controller):
 
     def __init__(self, start=None, ranged=False, minimum=0, maximum=100, step=1,
                  caption=''):
+        """Create a slider.
+
+        Parameters
+        ----------
+        start : number or list with two values, optional
+            Determines the starting value.
+            If a list of two values are given it will be a range slider.
+        ranged : bool, optional
+            If this is a range slider.
+        minimum : number, optional
+            Minimum value of the slider.
+        maximum : number, optional
+            Maximum value of the slider.
+        step : number, optional
+            Step size.
+        caption : str, optional
+            Heading text.
+
+        """
         super(Slider, self).__init__()
 
         if not start:

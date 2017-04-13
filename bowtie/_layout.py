@@ -77,14 +77,22 @@ def raise_not_number(x):
 
 
 class Span(object):
-    """Define the location of a widget.
-
-    Indexing starts at 0 and both start and end are inclusive.
-
-    """
+    """Define the location of a widget."""
 
     # pylint: disable=too-few-public-methods
     def __init__(self, row_start, column_start, row_end=None, column_end=None):
+        """Create a span for a widget.
+
+        Indexing starts at 0. Both start and end are inclusive.
+
+        Parameters
+        ----------
+        row_start : int
+        column_start : int
+        row_end : int, optional
+        column_end : int, optional
+
+        """
         self.row_start = row_start + 1
         self.column_start = column_start + 1
         # add 2 to then ends because they start counting from 1
@@ -112,6 +120,7 @@ class Size(object):
     """
 
     def __init__(self):
+        """Create a default row or column size with fraction = 1."""
         self.minimum = None
         self.maximum = None
         self.fraction(1)
@@ -150,6 +159,7 @@ class Size(object):
         self.minimum = '{}%'.format(value)
 
     def __repr__(self):
+        """Represent the size to be inserted into a JSX template."""
         if self.minimum:
             return 'minmax({}, {})'.format(self.minimum, self.maximum)
         return self.maximum
@@ -157,38 +167,39 @@ class Size(object):
 
 
 class Layout(object):
-    """Create a Bowtie App.
-
-    Parameters
-    ----------
-    title : str, optional
-        Title of the HTML.
-    description : str, optional
-        Describe the app in Markdown, inserted in control pane.
-    basic_auth : bool, optional
-        Enable basic authentication.
-    username : str, optional
-        Username for basic authentication.
-    password : str, optional
-        Password for basic authentication.
-    background_color : str, optional
-        Background color of the control pane.
-    directory : str, optional
-        Location where app is compiled.
-    host : str, optional
-        Host IP address.
-    port : int, optional
-        Host port number.
-    debug : bool, optional
-        Enable debugging in Flask. Disable in production!
-
-    """
+    """Core class to layout, connect, build a Bowtie app."""
 
     def __init__(self, rows=1, columns=1, sidebar=True,
                  title='Bowtie App', description='Bowtie App\n---',
                  basic_auth=False, username='username', password='password',
                  background_color='White', directory='build',
                  host='0.0.0.0', port=9991, debug=False):
+        """Create a Bowtie App.
+
+        Parameters
+        ----------
+        title : str, optional
+            Title of the HTML.
+        description : str, optional
+            Describe the app in Markdown, inserted in control pane.
+        basic_auth : bool, optional
+            Enable basic authentication.
+        username : str, optional
+            Username for basic authentication.
+        password : str, optional
+            Password for basic authentication.
+        background_color : str, optional
+            Background color of the control pane.
+        directory : str, optional
+            Location where app is compiled.
+        host : str, optional
+            Host IP address.
+        port : int, optional
+            Host port number.
+        debug : bool, optional
+            Enable debugging in Flask. Disable in production!
+
+        """
         self.background_color = background_color
         self.basic_auth = basic_auth
         self.controllers = []
