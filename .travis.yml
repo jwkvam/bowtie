@@ -14,7 +14,7 @@ install:
     - npm install -g webpack@2.3.1 yarn
     - npm install -g eslint babel-eslint eslint-plugin-react
     - make eslint
-    - make pydocstyle
+    - make checkdocs
     - sudo apt-get update
       # We do this conditionally because it saves us some downloading if the
       # version is the same.
