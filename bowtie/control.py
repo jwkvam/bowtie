@@ -69,7 +69,7 @@ class Dropdown(_Controller):
     """Dropdown based on react-select."""
 
     _TEMPLATE = 'dropdown.jsx'
-    _COMPONENT = 'DropDown'
+    _COMPONENT = 'Dropdown'
     _PACKAGE = 'react-select@1.0.0-rc.3'
     _TAG = ('<Dropdown initOptions={{{options}}} '
             'multi={{{multi}}}'
@@ -93,7 +93,7 @@ class Dropdown(_Controller):
             Heading text.
 
         """
-        super(DropDown, self).__init__()
+        super(Dropdown, self).__init__()
 
         if labels is None and values is None:
             labels = []

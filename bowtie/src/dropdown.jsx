@@ -5,7 +5,7 @@ import 'react-select/dist/react-select.css';
 
 var msgpack = require('msgpack-lite');
 
-export default class DropDown extends React.Component {
+export default class Dropdown extends React.Component {
     constructor(props) {
         super(props);
         this.state = {value: this.props.default, options: this.props.initOptions};
@@ -50,7 +50,7 @@ export default class DropDown extends React.Component {
     }
 }
 
-DropDown.propTypes = {
+Dropdown.propTypes = {
     uuid: React.PropTypes.string.isRequired,
     socket: React.PropTypes.object.isRequired,
     multi: React.PropTypes.bool.isRequired,

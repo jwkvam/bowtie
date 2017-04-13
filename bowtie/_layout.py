@@ -332,7 +332,7 @@ class Layout(object):
 
         Examples
         --------
-        >>> dd = DropDown()
+        >>> dd = Dropdown()
         >>> slide = Slider()
         >>> def callback(dd_item, slide_value):
         >>>     pass
