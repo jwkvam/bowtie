@@ -4,7 +4,7 @@ import 'antd/dist/antd.css';
 
 var msgpack = require('msgpack-lite');
 
-export default class CProgress extends React.Component {
+export default class AntProgress extends React.Component {
     constructor(props) {
         super(props);
         this.state = {percent: 0, visible: false, status: 'active'};
@@ -49,10 +49,15 @@ export default class CProgress extends React.Component {
         socket.on(uuid + '#error', this.error);
     }
 
+    // Centering this component
+    // http://stackoverflow.com/a/42934918/744520
     render() {
         if (this.state.visible) {
             return (
-                <div style={{display: 'flex', flex: '1 1 0', alignItems: 'center', justifyContent: 'center', alignContent: 'center'}}>
+                <div style={{position: 'absolute',
+                    top: '50%', left: '50%',
+                    transform: 'translate(-50%, -50%)'
+                }}>
                 <Progress
                     type="circle"
                     showInfo
@@ -70,7 +75,7 @@ export default class CProgress extends React.Component {
     }
 }
 
-CProgress.propTypes = {
+AntProgress.propTypes = {
     uuid: React.PropTypes.string.isRequired,
     socket: React.PropTypes.object.isRequired,
     children: React.PropTypes.any

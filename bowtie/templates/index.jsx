@@ -4,7 +4,7 @@ import {render} from 'react-dom';
 import io from 'socket.io-client';
 import 'antd/dist/antd.css'
 
-import CProgress from './progress';
+import AntProgress from './progress';
 
 {% for component in components %}
 import {{ component.component }} from './{{ component.module }}';
@@ -47,10 +47,18 @@ class Dashboard extends React.Component {
 
     render() {
         return (
-            <div style={{ '{{' }}display: 'flex', flexFlow: 'row nowrap', width: '100%', height: '100%',
+            <div style={{ '{{' }}display: 'grid',
+                    gridTemplateColumns: '{{ columns|join(' ') }}',
+                    gridTemplateRows: '{{ rows|join(' ') }}',
+                    width: '100%', height: '100%',
                     minHeight: '100vh', maxHeight: '100%',
                     minWidth: '100vw', maxWidth: '100%'{{ '}}' }}>
-                <div style={{ '{{' }}display: 'flex', flexFlow: 'column nowrap', flex: '0 0 18em', padding: '7px', backgroundColor: '{{background_color}}'{{ '}}' }}>
+
+                {% if sidebar %}
+                <div style={{ '{{' }}padding: '7px', backgroundColor: '{{background_color}}',
+                        gridColumn: '1 / 2',
+                        gridRow: '1 / -1'
+                        {{ '}}' }}>
                     {{ description }}
 
                     {% for control in controls %}
@@ -63,25 +71,23 @@ class Dashboard extends React.Component {
                     </div>
                     {% endfor %}
                 </div>
+                {% endif %}
 
-                <div style={{ '{{' }}display: 'flex', flexFlow: 'column nowrap', flex: '1 1 0'{{ '}}' }}>
-                    {% for visualrow, min_height in visuals %}
-                    <div style={{ '{{' }}display: 'flex', minHeight: '{{ min_height }}px',
-                            flexFlow: 'row nowrap', flex: '1 1 0'{{ '}}' }}>
-                        {% for visual, progress, min_width in visualrow %}
-                        <div style={{ '{{' }}display: 'flex', minWidth: '{{ min_width }}px',
-                                flex: '1 1 0'{{ '}}' }}>
-                            {{ progress }}
-                            {{ visual }}
-                            </CProgress>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% endfor %}
+                {% for widget, span in widgets %}
+                <div style={{ '{{' }}
+                        gridColumn: '{{ span.column_start + sidebar }} / {{ span.column_end + sidebar }}',
+                        gridRow: '{{ span.row_start }} / {{ span.row_end }}',
+                        position: 'relative'
+                        {{ '}}' }}>
+                    {{ widget }}
                 </div>
+                {% endfor %}
             </div>
         );
     }
 }
+
+                    // <!-- gridTemplateColumns: '18em {% for x in size %}{{x}}{% endfor %}', -->
+//  minWidth: '{{ min_width }}px',
 
 render(<Dashboard />, document.getElementById('app'));

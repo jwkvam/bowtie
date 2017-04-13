@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
-"""
-Progress component
+"""Progress component.
+
+Not for direct use by user.
 """
 
 from bowtie._component import Component
 
 
 class Progress(Component):
-    """This component is used by all visual components and
+    """A progress indicator.
+
+    This component is used by all visual components and
     is not meant to be used alone.
 
     By default, it is not visible.
@@ -33,10 +36,11 @@ class Progress(Component):
     https://ant.design/components/progress/
 
     """
+
     _TEMPLATE = 'progress.jsx'
-    _COMPONENT = 'CProgress'
+    _COMPONENT = 'AntProgress'
     _PACKAGE = None
-    _TAG = ('<CProgress '
+    _TAG = ('<AntProgress '
             'socket={{socket}} '
             'uuid={{{uuid}}} '
             '>')
@@ -63,7 +67,7 @@ class Progress(Component):
         return percent
 
     def do_inc(self, inc):
-        """Increments the progress indicator.
+        """Increment the progress indicator.
 
         Parameters
         ----------
@@ -78,7 +82,7 @@ class Progress(Component):
         return inc
 
     def do_visible(self, visible):
-        """Hides and shows the progress indicator.
+        """Hide and shows the progress indicator.
 
         Parameters
         ----------
@@ -94,7 +98,7 @@ class Progress(Component):
         return visible
 
     def do_active(self):
-        """Resets the progress to active (in progress) status.
+        """Reset the progress to active (in progress) status.
 
         Returns
         -------

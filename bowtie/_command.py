@@ -17,35 +17,30 @@ from bowtie._compat import numargs
 
 
 class WrongNumberOfArguments(TypeError):
-    """The "build" function accepts an incorrect number of arguments.
-    """
+    """The "build" function accepts an incorrect number of arguments."""
+
     pass
 
 
 def command(func):
-    """
-    Decorates a function for building a Bowtie
-    application and turns it into a command line interface.
+    """Command line interface decorator.
 
+    Decorate a function for building a Bowtie
+    application and turn it into a command line interface.
     """
-
     @click.group(options_metavar='[-p <path>] [--help]')
     @click.option('--path', '-p', default='build', type=str,
                   help='Path to build the app.')
     @click.pass_context
     def cmd(ctx, path):
-        """
-        Bowtie CLI to help build and run your app.
-        """
+        """Bowtie CLI to help build and run your app."""
         ctx.obj = path
 
     # pylint: disable=unused-variable
     @cmd.command(add_help_option=False)
     @click.pass_context
     def build(ctx):
-        """
-        Writes the app, downloads the packages, and bundles it with Webpack.
-        """
+        """Write the app, downloads the packages, and bundles it with Webpack."""
         nargs = numargs(func)
         if nargs == 0:
             func()
@@ -62,9 +57,7 @@ def command(func):
     @click.argument('extra', nargs=-1, type=click.UNPROCESSED)
     @click.pass_context
     def serve(ctx, extra):
-        """
-        Serves the Bowtie app locally.
-        """
+        """Serve the Bowtie app."""
         line = ('./{}/src/server.py'.format(ctx.obj),) + extra
         call(line)
 
@@ -73,9 +66,7 @@ def command(func):
     @click.argument('extra', nargs=-1, type=click.UNPROCESSED)
     @click.pass_context
     def dev(ctx, extra):
-        """
-        Recompiles the app for development.
-        """
+        """Recompile the app for development."""
         line = ('webpack', '-d') + extra
         call(line, cwd=ctx.obj)
 
@@ -84,9 +75,7 @@ def command(func):
     @click.argument('extra', nargs=-1, type=click.UNPROCESSED)
     @click.pass_context
     def prod(ctx, extra):
-        """
-        Recompiles the app for production.
-        """
+        """Recompile the app for production."""
         line = ('webpack', '--define', 'process.env.NODE_ENV="production"', '--progress') + extra
         call(line, cwd=ctx.obj)
 

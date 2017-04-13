@@ -99,8 +99,8 @@ To finish, we simply wrap the function with the ``command`` decorator::
     def construct(path):
         from bowtie import Layout
         layout = Layout(directory=path)
-        layout.add_controller(freq_slider)
-        layout.add_visual(sine_plot)
+        layout.add_sidebar(freq_slider)
+        layout.add(sine_plot)
         layout.subscribe(listener, freq_slider.on_change)
         layout.build()
 

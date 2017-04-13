@@ -32,6 +32,7 @@ install:
     - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
     - source activate test-environment
     - pip install -r requirements.txt
+    - make checkdocs
 
 script:
     - make test

@@ -34,9 +34,9 @@ def test_plotly(remove_build):
 
     path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'build')
     layout = Layout(directory=path)
-    layout.add_visual(viz)
-    layout.add_controller(ctrl)
-    layout.add_controller(ctrl2)
+    layout.add(viz)
+    layout.add_sidebar(ctrl)
+    layout.add_sidebar(ctrl2)
     layout.subscribe(callback, ctrl.on_change)
     layout.subscribe(callback, ctrl2.on_click)
     layout.build()
