@@ -86,7 +86,7 @@ def command(func):
         try:
             arg = sys.argv[1:]
         except IndexError:
-            arg = '--help',
+            arg = ('--help',)
         # pylint: disable=no-value-for-parameter
         sys.exit(cmd(arg))
 
