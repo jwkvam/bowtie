@@ -40,7 +40,7 @@ def json_conversion(obj):
         # numpy isn't an explicit dependency of bowtie
         # so we can't assume it's available
         import numpy as np
-        if isinstance(obj, np.ndarray) or isinstance(obj, np.generic):
+        if isinstance(obj, np.ndarray, np.generic):
             return obj.tolist()
     except ImportError:
         pass
@@ -54,7 +54,7 @@ def json_conversion(obj):
     except ImportError:
         pass
 
-    if isinstance(obj, datetime) or isinstance(obj, time) or isinstance(obj, date):
+    if isinstance(obj, datetime, time, date):
         return obj.isoformat()
     raise TypeError('Not sure how to serialize {} of type {}'.format(obj, type(obj)))
 
@@ -70,7 +70,7 @@ def encoders(obj):
         # numpy isn't an explicit dependency of bowtie
         # so we can't assume it's available
         import numpy as np
-        if isinstance(obj, np.ndarray) or isinstance(obj, np.generic):
+        if isinstance(obj, np.ndarray, np.generic):
             # https://docs.scipy.org/doc/numpy/reference/arrays.scalars.html
             return obj.tolist()
     except ImportError:
@@ -85,7 +85,7 @@ def encoders(obj):
     except ImportError:
         pass
 
-    if isinstance(obj, datetime) or isinstance(obj, time) or isinstance(obj, date):
+    if isinstance(obj, datetime, time, date):
         return obj.isoformat()
 
     return obj

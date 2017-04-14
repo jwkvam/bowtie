@@ -368,13 +368,7 @@ class RangePicker(_DatePickers):
 
 
 class Number(_Controller):
-    """A number input widget with increment and decrement buttons.
-
-    References
-    ----------
-    https://ant.design/components/input/
-
-    """
+    """A number input widget with increment and decrement buttons."""
 
     _TEMPLATE = 'number.jsx'
     _COMPONENT = 'AntNumber'
@@ -405,6 +399,11 @@ class Number(_Controller):
             Size of the textbox.
         caption : str, optional
             Heading text.
+
+        References
+        ----------
+        https://ant.design/components/input/
+
         """
         super(Number, self).__init__()
         self._instantiate = self._TAG.format(
@@ -444,13 +443,7 @@ class Number(_Controller):
 
 
 class Textbox(_Controller):
-    """A single line text box.
-
-    References
-    ----------
-    https://ant.design/components/input/
-
-    """
+    """A single line text box."""
 
     _TEMPLATE = 'textbox.jsx'
     _COMPONENT = 'Textbox'
@@ -473,6 +466,10 @@ class Textbox(_Controller):
             Size of the textbox.
         caption : str, optional
             Heading text.
+
+        References
+        ----------
+        https://ant.design/components/input/
 
         """
         super(Textbox, self).__init__()
@@ -524,13 +521,7 @@ class Textbox(_Controller):
 
 
 class Slider(_Controller):
-    """Ant Design slider.
-
-    References
-    ----------
-    https://ant.design/components/slider/
-
-    """
+    """Ant Design slider."""
 
     _TEMPLATE = 'slider.jsx'
     _COMPONENT = 'AntSlider'
@@ -565,6 +556,10 @@ class Slider(_Controller):
             Step size.
         caption : str, optional
             Heading text.
+
+        References
+        ----------
+        https://ant.design/components/slider/
 
         """
         super(Slider, self).__init__()
@@ -626,27 +621,7 @@ class Slider(_Controller):
 
 
 class Nouislider(_Controller):
-    """A lightweight JavaScript range slider library.
-
-    Parameters
-    ----------
-    start : number or list with two values, optional
-        Determines the starting value.
-        If a list of two values are given it will be a range slider.
-    minimum : number, optional
-        Minimum value of the slider.
-    maximum : number, optional
-        Maximum value of the slider.
-    tooltips : bool, optional
-        Show a popup text box.
-    caption : str, optional
-        Heading text.
-
-    References
-    ----------
-    https://refreshless.com/nouislider/events-callbacks/
-
-    """
+    """A lightweight JavaScript range slider library."""
 
     _TEMPLATE = 'nouislider.jsx'
     _COMPONENT = 'Nouislider'
@@ -659,7 +634,27 @@ class Nouislider(_Controller):
             '/>')
 
     def __init__(self, start=0, minimum=0, maximum=100, tooltips=True, caption=''):
-        """Create a slider."""
+        """Create a slider.
+
+        Parameters
+        ----------
+        start : number or list with two values, optional
+            Determines the starting value.
+            If a list of two values are given it will be a range slider.
+        minimum : number, optional
+            Minimum value of the slider.
+        maximum : number, optional
+            Maximum value of the slider.
+        tooltips : bool, optional
+            Show a popup text box.
+        caption : str, optional
+            Heading text.
+
+        References
+        ----------
+        https://refreshless.com/nouislider/events-callbacks/
+
+        """
         super(Nouislider, self).__init__()
 
         if not isinstance(start, Iterable):
