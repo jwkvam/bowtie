@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 0.3.0 / 2017-04-13
+
+### Added
+
+  * New more flexible and powerful layout API.
+  * Now using CSS Grid instead of Flexbox.
+  * Sidebar is now optional.
+  * Control widgets can be placed anywhere.
+
+### Breaking
+
+  * `add_visual` is now simply `add`
+  * `add_controller` is now `add_sidebar`
+  * DropDown is renamed to Dropdown
+
 ## 0.2.6 / 2017-03-27
 
 ### Added

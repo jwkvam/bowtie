@@ -17,7 +17,7 @@
     "less-loader": "^2.2.3",
     "lodash.clonedeep": "^4.5.0",
     "msgpack-lite": "^0.1.26",
-    "node-sass": "^4.5.0",
+    "node-sass": "^4.5.2",
     "normalize.css": "^6.0.0",
     "postcss-modules-values": "^1.2.2",
     "react": "^15.4.2",
