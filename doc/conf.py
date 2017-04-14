@@ -306,10 +306,6 @@ texinfo_documents = [
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'https://docs.python.org/': None}
 
-def skip(app, what, name, obj, skip, options):
-    if name == "__init__":
-        return False
-    return skip
-
-def setup(app):
-    app.connect("autodoc-skip-member", skip)
+# rtd doesn't seem to support the setup function
+# so we'll just combine the class and __init__ docstrings
+autoclass_content = 'both'
