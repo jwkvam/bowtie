@@ -6,7 +6,7 @@ from bowtie._compat import numargs
 
 
 def test_numargs():
-    """test numargs"""
+    """Numargs testing."""
 
     # pylint: disable=missing-docstring
     def onearg(x):

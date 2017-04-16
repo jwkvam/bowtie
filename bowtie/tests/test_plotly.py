@@ -23,9 +23,7 @@ def callback(*args):
 
 # pylint: disable=unused-argument
 def test_plotly(remove_build):
-    """
-    Tests plotly.
-    """
+    """Tests plotly."""
     viz = Plotly()
     ctrl = Nouislider()
     ctrl2 = Button()
