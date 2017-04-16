@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Plotly testing
-"""
+"""Plotly testing."""
 
 import os
 import subprocess
@@ -25,9 +23,7 @@ def callback(*args):
 
 # pylint: disable=unused-argument
 def test_plotly(remove_build):
-    """
-    Tests plotly.
-    """
+    """Tests plotly."""
     viz = Plotly()
     ctrl = Nouislider()
     ctrl2 = Button()

@@ -7,6 +7,7 @@ jinja2
 markdown
 msgpack-python
 numpy
+pandas
 plotlywrapper
 pydocstyle
 pylint

@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Compile tests
-"""
+"""Compile tests."""
 
 import os
 
@@ -19,9 +17,7 @@ def callback(*args):
 
 # pylint: disable=unused-argument
 def test_build(remove_build):
-    """
-    Tests the build process.
-    """
+    """Tests the build process."""
     ctrl = Nouislider()
     viz = Plotly()
 
