@@ -377,16 +377,16 @@ class Layout(object):
             lstrip_blocks=True
         )
 
-        server = env.get_template('server.py')
-        index = env.get_template('index.html')
-        react = env.get_template('index.jsx')
+        server = env.get_template('server.py.j2')
+        index = env.get_template('index.html.j2')
+        react = env.get_template('index.jsx.j2')
 
         src, app, templates = create_directories(directory=self.directory)
 
         webpack_src = path.join(file_dir, 'src/webpack.config.js')
         shutil.copy(webpack_src, self.directory)
 
-        server_path = path.join(src, server.name)
+        server_path = path.join(src, server.name[:-3])
         # [1] grabs the parent stack and [1] grabs the filename
         source_filename = inspect.stack()[1][1]
         with open(server_path, 'w') as f:
@@ -407,7 +407,7 @@ class Layout(object):
         perms = os.stat(server_path)
         os.chmod(server_path, perms.st_mode | stat.S_IEXEC)
 
-        with open(path.join(templates, index.name), 'w') as f:
+        with open(path.join(templates, index.name[:-3]), 'w') as f:
             f.write(
                 index.render(title=self.title)
             )
@@ -431,7 +431,7 @@ class Layout(object):
             columns.append('18em')
         columns += self.columns
 
-        with open(path.join(app, react.name), 'w') as f:
+        with open(path.join(app, react.name[:-3]), 'w') as f:
             f.write(
                 react.render(
                     description=self.description,
