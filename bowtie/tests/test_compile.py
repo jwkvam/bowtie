@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Compile tests
-"""
+"""Compile tests."""
 
 import os
 

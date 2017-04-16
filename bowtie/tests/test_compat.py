@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Compat testing
-"""
+"""Compat testing."""
 
 from bowtie._compat import numargs
 

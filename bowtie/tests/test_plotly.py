@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Plotly testing
-"""
+"""Plotly testing."""
 
 import os
 import subprocess
