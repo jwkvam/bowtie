@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 0.3.1 / 2017-04-16
+
+### Fixed
+
+  * isinstance calls use correct arguments
+
 ## 0.3.0 / 2017-04-13
 
 ### Added
