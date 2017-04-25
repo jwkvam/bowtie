@@ -11,7 +11,7 @@ import {{ component.component }} from './{{ component.module }}';
 {% endfor %}
 
 var msgpack = require('msgpack-lite');
-var socket = io();
+var socket = io({path: '/{{ socketio }}socket.io'});
 
 class Dashboard extends React.Component {
     constructor(props) {

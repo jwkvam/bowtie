@@ -173,7 +173,7 @@ class Layout(object):
                  title='Bowtie App', description='Bowtie App\n---',
                  basic_auth=False, username='username', password='password',
                  background_color='White', directory='build',
-                 host='0.0.0.0', port=9991, debug=False):
+                 host='0.0.0.0', port=9991, socketio='', debug=False):
         """Create a Bowtie App.
 
         Parameters
@@ -196,6 +196,8 @@ class Layout(object):
             Host IP address.
         port : int, optional
             Host port number.
+        socketio : string, optional
+            Socket.io path prefix, only change this for advanced deployments.
         debug : bool, optional
             Enable debugging in Flask. Disable in production!
 
@@ -213,6 +215,7 @@ class Layout(object):
         self.packages = set([])
         self.password = password
         self.port = port
+        self.socketio = socketio
         self.schedules = []
         self.subscriptions = defaultdict(list)
         self.pages = {}
@@ -419,6 +422,7 @@ class Layout(object):
         with open(server_path, 'w') as f:
             f.write(
                 server.render(
+                    socketio=self.socketio,
                     basic_auth=self.basic_auth,
                     username=self.username,
                     password=self.password,
@@ -463,6 +467,7 @@ class Layout(object):
             f.write(
                 react.render(
                     description=self.description,
+                    socketio=self.socketio,
                     sidebar=self.sidebar,
                     columns=columns,
                     rows=self.rows,
