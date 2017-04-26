@@ -42,6 +42,7 @@ class Button(_Controller):
             Label on the button.
         caption : str, optional
             Heading text.
+
         """
         super(Button, self).__init__()
 
@@ -208,6 +209,7 @@ class Switch(_Controller):
         -------
         bool
             True if the switch is enabled.
+
         """
         return data
 
@@ -277,6 +279,7 @@ class DatePicker(_DatePickers):
         -------
         str
             Date in the format "YYYY-MM-DD"
+
         """
         return data
 
@@ -320,6 +323,7 @@ class MonthPicker(_DatePickers):
         -------
         str
             Month in the format "YYYY-MM"
+
         """
         return data
 
@@ -363,6 +367,7 @@ class RangePicker(_DatePickers):
         -------
         list
             A list of two strings ``["yyyy-mm-dd", "yyyy-mm-dd"]``.
+
         """
         return data
 
@@ -616,6 +621,7 @@ class Slider(_Controller):
         -------
         list or number
             List if it's a range slider and gives two values.
+
         """
         return data
 
@@ -769,5 +775,6 @@ class Nouislider(_Controller):
         -------
         list or number
             List if it's a range slider and gives two values.
+
         """
         return data

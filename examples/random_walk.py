@@ -30,8 +30,8 @@ def walk():
 def construct():
     from bowtie import Layout
     layout = Layout(debug=True)
-    layout.add_controller(sigma)
-    layout.add_visual(mainplot)
+    layout.add_sidebar(sigma)
+    layout.add(mainplot)
     layout.schedule(0.1, walk)
 
     layout.build()

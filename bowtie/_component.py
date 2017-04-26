@@ -162,6 +162,7 @@ def make_getter(getter):
         if flask.has_request_context():
             emit(signal, callback=lambda x: event.put(unpack(x)))
         else:
+            print('no context')
             sio = flask.current_app.extensions['socketio']
             sio.emit(signal, callback=lambda x: event.put(unpack(x)))
         data = event.get(timeout=timeout)
