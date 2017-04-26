@@ -352,6 +352,7 @@ class Layout(object):
         ----------
         func : callable
             Function to be called.
+
         """
         self.init = func.__name__
 
@@ -364,6 +365,7 @@ class Layout(object):
             Minimum interval of function calls.
         func : callable
             Function to be called.
+
         """
         self.schedules.append(_Schedule(seconds, func.__name__))
 

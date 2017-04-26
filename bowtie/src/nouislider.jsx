@@ -1,6 +1,6 @@
 import React from 'react';
+import noUiSlider from 'nouislider/distribute/nouislider.min.js';
 import 'nouislider/distribute/nouislider.css';
-import nouislider from 'nouislider';
 
 var msgpack = require('msgpack-lite');
 
@@ -12,7 +12,7 @@ export default class Nouislider extends React.Component {
     }
 
     createSlider() {
-        var slider = this.slider = nouislider.create(this.sliderContainer,
+        var slider = this.slider = noUiSlider.create(this.sliderContainer,
             {...this.props}
         );
 

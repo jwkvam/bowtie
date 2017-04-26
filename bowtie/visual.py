@@ -172,6 +172,7 @@ class SmartGrid(_Visual):
         -------
         list
             Each entry in the list is a dict of labels and values for a row.
+
         """
         return data
 
@@ -282,7 +283,7 @@ class Plotly(_Visual):
     ## Events
 
     def on_click(self):
-        """Plotly click event.
+        """React to Plotly click event.
 
         | **Payload:** TODO.
 
@@ -411,41 +412,41 @@ class Plotly(_Visual):
         return config
 
     def get(self, data):
-        """
-        Get the current selection of points.
+        """Get the current selection of points.
 
         Returns
         -------
         list
+
         """
         return data
 
     def get_select(self, data):
-        """
-        Get the current selection of points.
+        """Get the current selection of points.
 
         Returns
         -------
         list
+
         """
         return data
 
     def get_click(self, data):
-        """
-        Get the current selection of points.
+        """Get the current selection of points.
 
         Returns
         -------
         list
+
         """
         return data
 
     def get_hover(self, data):
-        """
-        Get the current selection of points.
+        """Get the current selection of points.
 
         Returns
         -------
         list
+
         """
         return data
