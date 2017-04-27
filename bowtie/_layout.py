@@ -215,6 +215,7 @@ class Layout(object):
         self.port = port
         self.schedules = []
         self.subscriptions = defaultdict(list)
+        self.pages = {}
         self.templates = set(['progress.jsx'])
         self.title = title
         self.username = username
@@ -315,6 +316,30 @@ class Layout(object):
         self.controllers.append(_Control(instantiate=control._instantiate,
                                          caption=control.caption))
 
+    def respond(self, pager, func):
+        """Call a function in response to a page.
+
+        When the pager calls notify, the function will be called.
+
+        Parameters
+        ----------
+        pager : Pager
+            Pager that to signal when func is called.
+        func : callable
+            Function to be called.
+
+        Examples
+        --------
+        >>> pager = Pager()
+        >>> def callback():
+        >>>     pass
+        >>> def scheduledtask():
+        >>>     pager.notify()
+        >>> layout.respond(pager, callback)
+
+        """
+        self.pages[pager] = func.__name__
+
     def subscribe(self, func, event, *events):
         """Call a function in response to an event.
 
@@ -401,6 +426,7 @@ class Layout(object):
                     subscriptions=self.subscriptions,
                     schedules=self.schedules,
                     initial=self.init,
+                    pages=self.pages,
                     host="'{}'".format(self.host),
                     port=self.port,
                     debug=self.debug
@@ -440,6 +466,7 @@ class Layout(object):
                     sidebar=self.sidebar,
                     columns=columns,
                     rows=self.rows,
+                    pages=self.pages,
                     background_color=self.background_color,
                     components=self.imports,
                     controls=self.controllers,

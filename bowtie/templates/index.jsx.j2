@@ -43,6 +43,9 @@ class Dashboard extends React.Component {
     componentDidMount() {
         socket.on('cache_save', this.saveValue);
         socket.on('cache_load', this.loadValue);
+        {% for page in pages %}
+        socket.on('page#{{ page._uuid }}', function () {socket.emit('resp#{{ page._uuid }}')});
+        {% endfor %}
     }
 
     render() {
