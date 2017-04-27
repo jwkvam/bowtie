@@ -178,6 +178,12 @@ class Layout(object):
 
         Parameters
         ----------
+        row : int, optional
+            Number of rows in the grid.
+        columns : int, optional
+            Number of columns in the grid.
+        sidebar : bool, optional
+            Enable a sidebar for control widgets.
         title : str, optional
             Title of the HTML.
         description : str, optional
