@@ -128,18 +128,14 @@ def _():
 {% endif %}
 
 
-{#
-# {% for event, functions in subscriptions.items() %}
-# @socketio.on({{ event }})
-# def _(*args):
-#     {% for func in functions %}
-#     foo = copy_current_request_context({{ source_module }}.{{ func }})
-#     eventlet.spawn(foo, *(msgpack.unpackb(bytes(a['data']), encoding='utf8') for a in args))
-#     {% endfor %}
-# {% endfor %}
-    #}
+{% for page, function in pages.items() %}
+@socketio.on('resp#{{ page._uuid }}')
+def _():
+    foo = copy_current_request_context({{ source_module }}.{{ function }})
+    eventlet.spawn(foo)
+{% endfor %}
 
-{# {% for event, (events, functions) in subscriptions.items() %} #}
+
 {% for event, supports in subscriptions.items() %}
 @socketio.on('{{ event[0] }}')
 def _(*args):
