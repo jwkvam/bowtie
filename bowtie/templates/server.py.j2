@@ -49,7 +49,7 @@ import {{source_module}}
 
 app = Flask(__name__)
 app.debug = {{ debug|default(False) }}
-socketio = SocketIO(app, binary=True)
+socketio = SocketIO(app, binary=True, path='{{ socketio }}' + 'socket.io')
 # not sure if this is secure or how much it matters
 app.secret_key = os.urandom(256)
 
