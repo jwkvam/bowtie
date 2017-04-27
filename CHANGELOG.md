@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## 0.3.2 / 2017-04-26
+
+### Added
+
+  * Support changing socket.io path for nginx (#118)
+  * Pager: to request communication from the client (#122)
+
+### Fixed
+
+  * Nouislider
+  * Random walk example
+  * pydocstyle suggestions
+
 ## 0.3.1 / 2017-04-16
 
 ### Fixed
