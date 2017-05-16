@@ -14,6 +14,12 @@ export default class Textbox extends React.Component {
         var uuid = this.props.uuid;
         var socket = this.props.socket;
         socket.on(uuid + '#get', this.getValue);
+        socket.on(uuid + '#text', this.setValue);
+    }
+
+    setValue = (data, fn) => {
+        var arr = new Uint8Array(data['data']);
+        this.setState({value: msgpack.decode(arr)});
     }
 
     getValue = (data, fn) => {
@@ -33,12 +39,14 @@ export default class Textbox extends React.Component {
     render() {
         return (
             <Input
-                type={'text'}
+                value={this.state.value}
+                type={this.props.type}
                 placeholder={this.props.placeholder}
                 defaultValue={this.state.value}
                 onPressEnter={this.onPressEnter}
                 onChange={this.onChange}
-                autosize={false}
+                autosize={this.props.autosize}
+                disabled={this.props.disabled}
                 size={this.props.size}
             />
         );
@@ -47,6 +55,9 @@ export default class Textbox extends React.Component {
 
 Textbox.propTypes = {
     uuid: React.PropTypes.string.isRequired,
+    type: React.PropTypes.string.isRequired,
+    autosize: React.PropTypes.bool.isRequired,
+    disabled: React.PropTypes.bool.isRequired,
     socket: React.PropTypes.object.isRequired,
     placeholder: React.PropTypes.string.isRequired,
     size: React.PropTypes.string.isRequired,

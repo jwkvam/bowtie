@@ -41,6 +41,7 @@ class Table(_Visual):
             Number of rows on each pagination of the table.
 
         """
+        super(Table, self).__init__()
         self.data = []
         self.columns = []
         if data:
@@ -49,10 +50,7 @@ class Table(_Visual):
             self.columns = self._make_columns(columns)
 
         self.results_per_page = results_per_page
-        super(Table, self).__init__()
-
-    def _instantiate(self):
-        return self._TAG.format(
+        self._instantiate = self._TAG.format(
             uuid="'{}'".format(self._uuid),
             columns=self.columns,
             results_per_page=self.results_per_page
@@ -133,14 +131,12 @@ class SmartGrid(_Visual):
             Number of rows on each pagination of the table.
 
         """
+        super(SmartGrid, self).__init__()
         if columns is None:
             columns = []
         self.columns = columns
         self.results_per_page = results_per_page
-        super(SmartGrid, self).__init__()
-
-    def _instantiate(self):
-        return self._TAG.format(
+        self._instantiate = self._TAG.format(
             uuid="'{}'".format(self._uuid),
             columns=jdumps(self.columns),
             results_per_page=self.results_per_page
@@ -202,11 +198,9 @@ class SVG(_Visual):
             it will stretch to fill up the space available.
 
         """
-        self.preserve_aspect_ratio = preserve_aspect_ratio
         super(SVG, self).__init__()
-
-    def _instantiate(self):
-        return self._TAG.format(
+        self.preserve_aspect_ratio = preserve_aspect_ratio
+        self._instantiate = self._TAG.format(
             uuid="'{}'".format(self._uuid),
             preserve_aspect_ratio='true' if self.preserve_aspect_ratio else 'false'
         )
@@ -269,13 +263,11 @@ class Plotly(_Visual):
             Initial Plotly data to plot.
 
         """
+        super(Plotly, self).__init__()
         if init is None:
             init = dict(data=[], layout={'autosize': False})
         self.init = init
-        super(Plotly, self).__init__()
-
-    def _instantiate(self):
-        return self._TAG.format(
+        self._instantiate = self._TAG.format(
             uuid="'{}'".format(self._uuid),
             init=jdumps(self.init),
         )
