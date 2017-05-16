@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Input } from 'antd';
 import 'antd/dist/antd.css';
 
@@ -54,11 +55,11 @@ export default class Textbox extends React.Component {
 }
 
 Textbox.propTypes = {
-    uuid: React.PropTypes.string.isRequired,
-    type: React.PropTypes.string.isRequired,
-    autosize: React.PropTypes.bool.isRequired,
-    disabled: React.PropTypes.bool.isRequired,
-    socket: React.PropTypes.object.isRequired,
-    placeholder: React.PropTypes.string.isRequired,
-    size: React.PropTypes.string.isRequired,
+    uuid: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+    autosize: PropTypes.bool.isRequired,
+    disabled: PropTypes.bool.isRequired,
+    socket: PropTypes.object.isRequired,
+    placeholder: PropTypes.string.isRequired,
+    size: PropTypes.string.isRequired,
 };

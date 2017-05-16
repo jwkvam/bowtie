@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 
 import 'fixed-data-table/dist/fixed-data-table.css';
@@ -52,29 +53,29 @@ export default class FixedTable extends React.Component {
         );
     }
 }
-                // <Column
-                //   header={<Cell>Col 1</Cell>}
-                //   cell={<Cell>Column 1 static content</Cell>}
-                //   width={100}
-                // />
-                // <Column
-                //   header={<Cell>Col 2</Cell>}
-                //   cell={<Cell>Column 2 static content</Cell>}
-                //   width={100}
-                // />
-                // <Column
-                //   header={<Cell>Col 3</Cell>}
-                //   cell={({rowIndex, ...props}) => (
-                //     <Cell {...props}>
-                //       Data for column 3: {this.state.data[rowIndex][2]}
-                //     </Cell>
-                //   )}
-                //   width={100}
-                // />
+// <Column
+//   header={<Cell>Col 1</Cell>}
+//   cell={<Cell>Column 1 static content</Cell>}
+//   width={100}
+// />
+// <Column
+//   header={<Cell>Col 2</Cell>}
+//   cell={<Cell>Column 2 static content</Cell>}
+//   width={100}
+// />
+// <Column
+//   header={<Cell>Col 3</Cell>}
+//   cell={({rowIndex, ...props}) => (
+//     <Cell {...props}>
+//       Data for column 3: {this.state.data[rowIndex][2]}
+//     </Cell>
+//   )}
+//   width={100}
+// />
 
 FixedTable.propTypes = {
-    uuid: React.PropTypes.string.isRequired,
-    socket: React.PropTypes.object.isRequired,
-    rows: React.PropTypes.number,
-    columns: React.PropTypes.number
+    uuid: PropTypes.string.isRequired,
+    socket: PropTypes.object.isRequired,
+    rows: PropTypes.number,
+    columns: PropTypes.number
 };

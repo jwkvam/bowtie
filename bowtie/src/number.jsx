@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { InputNumber } from 'antd';
 import 'antd/dist/antd.css';
@@ -43,10 +44,10 @@ export default class AntNumber extends React.Component {
 }
 
 AntNumber.propTypes = {
-    uuid: React.PropTypes.string.isRequired,
-    socket: React.PropTypes.object.isRequired,
-    min: React.PropTypes.number.isRequired,
-    max: React.PropTypes.number.isRequired,
-    start: React.PropTypes.number.isRequired,
-    size: React.PropTypes.string.isRequired,
+    uuid: PropTypes.string.isRequired,
+    socket: PropTypes.object.isRequired,
+    min: PropTypes.number.isRequired,
+    max: PropTypes.number.isRequired,
+    start: PropTypes.number.isRequired,
+    size: PropTypes.string.isRequired,
 };

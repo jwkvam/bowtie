@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Table, LocaleProvider } from 'antd';
 import enUS from 'antd/lib/locale-provider/en_US';
@@ -52,8 +53,8 @@ export default class AntTable extends React.Component {
 }
 
 AntTable.propTypes = {
-    uuid: React.PropTypes.string.isRequired,
-    socket: React.PropTypes.object.isRequired,
-    columns: React.PropTypes.array.isRequired,
-    resultsPerPage: React.PropTypes.number.isRequired
+    uuid: PropTypes.string.isRequired,
+    socket: PropTypes.object.isRequired,
+    columns: PropTypes.array.isRequired,
+    resultsPerPage: PropTypes.number.isRequired
 };

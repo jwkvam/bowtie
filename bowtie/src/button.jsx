@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Button } from 'antd';
 import 'antd/dist/antd.css';
@@ -24,7 +25,7 @@ export default class SimpleButton extends React.Component {
 }
 
 SimpleButton.propTypes = {
-    label: React.PropTypes.string.isRequired,
-    uuid: React.PropTypes.string.isRequired,
-    socket: React.PropTypes.object.isRequired
+    label: PropTypes.string.isRequired,
+    uuid: PropTypes.string.isRequired,
+    socket: PropTypes.object.isRequired
 };

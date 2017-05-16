@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 
 var msgpack = require('msgpack-lite');
@@ -41,7 +42,7 @@ export default class SVG extends React.Component {
 }
 
 SVG.propTypes = {
-    uuid: React.PropTypes.string.isRequired,
-    socket: React.PropTypes.object.isRequired,
-    preserveAspectRatio: React.PropTypes.object.isRequired,
+    uuid: PropTypes.string.isRequired,
+    socket: PropTypes.object.isRequired,
+    preserveAspectRatio: PropTypes.object.isRequired,
 };
