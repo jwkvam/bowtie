@@ -265,10 +265,10 @@ class Layout(object):
 
         """
         for index in [row_start, row_end]:
-            if index is not None and (index < 0 or index >= len(self.rows)):
+            if index is not None and not(0 <= index < len(self.rows)):
                 raise GridIndexError('Invalid Row Index')
         for index in [column_start, column_end]:
-            if index is not None and (index < 0 or index >= len(self.columns)):
+            if index is not None and not(0 <= index < len(self.columns)):
                 raise GridIndexError('Invalid Column Index')
 
         if row_start is not None and row_end is not None and row_start > row_end:

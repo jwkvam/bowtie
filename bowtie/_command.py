@@ -80,7 +80,7 @@ def command(func):
         call(line, cwd=ctx.obj)
 
     locale = inspect.stack()[1][0].f_locals
-    module = locale.get("__name__", None)
+    module = locale.get("__name__")
 
     if module == "__main__":
         try:
