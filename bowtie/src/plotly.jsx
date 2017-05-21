@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import Plotly from 'plotly.js/dist/plotly.js';
 import cloneDeep from 'lodash.clonedeep';
@@ -133,9 +134,9 @@ export default class PlotlyPlot extends React.Component {
 }
 
 PlotlyPlot.propTypes = {
-    uuid: React.PropTypes.string.isRequired,
-    socket: React.PropTypes.object.isRequired,
-    initState: React.PropTypes.object,
-    rows: React.PropTypes.number,
-    columns: React.PropTypes.number
+    uuid: PropTypes.string.isRequired,
+    socket: PropTypes.object.isRequired,
+    initState: PropTypes.object,
+    rows: PropTypes.number,
+    columns: PropTypes.number
 };

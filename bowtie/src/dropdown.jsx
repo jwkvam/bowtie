@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import Select from 'react-select';
 // Be sure to include styles at some point, probably during your bootstrapping
@@ -51,9 +52,9 @@ export default class Dropdown extends React.Component {
 }
 
 Dropdown.propTypes = {
-    uuid: React.PropTypes.string.isRequired,
-    socket: React.PropTypes.object.isRequired,
-    multi: React.PropTypes.bool.isRequired,
-    default: React.PropTypes.any,
-    initOptions: React.PropTypes.array
+    uuid: PropTypes.string.isRequired,
+    socket: PropTypes.object.isRequired,
+    multi: PropTypes.bool.isRequired,
+    default: PropTypes.any,
+    initOptions: PropTypes.array
 };

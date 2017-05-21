@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Input } from 'antd';
 import 'antd/dist/antd.css';
 
@@ -14,6 +15,12 @@ export default class Textbox extends React.Component {
         var uuid = this.props.uuid;
         var socket = this.props.socket;
         socket.on(uuid + '#get', this.getValue);
+        socket.on(uuid + '#text', this.setValue);
+    }
+
+    setValue = (data, fn) => {
+        var arr = new Uint8Array(data['data']);
+        this.setState({value: msgpack.decode(arr)});
     }
 
     getValue = (data, fn) => {
@@ -33,12 +40,14 @@ export default class Textbox extends React.Component {
     render() {
         return (
             <Input
-                type={'text'}
+                value={this.state.value}
+                type={this.props.type}
                 placeholder={this.props.placeholder}
                 defaultValue={this.state.value}
                 onPressEnter={this.onPressEnter}
                 onChange={this.onChange}
-                autosize={false}
+                autosize={this.props.autosize}
+                disabled={this.props.disabled}
                 size={this.props.size}
             />
         );
@@ -46,8 +55,11 @@ export default class Textbox extends React.Component {
 }
 
 Textbox.propTypes = {
-    uuid: React.PropTypes.string.isRequired,
-    socket: React.PropTypes.object.isRequired,
-    placeholder: React.PropTypes.string.isRequired,
-    size: React.PropTypes.string.isRequired,
+    uuid: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+    autosize: PropTypes.bool.isRequired,
+    disabled: PropTypes.bool.isRequired,
+    socket: PropTypes.object.isRequired,
+    placeholder: PropTypes.string.isRequired,
+    size: PropTypes.string.isRequired,
 };

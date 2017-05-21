@@ -106,6 +106,15 @@ class Span(object):
         else:
             self.column_end = column_end + 2
 
+    def __repr__(self):
+        """Show the starting and ending points."""
+        return '({}, {}) to ({}, {})'.format(
+            self.row_start,
+            self.column_start,
+            self.row_end,
+            self.column_end
+        )
+
 
 class Size(object):
     """Size of rows and columns in grid.
@@ -239,23 +248,27 @@ class Layout(object):
             row_end=None, column_end=None):
         """Add a widget to the grid.
 
+        Zero-based index and inclusive.
+
         Parameters
         ----------
         visual : bowtie._Component
             A Bowtie widget instance.
-        next_row : bool, optional
-            Add this visual to the next row.
-        min_width : number, optional
-            Minimum width of the visual in pixels.
-        min_height : number, optional
-            Minimum height of the visual in pixels.
+        row_start : int, optional
+            Starting row for the widget.
+        column_start : int, optional
+            Starting column for the widget.
+        row_end : int, optional
+            Ending row for the widget.
+        column_end : int, optional
+            Ending column for the widget.
 
         """
         for index in [row_start, row_end]:
-            if index is not None and (index < 0 or index >= len(self.rows)):
+            if index is not None and not 0 <= index < len(self.rows):
                 raise GridIndexError('Invalid Row Index')
         for index in [column_start, column_end]:
-            if index is not None and (index < 0 or index >= len(self.columns)):
+            if index is not None and not 0 <= index < len(self.columns):
                 raise GridIndexError('Invalid Column Index')
 
         if row_start is not None and row_end is not None and row_start > row_end:
@@ -456,7 +469,7 @@ class Layout(object):
 
         for i, widget in enumerate(self.widgets):
             # pylint: disable=protected-access
-            winst = widget._instantiate()
+            winst = widget._instantiate
             if isinstance(widget, _Visual):
                 progress = widget.progress._instantiate()
                 close_progress = '</AntProgress>'

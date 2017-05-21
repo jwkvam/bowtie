@@ -456,11 +456,15 @@ class Textbox(_Controller):
     _TAG = ('<Textbox '
             'placeholder={{{placeholder}}} '
             'size={{{size}}} '
+            'type={{{area}}} '
+            'autosize={{{autosize}}} '
+            'disabled={{{disabled}}} '
             'socket={{socket}} '
             'uuid={{{uuid}}} '
             '/>')
 
-    def __init__(self, placeholder='Enter text', size='default', caption=''):
+    def __init__(self, placeholder='Enter text', size='default', area=False,
+                 autosize=False, disabled=False, caption=''):
         """Create a textbox.
 
         Parameters
@@ -469,6 +473,12 @@ class Textbox(_Controller):
             Initial text that appears.
         size : 'default', 'large', 'small', optional
             Size of the textbox.
+        area : bool, optional
+            Create a text area if True else create a single line input.
+        autosize : bool, optional
+            Automatically size the widget based on the content.
+        disabled : bool, optional
+            Disable input to the widget.
         caption : str, optional
             Heading text.
 
@@ -479,12 +489,29 @@ class Textbox(_Controller):
         """
         super(Textbox, self).__init__()
 
+        area = 'textarea' if area else 'text'
+
         self._instantiate = self._TAG.format(
             uuid="'{}'".format(self._uuid),
+            area="'{}'".format(area),
+            autosize='true' if autosize else 'false',
+            disabled='true' if disabled else 'false',
             placeholder="'{}'".format(placeholder),
             size="'{}'".format(size)
         )
         self.caption = caption
+
+    # pylint: disable=no-self-use
+    def do_text(self, text):
+        """Set the text of the textbox.
+
+        Parameters
+        ----------
+        text : str
+            String of the textbox.
+
+        """
+        return text
 
     def on_enter(self):
         """Emit an event when enter is pressed in the textbox.

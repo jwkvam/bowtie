@@ -1,4 +1,5 @@
 import 'react-datagrid/index.css';
+import PropTypes from 'prop-types';
 import React from 'react';
 import DataGrid from 'react-datagrid';
 
@@ -47,6 +48,6 @@ export default class Table extends React.Component {
 }
 
 Table.propTypes = {
-    uuid: React.PropTypes.string.isRequired,
-    socket: React.PropTypes.object.isRequired
+    uuid: PropTypes.string.isRequired,
+    socket: PropTypes.object.isRequired
 };

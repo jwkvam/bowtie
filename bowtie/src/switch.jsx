@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Switch, LocaleProvider } from 'antd';
 import enUS from 'antd/lib/locale-provider/en_US';
@@ -40,7 +41,7 @@ export default class Toggle extends React.Component {
 }
 
 Toggle.propTypes = {
-    uuid: React.PropTypes.string.isRequired,
-    socket: React.PropTypes.object.isRequired,
-    defaultChecked: React.PropTypes.bool.isRequired,
+    uuid: PropTypes.string.isRequired,
+    socket: PropTypes.object.isRequired,
+    defaultChecked: PropTypes.bool.isRequired,
 };

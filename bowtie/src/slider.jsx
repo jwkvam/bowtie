@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Slider } from 'antd';
 import 'antd/dist/antd.css';
@@ -46,15 +47,15 @@ export default class AntSlider extends React.Component {
 }
 
 AntSlider.propTypes = {
-    uuid: React.PropTypes.string.isRequired,
-    socket: React.PropTypes.object.isRequired,
-    min: React.PropTypes.number.isRequired,
-    max: React.PropTypes.number.isRequired,
-    range: React.PropTypes.bool.isRequired,
-    start: React.PropTypes.oneOfType([
-        React.PropTypes.number,
-        React.PropTypes.array
+    uuid: PropTypes.string.isRequired,
+    socket: PropTypes.object.isRequired,
+    min: PropTypes.number.isRequired,
+    max: PropTypes.number.isRequired,
+    range: PropTypes.bool.isRequired,
+    start: PropTypes.oneOfType([
+        PropTypes.number,
+        PropTypes.array
     ]).isRequired,
-    step: React.PropTypes.number.isRequired,
-    marks: React.PropTypes.object.isRequired,
+    step: PropTypes.number.isRequired,
+    marks: PropTypes.object.isRequired,
 };

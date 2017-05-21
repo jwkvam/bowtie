@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { DatePicker, LocaleProvider } from 'antd';
 import enUS from 'antd/lib/locale-provider/en_US';
@@ -67,9 +68,9 @@ export default class PickDates extends React.Component {
 }
 
 PickDates.propTypes = {
-    uuid: React.PropTypes.string.isRequired,
-    socket: React.PropTypes.object.isRequired,
-    date: React.PropTypes.bool.isRequired,
-    month: React.PropTypes.bool.isRequired,
-    range: React.PropTypes.bool.isRequired,
+    uuid: PropTypes.string.isRequired,
+    socket: PropTypes.object.isRequired,
+    date: PropTypes.bool.isRequired,
+    month: PropTypes.bool.isRequired,
+    range: PropTypes.bool.isRequired,
 };

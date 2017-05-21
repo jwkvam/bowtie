@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Progress } from 'antd';
 import 'antd/dist/antd.css';
@@ -76,7 +77,7 @@ export default class AntProgress extends React.Component {
 }
 
 AntProgress.propTypes = {
-    uuid: React.PropTypes.string.isRequired,
-    socket: React.PropTypes.object.isRequired,
-    children: React.PropTypes.any
+    uuid: PropTypes.string.isRequired,
+    socket: PropTypes.object.isRequired,
+    children: PropTypes.any
 };
