@@ -1,8 +1,8 @@
 {
   "dependencies": {
-    "antd": "^2.8.2",
-    "babel-core": "^6.23.1",
-    "babel-loader": "^6.4.1",
+    "antd": "^2.10.1",
+    "babel-core": "^6.24.1",
+    "babel-loader": "^7.0.0",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-polyfill": "^6.23.0",
     "babel-preset-latest": "^6.24.0",
@@ -17,16 +17,16 @@
     "less-loader": "^2.2.3",
     "lodash.clonedeep": "^4.5.0",
     "msgpack-lite": "^0.1.26",
-    "node-sass": "^4.5.2",
-    "normalize.css": "^6.0.0",
+    "node-sass": "^4.5.3",
+    "normalize.css": "^7.0.0",
     "postcss-modules-values": "^1.2.2",
     "prop-types": "^15.5.10",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "react-select": "^1.0.0-rc.3",
     "sass-loader": "^4.1.1",
-    "socket.io-client": "^1.7.3",
+    "socket.io-client": "^2.0.1",
     "style-loader": "^0.13.2",
-    "webpack": "2.4.1"
+    "webpack": "2.5.1"
   }
 }
