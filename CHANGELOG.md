@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 0.3.3 / 2017-05-24
+
+### Added
+
+  * new textbox feature to update text (#128)
+
+### Fixed
+
+  * fixed issue preventing controllers from added to layout (#128)
+  * updated Layout docstring (#125)
+
 ## 0.3.2 / 2017-04-26
 
 ### Added
