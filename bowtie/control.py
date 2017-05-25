@@ -71,7 +71,7 @@ class Dropdown(_Controller):
 
     _TEMPLATE = 'dropdown.jsx'
     _COMPONENT = 'Dropdown'
-    _PACKAGE = 'react-select@1.0.0-rc.3'
+    _PACKAGE = 'react-select@1.0.0-rc.4'
     _TAG = ('<Dropdown initOptions={{{options}}} '
             'multi={{{multi}}}'
             'default={{{default}}}'
