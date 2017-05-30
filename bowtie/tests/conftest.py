@@ -4,6 +4,7 @@
 
 import os
 import shutil
+from selenium import webdriver
 
 import pytest
 
@@ -14,3 +15,12 @@ def remove_build():
     yield
     path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'build')
     shutil.rmtree(path)
+
+
+@pytest.fixture
+def chrome_driver():
+    options = webdriver.ChromeOptions()
+    options.binary_location = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+    options.add_argument('headless')
+    options.add_argument('window-size=1200x800')
+    return webdriver.Chrome(chrome_options=options)
