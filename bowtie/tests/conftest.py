@@ -19,6 +19,7 @@ def remove_build():
 
 @pytest.fixture
 def chrome_driver():
+    """Set up chrome driver."""
     options = webdriver.ChromeOptions()
     options.binary_location = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
     options.add_argument('headless')
