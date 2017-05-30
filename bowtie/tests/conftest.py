@@ -24,6 +24,8 @@ def chrome_driver():
     options = webdriver.ChromeOptions()
     if platform == 'darwin':
         options.binary_location = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+    else:
+        options.binary_location = '/usr/bin/google-chrome-stable'
     options.add_argument('headless')
     options.add_argument('window-size=1200x800')
     return webdriver.Chrome(chrome_options=options)
