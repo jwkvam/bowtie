@@ -3,6 +3,7 @@
 """Pytest configuration."""
 
 import os
+from subprocess import call
 from sys import platform
 import shutil
 from selenium import webdriver
@@ -22,6 +23,7 @@ def remove_build():
 def chrome_driver():
     """Set up chrome driver."""
     options = webdriver.ChromeOptions()
+    print(call(['which', 'google-chrome-stable']))
     if platform == 'darwin':
         options.binary_location = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
     else:

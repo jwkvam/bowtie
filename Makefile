@@ -1,7 +1,7 @@
 all: test
 
 test:
-	py.test --cov=./ --pylint --pylint-rcfile=pylintrc --pylint-error-types=RCWEF --ignore=doc
+	py.test -s --cov=./ --pylint --pylint-rcfile=pylintrc --pylint-error-types=RCWEF --ignore=doc
 
 unit:
 	py.test --cov=./
