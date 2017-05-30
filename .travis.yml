@@ -34,6 +34,10 @@ install:
     - source activate test-environment
     - pip install -r requirements.txt
     - make checkdocs
+    - wget https://chromedriver.storage.googleapis.com/2.29/chromedriver_linux64.zip
+    - unzip chromedriver_linux64.zip
+    - chmod +x chromedriver
+    - sudo mv -f chromedriver /usr/local/bin
 
 script:
     - make test
