@@ -3,6 +3,7 @@
 """Pytest configuration."""
 
 import os
+from sys import platform
 import shutil
 from selenium import webdriver
 
@@ -21,7 +22,8 @@ def remove_build():
 def chrome_driver():
     """Set up chrome driver."""
     options = webdriver.ChromeOptions()
-    options.binary_location = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+    if platform == 'darwin':
+        options.binary_location = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
     options.add_argument('headless')
     options.add_argument('window-size=1200x800')
     return webdriver.Chrome(chrome_options=options)
