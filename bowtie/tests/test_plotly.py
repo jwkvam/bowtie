@@ -13,13 +13,15 @@ from bowtie import Layout
 from bowtie.control import Nouislider, Button
 from bowtie.visual import Plotly
 
-import plotly
 from plotly.graph_objs import Scatter
 from plotly.graph_objs import Layout as PlotLayout
 
+
+# pylint: disable=invalid-name
 viz = Plotly()
 ctrl = Nouislider()
 ctrl2 = Button()
+
 
 def callback(*args):
     """dummy function"""
