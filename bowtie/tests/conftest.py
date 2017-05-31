@@ -26,6 +26,8 @@ def chrome_driver():
     print('which chrome')
     print(call(['which', 'google-chrome-stable']))
     print(call(['ls', 'google*']))
+    print(call(['ls', '/usr/bin/google*']))
+    print(call(['ls', '/usr/local/bin/google*']))
     if platform == 'darwin':
         options.binary_location = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
     else:
