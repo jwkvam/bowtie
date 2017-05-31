@@ -3,7 +3,6 @@
 """Pytest configuration."""
 
 import os
-from subprocess import call
 from sys import platform
 import shutil
 from selenium import webdriver
