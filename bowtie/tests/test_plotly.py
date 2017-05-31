@@ -53,8 +53,10 @@ def test_plotly(remove_build, chrome_driver):
     env['PYTHONPATH'] = '{}:{}'.format(os.getcwd(), os.environ.get('PYTHONPATH', ''))
     server = subprocess.Popen(os.path.join(path, 'src/server.py'), env=env)
 
+    time.sleep(5)
+
     chrome_driver.get('http://localhost:9991')
-    chrome_driver.implicitly_wait(10)
+    chrome_driver.implicitly_wait(5)
 
     assert chrome_driver.title == 'Bowtie App'
 
