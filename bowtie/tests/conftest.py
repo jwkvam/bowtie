@@ -35,4 +35,6 @@ def chrome_driver():
     print(options.binary_location)
     options.add_argument('headless')
     options.add_argument('window-size=1200x800')
-    return webdriver.Chrome(chrome_options=options)
+    driver = webdriver.Chrome(chrome_options=options)
+    yield driver
+    driver.quit()
