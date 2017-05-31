@@ -23,7 +23,9 @@ def remove_build():
 def chrome_driver():
     """Set up chrome driver."""
     options = webdriver.ChromeOptions()
+    print('which chrome')
     print(call(['which', 'google-chrome-stable']))
+    print(call(['ls', 'google*']))
     if platform == 'darwin':
         options.binary_location = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
     else:
