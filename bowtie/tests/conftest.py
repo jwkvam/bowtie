@@ -23,16 +23,10 @@ def remove_build():
 def chrome_driver():
     """Set up chrome driver."""
     options = webdriver.ChromeOptions()
-    print('which chrome')
-    print(call(['which', 'google-chrome-stable']))
-    print(call(['ls', 'google*']))
-    print(call(['ls', '/usr/bin/google*']))
-    print(call(['ls', '/usr/local/bin/google*']))
     if platform == 'darwin':
         options.binary_location = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
     else:
         options.binary_location = '/usr/bin/google-chrome-stable'
-    print(options.binary_location)
     options.add_argument('headless')
     options.add_argument('window-size=1200x800')
     driver = webdriver.Chrome(chrome_options=options)

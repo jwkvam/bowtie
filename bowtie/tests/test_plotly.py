@@ -26,7 +26,6 @@ ctrl2 = Button()
 def callback(*args):
     """dummy function"""
     # pylint: disable=unused-argument
-    print('callback!')
     chart = {
         "data": [
             Scatter(x=[1, 2, 3, 4], y=[4, 1, 3, 7])
