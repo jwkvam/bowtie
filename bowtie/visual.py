@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 """Visual components."""
 
+from flask import Markup
+from markdown import markdown
+
 from bowtie._component import Component, jdumps
 from bowtie._progress import Progress
+
 
 
 # pylint: disable=too-few-public-methods
@@ -15,6 +19,60 @@ class _Visual(Component):
     def __init__(self):
         self.progress = Progress()
         super(_Visual, self).__init__()
+
+
+class Markdown(_Visual):
+    """Display Markdown."""
+
+    _TEMPLATE = 'markdown.jsx'
+    _COMPONENT = 'Markdown'
+    _PACKAGE = None
+    _TAG = ('<Markdown '
+            'socket={{socket}} '
+            'uuid={{{uuid}}} '
+            'initial={{{initial}}} '
+            '/>')
+
+    def __init__(self, initial=''):
+        """Create a Markdown widget.
+
+        Parameters
+        ----------
+        initial : str, optional
+            Default markdown for the widget.
+
+        """
+        super(Markdown, self).__init__()
+        self._instantiate = self._TAG.format(
+            uuid="'{}'".format(self._uuid),
+            initial="'{}'".format(Markup(markdown(initial).replace('\n', '\\n')))
+        )
+
+    # pylint: disable=no-self-use
+    def do_text(self, text):
+        """Replace widget with this text.
+
+        Parameters
+        ----------
+        test : str
+            Markdown text as a string.
+
+        Returns
+        -------
+        None
+
+        """
+        return Markup(markdown(text))
+
+    def get(self, text):
+        """Get the current text.
+
+        Returns
+        -------
+        String of html.
+
+        """
+        return text
 
 
 class Table(_Visual):
