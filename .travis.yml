@@ -17,7 +17,7 @@ install:
     - curl -o- https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
     - source ~/.nvm/nvm.sh
     - nvm install node
-    - npm install -g webpack@2.5.1 yarn
+    - npm install -g webpack@2.6.1 yarn
     - npm install -g eslint babel-eslint eslint-plugin-react
     - make eslint
     - sudo apt-get update

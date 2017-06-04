@@ -8,7 +8,6 @@ from bowtie._component import Component, jdumps
 from bowtie._progress import Progress
 
 
-
 # pylint: disable=too-few-public-methods
 class _Visual(Component):
     """Abstract class all visual components inherit.
