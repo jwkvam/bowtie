@@ -179,8 +179,8 @@ class Layout(object):
     """Core class to layout, connect, build a Bowtie app."""
 
     def __init__(self, rows=1, columns=1, sidebar=True,
-                 title='Bowtie App', description='Bowtie App\n---',
-                 basic_auth=False, username='username', password='password',
+                 title='Bowtie App', basic_auth=False,
+                 username='username', password='password',
                  background_color='White', directory='build',
                  host='0.0.0.0', port=9991, socketio='', debug=False):
         """Create a Bowtie App.
@@ -195,8 +195,6 @@ class Layout(object):
             Enable a sidebar for control widgets.
         title : str, optional
             Title of the HTML.
-        description : str, optional
-            Describe the app in Markdown, inserted in control pane.
         basic_auth : bool, optional
             Enable basic authentication.
         username : str, optional
@@ -221,7 +219,6 @@ class Layout(object):
         self.basic_auth = basic_auth
         self.controllers = []
         self.debug = debug
-        self.description = Markup(markdown(description))
         self.directory = directory
         self.functions = []
         self.host = host
@@ -485,7 +482,6 @@ class Layout(object):
         with open(path.join(app, react.name[:-3]), 'w') as f:
             f.write(
                 react.render(
-                    description=self.description,
                     socketio=self.socketio,
                     sidebar=self.sidebar,
                     columns=columns,
