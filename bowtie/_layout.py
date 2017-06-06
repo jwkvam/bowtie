@@ -17,13 +17,14 @@ from jinja2 import Environment, FileSystemLoader
 from markdown import markdown
 
 from bowtie._compat import makedirs
+from bowtie._component import Component
 from bowtie.control import _Controller
 from bowtie.visual import _Visual
 
 
 _Import = namedtuple('_Import', ['module', 'component'])
 _Control = namedtuple('_Control', ['instantiate', 'caption'])
-_Schedule = namedtuple('_Control', ['seconds', 'function'])
+_Schedule = namedtuple('_Schedule', ['seconds', 'function'])
 
 
 class YarnError(Exception):
@@ -261,6 +262,8 @@ class Layout(object):
             Ending column for the widget.
 
         """
+        assert isinstance(widget, Component)
+
         for index in [row_start, row_end]:
             if index is not None and not 0 <= index < len(self.rows):
                 raise GridIndexError('Invalid Row Index')
@@ -313,27 +316,27 @@ class Layout(object):
         self.widgets.append(widget)
         self.spans.append(span)
 
-    def add_sidebar(self, control):
+    def add_sidebar(self, widget):
         """Add a controller to the sidebar.
 
         Parameters
         ----------
-        control : bowtie._Controller
-            A Bowtie controller instance.
+        widget : bowtie._Component
+            A Bowtie compoenent instance.
 
         """
         if not self.sidebar:
             raise NoSidebarError('Set sidebar=True if you want to use the sidebar.')
 
-        assert isinstance(control, _Controller)
+        assert isinstance(widget, Component)
 
         # pylint: disable=protected-access
-        self.packages.add(control._PACKAGE)
-        self.templates.add(control._TEMPLATE)
-        self.imports.add(_Import(component=control._COMPONENT,
-                                 module=control._TEMPLATE[:control._TEMPLATE.find('.')]))
-        self.controllers.append(_Control(instantiate=control._instantiate,
-                                         caption=control.caption))
+        self.packages.add(widget._PACKAGE)
+        self.templates.add(widget._TEMPLATE)
+        self.imports.add(_Import(component=widget._COMPONENT,
+                                 module=widget._TEMPLATE[:widget._TEMPLATE.find('.')]))
+        self.controllers.append(_Control(instantiate=widget._instantiate,
+                                         caption=getattr(widget, 'caption', None)))
 
     def respond(self, pager, func):
         """Call a function in response to a page.
