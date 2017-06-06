@@ -12,13 +12,10 @@ import stat
 from collections import namedtuple, defaultdict, OrderedDict
 from subprocess import Popen
 
-from flask import Markup
 from jinja2 import Environment, FileSystemLoader
-from markdown import markdown
 
 from bowtie._compat import makedirs
 from bowtie._component import Component
-from bowtie.control import _Controller
 from bowtie.visual import _Visual
 
 
