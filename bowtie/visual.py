@@ -84,7 +84,7 @@ class Table(_Visual):
     _COMPONENT = 'AntTable'
     _PACKAGE = None
     _ATTRS = ('columns={{{columns}}} '
-              'resultsPerPage={{{results_per_page}}} ')
+              'resultsPerPage={{{results_per_page}}}')
 
     def __init__(self, data=None, columns=None, results_per_page=10):
         """Create a table and optionally intialize the data.
