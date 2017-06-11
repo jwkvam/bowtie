@@ -313,12 +313,12 @@ class Layout(object):
         self.spans.append(span)
 
     def add_sidebar(self, widget):
-        """Add a controller to the sidebar.
+        """Add a widget to the sidebar.
 
         Parameters
         ----------
         widget : bowtie._Component
-            A Bowtie compoenent instance.
+            Add this widget to the sidebar, it will be appended to the end.
 
         """
         if not self.sidebar:
