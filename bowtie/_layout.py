@@ -16,7 +16,6 @@ from jinja2 import Environment, FileSystemLoader
 
 from bowtie._compat import makedirs
 from bowtie._component import Component
-from bowtie.visual import _Visual
 
 
 _Import = namedtuple('_Import', ['module', 'component'])

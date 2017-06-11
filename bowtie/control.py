@@ -17,6 +17,7 @@ class _Controller(Component):
 
     Used to test if a an object is a controller.
     """
+
     def __init__(self, caption=None):
         super(_Controller, self).__init__()
         self.caption = caption

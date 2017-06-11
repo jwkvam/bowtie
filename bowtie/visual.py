@@ -21,6 +21,7 @@ class _Visual(Component):
 
     @property
     def _instantiate(self):
+        # pylint: disable=protected-access
         begin, end = self.progress._tags
         tagwrap = begin + '{component}' + self._tagbase + end
         return self._insert(tagwrap, self._comp)

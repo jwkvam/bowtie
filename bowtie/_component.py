@@ -197,7 +197,10 @@ class _Maker(type):
 
 
 class FormatDict(dict):
+    """Dict to replace missing keys."""
+
     def __missing__(self, key):
+        """Replace missing key with "{key"}"."""
         return "{" + key + "}"
 
 

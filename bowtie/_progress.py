@@ -43,6 +43,7 @@ class Progress(Component):
     _ATTRS = None
 
     def __init__(self):
+        """Create a progress indicator."""
         super(Progress, self).__init__()
         self._tagbase = self._tagbase[:-3] + '>'
         self._tags = '<' + self._COMPONENT + self._tagbase, '</AntProgress>'
