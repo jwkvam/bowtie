@@ -62,16 +62,17 @@ class Dashboard extends React.Component {
                         gridColumn: '1 / 2',
                         gridRow: '1 / -1'
                         {{ '}}' }}>
-                    {{ description }}
 
                     {% for control in controls %}
-                    <div style={{ '{{' }}paddingBottom: '3px'{{ '}}' }}>
-                    {{ control.caption }}
-                    </div>
+                        {% if control.caption is not none %}
+                            <div style={{ '{{' }}paddingBottom: '3px'{{ '}}' }}>
+                            {{ control.caption }}
+                            </div>
+                        {% endif %}
 
-                    <div style={{ '{{' }}paddingBottom: '7px'{{ '}}' }}>
-                    {{ control.instantiate }}
-                    </div>
+                        <div style={{ '{{' }}paddingBottom: '7px'{{ '}}' }}>
+                        {{ control.instantiate }}
+                        </div>
                     {% endfor %}
                 </div>
                 {% endif %}
@@ -89,8 +90,5 @@ class Dashboard extends React.Component {
         );
     }
 }
-
-                    // <!-- gridTemplateColumns: '18em {% for x in size %}{{x}}{% endfor %}', -->
-//  minWidth: '{{ min_width }}px',
 
 render(<Dashboard />, document.getElementById('app'));

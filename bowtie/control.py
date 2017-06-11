@@ -3,12 +3,7 @@
 
 from collections import Iterable
 
-from bowtie._component import Component, jdumps
-
-
-def _jsbool(x):
-    """Convert Python bool to Javascript bool."""
-    return repr(x).lower()
+from bowtie._component import Component, jdumps, jsbool
 
 
 # pylint: disable=too-few-public-methods
@@ -18,7 +13,14 @@ class _Controller(Component):
     Used to test if a an object is a controller.
     """
 
-    pass
+    def __init__(self, caption=None):
+        super(_Controller, self).__init__()
+        self.caption = caption
+
+    @property
+    def _instantiate(self):
+        tagwrap = '{component}' + self._tagbase
+        return self._insert(tagwrap, self._comp)
 
 
 class Button(_Controller):
@@ -27,13 +29,9 @@ class Button(_Controller):
     _TEMPLATE = 'button.jsx'
     _COMPONENT = 'SimpleButton'
     _PACKAGE = None
-    _TAG = ('<SimpleButton '
-            'socket={{socket}} '
-            'uuid={{{uuid}}} '
-            'label={{{label}}} '
-            '/>')
+    _ATTRS = "label={{'{label}'}}"
 
-    def __init__(self, label='', caption=''):
+    def __init__(self, label='', caption=None):
         """Create a button.
 
         Parameters
@@ -44,13 +42,10 @@ class Button(_Controller):
             Heading text.
 
         """
-        super(Button, self).__init__()
-
-        self._instantiate = self._TAG.format(
-            label="'{}'".format(label),
-            uuid="'{}'".format(self._uuid)
+        super(Button, self).__init__(caption=caption)
+        self._comp = self._tag.format(
+            label=label
         )
-        self.caption = caption
 
     def on_click(self):
         """Emit an event when the button is clicked.
@@ -72,14 +67,11 @@ class Dropdown(_Controller):
     _TEMPLATE = 'dropdown.jsx'
     _COMPONENT = 'Dropdown'
     _PACKAGE = 'react-select@1.0.0-rc.4'
-    _TAG = ('<Dropdown initOptions={{{options}}} '
-            'multi={{{multi}}}'
-            'default={{{default}}}'
-            'socket={{socket}} '
-            'uuid={{{uuid}}} '
-            '/>')
+    _ATTRS = ('initOptions={{{options}}} '
+              'multi={{{multi}}} '
+              'default={{{default}}}')
 
-    def __init__(self, labels=None, values=None, multi=False, default=None, caption=''):
+    def __init__(self, labels=None, values=None, multi=False, default=None, caption=None):
         """Create a drop down.
 
         Parameters
@@ -94,7 +86,7 @@ class Dropdown(_Controller):
             Heading text.
 
         """
-        super(Dropdown, self).__init__()
+        super(Dropdown, self).__init__(caption=caption)
 
         if labels is None and values is None:
             labels = []
@@ -102,13 +94,11 @@ class Dropdown(_Controller):
 
         options = [dict(value=value, label=str(label)) for value, label in zip(values, labels)]
 
-        self._instantiate = self._TAG.format(
+        self._comp = self._tag.format(
             options=jdumps(options),
-            multi='true' if multi else 'false',
+            multi=jsbool(multi),
             default=jdumps(default),
-            uuid="'{}'".format(self._uuid)
         )
-        self.caption = caption
 
     def on_change(self):
         """Emit an event when the selection changes.
@@ -162,14 +152,10 @@ class Switch(_Controller):
 
     _TEMPLATE = 'switch.jsx'
     _COMPONENT = 'Toggle'
-    _PACKAGE = 'antd'
-    _TAG = ('<Toggle '
-            'defaultChecked={{{defaultChecked}}} '
-            'socket={{socket}} '
-            'uuid={{{uuid}}} '
-            '/>')
+    _PACKAGE = None
+    _ATTRS = 'defaultChecked={{{defaultChecked}}}'
 
-    def __init__(self, initial=False, caption=''):
+    def __init__(self, initial=False, caption=None):
         """Create a toggle switch.
 
         Parameters
@@ -180,12 +166,10 @@ class Switch(_Controller):
             Label appearing above the widget.
 
         """
-        super(Switch, self).__init__()
-        self._instantiate = self._TAG.format(
-            uuid="'{}'".format(self._uuid),
-            defaultChecked=_jsbool(initial)
+        super(Switch, self).__init__(caption=caption)
+        self._comp = self._tag.format(
+            defaultChecked=jsbool(initial)
         )
-        self.caption = caption
 
     def on_switch(self):
         """Emit an event when the switch is toggled.
@@ -219,25 +203,19 @@ class _DatePickers(_Controller):
 
     _TEMPLATE = 'date.jsx'
     _COMPONENT = 'PickDates'
-    _PACKAGE = 'antd'
-    _TAG = ('<PickDates '
-            'date={{{date_type}}} '
-            'month={{{month_type}}} '
-            'range={{{range_type}}} '
-            'socket={{socket}} '
-            'uuid={{{uuid}}} '
-            '/>')
+    _PACKAGE = None
+    _ATTRS = ('date={{{date_type}}} '
+              'month={{{month_type}}} '
+              'range={{{range_type}}}')
 
     def __init__(self, date_type=False, month_type=False, range_type=False,
-                 caption=''):
-        super(_DatePickers, self).__init__()
-        self._instantiate = self._TAG.format(
-            uuid="'{}'".format(self._uuid),
-            date_type=_jsbool(date_type),
-            month_type=_jsbool(month_type),
-            range_type=_jsbool(range_type)
+                 caption=None):
+        super(_DatePickers, self).__init__(caption=caption)
+        self._comp = self._tag.format(
+            date_type=jsbool(date_type),
+            month_type=jsbool(month_type),
+            range_type=jsbool(range_type)
         )
-        self.caption = caption
 
 
 class DatePicker(_DatePickers):
@@ -246,7 +224,7 @@ class DatePicker(_DatePickers):
     Let's you choose an individual day.
     """
 
-    def __init__(self, caption=''):
+    def __init__(self, caption=None):
         """Create a date picker.
 
         Parameters
@@ -290,7 +268,7 @@ class MonthPicker(_DatePickers):
     Let's you choose a month and year.
     """
 
-    def __init__(self, caption=''):
+    def __init__(self, caption=None):
         """Create month picker.
 
         Parameters
@@ -334,7 +312,7 @@ class RangePicker(_DatePickers):
     Choose two dates to use as a range.
     """
 
-    def __init__(self, caption=''):
+    def __init__(self, caption=None):
         """Create a date range picker.
 
         Parameters
@@ -377,19 +355,15 @@ class Number(_Controller):
 
     _TEMPLATE = 'number.jsx'
     _COMPONENT = 'AntNumber'
-    _PACKAGE = 'antd'
-    _TAG = ('<AntNumber '
-            'start={{{start}}} '
-            'min={{{minimum}}} '
-            'max={{{maximum}}} '
-            'step={{{step}}} '
-            'size={{{size}}} '
-            'socket={{socket}} '
-            'uuid={{{uuid}}} '
-            '/>')
+    _PACKAGE = None
+    _ATTRS = ('start={{{start}}} '
+              'min={{{minimum}}} '
+              'max={{{maximum}}} '
+              'step={{{step}}} '
+              "size={{'{size}'}}")
 
     def __init__(self, start=0, minimum=-1e100, maximum=1e100,
-                 step=1, size='default', caption=''):
+                 step=1, size='default', caption=None):
         """Create a number input.
 
         Parameters
@@ -410,16 +384,14 @@ class Number(_Controller):
         https://ant.design/components/input/
 
         """
-        super(Number, self).__init__()
-        self._instantiate = self._TAG.format(
-            uuid="'{}'".format(self._uuid),
+        super(Number, self).__init__(caption=caption)
+        self._comp = self._tag.format(
             start=start,
             minimum=minimum,
             maximum=maximum,
             step=step,
             size="'{}'".format(size)
         )
-        self.caption = caption
 
     def on_change(self):
         """Emit an event when the number is changed.
@@ -452,19 +424,15 @@ class Textbox(_Controller):
 
     _TEMPLATE = 'textbox.jsx'
     _COMPONENT = 'Textbox'
-    _PACKAGE = 'antd'
-    _TAG = ('<Textbox '
-            'placeholder={{{placeholder}}} '
-            'size={{{size}}} '
-            'type={{{area}}} '
-            'autosize={{{autosize}}} '
-            'disabled={{{disabled}}} '
-            'socket={{socket}} '
-            'uuid={{{uuid}}} '
-            '/>')
+    _PACKAGE = None
+    _ATTRS = ("placeholder={{'{placeholder}'}} "
+              "size={{'{size}'}} "
+              "type={{'{area}'}} "
+              'autosize={{{autosize}}} '
+              'disabled={{{disabled}}}')
 
     def __init__(self, placeholder='Enter text', size='default', area=False,
-                 autosize=False, disabled=False, caption=''):
+                 autosize=False, disabled=False, caption=None):
         """Create a textbox.
 
         Parameters
@@ -487,19 +455,17 @@ class Textbox(_Controller):
         https://ant.design/components/input/
 
         """
-        super(Textbox, self).__init__()
+        super(Textbox, self).__init__(caption=caption)
 
         area = 'textarea' if area else 'text'
 
-        self._instantiate = self._TAG.format(
-            uuid="'{}'".format(self._uuid),
-            area="'{}'".format(area),
-            autosize='true' if autosize else 'false',
-            disabled='true' if disabled else 'false',
-            placeholder="'{}'".format(placeholder),
-            size="'{}'".format(size)
+        self._comp = self._tag.format(
+            area=area,
+            autosize=jsbool(autosize),
+            disabled=jsbool(disabled),
+            placeholder=placeholder,
+            size=size
         )
-        self.caption = caption
 
     # pylint: disable=no-self-use
     def do_text(self, text):
@@ -557,20 +523,16 @@ class Slider(_Controller):
 
     _TEMPLATE = 'slider.jsx'
     _COMPONENT = 'AntSlider'
-    _PACKAGE = 'antd'
-    _TAG = ('<AntSlider '
-            'range={{{range}}} '
-            'min={{{minimum}}} '
-            'max={{{maximum}}} '
-            'step={{{step}}} '
-            'start={{{start}}} '
-            'marks={{{marks}}} '
-            'socket={{socket}} '
-            'uuid={{{uuid}}} '
-            '/>')
+    _PACKAGE = None
+    _ATTRS = ('range={{{range}}} '
+              'min={{{minimum}}} '
+              'max={{{maximum}}} '
+              'step={{{step}}} '
+              'start={{{start}}} '
+              'marks={{{marks}}}')
 
     def __init__(self, start=None, ranged=False, minimum=0, maximum=100, step=1,
-                 caption=''):
+                 caption=None):
         """Create a slider.
 
         Parameters
@@ -594,7 +556,7 @@ class Slider(_Controller):
         https://ant.design/components/slider/
 
         """
-        super(Slider, self).__init__()
+        super(Slider, self).__init__(caption=caption)
 
         if not start:
             start = [0, 0] if ranged else 0
@@ -602,16 +564,14 @@ class Slider(_Controller):
             start = list(start)
             ranged = True
 
-        self._instantiate = self._TAG.format(
-            uuid="'{}'".format(self._uuid),
-            range=_jsbool(ranged),
+        self._comp = self._tag.format(
+            range=jsbool(ranged),
             minimum=minimum,
             maximum=maximum,
             start=start,
             step=step,
             marks={minimum: str(minimum), maximum: str(maximum)}
         )
-        self.caption = caption
 
     def on_change(self):
         """Emit an event when the slider's value changes.
@@ -659,14 +619,12 @@ class Nouislider(_Controller):
     _TEMPLATE = 'nouislider.jsx'
     _COMPONENT = 'Nouislider'
     _PACKAGE = 'nouislider@9.2.0'
-    _TAG = ('<Nouislider range={{{{min: {min}, max: {max}}}}} '
-            'socket={{socket}} '
-            'start={{{start}}} '
-            'tooltips={{{tooltips}}} '
-            'uuid={{{uuid}}} '
-            '/>')
+    _ATTRS = ('range={{{{min: {min}, max: {max}}}}} '
+              'socket={{socket}} '
+              'start={{{start}}} '
+              'tooltips={{{tooltips}}}')
 
-    def __init__(self, start=0, minimum=0, maximum=100, tooltips=True, caption=''):
+    def __init__(self, start=0, minimum=0, maximum=100, tooltips=True, caption=None):
         """Create a slider.
 
         Parameters
@@ -688,20 +646,18 @@ class Nouislider(_Controller):
         https://refreshless.com/nouislider/events-callbacks/
 
         """
-        super(Nouislider, self).__init__()
+        super(Nouislider, self).__init__(caption=caption)
 
         if not isinstance(start, Iterable):
             start = [start]
         else:
             start = list(start)
-        self._instantiate = self._TAG.format(
-            uuid="'{}'".format(self._uuid),
+        self._comp = self._tag.format(
             min=minimum,
             max=maximum,
             start=start,
-            tooltips='true' if tooltips else 'false'
+            tooltips=jsbool(tooltips)
         )
-        self.caption = caption
 
     def on_update(self):
         """Emit an event when the slider is moved.

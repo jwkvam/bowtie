@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 """Visual components."""
 
-from bowtie._component import Component, jdumps
+from flask import Markup
+from markdown import markdown
+
+from bowtie._component import Component, jdumps, jsbool
 from bowtie._progress import Progress
 
 
@@ -16,6 +19,63 @@ class _Visual(Component):
         self.progress = Progress()
         super(_Visual, self).__init__()
 
+    @property
+    def _instantiate(self):
+        # pylint: disable=protected-access
+        begin, end = self.progress._tags
+        tagwrap = begin + '{component}' + self._tagbase + end
+        return self._insert(tagwrap, self._comp)
+
+
+class Markdown(_Visual):
+    """Display Markdown."""
+
+    _TEMPLATE = 'markdown.jsx'
+    _COMPONENT = 'Markdown'
+    _PACKAGE = None
+    _ATTRS = "initial={{'{initial}'}}"
+
+    def __init__(self, initial=''):
+        """Create a Markdown widget.
+
+        Parameters
+        ----------
+        initial : str, optional
+            Default markdown for the widget.
+
+        """
+        super(Markdown, self).__init__()
+
+        self._comp = self._tag.format(
+            initial=Markup(markdown(initial).replace('\n', '\\n'))
+        )
+
+    # pylint: disable=no-self-use
+    def do_text(self, text):
+        """Replace widget with this text.
+
+        Parameters
+        ----------
+        test : str
+            Markdown text as a string.
+
+        Returns
+        -------
+        None
+
+        """
+        return Markup(markdown(text))
+
+    def get(self, text):
+        """Get the current text.
+
+        Returns
+        -------
+        String of html.
+
+        """
+        return text
+
 
 class Table(_Visual):
     """Ant Design table with filtering and sorting."""
@@ -23,12 +83,8 @@ class Table(_Visual):
     _TEMPLATE = 'table.jsx'
     _COMPONENT = 'AntTable'
     _PACKAGE = None
-    _TAG = ('<AntTable '
-            'socket={{socket}} '
-            'uuid={{{uuid}}} '
-            'columns={{{columns}}} '
-            'resultsPerPage={{{results_per_page}}} '
-            '/>')
+    _ATTRS = ('columns={{{columns}}} '
+              'resultsPerPage={{{results_per_page}}}')
 
     def __init__(self, data=None, columns=None, results_per_page=10):
         """Create a table and optionally intialize the data.
@@ -50,8 +106,8 @@ class Table(_Visual):
             self.columns = self._make_columns(columns)
 
         self.results_per_page = results_per_page
-        self._instantiate = self._TAG.format(
-            uuid="'{}'".format(self._uuid),
+
+        self._comp = self._tag.format(
             columns=self.columns,
             results_per_page=self.results_per_page
         )
@@ -113,12 +169,8 @@ class SmartGrid(_Visual):
     _TEMPLATE = 'griddle.jsx'
     _COMPONENT = 'SmartGrid'
     _PACKAGE = 'griddle-react@version0'
-    _TAG = ('<SmartGrid '
-            'socket={{socket}} '
-            'uuid={{{uuid}}} '
-            'columns={{{columns}}} '
-            'resultsPerPage={{{results_per_page}}}'
-            '/>')
+    _ATTRS = ('columns={{{columns}}} '
+              'resultsPerPage={{{results_per_page}}}')
 
     def __init__(self, columns=None, results_per_page=10):
         """Create the table, optionally set the columns.
@@ -136,8 +188,8 @@ class SmartGrid(_Visual):
             columns = []
         self.columns = columns
         self.results_per_page = results_per_page
-        self._instantiate = self._TAG.format(
-            uuid="'{}'".format(self._uuid),
+
+        self._comp = self._tag.format(
             columns=jdumps(self.columns),
             results_per_page=self.results_per_page
         )
@@ -182,11 +234,7 @@ class SVG(_Visual):
     _TEMPLATE = 'svg.jsx'
     _COMPONENT = 'SVG'
     _PACKAGE = None
-    _TAG = ('<SVG '
-            'socket={{socket}} '
-            'uuid={{{uuid}}} '
-            'preserve_aspect_ratio={{{preserve_aspect_ratio}}} '
-            '/>')
+    _ATTRS = 'preserve_aspect_ratio={{{preserve_aspect_ratio}}}'
 
     def __init__(self, preserve_aspect_ratio=False):
         """Create SVG component.
@@ -200,9 +248,8 @@ class SVG(_Visual):
         """
         super(SVG, self).__init__()
         self.preserve_aspect_ratio = preserve_aspect_ratio
-        self._instantiate = self._TAG.format(
-            uuid="'{}'".format(self._uuid),
-            preserve_aspect_ratio='true' if self.preserve_aspect_ratio else 'false'
+        self._comp = self._tag.format(
+            preserve_aspect_ratio=jsbool(self.preserve_aspect_ratio)
         )
 
     # pylint: disable=no-self-use
@@ -249,10 +296,7 @@ class Plotly(_Visual):
     _TEMPLATE = 'plotly.jsx'
     _COMPONENT = 'PlotlyPlot'
     _PACKAGE = 'plotly.js'
-    _TAG = ('<PlotlyPlot initState={{{init}}} '
-            'socket={{socket}} '
-            'uuid={{{uuid}}} '
-            '/>')
+    _ATTRS = 'initState={{{init}}}'
 
     def __init__(self, init=None):
         """Create a Plotly component.
@@ -267,9 +311,9 @@ class Plotly(_Visual):
         if init is None:
             init = dict(data=[], layout={'autosize': False})
         self.init = init
-        self._instantiate = self._TAG.format(
-            uuid="'{}'".format(self._uuid),
-            init=jdumps(self.init),
+
+        self._comp = self._tag.format(
+            init=jdumps(self.init)
         )
 
     ## Events

@@ -8,47 +8,45 @@ from bowtie._component import Component
 
 
 class Progress(Component):
-    """A progress indicator.
-
-    This component is used by all visual components and
-    is not meant to be used alone.
-
-    By default, it is not visible.
-    It is an opt-in feature and you can happily use Bowtie
-    without using the progress indicators at all.
-
-    It is useful for indicating progress to the user for long-running processes.
-    It can be accessed through the ``.progress`` accessor.
-
-    Examples
-    --------
-    >>> plotly = Plotly()
-    >>> def callback(x):
-    >>>     plotly.progress.do_visible(True)
-    >>>     plotly.progress.do_percent(0)
-    >>>     compute1()
-    >>>     plotly.progress.do_inc(50)
-    >>>     compute2()
-    >>>     plotly.progress.do_visible(False)
-
-    References
-    ----------
-    https://ant.design/components/progress/
-
-    """
+    """Circle progress indicator."""
 
     _TEMPLATE = 'progress.jsx'
     _COMPONENT = 'AntProgress'
     _PACKAGE = None
-    _TAG = ('<AntProgress '
-            'socket={{socket}} '
-            'uuid={{{uuid}}} '
-            '>')
+    _ATTRS = None
 
-    def _instantiate(self):
-        return self._TAG.format(
-            uuid="'{}'".format(self._uuid)
-        )
+    def __init__(self):
+        """Create a progress indicator.
+
+        This component is used by all visual components.
+        It is not meant to be used alone.
+
+        By default, it is not visible.
+        It is an opt-in feature and you can happily use Bowtie
+        without using the progress indicators at all.
+
+        It is useful for indicating progress to the user for long-running processes.
+        It can be accessed through the ``.progress`` accessor.
+
+        Examples
+        --------
+        >>> plotly = Plotly()
+        >>> def callback(x):
+        >>>     plotly.progress.do_visible(True)
+        >>>     plotly.progress.do_percent(0)
+        >>>     compute1()
+        >>>     plotly.progress.do_inc(50)
+        >>>     compute2()
+        >>>     plotly.progress.do_visible(False)
+
+        References
+        ----------
+        https://ant.design/components/progress/
+
+        """
+        super(Progress, self).__init__()
+        self._tagbase = self._tagbase[:-3] + '>'
+        self._tags = '<' + self._COMPONENT + self._tagbase, '</AntProgress>'
 
     # pylint: disable=no-self-use
     def do_percent(self, percent):

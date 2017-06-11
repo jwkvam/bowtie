@@ -12,18 +12,15 @@ import stat
 from collections import namedtuple, defaultdict, OrderedDict
 from subprocess import Popen
 
-from flask import Markup
 from jinja2 import Environment, FileSystemLoader
-from markdown import markdown
 
 from bowtie._compat import makedirs
-from bowtie.control import _Controller
-from bowtie.visual import _Visual
+from bowtie._component import Component
 
 
 _Import = namedtuple('_Import', ['module', 'component'])
 _Control = namedtuple('_Control', ['instantiate', 'caption'])
-_Schedule = namedtuple('_Control', ['seconds', 'function'])
+_Schedule = namedtuple('_Schedule', ['seconds', 'function'])
 
 
 class YarnError(Exception):
@@ -179,8 +176,8 @@ class Layout(object):
     """Core class to layout, connect, build a Bowtie app."""
 
     def __init__(self, rows=1, columns=1, sidebar=True,
-                 title='Bowtie App', description='Bowtie App\n---',
-                 basic_auth=False, username='username', password='password',
+                 title='Bowtie App', basic_auth=False,
+                 username='username', password='password',
                  background_color='White', directory='build',
                  host='0.0.0.0', port=9991, socketio='', debug=False):
         """Create a Bowtie App.
@@ -195,8 +192,6 @@ class Layout(object):
             Enable a sidebar for control widgets.
         title : str, optional
             Title of the HTML.
-        description : str, optional
-            Describe the app in Markdown, inserted in control pane.
         basic_auth : bool, optional
             Enable basic authentication.
         username : str, optional
@@ -221,7 +216,6 @@ class Layout(object):
         self.basic_auth = basic_auth
         self.controllers = []
         self.debug = debug
-        self.description = Markup(markdown(description))
         self.directory = directory
         self.functions = []
         self.host = host
@@ -264,6 +258,8 @@ class Layout(object):
             Ending column for the widget.
 
         """
+        assert isinstance(widget, Component)
+
         for index in [row_start, row_end]:
             if index is not None and not 0 <= index < len(self.rows):
                 raise GridIndexError('Invalid Row Index')
@@ -316,27 +312,27 @@ class Layout(object):
         self.widgets.append(widget)
         self.spans.append(span)
 
-    def add_sidebar(self, control):
-        """Add a controller to the sidebar.
+    def add_sidebar(self, widget):
+        """Add a widget to the sidebar.
 
         Parameters
         ----------
-        control : bowtie._Controller
-            A Bowtie controller instance.
+        widget : bowtie._Component
+            Add this widget to the sidebar, it will be appended to the end.
 
         """
         if not self.sidebar:
             raise NoSidebarError('Set sidebar=True if you want to use the sidebar.')
 
-        assert isinstance(control, _Controller)
+        assert isinstance(widget, Component)
 
         # pylint: disable=protected-access
-        self.packages.add(control._PACKAGE)
-        self.templates.add(control._TEMPLATE)
-        self.imports.add(_Import(component=control._COMPONENT,
-                                 module=control._TEMPLATE[:control._TEMPLATE.find('.')]))
-        self.controllers.append(_Control(instantiate=control._instantiate,
-                                         caption=control.caption))
+        self.packages.add(widget._PACKAGE)
+        self.templates.add(widget._TEMPLATE)
+        self.imports.add(_Import(component=widget._COMPONENT,
+                                 module=widget._TEMPLATE[:widget._TEMPLATE.find('.')]))
+        self.controllers.append(_Control(instantiate=widget._instantiate,
+                                         caption=getattr(widget, 'caption', None)))
 
     def respond(self, pager, func):
         """Call a function in response to a page.
@@ -467,15 +463,8 @@ class Layout(object):
             template_src = path.join(file_dir, 'src', template)
             shutil.copy(template_src, app)
 
-        for i, widget in enumerate(self.widgets):
-            # pylint: disable=protected-access
-            winst = widget._instantiate
-            if isinstance(widget, _Visual):
-                progress = widget.progress._instantiate()
-                close_progress = '</AntProgress>'
-                self.widgets[i] = ''.join((progress, winst, close_progress))
-            else:
-                self.widgets[i] = winst
+        # pylint: disable=protected-access
+        self.widgets = [w._instantiate for w in self.widgets]
 
         columns = []
         if self.sidebar:
@@ -485,7 +474,6 @@ class Layout(object):
         with open(path.join(app, react.name[:-3]), 'w') as f:
             f.write(
                 react.render(
-                    description=self.description,
                     socketio=self.socketio,
                     sidebar=self.sidebar,
                     columns=columns,
