@@ -35,6 +35,11 @@ def varname(variable):
             return name
 
 
+def jsbool(x):
+    """Convert Python bool to Javascript bool."""
+    return repr(x).lower()
+
+
 def json_conversion(obj):
     """Encode additional objects to JSON."""
     try:

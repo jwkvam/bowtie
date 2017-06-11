@@ -4,7 +4,7 @@
 from flask import Markup
 from markdown import markdown
 
-from bowtie._component import Component, jdumps
+from bowtie._component import Component, jdumps, jsbool
 from bowtie._progress import Progress
 
 
@@ -249,7 +249,7 @@ class SVG(_Visual):
         super(SVG, self).__init__()
         self.preserve_aspect_ratio = preserve_aspect_ratio
         self._comp = self._tag.format(
-            preserve_aspect_ratio='true' if self.preserve_aspect_ratio else 'false'
+            preserve_aspect_ratio=jsbool(self.preserve_aspect_ratio)
         )
 
     # pylint: disable=no-self-use

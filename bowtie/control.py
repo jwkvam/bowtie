@@ -3,12 +3,7 @@
 
 from collections import Iterable
 
-from bowtie._component import Component, jdumps
-
-
-def _jsbool(x):
-    """Convert Python bool to Javascript bool."""
-    return repr(x).lower()
+from bowtie._component import Component, jdumps, jsbool
 
 
 # pylint: disable=too-few-public-methods
@@ -101,7 +96,7 @@ class Dropdown(_Controller):
 
         self._comp = self._tag.format(
             options=jdumps(options),
-            multi=_jsbool(multi),
+            multi=jsbool(multi),
             default=jdumps(default),
         )
 
@@ -173,7 +168,7 @@ class Switch(_Controller):
         """
         super(Switch, self).__init__(caption=caption)
         self._comp = self._tag.format(
-            defaultChecked=_jsbool(initial)
+            defaultChecked=jsbool(initial)
         )
 
     def on_switch(self):
@@ -217,9 +212,9 @@ class _DatePickers(_Controller):
                  caption=None):
         super(_DatePickers, self).__init__(caption=caption)
         self._comp = self._tag.format(
-            date_type=_jsbool(date_type),
-            month_type=_jsbool(month_type),
-            range_type=_jsbool(range_type)
+            date_type=jsbool(date_type),
+            month_type=jsbool(month_type),
+            range_type=jsbool(range_type)
         )
 
 
@@ -466,8 +461,8 @@ class Textbox(_Controller):
 
         self._comp = self._tag.format(
             area=area,
-            autosize=_jsbool(autosize),
-            disabled=_jsbool(disabled),
+            autosize=jsbool(autosize),
+            disabled=jsbool(disabled),
             placeholder=placeholder,
             size=size
         )
@@ -570,7 +565,7 @@ class Slider(_Controller):
             ranged = True
 
         self._comp = self._tag.format(
-            range=_jsbool(ranged),
+            range=jsbool(ranged),
             minimum=minimum,
             maximum=maximum,
             start=start,
@@ -661,7 +656,7 @@ class Nouislider(_Controller):
             min=minimum,
             max=maximum,
             start=start,
-            tooltips=_jsbool(tooltips)
+            tooltips=jsbool(tooltips)
         )
 
     def on_update(self):
