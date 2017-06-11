@@ -40,15 +40,12 @@ class Progress(Component):
     _TEMPLATE = 'progress.jsx'
     _COMPONENT = 'AntProgress'
     _PACKAGE = None
-    _TAG = ('<AntProgress '
-            'socket={{socket}} '
-            'uuid={{{uuid}}} '
-            '>')
+    _ATTRS = None
 
-    def _instantiate(self):
-        return self._TAG.format(
-            uuid="'{}'".format(self._uuid)
-        )
+    def __init__(self):
+        super(Progress, self).__init__()
+        self._tagbase = self._tagbase[:-3] + '>'
+        self._tags = '<' + self._COMPONENT + self._tagbase, '</AntProgress>'
 
     # pylint: disable=no-self-use
     def do_percent(self, percent):

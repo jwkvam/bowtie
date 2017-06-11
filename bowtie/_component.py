@@ -10,6 +10,7 @@ from __future__ import unicode_literals
 # pylint: disable=redefined-builtin
 from builtins import bytes
 
+import string
 import inspect
 from functools import wraps
 import json
@@ -195,6 +196,11 @@ class _Maker(type):
         return super(_Maker, mcs).__new__(mcs, name, parents, dct)
 
 
+class FormatDict(dict):
+    def __missing__(self, key):
+        return "{" + key + "}"
+
+
 # pylint: disable=too-few-public-methods
 class Component(with_metaclass(_Maker, object)):
     """Abstract class for all components.
@@ -216,3 +222,19 @@ class Component(with_metaclass(_Maker, object)):
         # was surprised that didn't work
         self._uuid = Component._next_uuid()
         super(Component, self).__init__()
+        self._tagbase = " socket={{socket}} uuid={{'{uuid}'}} />".format(uuid=self._uuid)
+        self._tag = '<' + self._COMPONENT
+        if self._ATTRS:
+            self._tag += ' ' + self._ATTRS
+
+    @staticmethod
+    def _insert(wrap, tag):
+        """Insert the component tag into the wrapper html.
+
+        This ignores other tags already created like ``{socket}``.
+
+        https://stackoverflow.com/a/11284026/744520
+        """
+        formatter = string.Formatter()
+        mapping = FormatDict(component=tag)
+        return formatter.vformat(wrap, (), mapping)

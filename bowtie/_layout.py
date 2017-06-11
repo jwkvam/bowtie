@@ -464,15 +464,8 @@ class Layout(object):
             template_src = path.join(file_dir, 'src', template)
             shutil.copy(template_src, app)
 
-        for i, widget in enumerate(self.widgets):
-            # pylint: disable=protected-access
-            winst = widget._instantiate
-            if isinstance(widget, _Visual):
-                progress = widget.progress._instantiate()
-                close_progress = '</AntProgress>'
-                self.widgets[i] = ''.join((progress, winst, close_progress))
-            else:
-                self.widgets[i] = winst
+        # pylint: disable=protected-access
+        self.widgets = [w._instantiate for w in self.widgets]
 
         columns = []
         if self.sidebar:
