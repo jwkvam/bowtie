@@ -28,7 +28,7 @@ def chrome_driver():
         options.binary_location = '/usr/bin/google-chrome-stable'
     options.add_argument('headless')
     options.add_argument('disable-gpu')
-    options.add_argument('remote-debugging-port=9222')
+    # options.add_argument('remote-debugging-port=9222')
     options.add_argument('window-size=1200x800')
     driver = webdriver.Chrome(chrome_options=options)
     yield driver
