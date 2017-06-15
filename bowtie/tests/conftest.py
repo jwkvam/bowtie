@@ -20,6 +20,7 @@ def remove_build():
 
 @pytest.fixture
 def build_path():
+    """Path for building apps with pytest."""
     return os.path.join(os.path.dirname(os.path.realpath(__file__)), 'build')
 
 
