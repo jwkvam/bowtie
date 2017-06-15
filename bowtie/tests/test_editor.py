@@ -30,7 +30,7 @@ def write(txt):
 
 
 # pylint: disable=unused-argument
-def test_markdown(remove_build, chrome_driver, build_path):
+def test_markdown(chrome_driver, build_path):
     """Test markdown and text widgets."""
     layout = Layout(directory=build_path)
     layout.add(mark)

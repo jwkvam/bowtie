@@ -14,7 +14,7 @@ def callback(*args):
 
 
 # pylint: disable=unused-argument
-def test_build(remove_build, build_path):
+def test_build(build_path):
     """Tests the build process."""
     ctrl = Nouislider()
     viz = Plotly()

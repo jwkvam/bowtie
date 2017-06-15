@@ -36,7 +36,7 @@ def callback(*args):
 
 
 # pylint: disable=unused-argument
-def test_plotly(remove_build, chrome_driver, build_path):
+def test_plotly(chrome_driver, build_path):
     """Tests plotly."""
 
     layout = Layout(directory=build_path)
