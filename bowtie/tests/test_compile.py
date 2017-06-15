@@ -16,13 +16,12 @@ def callback(*args):
 
 
 # pylint: disable=unused-argument
-def test_build(remove_build):
+def test_build(remove_build, build_path):
     """Tests the build process."""
     ctrl = Nouislider()
     viz = Plotly()
 
-    path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'build')
-    layout = Layout(directory=path)
+    layout = Layout(directory=build_path)
     layout.add_sidebar(ctrl)
     layout.add(viz)
     layout.subscribe(callback, ctrl.on_change)
