@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Compile tests."""
 
-import os
-
 from bowtie import Layout
 from bowtie.control import Nouislider
 from bowtie.visual import Plotly

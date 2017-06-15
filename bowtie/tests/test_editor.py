@@ -1,16 +1,17 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""Test markdown and text widgets."""
 
 import os
 from os import environ as env
 import subprocess
 import time
 
-from bowtie import command, Layout
+from bowtie import Layout
 from bowtie.visual import Markdown
 from bowtie.control import Textbox
 
 
+# pylint: disable=invalid-name
 mark = Markdown('''
 # top
 ## middle
@@ -24,11 +25,13 @@ text = Textbox(area=True)
 
 
 def write(txt):
+    """Update markdown text."""
     mark.do_text(txt)
 
 
+# pylint: disable=unused-argument
 def test_markdown(remove_build, chrome_driver, build_path):
-    """Tests markdown and text widget."""
+    """Test markdown and text widgets."""
     layout = Layout(directory=build_path)
     layout.add(mark)
     layout.add_sidebar(side)

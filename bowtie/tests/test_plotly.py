@@ -7,9 +7,6 @@ from os import environ as env
 import subprocess
 import time
 
-# from selenium.webdriver import PhantomJS
-# from selenium.webdriver import ActionChains
-
 from bowtie import Layout
 from bowtie.control import Nouislider, Button
 from bowtie.visual import Plotly
