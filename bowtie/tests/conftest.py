@@ -19,6 +19,11 @@ def remove_build():
 
 
 @pytest.fixture
+def build_path():
+    return os.path.join(os.path.dirname(os.path.realpath(__file__)), 'build')
+
+
+@pytest.fixture
 def chrome_driver():
     """Set up chrome driver."""
     options = webdriver.ChromeOptions()

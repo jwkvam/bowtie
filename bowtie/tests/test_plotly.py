@@ -3,6 +3,7 @@
 """Plotly testing."""
 
 import os
+from os import environ as env
 import subprocess
 import time
 
@@ -38,11 +39,10 @@ def callback(*args):
 
 
 # pylint: disable=unused-argument
-def test_plotly(remove_build, chrome_driver):
+def test_plotly(remove_build, chrome_driver, build_path):
     """Tests plotly."""
 
-    path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'build')
-    layout = Layout(directory=path)
+    layout = Layout(directory=build_path)
     layout.add(viz)
     layout.add_sidebar(ctrl)
     layout.add_sidebar(ctrl2)
@@ -50,9 +50,8 @@ def test_plotly(remove_build, chrome_driver):
     layout.subscribe(callback, ctrl2.on_click)
     layout.build()
 
-    env = os.environ
     env['PYTHONPATH'] = '{}:{}'.format(os.getcwd(), os.environ.get('PYTHONPATH', ''))
-    server = subprocess.Popen(os.path.join(path, 'src/server.py'), env=env)
+    server = subprocess.Popen(os.path.join(build_path, 'src/server.py'), env=env)
 
     time.sleep(5)
 
