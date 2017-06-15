@@ -30,11 +30,11 @@ export default class Toggle extends React.Component {
     render () {
         return (
             <LocaleProvider locale={enUS}>
-            <Switch
-                checked={this.state.checked}
-                defaultChecked={this.props.defaultChecked}
-                onChange={this.handleChange}
-            />
+                <Switch
+                    checked={this.state.checked}
+                    defaultChecked={this.props.defaultChecked}
+                    onChange={this.handleChange}
+                />
             </LocaleProvider>
         );
     }

@@ -16,9 +16,9 @@ export default class SimpleButton extends React.Component {
     render() {
         return (
             <Button
-            type="primary"
-            onClick={this.handleClick} >
-            {this.props.label}
+                type="primary"
+                onClick={this.handleClick} >
+                {this.props.label}
             </Button>
         );
     }

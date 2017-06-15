@@ -33,34 +33,34 @@ export default class PickDates extends React.Component {
         if (this.props.date) {
             return (
                 <LocaleProvider locale={enUS}>
-                <DatePicker
-                    style={{ width: '100%' }}
-                    value={this.state.value}
-                    onChange={this.handleChange}
-                    locale={enUS}
-                />
+                    <DatePicker
+                        style={{ width: '100%' }}
+                        value={this.state.value}
+                        onChange={this.handleChange}
+                        locale={enUS}
+                    />
                 </LocaleProvider>
             );
         } else if (this.props.month) {
             return (
                 <LocaleProvider locale={enUS}>
-                <MonthPicker
-                    style={{ width: '100%' }}
-                    value={this.state.value}
-                    onChange={this.handleChange}
-                    locale={enUS}
-                />
+                    <MonthPicker
+                        style={{ width: '100%' }}
+                        value={this.state.value}
+                        onChange={this.handleChange}
+                        locale={enUS}
+                    />
                 </LocaleProvider>
             );
         } else {
             return (
                 <LocaleProvider locale={enUS}>
-                <RangePicker
-                    style={{ width: '100%' }}
-                    value={this.state.value}
-                    onChange={this.handleChange}
-                    locale={enUS}
-                />
+                    <RangePicker
+                        style={{ width: '100%' }}
+                        value={this.state.value}
+                        onChange={this.handleChange}
+                        locale={enUS}
+                    />
                 </LocaleProvider>
             );
         }
