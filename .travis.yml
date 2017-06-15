@@ -23,6 +23,7 @@ install:
     - npm install -g eslint babel-eslint eslint-plugin-react
     - make eslint
     - sudo apt-get update
+    - sudo apt-get install xvfb
       # We do this conditionally because it saves us some downloading if the
       # version is the same.
     - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
