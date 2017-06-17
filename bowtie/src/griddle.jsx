@@ -36,7 +36,7 @@ export default class SmartGrid extends React.Component {
                 useGriddleStyles={true}
                 columns={this.props.columns}
                 resultsPerPage={this.props.resultsPerPage}
-                />
+            />
         );
     }
 }

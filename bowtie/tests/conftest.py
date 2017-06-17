@@ -11,10 +11,10 @@ import pytest
 
 
 @pytest.fixture
-def remove_build():
-    """Remove build directory after use."""
-    yield
+def build_path():
+    """Path for building apps with pytest."""
     path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'build')
+    yield path
     shutil.rmtree(path)
 
 

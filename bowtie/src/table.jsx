@@ -38,15 +38,15 @@ export default class AntTable extends React.Component {
     render() {
         return (
             <LocaleProvider locale={enUS}>
-            <Table
-                dataSource={this.state.data}
-                columns={this.state.columns}
-                size="small"
-                bordered={true}
-                pagination={{ pageSize: this.props.resultsPerPage }}
-                style={{width: '100%'}}
-                scroll={{y: false}}
-            />
+                <Table
+                    dataSource={this.state.data}
+                    columns={this.state.columns}
+                    size="small"
+                    bordered={true}
+                    pagination={{ pageSize: this.props.resultsPerPage }}
+                    style={{width: '100%'}}
+                    scroll={{y: false}}
+                />
             </LocaleProvider>
         );
     }

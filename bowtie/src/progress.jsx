@@ -59,13 +59,13 @@ export default class AntProgress extends React.Component {
                     top: '50%', left: '50%',
                     transform: 'translate(-50%, -50%)'
                 }}>
-                <Progress
-                    type="circle"
-                    showInfo
-                    status={this.state.status}
-                    percent={this.state.percent}
-                    style={{alignSelf: 'center'}}
-                />
+                    <Progress
+                        type="circle"
+                        showInfo
+                        status={this.state.status}
+                        percent={this.state.percent}
+                        style={{alignSelf: 'center'}}
+                    />
                 </div>
             );
         } else {
