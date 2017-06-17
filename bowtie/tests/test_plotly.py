@@ -13,10 +13,10 @@ from plotly.graph_objs import Layout as PlotLayout
 from bowtie import Layout
 from bowtie.control import Nouislider, Button
 from bowtie.visual import Plotly
-from bowtie._component import Component
+from bowtie.tests.utils import reset_uuid
 
 
-Component._NEXT_UUID = 0
+reset_uuid()
 
 # pylint: disable=invalid-name
 viz = Plotly()
