@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 0.4.0 / 2017-06-17
+
+### Added
+
+  * Markdown widget (#135)
+
+### Breaking
+
+  * `description` parameter in Layout removed in favor of Markdown widget
+
 ## 0.3.3 / 2017-05-24
 
 ### Added
