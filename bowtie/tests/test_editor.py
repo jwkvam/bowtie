@@ -9,7 +9,10 @@ import time
 from bowtie import Layout
 from bowtie.visual import Markdown
 from bowtie.control import Textbox
+from bowtie._component import Component
 
+
+Component._NEXT_UUID = 0
 
 # pylint: disable=invalid-name
 mark = Markdown('''

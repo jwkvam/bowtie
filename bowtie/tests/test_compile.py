@@ -5,6 +5,7 @@
 from bowtie import Layout
 from bowtie.control import Nouislider
 from bowtie.visual import Plotly
+from bowtie._component import Component
 
 
 def callback(*args):
@@ -16,6 +17,7 @@ def callback(*args):
 # pylint: disable=unused-argument
 def test_build(build_path):
     """Tests the build process."""
+    Component._NEXT_UUID = 0
     ctrl = Nouislider()
     viz = Plotly()
 

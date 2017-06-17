@@ -7,13 +7,16 @@ from os import environ as env
 import subprocess
 import time
 
-from bowtie import Layout
-from bowtie.control import Nouislider, Button
-from bowtie.visual import Plotly
-
 from plotly.graph_objs import Scatter
 from plotly.graph_objs import Layout as PlotLayout
 
+from bowtie import Layout
+from bowtie.control import Nouislider, Button
+from bowtie.visual import Plotly
+from bowtie._component import Component
+
+
+Component._NEXT_UUID = 0
 
 # pylint: disable=invalid-name
 viz = Plotly()
