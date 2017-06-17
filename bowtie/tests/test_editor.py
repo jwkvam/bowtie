@@ -62,12 +62,15 @@ def test_markdown(chrome_driver, build_path):
     assert 'middle' in output.text
     assert 'link' in output.text
 
-    txtctrl.send_keys('apple ')
+    txtctrl.send_keys('apple')
+    time.sleep(1)
 
     assert 'apple' in output.text
 
-    txtctrl.send_keys('banana ')
+    txtctrl.send_keys('banana')
+    time.sleep(1)
 
+    assert 'apple' in output.text
     assert 'banana' in output.text
 
     server.kill()
