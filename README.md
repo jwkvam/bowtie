@@ -51,3 +51,4 @@ You can help Bowtie in many ways including:
 - Trying it [out](http://bowtie-py.readthedocs.io/en/latest/quickstart.html) and reporting bugs or simply what was difficult to use or get working.
 - Helping improve the [documentation](https://github.com/jwkvam/bowtie/tree/master/doc).
 - Writing new [widgets](http://bowtie-py.readthedocs.io/en/latest/newcomponents.html).
+- Say [thanks](https://saythanks.io/to/jwkvam)!
