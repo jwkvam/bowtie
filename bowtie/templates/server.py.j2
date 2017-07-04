@@ -128,6 +128,13 @@ def _():
 {% endif %}
 
 
+{% for upload in uploads %}
+@app.route('/upload{{ upload._uuid }}', methods=['POST'])
+def _():
+    {{ source_module }}.{{ upload.function }}()
+{% endfor %}
+
+
 {% for page, function in pages.items() %}
 @socketio.on('resp#{{ page._uuid }}')
 def _():

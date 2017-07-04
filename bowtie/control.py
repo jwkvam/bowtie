@@ -61,6 +61,30 @@ class Button(_Controller):
         pass
 
 
+class Upload(_Controller):
+    """An Ant design button."""
+
+    _TEMPLATE = 'upload.jsx'
+    _COMPONENT = 'AntUpload'
+    _PACKAGE = None
+    _ATTRS = ""
+
+    def __init__(self, handler, caption=None):
+        """Create a button.
+
+        Parameters
+        ----------
+        label : str, optional
+            Label on the button.
+        caption : str, optional
+            Heading text.
+
+        """
+        super(Upload, self).__init__(caption=caption)
+        self.function = handler.__name__
+        self._comp = self._tag
+
+
 class Dropdown(_Controller):
     """Dropdown based on react-select."""
 
