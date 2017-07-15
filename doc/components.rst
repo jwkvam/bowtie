@@ -127,3 +127,10 @@ NoUISlider
 .. autoclass:: bowtie.control.Nouislider
     :members:
     :undoc-members:
+
+Upload
+~~~~~~
+
+.. autoclass:: bowtie.control.Upload
+    :members:
+    :undoc-members:
