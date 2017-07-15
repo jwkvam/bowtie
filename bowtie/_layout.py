@@ -16,6 +16,7 @@ from jinja2 import Environment, FileSystemLoader
 
 from bowtie._compat import makedirs
 from bowtie._component import Component
+from bowtie.control import Upload
 
 
 _Import = namedtuple('_Import', ['module', 'component'])
@@ -233,6 +234,7 @@ class Layout(object):
         self.username = username
         self.used = OrderedDict(((key, False) for key in product(range(rows), range(columns))))
         self.widgets = []
+        self.uploads = []
         self.spans = []
         self.rows = [Size() for _ in range(rows)]
         self.columns = [Size() for _ in range(columns)]
@@ -259,6 +261,7 @@ class Layout(object):
 
         """
         assert isinstance(widget, Component)
+        self._check_and_add_upload(widget)
 
         for index in [row_start, row_end]:
             if index is not None and not 0 <= index < len(self.rows):
@@ -322,9 +325,10 @@ class Layout(object):
 
         """
         if not self.sidebar:
-            raise NoSidebarError('Set sidebar=True if you want to use the sidebar.')
+            raise NoSidebarError('Set `sidebar=True` if you want to use the sidebar.')
 
         assert isinstance(widget, Component)
+        self._check_and_add_upload(widget)
 
         # pylint: disable=protected-access
         self.packages.add(widget._PACKAGE)
@@ -333,6 +337,11 @@ class Layout(object):
                                  module=widget._TEMPLATE[:widget._TEMPLATE.find('.')]))
         self.controllers.append(_Control(instantiate=widget._instantiate,
                                          caption=getattr(widget, 'caption', None)))
+
+    def _check_and_add_upload(self, widget):
+        if not isinstance(widget, Upload):
+            return
+        self.uploads.append(widget)
 
     def respond(self, pager, func):
         """Call a function in response to a page.
@@ -443,6 +452,7 @@ class Layout(object):
                     password=self.password,
                     source_module=os.path.basename(source_filename)[:-3],
                     subscriptions=self.subscriptions,
+                    uploads=self.uploads,
                     schedules=self.schedules,
                     initial=self.init,
                     pages=self.pages,

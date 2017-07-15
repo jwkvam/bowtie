@@ -10,8 +10,8 @@ from builtins import bytes
 import click
 import msgpack
 import flask
-from flask import Flask, render_template, copy_current_request_context
-from flask import request, Response
+from flask import (Flask, render_template, make_response, copy_current_request_context,
+                   jsonify, request, Response)
 from flask_socketio import SocketIO
 import eventlet
 
@@ -126,6 +126,17 @@ def _():
     foo = copy_current_request_context({{ source_module }}.{{ initial }})
     eventlet.spawn(foo)
 {% endif %}
+
+
+{% for upload in uploads %}
+@app.route('/upload{{ upload._uuid }}', methods=['POST'])
+def _():
+    upfile = request.files['file']
+    retval = {{ source_module }}.{{ upload.function }}(upfile.filename, upfile.stream)
+    if retval:
+        return make_response(jsonify(), 400)
+    return make_response(jsonify(), 200)
+{% endfor %}
 
 
 {% for page, function in pages.items() %}
