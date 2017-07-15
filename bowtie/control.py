@@ -67,9 +67,9 @@ class Upload(_Controller):
     _TEMPLATE = 'upload.jsx'
     _COMPONENT = 'AntUpload'
     _PACKAGE = None
-    _ATTRS = ""
+    _ATTRS = "multiple={{{multiple}}}"
 
-    def __init__(self, handler, caption=None):
+    def __init__(self, handler, multiple=False, caption=None):
         """Create a button.
 
         Parameters
@@ -82,7 +82,9 @@ class Upload(_Controller):
         """
         super(Upload, self).__init__(caption=caption)
         self.function = handler.__name__
-        self._comp = self._tag
+        self._comp = self._tag.format(
+            multiple=jsbool(multiple)
+        )
 
 
 class Dropdown(_Controller):
