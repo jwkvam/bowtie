@@ -17,6 +17,7 @@ Easy to deploy so you can share results with others.
     layout
     components
     cache
+    docker
     architecture
     newcomponents
     comparison
