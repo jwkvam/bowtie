@@ -504,8 +504,7 @@ class Layout(object):
         packages = path.join(file_dir, 'src/package.json')
         shutil.copy(packages, self.directory)
 
-
-        install = Popen('yarn add package.json', shell=True, cwd=self.directory).wait()
+        install = Popen('yarn install', shell=True, cwd=self.directory).wait()
         if install > 1:
             raise YarnError('Error install node packages')
 

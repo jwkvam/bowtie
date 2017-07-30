@@ -295,7 +295,7 @@ class Plotly(_Visual):
 
     _TEMPLATE = 'plotly.jsx'
     _COMPONENT = 'PlotlyPlot'
-    _PACKAGE = 'plotly.js'
+    _PACKAGE = 'plotly.js@1.29.3'
     _ATTRS = 'initState={{{init}}}'
 
     def __init__(self, init=None):

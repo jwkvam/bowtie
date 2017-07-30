@@ -25,6 +25,7 @@ export default class PlotlyPlot extends React.Component {
     }
 
     setSelection = data => {
+        data.points = data.points.map(this.processPoint);
         this.selection = data;
         this.props.socket.emit(this.props.uuid + '#select', msgpack.encode(data));
     }
@@ -33,22 +34,25 @@ export default class PlotlyPlot extends React.Component {
         fn(msgpack.encode(this.selection));
     }
 
-    processPoint = data => {
-        var p0 = data.points[0];
-        var text = p0.data.text;
+    processData = data => {
+        return this.processPoint(data.points[0]);
+    }
+
+    processPoint = point => {
+        var text = point.data.text;
         var datum = {
-            curve: p0.curveNumber,
-            point: p0.pointNumber,
-            x: p0.x,
-            y: p0.y,
+            curve: point.curveNumber,
+            point: point.pointNumber,
+            x: point.x,
+            y: point.y,
             // TODO this indexing needs to be checked
-            hover: (text == null) ? null : text[p0.pointNumber]
+            hover: (text == null) ? null : text[point.pointNumber]
         };
         return datum;
     }
 
     setClick = data => {
-        var datum = this.processPoint(data);
+        var datum = this.processData(data);
         this.click = datum;
         this.props.socket.emit(this.props.uuid + '#click', msgpack.encode(datum));
     }
@@ -58,7 +62,7 @@ export default class PlotlyPlot extends React.Component {
     }
 
     setHover = data => {
-        var datum = this.processPoint(data);
+        var datum = this.processData(data);
         this.hover = datum;
         this.props.socket.emit(this.props.uuid + '#hover', msgpack.encode(datum));
     }
