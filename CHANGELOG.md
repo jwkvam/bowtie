@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 0.4.1 / 2017-07-29
+
+### Added
+
+  * Dockerfile for building apps
+
+### Fixed
+
+  * Refactored the data Plotly sends on selection to stop crashes, may break some apps
+
 ## 0.4.0 / 2017-06-17
 
 ### Added
