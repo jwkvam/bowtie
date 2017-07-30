@@ -1,8 +1,6 @@
 FROM node:8.2
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
-# let flit install packages as root
-ENV FLIT_ROOT_INSTALL 1
 
 RUN apt-get update --fix-missing && apt-get install -y wget bzip2 ca-certificates
 
@@ -15,11 +13,8 @@ RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
 
 ENV PATH /opt/conda/bin:$PATH
 
-RUN npm install -g webpack@2.6.1 yarn
-RUN pip install flit
-
-COPY . /bowtie
-RUN cd /bowtie && flit install
+RUN npm install -g webpack@3.4.1 yarn
+RUN pip install bowtie
 
 WORKDIR /work
 
