@@ -62,7 +62,7 @@ class Button(_Controller):
 
 
 class Upload(_Controller):
-    """An Ant design button."""
+    """Draggable file upload widget."""
 
     _TEMPLATE = 'upload.jsx'
     _COMPONENT = 'AntUpload'
@@ -70,7 +70,9 @@ class Upload(_Controller):
     _ATTRS = "multiple={{{multiple}}}"
 
     def __init__(self, handler, multiple=True, caption=None):
-        """Create a button.
+        """Create the widget.
+
+        Note: the handler parameter may be changed in the future.
 
         Parameters
         ----------
