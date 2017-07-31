@@ -4,6 +4,7 @@
 
 ### Added
 
+  * Upload widget
   * Dockerfile for building apps
 
 ### Fixed

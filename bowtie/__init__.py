@@ -1,6 +1,6 @@
 """Interactive dashboard toolkit."""
 
-__version__ = '0.4.1'
+__version__ = '0.4.2-dev'
 
 from bowtie._layout import Layout
 from bowtie._command import command
