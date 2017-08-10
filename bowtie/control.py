@@ -61,6 +61,44 @@ class Button(_Controller):
         pass
 
 
+class Download(_Controller):
+    """An Ant design button."""
+
+    _TEMPLATE = 'button.jsx'
+    _COMPONENT = 'SimpleButton'
+    _PACKAGE = None
+    _ATTRS = "label={{'{label}'}}"
+
+    def __init__(self, label='', caption=None):
+        """Create a button.
+
+        Parameters
+        ----------
+        label : str, optional
+            Label on the button.
+        caption : str, optional
+            Heading text.
+
+        """
+        super(Download, self).__init__(caption=caption)
+        self._comp = self._tag.format(
+            label=label
+        )
+
+    def on_click(self):
+        """Emit an event when the button is clicked.
+
+        | **Payload:** ``None``.
+
+        Returns
+        -------
+        str
+            Name of click event.
+
+        """
+        pass
+
+
 class Upload(_Controller):
     """Draggable file upload widget."""
 

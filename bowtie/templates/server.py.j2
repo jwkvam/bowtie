@@ -185,8 +185,20 @@ def _(*args):
 
     foo = copy_current_request_context(wrapuser)
     eventlet.spawn(foo)
-
 {% endfor %}
+
+
+{% for download in downloads %}
+@socketio.on('{{ event }}')
+def _():
+    foo = copy_current_request_context({{ source_module }}.{{ download }})
+    gthread = eventlet.spawn(foo)
+    data, fname = gthread.wait()
+    response = make_response(data)
+    response.headers['Content-Disposition'] = 'attachment; filename={}'.format(fname)
+    return response
+{% endfor %}
+
 
 @click.command()
 @click.option('--host', '-h', default={{host}}, help='Host IP')
