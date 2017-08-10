@@ -33,6 +33,12 @@ From Plotly is `Dash <https://github.com/plotly/dash>`_
 .. todo::
     compare to dash
 
+Bokeh
+-----
+
+.. todo::
+    compare to bokeh
+
 Shiny
 -----
 
