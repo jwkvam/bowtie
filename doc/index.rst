@@ -17,12 +17,18 @@ It takes about 10 minutes to go through.
 Notable Features
 ----------------
 
-* Ships with many useful widgets including charts, tables, dropdowns, sliders, and markdown.
+* Ships with many useful widgets including charts, tables, dropdowns, sliders, and markdown
+* All widgets come with many events and commands for interaction
+* Hook into Plotly charts with click, selection, and hover events
+* Run functions periodically
+* Store and fetch data from the client (browser)
+* Built in progress indicators for all visual widgets
 * Powerful Pythonic CSS grid API to layout components
-* Facebook's React ecosystem gives access to many high quality widgets
-* Creates a single Javascript bundle speeding up load times and removes CDN dependencies
+* Compiles a single Javascript bundle speeding up load times and removes CDN dependencies
 * Powerful programming model let's you listen to multiple events and update multiple widgets with single functions
-* One self-contained package includes all Python and Javascript
+
+.. * Facebook's React ecosystem gives access to many high quality widgets
+.. * One self-contained package includes all Python and Javascript
 
 Contents
 --------
