@@ -172,7 +172,6 @@ class Size(object):
         return self.maximum
 
 
-
 class Layout(object):
     """Core class to layout, connect, build a Bowtie app."""
 
