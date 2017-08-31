@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "antd": "^2.12.7",
+    "antd": "^2.12.8",
     "babel-core": "^6.25.0",
     "babel-loader": "^7.1.1",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
