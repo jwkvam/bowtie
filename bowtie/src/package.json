@@ -26,6 +26,6 @@
     "sass-loader": "^6.0.6",
     "socket.io-client": "^2.0.3",
     "style-loader": "^0.18.2",
-    "webpack": "^3.5.4"
+    "webpack": "^3.5.5"
   }
 }
