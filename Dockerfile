@@ -13,7 +13,7 @@ RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
 
 ENV PATH /opt/conda/bin:$PATH
 
-RUN npm install -g webpack@3.5.4 yarn
+RUN npm install -g webpack@3.5.5 yarn
 RUN pip install bowtie
 
 WORKDIR /work
