@@ -10,7 +10,7 @@ from bowtie._utils import func_name
 
 
 def _message(status, content):
-    """Generic message.
+    """Send message interface.
 
     Parameters
     ----------
@@ -73,7 +73,7 @@ def warning(content):
 
 
 def loading(content):
-    """Loading message.
+    """Load message.
 
     Parameters
     ----------
