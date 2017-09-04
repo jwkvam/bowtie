@@ -15,10 +15,11 @@ reset_uuid()
 
 # pylint: disable=invalid-name
 controllers = [getattr(control, comp)() for comp in dir(control)
-               if comp[0].isupper() and comp not in ('Component', 'Iterable', 'Upload')]
+               if comp[0].isupper() and issubclass(getattr(control, comp), control._Controller) and
+               comp != 'Upload']
 
 visuals = [getattr(visual, comp)() for comp in dir(visual)
-           if comp[0].isupper() and comp not in ('Component', 'Iterable', 'Progress')]
+           if comp[0].isupper() and issubclass(getattr(visual, comp), visual._Visual)]
 
 
 # pylint: disable=unused-argument
