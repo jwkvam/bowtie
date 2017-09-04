@@ -25,7 +25,7 @@ var config = {
                 exclude: /node_modules/,
                 query: {
                     presets: [
-                        ['latest', { 'modules': false}],
+                        ['env', {'modules': false}],
                         'react', 'stage-0'],
                     plugins: [
                         'transform-object-rest-spread',

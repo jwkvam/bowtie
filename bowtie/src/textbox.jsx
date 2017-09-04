@@ -38,19 +38,32 @@ export default class Textbox extends React.Component {
     }
 
     render() {
-        return (
-            <Input
-                value={this.state.value}
-                type={this.props.type}
-                placeholder={this.props.placeholder}
-                defaultValue={this.state.value}
-                onPressEnter={this.onPressEnter}
-                onChange={this.onChange}
-                autosize={this.props.autosize}
-                disabled={this.props.disabled}
-                size={this.props.size}
-            />
-        );
+        if (this.props.type == 'area') {
+            return (
+                <Input.TextArea
+                    value={this.state.value}
+                    placeholder={this.props.placeholder}
+                    defaultValue={this.state.value}
+                    onPressEnter={this.onPressEnter}
+                    onChange={this.onChange}
+                    autosize={this.props.autosize}
+                    disabled={this.props.disabled}
+                    size={this.props.size}
+                />
+            );
+        } else {
+            return (
+                <Input
+                    value={this.state.value}
+                    placeholder={this.props.placeholder}
+                    defaultValue={this.state.value}
+                    onPressEnter={this.onPressEnter}
+                    onChange={this.onChange}
+                    disabled={this.props.disabled}
+                    size={this.props.size}
+                />
+            );
+        }
     }
 }
 

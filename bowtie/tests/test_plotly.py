@@ -65,6 +65,11 @@ def test_plotly(chrome_driver, build_path):
 
     points = chrome_driver.find_elements_by_class_name('point')
 
+    logs = chrome_driver.get_log('browser')
+    for log in logs:
+        if log['level'] == 'SEVERE':
+            raise Exception(log['message'])
+
     assert len(points) == 4
 
     server.kill()
