@@ -7,9 +7,6 @@ from os import environ as env
 import subprocess
 import time
 
-from plotly.graph_objs import Scatter
-from plotly.graph_objs import Layout as PlotLayout
-
 from bowtie import Layout
 from bowtie import control, visual
 from bowtie.tests.utils import reset_uuid
@@ -18,10 +15,10 @@ reset_uuid()
 
 # pylint: disable=invalid-name
 controllers = [getattr(control, comp)() for comp in dir(control)
-              if comp[0].isupper() and comp not in ('Component', 'Iterable', 'Upload')]
+               if comp[0].isupper() and comp not in ('Component', 'Iterable', 'Upload')]
 
 visuals = [getattr(visual, comp)() for comp in dir(visual)
-              if comp[0].isupper() and comp not in ('Component', 'Iterable', 'Progress')]
+           if comp[0].isupper() and comp not in ('Component', 'Iterable', 'Progress')]
 
 
 # pylint: disable=unused-argument
@@ -48,3 +45,5 @@ def test_components(chrome_driver, build_path):
     for log in logs:
         if log['level'] == 'SEVERE':
             raise Exception(log['message'])
+
+    server.kill()
