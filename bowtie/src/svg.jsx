@@ -44,5 +44,5 @@ export default class SVG extends React.Component {
 SVG.propTypes = {
     uuid: PropTypes.string.isRequired,
     socket: PropTypes.object.isRequired,
-    preserveAspectRatio: PropTypes.object.isRequired,
+    preserveAspectRatio: PropTypes.bool.isRequired,
 };

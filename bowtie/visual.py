@@ -234,7 +234,7 @@ class SVG(_Visual):
     _TEMPLATE = 'svg.jsx'
     _COMPONENT = 'SVG'
     _PACKAGE = None
-    _ATTRS = 'preserve_aspect_ratio={{{preserve_aspect_ratio}}}'
+    _ATTRS = 'preserveAspectRatio={{{preserve_aspect_ratio}}}'
 
     def __init__(self, preserve_aspect_ratio=False):
         """Create SVG component.

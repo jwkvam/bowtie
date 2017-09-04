@@ -13,7 +13,7 @@ from bowtie.tests.utils import reset_uuid
 
 reset_uuid()
 
-# pylint: disable=invalid-name
+# pylint: disable=invalid-name,protected-access
 controllers = [getattr(control, comp)() for comp in dir(control)
                if comp[0].isupper() and issubclass(getattr(control, comp), control._Controller) and
                comp != 'Upload']
