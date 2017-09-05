@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 0.4.2 / 2017-09-05
+
+### Added
+
+  * Programmatic control of sliders (#155)
+  * Add message popups and better testing of components (#153)
+
 ## 0.4.1 / 2017-07-29
 
 ### Added
