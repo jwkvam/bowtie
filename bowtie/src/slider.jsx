@@ -28,15 +28,11 @@ export default class AntSlider extends React.Component {
 
     setValue = data => {
         var arr = new Uint8Array(data['data']);
-        console.log('value');
-        console.log(msgpack.decode(arr));
         this.setState({value: msgpack.decode(arr)});
     }
 
     setMax = data => {
         var arr = new Uint8Array(data['data']);
-        console.log('max');
-        console.log(msgpack.decode(arr));
         this.setState({max: msgpack.decode(arr)});
     }
 
