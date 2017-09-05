@@ -18,6 +18,7 @@ before_script:
     - sleep 3 # give xvfb some time to start
 
 install:
+    - hadolint Dockerfile
     - google-chrome --version
     - google-chrome-stable --version
     # get latest version of node
