@@ -425,7 +425,7 @@ class Number(_Controller):
             minimum=minimum,
             maximum=maximum,
             step=step,
-            size="'{}'".format(size)
+            size=size
         )
 
     def on_change(self):

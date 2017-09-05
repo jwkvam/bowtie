@@ -1,13 +1,17 @@
-FROM node:8.2
+FROM node:8.4
+
+MAINTAINER Jacques Kvam <jwkvam@gmail.com>
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
-RUN apt-get update --fix-missing && apt-get install -y wget bzip2 ca-certificates
+RUN apt-get update --fix-missing && \
+    apt-get install -y --no-install-recommends curl bzip2 ca-certificates && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # miniconda archive
 # https://repo.continuum.io/miniconda/
-RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
-    wget --quiet https://repo.continuum.io/miniconda/Miniconda3-4.3.21-Linux-x86_64.sh -O ~/miniconda.sh && \
+RUN echo "export PATH=/opt/conda/bin:$PATH" > /etc/profile.d/conda.sh && \
+    curl -L https://repo.continuum.io/miniconda/Miniconda3-4.3.21-Linux-x86_64.sh -o ~/miniconda.sh && \
     /bin/bash ~/miniconda.sh -b -p /opt/conda && \
     rm ~/miniconda.sh
 

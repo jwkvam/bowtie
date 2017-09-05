@@ -17,7 +17,11 @@ before_script:
     - "sh -e /etc/init.d/xvfb start"
     - sleep 3 # give xvfb some time to start
 
+before_install:
+    - docker pull lukasmartinelli/hadolint
+
 install:
+    - docker run --rm -i lukasmartinelli/hadolint hadolint --ignore DL3008 --ignore DL3013 - < Dockerfile
     - google-chrome --version
     - google-chrome-stable --version
     # get latest version of node
