@@ -39,6 +39,7 @@ Contents
     quickstart
     layout
     components
+    feedback
     cache
     docker
     architecture
