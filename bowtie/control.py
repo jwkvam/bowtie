@@ -608,6 +608,7 @@ class Slider(_Controller):
             marks={minimum: str(minimum), maximum: str(maximum)}
         )
 
+    # pylint: disable=no-self-use
     def do_max(self, value):
         """Replace the max value of the slider.
 
@@ -682,7 +683,6 @@ class Slider(_Controller):
         """
         return self.get
 
-    # pylint: disable=no-self-use
     def get(self, data):
         """
         Get the currently selected value(s).
