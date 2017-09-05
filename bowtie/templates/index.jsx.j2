@@ -50,23 +50,23 @@ class Dashboard extends React.Component {
         socket.on('message.success', (data) => {
             var arr = new Uint8Array(data['data']);
             message.success(msgpack.decode(arr));
-        })
+        });
         socket.on('message.error', (data) => {
             var arr = new Uint8Array(data['data']);
             message.error(msgpack.decode(arr));
-        })
+        });
         socket.on('message.info', (data) => {
             var arr = new Uint8Array(data['data']);
             message.info(msgpack.decode(arr));
-        })
+        });
         socket.on('message.warning', (data) => {
             var arr = new Uint8Array(data['data']);
             message.warning(msgpack.decode(arr));
-        })
+        });
         socket.on('message.loading', (data) => {
             var arr = new Uint8Array(data['data']);
             message.loading(msgpack.decode(arr));
-        })
+        });
     }
 
     render() {
