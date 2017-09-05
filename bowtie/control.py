@@ -608,6 +608,54 @@ class Slider(_Controller):
             marks={minimum: str(minimum), maximum: str(maximum)}
         )
 
+    def do_max(self, value):
+        """Replace the max value of the slider.
+
+        Parameters
+        ----------
+        value : int
+            Maximum value of the slider.
+
+        """
+        return value
+
+    def do_min(self, value):
+        """Replace the min value of the slider.
+
+        Parameters
+        ----------
+        value : int
+            Minimum value of the slider.
+
+        """
+        return value
+
+    def do_value(self, value):
+        """Set the value of the slider.
+
+        Parameters
+        ----------
+        value : int
+            Value of the slider.
+
+        """
+        return value
+
+    def do_min_max_value(self, minimum, maximum, value):
+        """Set the minimum, maximum, and value of slider simultaneously.
+
+        Parameters
+        ----------
+        minimum : int
+            Minimum value of the slider.
+        maximum : int
+            Maximum value of the slider.
+        value : int
+            Value of the slider.
+
+        """
+        return minimum, maximum, value
+
     def on_change(self):
         """Emit an event when the slider's value changes.
 
