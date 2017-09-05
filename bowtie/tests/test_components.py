@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Plotly testing."""
+"""Test all components for instatiation issues."""
 
 import os
 from os import environ as env
