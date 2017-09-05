@@ -642,6 +642,17 @@ class Slider(_Controller):
         """
         return value
 
+    def do_inc(self, value=1):
+        """Increment value of slider by given amount.
+
+        Parameters
+        ----------
+        value : int
+            Number to change value of slider by.
+
+        """
+        return value
+
     def do_min_max_value(self, minimum, maximum, value):
         """Set the minimum, maximum, and value of slider simultaneously.
 

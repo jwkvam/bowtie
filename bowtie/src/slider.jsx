@@ -17,6 +17,7 @@ export default class AntSlider extends React.Component {
         };
         socket.on(uuid + '#get', this.getValue);
         socket.on(uuid + '#value', this.setValue);
+        socket.on(uuid + '#inc', this.incValue);
         socket.on(uuid + '#min', this.setMax);
         socket.on(uuid + '#max', this.setMin);
         socket.on(uuid + '#min_max_value', this.setMinMaxValue);
@@ -45,6 +46,12 @@ export default class AntSlider extends React.Component {
         var arr = new Uint8Array(data['data']);
         var value = msgpack.decode(arr);
         this.setState({min: value[0], max: value[1], value: value[2]});
+    }
+
+    incValue = data => {
+        var arr = new Uint8Array(data['data']);
+        var value = msgpack.decode(arr);
+        this.setState({value: this.state.value + value});
     }
 
     onChange = value => {
