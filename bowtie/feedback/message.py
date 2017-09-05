@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
-"""Bowtie pager."""
+"""Messages provide a temporary message that will disappear after a few seconds.
+
+Reference
+^^^^^^^^^
+https://ant.design/components/message/
+"""
 
 import flask
 from flask_socketio import emit
@@ -34,6 +39,7 @@ def success(content):
     Parameters
     ----------
     content : str
+        Message to show user.
 
     """
     _message(func_name(), content)
@@ -45,6 +51,7 @@ def error(content):
     Parameters
     ----------
     content : str
+        Message to show user.
 
     """
     _message(func_name(), content)
@@ -56,6 +63,7 @@ def info(content):
     Parameters
     ----------
     content : str
+        Message to show user.
 
     """
     _message(func_name(), content)
@@ -67,6 +75,7 @@ def warning(content):
     Parameters
     ----------
     content : str
+        Message to show user.
 
     """
     _message(func_name(), content)
@@ -78,6 +87,7 @@ def loading(content):
     Parameters
     ----------
     content : str
+        Message to show user.
 
     """
     _message(func_name(), content)
