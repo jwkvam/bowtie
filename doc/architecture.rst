@@ -42,7 +42,7 @@ Events
 Almost every component has events associated with it.
 For example, a slider generates events when the user moves the slider.
 In Bowtie, these events are class properties with the prefix ``on_``.
-With the layout class you can subscribe callbacks to events, so when an
+With the App class you can subscribe callbacks to events, so when an
 event happens the callback is called with an argument that is related to the event.
 
 Commands
@@ -70,14 +70,14 @@ There are a few key parts to any Bowtie application.
         data = cool_stuff(global_dataset, dropdown_item)
         plotly.do_all(data)
 
-3. Define the layout and connect events to callbacks.
+3. Define the app and connect events to callbacks.
    I encourage using a function decorated with ``command``::
 
     from bowtie import command
     @command
     def construct():
-        layout = Layout(rows=1, columns=1, sidebar=True)
-        layout.add_sidebar(dropdown)
-        layout.add(plotly)
-        layout.subscribe(callback, dropdown.on_change)
-        layout.build()
+        app = App(rows=1, columns=1, sidebar=True)
+        app.add_sidebar(dropdown)
+        app.add(plotly)
+        app.subscribe(callback, dropdown.on_change)
+        app.build()

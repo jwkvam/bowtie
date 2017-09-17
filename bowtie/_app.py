@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Defines the Layout class."""
+"""Defines the App class."""
 
 from __future__ import print_function
 
@@ -172,72 +172,18 @@ class Size(object):
         return self.maximum
 
 
-class Layout(object):
-    """Core class to layout, connect, build a Bowtie app."""
+class View(object):
+    """Grid of widgets."""
 
     def __init__(self, rows=1, columns=1, sidebar=True,
-                 title='Bowtie App', basic_auth=False,
-                 username='username', password='password',
-                 background_color='White', directory='build',
-                 host='0.0.0.0', port=9991, socketio='', debug=False):
-        """Create a Bowtie App.
-
-        Parameters
-        ----------
-        row : int, optional
-            Number of rows in the grid.
-        columns : int, optional
-            Number of columns in the grid.
-        sidebar : bool, optional
-            Enable a sidebar for control widgets.
-        title : str, optional
-            Title of the HTML.
-        basic_auth : bool, optional
-            Enable basic authentication.
-        username : str, optional
-            Username for basic authentication.
-        password : str, optional
-            Password for basic authentication.
-        background_color : str, optional
-            Background color of the control pane.
-        directory : str, optional
-            Location where app is compiled.
-        host : str, optional
-            Host IP address.
-        port : int, optional
-            Host port number.
-        socketio : string, optional
-            Socket.io path prefix, only change this for advanced deployments.
-        debug : bool, optional
-            Enable debugging in Flask. Disable in production!
-
-        """
-        self.background_color = background_color
-        self.basic_auth = basic_auth
-        self.controllers = []
-        self.debug = debug
-        self.directory = directory
-        self.functions = []
-        self.host = host
-        self.imports = set()
-        self.init = None
-        self.packages = set([])
-        self.password = password
-        self.port = port
-        self.socketio = socketio
-        self.schedules = []
-        self.subscriptions = defaultdict(list)
-        self.pages = {}
-        self.templates = set(['progress.jsx'])
-        self.title = title
-        self.username = username
+                 background_color='White'):
+        """Create a new grid."""
         self.used = OrderedDict(((key, False) for key in product(range(rows), range(columns))))
-        self.widgets = []
-        self.uploads = []
-        self.spans = []
         self.rows = [Size() for _ in range(rows)]
         self.columns = [Size() for _ in range(columns)]
         self.sidebar = sidebar
+        self.background_color = background_color
+        self.spans = []
 
     def add(self, widget, row_start=None, column_start=None,
             row_end=None, column_end=None):
@@ -342,6 +288,107 @@ class Layout(object):
             return
         self.uploads.append(widget)
 
+
+class App(object):
+    """Core class to layout, connect, build a Bowtie app."""
+
+    def __init__(self, rows=1, columns=1, sidebar=True,
+                 title='Bowtie App', basic_auth=False,
+                 username='username', password='password',
+                 background_color='White', directory='build',
+                 host='0.0.0.0', port=9991, socketio='', debug=False):
+        """Create a Bowtie App.
+
+        Parameters
+        ----------
+        row : int, optional
+            Number of rows in the grid.
+        columns : int, optional
+            Number of columns in the grid.
+        sidebar : bool, optional
+            Enable a sidebar for control widgets.
+        title : str, optional
+            Title of the HTML.
+        views : list, optional
+            List of views.
+        basic_auth : bool, optional
+            Enable basic authentication.
+        username : str, optional
+            Username for basic authentication.
+        password : str, optional
+            Password for basic authentication.
+        background_color : str, optional
+            Background color of the control pane.
+        directory : str, optional
+            Location where app is compiled.
+        host : str, optional
+            Host IP address.
+        port : int, optional
+            Host port number.
+        socketio : string, optional
+            Socket.io path prefix, only change this for advanced deployments.
+        debug : bool, optional
+            Enable debugging in Flask. Disable in production!
+
+        """
+        self.background_color = background_color
+        self.basic_auth = basic_auth
+        self.controllers = []
+        self.debug = debug
+        self.directory = directory
+        self.functions = []
+        self.host = host
+        self.imports = set()
+        self.init = None
+        self.packages = set()
+        self.password = password
+        self.port = port
+        self.socketio = socketio
+        self.schedules = []
+        self.subscriptions = defaultdict(list)
+        self.pages = {}
+        self.templates = set(['progress.jsx'])
+        self.title = title
+        self.username = username
+        self.widgets = []
+        self.uploads = []
+        self.root = View(rows=rows, columns=columns, sidebar=sidebar,
+                         background_color=background_color)
+
+    def add(self, widget, row_start=None, column_start=None,
+            row_end=None, column_end=None):
+        """Add a widget to the grid.
+
+        Zero-based index and inclusive.
+
+        Parameters
+        ----------
+        visual : bowtie._Component
+            A Bowtie widget instance.
+        row_start : int, optional
+            Starting row for the widget.
+        column_start : int, optional
+            Starting column for the widget.
+        row_end : int, optional
+            Ending row for the widget.
+        column_end : int, optional
+            Ending column for the widget.
+
+        """
+        self.root.add(widget, row_start=row_start, column_start=column_start,
+                      row_end=row_end, column_end=column_end)
+
+    def add_sidebar(self, widget):
+        """Add a widget to the sidebar.
+
+        Parameters
+        ----------
+        widget : bowtie._Component
+            Add this widget to the sidebar, it will be appended to the end.
+
+        """
+        self.root.add_sidebar(widget)
+
     def respond(self, pager, func):
         """Call a function in response to a page.
 
@@ -361,7 +408,7 @@ class Layout(object):
         >>>     pass
         >>> def scheduledtask():
         >>>     pager.notify()
-        >>> layout.respond(pager, callback)
+        >>> app.respond(pager, callback)
 
         """
         self.pages[pager] = func.__name__
@@ -387,7 +434,7 @@ class Layout(object):
         >>> slide = Slider()
         >>> def callback(dd_item, slide_value):
         >>>     pass
-        >>> layout.subscribe(callback, dd.on_change, slide.on_change)
+        >>> app.subscribe(callback, dd.on_change, slide.on_change)
 
         """
         all_events = [event]

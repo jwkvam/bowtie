@@ -23,7 +23,7 @@ class Pager(object):
     def notify(self):
         """Notify the client.
 
-        The function passed to ``Layout.respond`` will get called.
+        The function passed to ``App.respond`` will get called.
         """
         if flask.has_request_context():
             emit('page#' + str(self._uuid))

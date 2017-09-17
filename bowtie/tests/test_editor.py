@@ -6,7 +6,7 @@ from os import environ as env
 import subprocess
 import time
 
-from bowtie import Layout
+from bowtie import App
 from bowtie.visual import Markdown
 from bowtie.control import Textbox
 from bowtie.tests.utils import reset_uuid
@@ -35,12 +35,12 @@ def write(txt):
 # pylint: disable=unused-argument
 def test_markdown(chrome_driver, build_path):
     """Test markdown and text widgets."""
-    layout = Layout(directory=build_path)
-    layout.add(mark)
-    layout.add_sidebar(side)
-    layout.add_sidebar(text)
-    layout.subscribe(write, text.on_change)
-    layout.build()
+    app = App(directory=build_path)
+    app.add(mark)
+    app.add_sidebar(side)
+    app.add_sidebar(text)
+    app.subscribe(write, text.on_change)
+    app.build()
 
 
     env['PYTHONPATH'] = '{}:{}'.format(os.getcwd(), os.environ.get('PYTHONPATH', ''))
