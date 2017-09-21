@@ -23,6 +23,7 @@
     "prop-types": "^15.5.10",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
+    "react-router": "^4.2.0",
     "sass-loader": "^6.0.6",
     "socket.io-client": "^2.0.3",
     "style-loader": "^0.18.2",

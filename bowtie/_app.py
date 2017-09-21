@@ -183,7 +183,13 @@ class View(object):
         self.columns = [Size() for _ in range(columns)]
         self.sidebar = sidebar
         self.background_color = background_color
+        self.packages = set()
+        self.templates = set()
+        self.imports = set()
+        self.controllers = []
+        self.widgets = []
         self.spans = []
+        self.uploads = []
 
     def add(self, widget, row_start=None, column_start=None,
             row_end=None, column_end=None):
@@ -333,27 +339,27 @@ class App(object):
         """
         self.background_color = background_color
         self.basic_auth = basic_auth
-        self.controllers = []
+        # self.controllers = []
         self.debug = debug
         self.directory = directory
         self.functions = []
         self.host = host
         self.imports = set()
         self.init = None
-        self.packages = set()
         self.password = password
         self.port = port
         self.socketio = socketio
         self.schedules = []
         self.subscriptions = defaultdict(list)
         self.pages = {}
-        self.templates = set(['progress.jsx'])
+        # self.templates = set(['progress.jsx'])
         self.title = title
         self.username = username
-        self.widgets = []
-        self.uploads = []
+        # self.widgets = []
+        # self.uploads = []
         self.root = View(rows=rows, columns=columns, sidebar=sidebar,
                          background_color=background_color)
+        self.views = [self.root]
 
     def add(self, widget, row_start=None, column_start=None,
             row_end=None, column_end=None):
@@ -515,6 +521,8 @@ class App(object):
                 index.render(title=self.title)
             )
 
+        for view in self.views:
+            set(['progress.jsx'])
         for template in self.templates:
             template_src = path.join(file_dir, 'src', template)
             shutil.copy(template_src, app)
