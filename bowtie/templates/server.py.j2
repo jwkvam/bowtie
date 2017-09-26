@@ -128,15 +128,15 @@ def _():
 {% endif %}
 
 
-{% for upload in uploads %}
-@app.route('/upload{{ upload._uuid }}', methods=['POST'])
-def _():
-    upfile = request.files['file']
-    retval = {{ source_module }}.{{ upload.function }}(upfile.filename, upfile.stream)
-    if retval:
-        return make_response(jsonify(), 400)
-    return make_response(jsonify(), 200)
-{% endfor %}
+# {% for upload in uploads %}
+# @app.route('/upload{{ upload._uuid }}', methods=['POST'])
+# def _():
+#     upfile = request.files['file']
+#     retval = {{ source_module }}.{{ upload.function }}(upfile.filename, upfile.stream)
+#     if retval:
+#         return make_response(jsonify(), 400)
+#     return make_response(jsonify(), 200)
+# {% endfor %}
 
 
 {% for page, function in pages.items() %}

@@ -69,19 +69,13 @@ class Upload(_Controller):
     _PACKAGE = None
     _ATTRS = "multiple={{{multiple}}}"
 
-    def __init__(self, handler, multiple=True, caption=None):
+    def __init__(self, multiple=True, caption=None):
         """Create the widget.
 
         Note: the handler parameter may be changed in the future.
 
         Parameters
         ----------
-        handler : callable
-            Function that accepts two arguments: a filename of type str
-            and a stream object of type BytesIO. The user is responsible
-            for storing the object in this function if they want it for later use.
-            To indicate an error, return True, otherwise a return value of None or False
-            indicate success.
         multiple : bool, optional
             If true, you can upload multiple files at once. Even with this set to true,
             the handler will get called once per file uploaded.
@@ -90,10 +84,22 @@ class Upload(_Controller):
 
         """
         super(Upload, self).__init__(caption=caption)
-        self.function = handler.__name__
         self._comp = self._tag.format(
             multiple=jsbool(multiple)
         )
+
+    def on_upload(self):
+        """ Function that accepts two arguments: a filename of type str
+            and a stream object of type BytesIO. The user is responsible
+            for storing the object in this function if they want it for later use.
+            To indicate an error, return True, otherwise a return value of None or False
+            indicate success.
+        """
+        return self.get
+
+    def get(self, name, stream):
+        """Return selected value(s)."""
+        return name, stream
 
 
 class Dropdown(_Controller):

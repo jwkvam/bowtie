@@ -1,5 +1,6 @@
 import 'normalize.css';
 import React from 'react';
+import PropTypes from 'prop-types';
 import {render} from 'react-dom';
 import {message} from 'antd';
 import 'antd/dist/antd.css'
@@ -10,8 +11,9 @@ import AntProgress from './progress';
 import {{ component.component }} from './{{ component.module }}';
 {% endfor %}
 
-class View extends React.Component {
+export default class View{{ uuid }} extends React.Component {
     render() {
+        var socket = this.props.socket;
         return (
             <div style={{ '{{' }}display: 'grid',
                     gridTemplateColumns: '{{ columns|join(' ') }}',
@@ -52,6 +54,10 @@ class View extends React.Component {
             </div>
         );
     }
+}
+
+View{{ uuid }}.propTypes = {
+    socket: PropTypes.object.isRequired,
 }
 
 // vim: set ft=javascript.jsx:

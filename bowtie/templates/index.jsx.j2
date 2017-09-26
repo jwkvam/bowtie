@@ -3,12 +3,22 @@ import React from 'react';
 import {render} from 'react-dom';
 import io from 'socket.io-client';
 import {message} from 'antd';
-import 'antd/dist/antd.css'
+import 'antd/dist/antd.css';
+import {
+  BrowserRouter,
+  Switch,
+  Route,
+  Link
+} from 'react-router-dom';
 
-import AntProgress from './progress';
+// import AntProgress from './progress';
+//
+// {% for component in components %}
+// import {{ component.component }} from './{{ component.module }}';
+// {% endfor %}
 
-{% for component in components %}
-import {{ component.component }} from './{{ component.module }}';
+{% for viewid in range(1, maxviewid) %}
+import View{{ viewid }} from './view{{ viewid }}';
 {% endfor %}
 
 var msgpack = require('msgpack-lite');
@@ -71,13 +81,19 @@ class Dashboard extends React.Component {
 
     render() {
         return (
-            <Router>
-                <div>
-                    <Route exact path='/' component={Home}/>
-                    <Route path='/gallery' component={Gallery}/>
-                    <Route path='/img/:id' component={ImageView}/>
-                </div>
-            </Router>
+            <BrowserRouter>
+                <Switch>
+                    {% for route in routes %}
+                        <Route
+                            {% if route.exact %}
+                            exact
+                            {% endif %}
+                            path='{{ route.path }}'
+                            render={()=><View{{ route.view.uuid }} socket={socket}/>}
+                        />
+                    {% endfor %}
+                </Switch>
+            </BrowserRouter>
         );
     }
 }

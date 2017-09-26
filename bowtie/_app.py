@@ -4,7 +4,6 @@
 from __future__ import print_function
 
 import os
-from os import path
 from itertools import product
 import inspect
 import shutil
@@ -16,7 +15,6 @@ from jinja2 import Environment, FileSystemLoader
 
 from bowtie._compat import makedirs
 from bowtie._component import Component
-from bowtie.control import Upload
 
 
 _Import = namedtuple('_Import', ['module', 'component'])
@@ -175,9 +173,18 @@ class Size(object):
 class View(object):
     """Grid of widgets."""
 
+    _NEXT_UUID = 0
+
+    @classmethod
+    def _next_uuid(cls):
+        cls._NEXT_UUID += 1
+        return cls._NEXT_UUID
+
     def __init__(self, rows=1, columns=1, sidebar=True,
                  background_color='White'):
         """Create a new grid."""
+        self.uuid = View._next_uuid()
+        self.name = 'view{}'.format(View._next_uuid())
         self.used = OrderedDict(((key, False) for key in product(range(rows), range(columns))))
         self.rows = [Size() for _ in range(rows)]
         self.columns = [Size() for _ in range(columns)]
@@ -189,7 +196,7 @@ class View(object):
         self.controllers = []
         self.widgets = []
         self.spans = []
-        self.uploads = []
+        # self.uploads = []
 
     def add(self, widget, row_start=None, column_start=None,
             row_end=None, column_end=None):
@@ -212,7 +219,7 @@ class View(object):
 
         """
         assert isinstance(widget, Component)
-        self._check_and_add_upload(widget)
+        # self._check_and_add_upload(widget)
 
         for index in [row_start, row_end]:
             if index is not None and not 0 <= index < len(self.rows):
@@ -279,7 +286,7 @@ class View(object):
             raise NoSidebarError('Set `sidebar=True` if you want to use the sidebar.')
 
         assert isinstance(widget, Component)
-        self._check_and_add_upload(widget)
+        # self._check_and_add_upload(widget)
 
         # pylint: disable=protected-access
         self.packages.add(widget._PACKAGE)
@@ -289,10 +296,48 @@ class View(object):
         self.controllers.append(_Control(instantiate=widget._instantiate,
                                          caption=getattr(widget, 'caption', None)))
 
-    def _check_and_add_upload(self, widget):
-        if not isinstance(widget, Upload):
-            return
-        self.uploads.append(widget)
+    def _render(self, path, env):
+        """TODO: Docstring for _render.
+
+        Parameters
+        ----------
+        path : TODO
+
+        Returns
+        -------
+        TODO
+
+        """
+        jsx = env.get_template('view.jsx.j2')
+
+        # pylint: disable=protected-access
+        self.widgets = [w._instantiate for w in self.widgets]
+
+        columns = []
+        if self.sidebar:
+            columns.append('18em')
+        columns += self.columns
+
+        with open(os.path.join(path, 'view{}.jsx'.format(self.uuid)), 'w') as f:
+            f.write(
+                jsx.render(
+                    uuid=self.uuid,
+                    sidebar=self.sidebar,
+                    columns=columns,
+                    rows=self.rows,
+                    background_color=self.background_color,
+                    components=self.imports,
+                    controls=self.controllers,
+                    widgets=zip(self.widgets, self.spans)
+                )
+            )
+    # def _check_and_add_upload(self, widget):
+    #     if not isinstance(widget, Upload):
+    #         return
+    #     self.uploads.append(widget)
+
+
+Route = namedtuple('Route', ['view', 'path', 'exact'])
 
 
 class App(object):
@@ -315,8 +360,6 @@ class App(object):
             Enable a sidebar for control widgets.
         title : str, optional
             Title of the HTML.
-        views : list, optional
-            List of views.
         basic_auth : bool, optional
             Enable basic authentication.
         username : str, optional
@@ -359,7 +402,7 @@ class App(object):
         # self.uploads = []
         self.root = View(rows=rows, columns=columns, sidebar=sidebar,
                          background_color=background_color)
-        self.views = [self.root]
+        self.routes = [Route(view=self.root, path='/', exact=True)]
 
     def add(self, widget, row_start=None, column_start=None,
             row_end=None, column_end=None):
@@ -394,6 +437,21 @@ class App(object):
 
         """
         self.root.add_sidebar(widget)
+
+    def add_route(self, view, path, exact=True):
+        """Add a view to the app.
+
+        Parameters
+        ----------
+        view : View
+        path : str
+        exact : bool, optional
+
+        """
+        assert path[0] == '/'
+        for route in self.routes:
+            assert path != route.path, 'Cannot use the same path twice'
+        self.routes.append(Route(view=view, path=path, exact=exact))
 
     def respond(self, pager, func):
         """Call a function in response to a page.
@@ -475,24 +533,24 @@ class App(object):
 
     def build(self):
         """Compile the Bowtie application."""
-        file_dir = path.dirname(__file__)
+        file_dir = os.path.dirname(__file__)
 
         env = Environment(
-            loader=FileSystemLoader(path.join(file_dir, 'templates')),
+            loader=FileSystemLoader(os.path.join(file_dir, 'templates')),
             trim_blocks=True,
             lstrip_blocks=True
         )
 
         server = env.get_template('server.py.j2')
-        index = env.get_template('index.html.j2')
-        react = env.get_template('index.jsx.j2')
+        indexhtml = env.get_template('index.html.j2')
+        indexjsx = env.get_template('index.jsx.j2')
 
         src, app, templates = create_directories(directory=self.directory)
 
-        webpack_src = path.join(file_dir, 'src/webpack.config.js')
+        webpack_src = os.path.join(file_dir, 'src/webpack.config.js')
         shutil.copy(webpack_src, self.directory)
 
-        server_path = path.join(src, server.name[:-3])
+        server_path = os.path.join(src, server.name[:-3])
         # [1] grabs the parent stack and [1] grabs the filename
         source_filename = inspect.stack()[1][1]
         with open(server_path, 'w') as f:
@@ -504,7 +562,7 @@ class App(object):
                     password=self.password,
                     source_module=os.path.basename(source_filename)[:-3],
                     subscriptions=self.subscriptions,
-                    uploads=self.uploads,
+                    # uploads=self.uploads,
                     schedules=self.schedules,
                     initial=self.init,
                     pages=self.pages,
@@ -516,54 +574,49 @@ class App(object):
         perms = os.stat(server_path)
         os.chmod(server_path, perms.st_mode | stat.S_IEXEC)
 
-        with open(path.join(templates, index.name[:-3]), 'w') as f:
+        with open(os.path.join(templates, indexhtml.name[:-3]), 'w') as f:
             f.write(
-                index.render(title=self.title)
+                indexhtml.render(title=self.title)
             )
 
-        for view in self.views:
-            set(['progress.jsx'])
-        for template in self.templates:
-            template_src = path.join(file_dir, 'src', template)
-            shutil.copy(template_src, app)
+        for route in self.routes:
+            # set(['progress.jsx'])
+            for template in route.view.templates:
+                template_src = os.path.join(file_dir, 'src', template)
+                shutil.copy(template_src, app)
 
-        # pylint: disable=protected-access
-        self.widgets = [w._instantiate for w in self.widgets]
 
-        columns = []
-        if self.sidebar:
-            columns.append('18em')
-        columns += self.columns
+        packages = set()
+        for route in self.routes:
+            # pylint: disable=protected-access
+            route.view._render(app, env)
+            packages |= route.view.packages
 
-        with open(path.join(app, react.name[:-3]), 'w') as f:
+        with open(os.path.join(app, indexjsx.name[:-3]), 'w') as f:
             f.write(
-                react.render(
+                indexjsx.render(
+                    # pylint: disable=protected-access
+                    maxviewid=View._NEXT_UUID,
                     socketio=self.socketio,
-                    sidebar=self.sidebar,
-                    columns=columns,
-                    rows=self.rows,
                     pages=self.pages,
-                    background_color=self.background_color,
-                    components=self.imports,
-                    controls=self.controllers,
-                    widgets=zip(self.widgets, self.spans)
+                    routes=self.routes
                 )
             )
 
         init = Popen('yarn init -y', shell=True, cwd=self.directory).wait()
         if init != 0:
             raise YarnError('Error running "yarn init -y"')
-        self.packages.discard(None)
+        packages.discard(None)
 
-        packages = path.join(file_dir, 'src/package.json')
-        shutil.copy(packages, self.directory)
+        packagejson = os.path.join(file_dir, 'src/package.json')
+        shutil.copy(packagejson, self.directory)
 
         install = Popen('yarn install', shell=True, cwd=self.directory).wait()
         if install > 1:
             raise YarnError('Error install node packages')
 
-        packages = ' '.join(self.packages)
-        install = Popen('yarn add {}'.format(packages),
+        packagestr = ' '.join(packages)
+        install = Popen('yarn add {}'.format(packagestr),
                         shell=True, cwd=self.directory).wait()
         if install > 1:
             raise YarnError('Error install node packages')
@@ -577,9 +630,9 @@ class App(object):
 
 def create_directories(directory='build'):
     """Create all the necessary subdirectories for the build."""
-    src = path.join(directory, 'src')
-    templates = path.join(src, 'templates')
-    app = path.join(src, 'app')
+    src = os.path.join(directory, 'src')
+    templates = os.path.join(src, 'templates')
+    app = os.path.join(src, 'app')
     makedirs(app, exist_ok=True)
     makedirs(templates, exist_ok=True)
     return src, app, templates
