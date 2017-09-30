@@ -510,14 +510,16 @@ class App(object):
                     raise NotStatefulEvent(msg.format(evt[1], name))
 
         if event[0].split(SEPARATOR)[1] == 'upload':
-            evt = event[0]
-            uuid = evt[0].split(SEPARATOR)[0]
+            # evt = event[0]
+            uuid = event[0].split(SEPARATOR)[0]
             if uuid in self.uploads:
-                warnings.warn('Overwriting {func1} with {func2} for upload object {obj}'.format(
-                    func1=self.uploads[uuid],
-                    func2=func.__name__,
-                    obj=evt[1]
-                ), Warning)
+                warnings.warn(
+                    ('Overwriting function "{func1}" with function '
+                     '"{func2}" for upload object "{obj}".').format(
+                         func1=self.uploads[uuid],
+                         func2=func.__name__,
+                         obj=event[1]
+                     ), Warning)
             self.uploads[uuid] = func.__name__
 
         for evt in all_events:
