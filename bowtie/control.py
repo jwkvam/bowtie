@@ -89,17 +89,16 @@ class Upload(_Controller):
         )
 
     def on_upload(self):
-        """ Function that accepts two arguments: a filename of type str
-            and a stream object of type BytesIO. The user is responsible
-            for storing the object in this function if they want it for later use.
-            To indicate an error, return True, otherwise a return value of None or False
-            indicate success.
-        """
-        return self.get
+        """Emit an event when the selection changes.
 
-    def get(self, name, stream):
-        """Return selected value(s)."""
-        return name, stream
+        | **Payload:** ``tuple`` with a str (name) and BytesIO (stream).
+
+        The user is responsible for storing the object in this function
+        if they want it for later use. To indicate an error, return True,
+        otherwise a return value of None or False indicate success.
+
+        """
+        pass
 
 
 class Dropdown(_Controller):
@@ -107,7 +106,7 @@ class Dropdown(_Controller):
 
     _TEMPLATE = 'dropdown.jsx'
     _COMPONENT = 'Dropdown'
-    _PACKAGE = 'react-select@1.0.0-rc.5'
+    _PACKAGE = 'react-select@1.0.0-rc.10'
     _ATTRS = ('initOptions={{{options}}} '
               'multi={{{multi}}} '
               'default={{{default}}}')

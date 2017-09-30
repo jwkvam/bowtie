@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Griddle from 'griddle-react';
+import Griddle, { plugins } from 'griddle-react';
 
 var msgpack = require('msgpack-lite');
 
@@ -30,12 +30,7 @@ export default class SmartGrid extends React.Component {
     render() {
         return (
             <Griddle
-                results={this.state.data}
-                showFilter={true}
-                showSettings={true}
-                useGriddleStyles={true}
-                columns={this.props.columns}
-                resultsPerPage={this.props.resultsPerPage}
+                data={this.state.data}
             />
         );
     }
@@ -43,7 +38,5 @@ export default class SmartGrid extends React.Component {
 
 SmartGrid.propTypes = {
     uuid: PropTypes.string.isRequired,
-    socket: PropTypes.object.isRequired,
-    columns: PropTypes.array.isRequired,
-    resultsPerPage: PropTypes.number.isRequired
+    socket: PropTypes.object.isRequired
 };

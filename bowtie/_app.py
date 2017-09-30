@@ -10,11 +10,12 @@ import shutil
 import stat
 from collections import namedtuple, defaultdict, OrderedDict
 from subprocess import Popen
+import warnings
 
 from jinja2 import Environment, FileSystemLoader
 
 from bowtie._compat import makedirs
-from bowtie._component import Component
+from bowtie._component import Component, SEPARATOR
 
 
 _Import = namedtuple('_Import', ['module', 'component'])
@@ -60,6 +61,12 @@ class UsedCellsError(Exception):
 
 class NoSidebarError(Exception):
     """Cannot add to the sidebar when it doesn't exist."""
+
+    pass
+
+
+class NotStatefulEvent(Exception):
+    """This event is not stateful and cannot be paired with other events."""
 
     pass
 
@@ -196,7 +203,6 @@ class View(object):
         self.controllers = []
         self.widgets = []
         self.spans = []
-        # self.uploads = []
 
     def add(self, widget, row_start=None, column_start=None,
             row_end=None, column_end=None):
@@ -219,7 +225,6 @@ class View(object):
 
         """
         assert isinstance(widget, Component)
-        # self._check_and_add_upload(widget)
 
         for index in [row_start, row_end]:
             if index is not None and not 0 <= index < len(self.rows):
@@ -286,7 +291,6 @@ class View(object):
             raise NoSidebarError('Set `sidebar=True` if you want to use the sidebar.')
 
         assert isinstance(widget, Component)
-        # self._check_and_add_upload(widget)
 
         # pylint: disable=protected-access
         self.packages.add(widget._PACKAGE)
@@ -331,10 +335,6 @@ class View(object):
                     widgets=zip(self.widgets, self.spans)
                 )
             )
-    # def _check_and_add_upload(self, widget):
-    #     if not isinstance(widget, Upload):
-    #         return
-    #     self.uploads.append(widget)
 
 
 Route = namedtuple('Route', ['view', 'path', 'exact'])
@@ -382,7 +382,6 @@ class App(object):
         """
         self.background_color = background_color
         self.basic_auth = basic_auth
-        # self.controllers = []
         self.debug = debug
         self.directory = directory
         self.functions = []
@@ -395,11 +394,9 @@ class App(object):
         self.schedules = []
         self.subscriptions = defaultdict(list)
         self.pages = {}
-        # self.templates = set(['progress.jsx'])
         self.title = title
         self.username = username
-        # self.widgets = []
-        # self.uploads = []
+        self.uploads = {}
         self.root = View(rows=rows, columns=columns, sidebar=sidebar,
                          background_color=background_color)
         self.routes = [Route(view=self.root, path='/', exact=True)]
@@ -504,6 +501,25 @@ class App(object):
         all_events = [event]
         all_events.extend(events)
 
+        if len(all_events) > 1:
+            # check if we are using any non stateful events
+            for evt in all_events:
+                if evt[2] is None:
+                    name = evt[0].split(SEPARATOR)[1]
+                    msg = '{}.on_{} is not a stateful event. It must be used alone.'
+                    raise NotStatefulEvent(msg.format(evt[1], name))
+
+        if event[0].split(SEPARATOR)[1] == 'upload':
+            evt = event[0]
+            uuid = evt[0].split(SEPARATOR)[0]
+            if uuid in self.uploads:
+                warnings.warn('Overwriting {func1} with {func2} for upload object {obj}'.format(
+                    func1=self.uploads[uuid],
+                    func2=func.__name__,
+                    obj=evt[1]
+                ), Warning)
+            self.uploads[uuid] = func.__name__
+
         for evt in all_events:
             self.subscriptions[evt].append((all_events, func.__name__))
 
@@ -562,7 +578,7 @@ class App(object):
                     password=self.password,
                     source_module=os.path.basename(source_filename)[:-3],
                     subscriptions=self.subscriptions,
-                    # uploads=self.uploads,
+                    uploads=self.uploads,
                     schedules=self.schedules,
                     initial=self.init,
                     pages=self.pages,
@@ -579,8 +595,9 @@ class App(object):
                 indexhtml.render(title=self.title)
             )
 
+        template_src = os.path.join(file_dir, 'src', 'progress.jsx')
+        shutil.copy(template_src, app)
         for route in self.routes:
-            # set(['progress.jsx'])
             for template in route.view.templates:
                 template_src = os.path.join(file_dir, 'src', template)
                 shutil.copy(template_src, app)
