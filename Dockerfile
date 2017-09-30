@@ -17,9 +17,12 @@ RUN echo "export PATH=/opt/conda/bin:$PATH" > /etc/profile.d/conda.sh && \
 
 ENV PATH /opt/conda/bin:$PATH
 
-RUN npm install -g webpack@3.5.5 yarn
-RUN pip install bowtie
+RUN npm install -g webpack@3.6.0 yarn
+RUN pip install flit
 
+WORKDIR /bowtie
+COPY . /bowtie
+RUN flit install
 WORKDIR /work
 
 ENTRYPOINT [ "sleep", "infinity" ]
