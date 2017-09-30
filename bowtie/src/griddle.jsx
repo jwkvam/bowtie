@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Griddle, { plugins } from 'griddle-react';
+import Griddle from 'griddle-react';
 
 var msgpack = require('msgpack-lite');
 
