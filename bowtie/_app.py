@@ -190,8 +190,8 @@ class View(object):
     def __init__(self, rows=1, columns=1, sidebar=True,
                  background_color='White'):
         """Create a new grid."""
-        self.uuid = View._next_uuid()
-        self.name = 'view{}'.format(View._next_uuid())
+        self._uuid = View._next_uuid()
+        self.name = 'view{}'.format(self._uuid)
         self.used = OrderedDict(((key, False) for key in product(range(rows), range(columns))))
         self.rows = [Size() for _ in range(rows)]
         self.columns = [Size() for _ in range(columns)]
@@ -322,10 +322,10 @@ class View(object):
             columns.append('18em')
         columns += self.columns
 
-        with open(os.path.join(path, 'view{}.jsx'.format(self.uuid)), 'w') as f:
+        with open(os.path.join(path, 'view{}.jsx'.format(self._uuid)), 'w') as f:
             f.write(
                 jsx.render(
-                    uuid=self.uuid,
+                    uuid=self._uuid,
                     sidebar=self.sidebar,
                     columns=columns,
                     rows=self.rows,
@@ -397,9 +397,12 @@ class App(object):
         self.title = title
         self.username = username
         self.uploads = {}
+        print('next_uuid', View._NEXT_UUID)
         self.root = View(rows=rows, columns=columns, sidebar=sidebar,
                          background_color=background_color)
+        print('next_uuid', View._NEXT_UUID)
         self.routes = [Route(view=self.root, path='/', exact=True)]
+        print('next_uuid', View._NEXT_UUID)
 
     def add(self, widget, row_start=None, column_start=None,
             row_end=None, column_end=None):

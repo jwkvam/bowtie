@@ -61,6 +61,40 @@ class Button(_Controller):
         pass
 
 
+class Link(_Controller):
+    """An internal link."""
+
+    _TEMPLATE = 'link.jsx'
+    _COMPONENT = 'ALink'
+    _PACKAGE = None
+    _ATTRS = "to={{'{link}'}}"
+
+    def __init__(self, link='/', caption=None):
+        """Create a button.
+
+        Parameters
+        ----------
+        link : str
+
+        """
+        super(Link, self).__init__(caption=caption)
+        self._comp = self._tag.format(
+            link=link
+        )
+
+    def on_click(self):
+        """Emit an event when the button is clicked.
+
+        | **Payload:** ``None``.
+
+        Returns
+        -------
+        str
+            Name of click event.
+
+        """
+        pass
+
 class Upload(_Controller):
     """Draggable file upload widget."""
 
