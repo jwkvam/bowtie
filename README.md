@@ -48,7 +48,8 @@ npm install -g webpack yarn
 ## Contributing
 
 You can help Bowtie in many ways including:
-- Trying it [out](http://bowtie-py.readthedocs.io/en/latest/quickstart.html) and reporting bugs or simply what was difficult to use or get working.
-- Helping improve the [documentation](https://github.com/jwkvam/bowtie/tree/master/doc).
-- Writing new [widgets](http://bowtie-py.readthedocs.io/en/latest/newcomponents.html).
+- Try it [out](http://bowtie-py.readthedocs.io/en/latest/quickstart.html) and report bugs or what was difficult.
+- Help improve the [documentation](https://github.com/jwkvam/bowtie/tree/master/doc).
+- Write new [widgets](http://bowtie-py.readthedocs.io/en/latest/newcomponents.html).
+- Provide hosting for apps in the gallery.
 - Say [thanks](https://saythanks.io/to/jwkvam)!
