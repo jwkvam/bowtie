@@ -1,6 +1,8 @@
+// https://github.com/jackielii/simplest-redux-example/blob/master/index.js
+// 
 import 'normalize.css';
 import React from 'react';
-import {render} from 'react-dom';
+import ReactDOM from 'react-dom';
 import io from 'socket.io-client';
 import {message} from 'antd';
 import 'antd/dist/antd.css';
@@ -10,6 +12,8 @@ import {
     Route,
     Link
 } from 'react-router-dom';
+// import { createStore } from 'redux';
+// import { Provider, connect } from 'react-redux';
 
 // import AntProgress from './progress';
 //
@@ -98,6 +102,13 @@ class Dashboard extends React.Component {
     }
 }
 
-render(<Dashboard />, document.getElementById('app'));
+// let store = createStore()
+
+ReactDOM.render(
+    // <Provider store={store}>
+    <Dashboard />,
+    // </Provider>,
+    document.getElementById('app')
+);
 
 // vim: set ft=javascript.jsx:
