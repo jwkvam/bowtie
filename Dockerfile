@@ -1,6 +1,6 @@
 FROM node:8.4
 
-MAINTAINER Jacques Kvam <jwkvam@gmail.com>
+LABEL maintainer="jwkvam@gmail.com"
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
