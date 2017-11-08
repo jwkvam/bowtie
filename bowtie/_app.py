@@ -397,12 +397,9 @@ class App(object):
         self.title = title
         self.username = username
         self.uploads = {}
-        print('next_uuid', View._NEXT_UUID)
         self.root = View(rows=rows, columns=columns, sidebar=sidebar,
                          background_color=background_color)
-        print('next_uuid', View._NEXT_UUID)
         self.routes = [Route(view=self.root, path='/', exact=True)]
-        print('next_uuid', View._NEXT_UUID)
 
     def add(self, widget, row_start=None, column_start=None,
             row_end=None, column_end=None):
