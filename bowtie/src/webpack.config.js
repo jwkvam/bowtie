@@ -29,7 +29,6 @@ var config = {
                         'react', 'stage-0'],
                     plugins: [
                         'transform-object-rest-spread',
-                        'transform-decorators-legacy'
                     ]
                 }
             }, {
