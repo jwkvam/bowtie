@@ -11,11 +11,17 @@ var msgpack = require('msgpack-lite');
 export default class PickDates extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {value: null};
+        var local = localStorage.getItem(this.props.uuid);
+        if (local === null) {
+            this.state = {value: null};
+        } else {
+            this.state = JSON.parse(local);
+        }
     }
 
     handleChange = (moment, ds) => {
         this.setState({value: moment});
+        localStorage.setItem(this.props.uuid, JSON.stringify({value: moment}));
         this.props.socket.emit(this.props.uuid + '#change', msgpack.encode(ds));
     }
 

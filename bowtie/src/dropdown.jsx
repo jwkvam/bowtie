@@ -14,13 +14,14 @@ export default class Dropdown extends React.Component {
             this.state = {value: this.props.default, options: this.props.initOptions};
         } else {
             this.state = JSON.parse(local);
+            // this.props.socket.emit(this.props.uuid + '#change', msgpack.encode(this.state.value));
         }
     }
 
     handleChange = value => {
         this.setState({value: value});
-        localStorage.setItem(this.props.uuid, JSON.stringify({value: value, options: this.state.options}));
         this.props.socket.emit(this.props.uuid + '#change', msgpack.encode(value));
+        localStorage.setItem(this.props.uuid, JSON.stringify({value: value, options: this.state.options}));
     }
 
     choose = data => {
