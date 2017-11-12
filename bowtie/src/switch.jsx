@@ -20,7 +20,7 @@ export default class Toggle extends React.Component {
 
     handleChange = (checked) => {
         this.setState({checked: checked});
-        storeState(this.props.uuid, this.state, {checked: checked})
+        storeState(this.props.uuid, this.state, {checked: checked});
         this.props.socket.emit(this.props.uuid + '#switch', msgpack.encode(checked));
     }
 
