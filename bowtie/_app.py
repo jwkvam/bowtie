@@ -600,6 +600,8 @@ class App(object):
 
         template_src = os.path.join(file_dir, 'src', 'progress.jsx')
         shutil.copy(template_src, app)
+        template_src = os.path.join(file_dir, 'src', 'utils.js')
+        shutil.copy(template_src, app)
         for route in self.routes:
             for template in route.view.templates:
                 template_src = os.path.join(file_dir, 'src', template)

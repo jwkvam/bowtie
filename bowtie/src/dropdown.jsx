@@ -3,6 +3,7 @@ import React from 'react';
 import Select from 'react-select';
 // Be sure to include styles at some point, probably during your bootstrapping
 import 'react-select/dist/react-select.css';
+import { storeState } from './utils';
 
 var msgpack = require('msgpack-lite');
 
@@ -14,26 +15,25 @@ export default class Dropdown extends React.Component {
             this.state = {value: this.props.default, options: this.props.initOptions};
         } else {
             this.state = JSON.parse(local);
-            // this.props.socket.emit(this.props.uuid + '#change', msgpack.encode(this.state.value));
         }
     }
 
     handleChange = value => {
         this.setState({value: value});
         this.props.socket.emit(this.props.uuid + '#change', msgpack.encode(value));
-        sessionStorage.setItem(this.props.uuid, JSON.stringify({value: value, options: this.state.options}));
+        storeState(this.props.uuid, this.state, {value: value});
     }
 
     choose = data => {
         var arr = new Uint8Array(data['data']);
         this.setState({value: arr});
-        sessionStorage.setItem(this.props.uuid, JSON.stringify({value: arr, options: this.state.options}));
+        storeState(this.props.uuid, this.state, {value: arr});
     }
 
     newOptions = data => {
         var arr = new Uint8Array(data['data']);
         this.setState({value: null, options: msgpack.decode(arr)});
-        sessionStorage.setItem(this.props.uuid, JSON.stringify({value: null, options: msgpack.decode(arr)}));
+        storeState(this.props.uuid, this.state, {value: null, options: msgpack.decode(arr)});
     }
 
     componentDidMount() {
