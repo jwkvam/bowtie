@@ -583,6 +583,7 @@ class App(object):
                     uploads=self.uploads,
                     schedules=self.schedules,
                     initial=self.init,
+                    routes=self.routes,
                     pages=self.pages,
                     host="'{}'".format(self.host),
                     port=self.port,

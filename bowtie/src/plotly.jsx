@@ -13,7 +13,7 @@ export default class PlotlyPlot extends React.Component {
         this.click = null;
         this.hover = null;
 
-        var local = localStorage.getItem(this.props.uuid);
+        var local = sessionStorage.getItem(this.props.uuid);
         if (local === null) {
             this.state = this.props.initState;
         } else {
@@ -24,7 +24,7 @@ export default class PlotlyPlot extends React.Component {
         this.props.socket.on(this.props.uuid + '#all', (data) => {
             var arr = new Uint8Array(data['data']);
             this.setState(msgpack.decode(arr));
-            localStorage.setItem(this.props.uuid, JSON.stringify(msgpack.decode(arr)));
+            sessionStorage.setItem(this.props.uuid, JSON.stringify(msgpack.decode(arr)));
         });
         this.props.socket.on(this.props.uuid + '#get', this.getSelection);
         this.props.socket.on(this.props.uuid + '#get_select', this.getSelection);

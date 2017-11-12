@@ -9,7 +9,7 @@ var msgpack = require('msgpack-lite');
 export default class Dropdown extends React.Component {
     constructor(props) {
         super(props);
-        var local = localStorage.getItem(this.props.uuid);
+        var local = sessionStorage.getItem(this.props.uuid);
         if (local === null) {
             this.state = {value: this.props.default, options: this.props.initOptions};
         } else {
@@ -21,19 +21,19 @@ export default class Dropdown extends React.Component {
     handleChange = value => {
         this.setState({value: value});
         this.props.socket.emit(this.props.uuid + '#change', msgpack.encode(value));
-        localStorage.setItem(this.props.uuid, JSON.stringify({value: value, options: this.state.options}));
+        sessionStorage.setItem(this.props.uuid, JSON.stringify({value: value, options: this.state.options}));
     }
 
     choose = data => {
         var arr = new Uint8Array(data['data']);
         this.setState({value: arr});
-        localStorage.setItem(this.props.uuid, JSON.stringify({value: arr, options: this.state.options}));
+        sessionStorage.setItem(this.props.uuid, JSON.stringify({value: arr, options: this.state.options}));
     }
 
     newOptions = data => {
         var arr = new Uint8Array(data['data']);
         this.setState({value: null, options: msgpack.decode(arr)});
-        localStorage.setItem(this.props.uuid, JSON.stringify({value: null, options: msgpack.decode(arr)}));
+        sessionStorage.setItem(this.props.uuid, JSON.stringify({value: null, options: msgpack.decode(arr)}));
     }
 
     componentDidMount() {

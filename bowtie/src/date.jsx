@@ -11,7 +11,7 @@ var msgpack = require('msgpack-lite');
 export default class PickDates extends React.Component {
     constructor(props) {
         super(props);
-        var local = localStorage.getItem(this.props.uuid);
+        var local = sessionStorage.getItem(this.props.uuid);
         if (local === null) {
             this.state = {value: null};
         } else {
@@ -21,7 +21,7 @@ export default class PickDates extends React.Component {
 
     handleChange = (moment, ds) => {
         this.setState({value: moment});
-        localStorage.setItem(this.props.uuid, JSON.stringify({value: moment}));
+        sessionStorage.setItem(this.props.uuid, JSON.stringify({value: moment}));
         this.props.socket.emit(this.props.uuid + '#change', msgpack.encode(ds));
     }
 
