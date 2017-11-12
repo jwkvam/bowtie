@@ -2,13 +2,19 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Input } from 'antd';
 import 'antd/dist/antd.css';
+import { storeState } from './utils';
 
 var msgpack = require('msgpack-lite');
 
 export default class Textbox extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {value: null};
+        var local = sessionStorage.getItem(this.props.uuid);
+        if (local === null) {
+            this.state = {value: null};
+        } else {
+            this.state = JSON.parse(local);
+        }
     }
 
     componentDidMount() {
@@ -20,7 +26,9 @@ export default class Textbox extends React.Component {
 
     setValue = (data, fn) => {
         var arr = new Uint8Array(data['data']);
-        this.setState({value: msgpack.decode(arr)});
+        arr = msgpack.decode(arr);
+        this.setState({value: arr});
+        storeState(this.props.uuid, this.state, {value: arr});
     }
 
     getValue = (data, fn) => {
@@ -29,11 +37,13 @@ export default class Textbox extends React.Component {
 
     onPressEnter = value => {
         this.setState({value: value.target.value});
+        storeState(this.props.uuid, this.state, {value: value.target.value});
         this.props.socket.emit(this.props.uuid + '#enter', msgpack.encode(value.target.value));
     }
 
     onChange = value => {
         this.setState({value: value.target.value});
+        storeState(this.props.uuid, this.state, {value: value.target.value});
         this.props.socket.emit(this.props.uuid + '#change', msgpack.encode(value.target.value));
     }
 

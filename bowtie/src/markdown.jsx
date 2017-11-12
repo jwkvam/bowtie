@@ -1,12 +1,18 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { storeState } from './utils';
 
 var msgpack = require('msgpack-lite');
 
 export default class Markdown extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {value: this.props.initial};
+        var local = sessionStorage.getItem(this.props.uuid);
+        if (local === null) {
+            this.state = {value: this.props.initial};
+        } else {
+            this.state = JSON.parse(local);
+        }
     }
 
     getValue = (data, fn) => {
@@ -15,7 +21,9 @@ export default class Markdown extends React.Component {
 
     setText = data => {
         var arr = new Uint8Array(data['data']);
-        this.setState({value: msgpack.decode(arr)});
+        arr = msgpack.decode(arr);
+        this.setState({value: arr});
+        storeState(this.props.uuid, this.state, {value: arr});
     }
 
     componentDidMount() {
