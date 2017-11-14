@@ -10,7 +10,7 @@ import time
 from plotly.graph_objs import Scatter
 from plotly.graph_objs import Layout as PlotLayout
 
-from bowtie import Layout
+from bowtie import App
 from bowtie.control import Nouislider, Button
 from bowtie.visual import Plotly
 from bowtie.tests.utils import reset_uuid
@@ -31,7 +31,7 @@ def callback(*args):
         "data": [
             Scatter(x=[1, 2, 3, 4], y=[4, 1, 3, 7])
         ],
-        "layout": PlotLayout(
+        "app": PlotLayout(
             title="hello world"
         )
     }
@@ -42,13 +42,13 @@ def callback(*args):
 def test_plotly(chrome_driver, build_path):
     """Tests plotly."""
 
-    layout = Layout(directory=build_path)
-    layout.add(viz)
-    layout.add_sidebar(ctrl)
-    layout.add_sidebar(ctrl2)
-    layout.subscribe(callback, ctrl.on_change)
-    layout.subscribe(callback, ctrl2.on_click)
-    layout.build()
+    app = App(directory=build_path)
+    app.add(viz)
+    app.add_sidebar(ctrl)
+    app.add_sidebar(ctrl2)
+    app.subscribe(callback, ctrl.on_change)
+    app.subscribe(callback, ctrl2.on_click)
+    app.build()
 
     env['PYTHONPATH'] = '{}:{}'.format(os.getcwd(), os.environ.get('PYTHONPATH', ''))
     server = subprocess.Popen(os.path.join(build_path, 'src/server.py'), env=env)

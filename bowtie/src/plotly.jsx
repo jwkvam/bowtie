@@ -12,11 +12,19 @@ export default class PlotlyPlot extends React.Component {
         this.selection = null;
         this.click = null;
         this.hover = null;
-        this.state = this.props.initState;
+
+        var local = sessionStorage.getItem(this.props.uuid);
+        if (local === null) {
+            this.state = this.props.initState;
+        } else {
+            this.state = JSON.parse(local);
+        }
+
         this.resize = this.resize.bind(this);
         this.props.socket.on(this.props.uuid + '#all', (data) => {
             var arr = new Uint8Array(data['data']);
             this.setState(msgpack.decode(arr));
+            sessionStorage.setItem(this.props.uuid, JSON.stringify(msgpack.decode(arr)));
         });
         this.props.socket.on(this.props.uuid + '#get', this.getSelection);
         this.props.socket.on(this.props.uuid + '#get_select', this.getSelection);

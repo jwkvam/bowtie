@@ -24,6 +24,9 @@ import eventlet
 from eventlet.queue import LightQueue
 
 
+SEPARATOR = '#'
+
+
 def varname(variable):
     """Return the name of the given variable."""
     frame = inspect.stack()[2][0]
@@ -115,7 +118,11 @@ def make_event(event):
     def actualevent(self):
         name = event.__name__[3:]
         # pylint: disable=protected-access
-        ename = '{uuid}#{event}'.format(uuid=self._uuid, event=name)
+        ename = '{uuid}{sep}{event}'.format(
+            uuid=self._uuid,
+            sep=SEPARATOR,
+            event=name
+        )
         objname = varname(self)
         try:
             # the getter post processing function
@@ -141,7 +148,11 @@ def make_command(command):
         data = command(self, *args, **kwds)
         name = command.__name__[3:]
         # pylint: disable=protected-access
-        signal = '{uuid}#{event}'.format(uuid=self._uuid, event=name)
+        signal = '{uuid}{sep}{event}'.format(
+            uuid=self._uuid,
+            sep=SEPARATOR,
+            event=name
+        )
         if flask.has_request_context():
             emit(signal, {'data': pack(data)})
         else:
@@ -163,7 +174,11 @@ def make_getter(getter):
     def get(self, timeout=10):
         name = getter.__name__
         # pylint: disable=protected-access
-        signal = '{uuid}#{event}'.format(uuid=self._uuid, event=name)
+        signal = '{uuid}{sep}{event}'.format(
+            uuid=self._uuid,
+            sep=SEPARATOR,
+            event=name
+        )
         event = LightQueue(1)
         if flask.has_request_context():
             emit(signal, callback=lambda x: event.put(unpack(x)))

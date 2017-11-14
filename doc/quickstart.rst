@@ -92,19 +92,19 @@ If you prefer not to use ``plotlywrapper``::
 The :py:class:`bowtie.control.Nouislider` component sends its values as a list of strings so we had to cast it to a float.
 
 Lastly we need to build the application by laying out the components and connecting listeners to events.
-The ``Layout`` class handles this and we put this logic into a function.
+The ``App`` class handles this and we put this logic into a function.
 Bowtie provides a decorator, ``command``, which we'll use to make a simple command line interface.
 To finish, we simply wrap the function with the ``command`` decorator::
 
     from bowtie import command
     @command
     def construct(path):
-        from bowtie import Layout
-        layout = Layout(directory=path)
-        layout.add_sidebar(freq_slider)
-        layout.add(sine_plot)
-        layout.subscribe(listener, freq_slider.on_change)
-        layout.build()
+        from bowtie import App
+        app = App(directory=path)
+        app.add_sidebar(freq_slider)
+        app.add(sine_plot)
+        app.subscribe(listener, freq_slider.on_change)
+        app.build()
 
 The ``path`` argument is optional, but it allows you to specify a directory through command line arguments.
 

@@ -7,7 +7,7 @@ from os import environ as env
 import subprocess
 import time
 
-from bowtie import Layout
+from bowtie import App
 from bowtie import control, visual
 from bowtie.tests.utils import reset_uuid
 
@@ -26,13 +26,13 @@ visuals = [getattr(visual, comp)() for comp in dir(visual)
 def test_components(chrome_driver, build_path):
     """Tests plotly."""
 
-    layout = Layout(rows=len(visuals), directory=build_path)
+    app = App(rows=len(visuals), directory=build_path)
     for controller in controllers:
-        layout.add_sidebar(controller)
+        app.add_sidebar(controller)
 
     for vis in visuals:
-        layout.add(vis)
-    layout.build()
+        app.add(vis)
+    app.build()
 
     env['PYTHONPATH'] = '{}:{}'.format(os.getcwd(), os.environ.get('PYTHONPATH', ''))
     server = subprocess.Popen(os.path.join(build_path, 'src/server.py'), env=env)

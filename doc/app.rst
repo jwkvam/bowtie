@@ -3,17 +3,17 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Layout
-======
+App
+===
 
-The Layout class defines the structure of the application:
+The App class defines the structure of the application:
 how things are laid out, subscribing listeners to events, and building the application.
 
-.. autoclass:: bowtie.Layout
+.. autoclass:: bowtie.App
     :members:
     :undoc-members:
 
-Each row and column in the layout is a ``Size`` object.
+Each row and column in the app is a ``Size`` object.
 The space used by each row and column can be changed through the following methods.
 
 .. autoclass:: bowtie._layout.Size

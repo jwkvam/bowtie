@@ -37,7 +37,7 @@ Contents
     :maxdepth: 2
 
     quickstart
-    layout
+    app
     components
     feedback
     cache

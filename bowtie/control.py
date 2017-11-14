@@ -61,6 +61,40 @@ class Button(_Controller):
         pass
 
 
+class Link(_Controller):
+    """An internal link."""
+
+    _TEMPLATE = 'link.jsx'
+    _COMPONENT = 'ALink'
+    _PACKAGE = None
+    _ATTRS = "to={{'{link}'}}"
+
+    def __init__(self, link='/', caption=None):
+        """Create a button.
+
+        Parameters
+        ----------
+        link : str
+
+        """
+        super(Link, self).__init__(caption=caption)
+        self._comp = self._tag.format(
+            link=link
+        )
+
+    def on_click(self):
+        """Emit an event when the button is clicked.
+
+        | **Payload:** ``None``.
+
+        Returns
+        -------
+        str
+            Name of click event.
+
+        """
+        pass
+
 class Upload(_Controller):
     """Draggable file upload widget."""
 
@@ -69,19 +103,13 @@ class Upload(_Controller):
     _PACKAGE = None
     _ATTRS = "multiple={{{multiple}}}"
 
-    def __init__(self, handler, multiple=True, caption=None):
+    def __init__(self, multiple=True, caption=None):
         """Create the widget.
 
         Note: the handler parameter may be changed in the future.
 
         Parameters
         ----------
-        handler : callable
-            Function that accepts two arguments: a filename of type str
-            and a stream object of type BytesIO. The user is responsible
-            for storing the object in this function if they want it for later use.
-            To indicate an error, return True, otherwise a return value of None or False
-            indicate success.
         multiple : bool, optional
             If true, you can upload multiple files at once. Even with this set to true,
             the handler will get called once per file uploaded.
@@ -90,10 +118,21 @@ class Upload(_Controller):
 
         """
         super(Upload, self).__init__(caption=caption)
-        self.function = handler.__name__
         self._comp = self._tag.format(
             multiple=jsbool(multiple)
         )
+
+    def on_upload(self):
+        """Emit an event when the selection changes.
+
+        | **Payload:** ``tuple`` with a str (name) and BytesIO (stream).
+
+        The user is responsible for storing the object in this function
+        if they want it for later use. To indicate an error, return True,
+        otherwise a return value of None or False indicate success.
+
+        """
+        pass
 
 
 class Dropdown(_Controller):
@@ -101,7 +140,7 @@ class Dropdown(_Controller):
 
     _TEMPLATE = 'dropdown.jsx'
     _COMPONENT = 'Dropdown'
-    _PACKAGE = 'react-select@1.0.0-rc.5'
+    _PACKAGE = 'react-select@1.0.0-rc.10'
     _ATTRS = ('initOptions={{{options}}} '
               'multi={{{multi}}} '
               'default={{{default}}}')
@@ -712,7 +751,7 @@ class Nouislider(_Controller):
 
     _TEMPLATE = 'nouislider.jsx'
     _COMPONENT = 'Nouislider'
-    _PACKAGE = 'nouislider@9.2.0'
+    _PACKAGE = 'nouislider@10.1.0'
     _ATTRS = ('range={{{{min: {min}, max: {max}}}}} '
               'socket={{socket}} '
               'start={{{start}}} '

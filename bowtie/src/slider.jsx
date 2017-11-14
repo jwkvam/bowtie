@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Slider } from 'antd';
 import 'antd/dist/antd.css';
+import { storeState } from './utils';
 
 var msgpack = require('msgpack-lite');
 
@@ -10,11 +11,16 @@ export default class AntSlider extends React.Component {
         super(props);
         var uuid = this.props.uuid;
         var socket = this.props.socket;
-        this.state = {
-            value: this.props.start,
-            max: this.props.max,
-            min: this.props.min
-        };
+        var local = sessionStorage.getItem(this.props.uuid);
+        if (local === null) {
+            this.state = {
+                value: this.props.start,
+                max: this.props.max,
+                min: this.props.min
+            };
+        } else {
+            this.state = JSON.parse(local);
+        }
         socket.on(uuid + '#get', this.getValue);
         socket.on(uuid + '#value', this.setValue);
         socket.on(uuid + '#inc', this.incValue);
@@ -29,33 +35,44 @@ export default class AntSlider extends React.Component {
 
     setValue = data => {
         var arr = new Uint8Array(data['data']);
-        this.setState({value: msgpack.decode(arr)});
+        arr = msgpack.decode(arr);
+        this.setState({value: arr});
+        storeState(this.props.uuid, this.state, {value: arr});
     }
 
     setMax = data => {
         var arr = new Uint8Array(data['data']);
-        this.setState({max: msgpack.decode(arr)});
+        arr = msgpack.decode(arr);
+        this.setState({max: arr});
+        storeState(this.props.uuid, this.state, {max: arr});
     }
 
     setMin = data => {
         var arr = new Uint8Array(data['data']);
-        this.setState({min: msgpack.decode(arr)});
+        arr = msgpack.decode(arr);
+        this.setState({min: arr});
+        storeState(this.props.uuid, this.state, {min: arr});
     }
 
     setMinMaxValue = data => {
         var arr = new Uint8Array(data['data']);
-        var value = msgpack.decode(arr);
-        this.setState({min: value[0], max: value[1], value: value[2]});
+        arr = msgpack.decode(arr);
+        var value = {min: arr[0], max: arr[1], value: arr[2]};
+        this.setState(value);
+        storeState(this.props.uuid, this.state, value);
     }
 
     incValue = data => {
         var arr = new Uint8Array(data['data']);
         var value = msgpack.decode(arr);
-        this.setState({value: this.state.value + value});
+        value += this.state.value;
+        this.setState({value: value});
+        storeState(this.props.uuid, this.state, {value: value});
     }
 
     onChange = value => {
         this.setState({value: value});
+        storeState(this.props.uuid, this.state, {value: value});
         this.props.socket.emit(this.props.uuid + '#change', msgpack.encode(value));
     }
 

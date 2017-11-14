@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """Compile tests."""
 
-from bowtie import Layout
+from bowtie import App
 from bowtie.control import Nouislider
 from bowtie.visual import Plotly
 from bowtie.tests.utils import reset_uuid
@@ -21,8 +21,8 @@ def test_build(build_path):
     ctrl = Nouislider()
     viz = Plotly()
 
-    layout = Layout(directory=build_path)
-    layout.add_sidebar(ctrl)
-    layout.add(viz)
-    layout.subscribe(callback, ctrl.on_change)
-    layout.build()
+    app = App(directory=build_path)
+    app.add_sidebar(ctrl)
+    app.add(viz)
+    app.subscribe(callback, ctrl.on_change)
+    app.build()

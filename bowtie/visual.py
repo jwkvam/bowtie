@@ -168,31 +168,13 @@ class SmartGrid(_Visual):
 
     _TEMPLATE = 'griddle.jsx'
     _COMPONENT = 'SmartGrid'
-    _PACKAGE = 'griddle-react@version0'
-    _ATTRS = ('columns={{{columns}}} '
-              'resultsPerPage={{{results_per_page}}}')
+    _PACKAGE = 'griddle-react@1.9.0'
+    _ATTRS = None #('columns={{{columns}}} '
 
-    def __init__(self, columns=None, results_per_page=10):
-        """Create the table, optionally set the columns.
-
-        Parameters
-        ----------
-        columns : list, optional
-            List of column names to display.
-        results_per_page : int, optional
-            Number of rows on each pagination of the table.
-
-        """
+    def __init__(self):
+        """Create the table, optionally set the columns."""
         super(SmartGrid, self).__init__()
-        if columns is None:
-            columns = []
-        self.columns = columns
-        self.results_per_page = results_per_page
-
-        self._comp = self._tag.format(
-            columns=jdumps(self.columns),
-            results_per_page=self.results_per_page
-        )
+        self._comp = self._tag
 
     # pylint: disable=no-self-use
     def do_update(self, data):
@@ -200,17 +182,14 @@ class SmartGrid(_Visual):
 
         Parameters
         ----------
-        data : list of dicts
-            Each entry in the list must be a dict
-            with the same keys which are the columns
-            of the table.
+        data : pandas.DataFrame
 
         Returns
         -------
         None
 
         """
-        return data
+        return data.to_dict(orient='records')
 
     def get(self, data):
         """
@@ -295,7 +274,7 @@ class Plotly(_Visual):
 
     _TEMPLATE = 'plotly.jsx'
     _COMPONENT = 'PlotlyPlot'
-    _PACKAGE = 'plotly.js@1.29.3'
+    _PACKAGE = 'plotly.js@1.31.2'
     _ATTRS = 'initState={{{init}}}'
 
     def __init__(self, init=None):

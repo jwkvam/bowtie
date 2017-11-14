@@ -3,6 +3,7 @@ import React from 'react';
 import { Table, LocaleProvider } from 'antd';
 import enUS from 'antd/lib/locale-provider/en_US';
 import 'antd/dist/antd.css';
+import { storeState } from './utils';
 
 var msgpack = require('msgpack-lite');
 
@@ -10,10 +11,15 @@ var msgpack = require('msgpack-lite');
 export default class AntTable extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            data: [],
-            columns: this.props.columns
-        };
+        var local = sessionStorage.getItem(this.props.uuid);
+        if (local === null) {
+            this.state = {
+                data: [],
+                columns: this.props.columns
+            };
+        } else {
+            this.state = JSON.parse(local);
+        }
     }
 
     componentDidMount() {
@@ -27,12 +33,14 @@ export default class AntTable extends React.Component {
         var arr = new Uint8Array(data['data']);
         var datacols = msgpack.decode(arr);
         this.setState({data: datacols[0], columns: datacols[1]});
+        storeState(this.props.uuid, this.state, {data: datacols[0], columns: datacols[1]});
     }
 
     newColumns = (data, fn) => {
         var arr = new Uint8Array(data['data']);
         var columns = msgpack.decode(arr);
         this.setState({columns: columns});
+        storeState(this.props.uuid, this.state, {columns: columns});
     }
 
     render() {

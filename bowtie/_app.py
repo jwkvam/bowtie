@@ -1,22 +1,21 @@
 # -*- coding: utf-8 -*-
-"""Defines the Layout class."""
+"""Defines the App class."""
 
 from __future__ import print_function
 
 import os
-from os import path
 from itertools import product
 import inspect
 import shutil
 import stat
 from collections import namedtuple, defaultdict, OrderedDict
 from subprocess import Popen
+import warnings
 
 from jinja2 import Environment, FileSystemLoader
 
 from bowtie._compat import makedirs
-from bowtie._component import Component
-from bowtie.control import Upload
+from bowtie._component import Component, SEPARATOR
 
 
 _Import = namedtuple('_Import', ['module', 'component'])
@@ -62,6 +61,12 @@ class UsedCellsError(Exception):
 
 class NoSidebarError(Exception):
     """Cannot add to the sidebar when it doesn't exist."""
+
+    pass
+
+
+class NotStatefulEvent(Exception):
+    """This event is not stateful and cannot be paired with other events."""
 
     pass
 
@@ -172,72 +177,32 @@ class Size(object):
         return self.maximum
 
 
-class Layout(object):
-    """Core class to layout, connect, build a Bowtie app."""
+class View(object):
+    """Grid of widgets."""
+
+    _NEXT_UUID = 0
+
+    @classmethod
+    def _next_uuid(cls):
+        cls._NEXT_UUID += 1
+        return cls._NEXT_UUID
 
     def __init__(self, rows=1, columns=1, sidebar=True,
-                 title='Bowtie App', basic_auth=False,
-                 username='username', password='password',
-                 background_color='White', directory='build',
-                 host='0.0.0.0', port=9991, socketio='', debug=False):
-        """Create a Bowtie App.
-
-        Parameters
-        ----------
-        row : int, optional
-            Number of rows in the grid.
-        columns : int, optional
-            Number of columns in the grid.
-        sidebar : bool, optional
-            Enable a sidebar for control widgets.
-        title : str, optional
-            Title of the HTML.
-        basic_auth : bool, optional
-            Enable basic authentication.
-        username : str, optional
-            Username for basic authentication.
-        password : str, optional
-            Password for basic authentication.
-        background_color : str, optional
-            Background color of the control pane.
-        directory : str, optional
-            Location where app is compiled.
-        host : str, optional
-            Host IP address.
-        port : int, optional
-            Host port number.
-        socketio : string, optional
-            Socket.io path prefix, only change this for advanced deployments.
-        debug : bool, optional
-            Enable debugging in Flask. Disable in production!
-
-        """
-        self.background_color = background_color
-        self.basic_auth = basic_auth
-        self.controllers = []
-        self.debug = debug
-        self.directory = directory
-        self.functions = []
-        self.host = host
-        self.imports = set()
-        self.init = None
-        self.packages = set([])
-        self.password = password
-        self.port = port
-        self.socketio = socketio
-        self.schedules = []
-        self.subscriptions = defaultdict(list)
-        self.pages = {}
-        self.templates = set(['progress.jsx'])
-        self.title = title
-        self.username = username
+                 background_color='White'):
+        """Create a new grid."""
+        self._uuid = View._next_uuid()
+        self.name = 'view{}'.format(self._uuid)
         self.used = OrderedDict(((key, False) for key in product(range(rows), range(columns))))
-        self.widgets = []
-        self.uploads = []
-        self.spans = []
         self.rows = [Size() for _ in range(rows)]
         self.columns = [Size() for _ in range(columns)]
         self.sidebar = sidebar
+        self.background_color = background_color
+        self.packages = set()
+        self.templates = set()
+        self.imports = set()
+        self.controllers = []
+        self.widgets = []
+        self.spans = []
 
     def add(self, widget, row_start=None, column_start=None,
             row_end=None, column_end=None):
@@ -260,7 +225,6 @@ class Layout(object):
 
         """
         assert isinstance(widget, Component)
-        self._check_and_add_upload(widget)
 
         for index in [row_start, row_end]:
             if index is not None and not 0 <= index < len(self.rows):
@@ -327,7 +291,6 @@ class Layout(object):
             raise NoSidebarError('Set `sidebar=True` if you want to use the sidebar.')
 
         assert isinstance(widget, Component)
-        self._check_and_add_upload(widget)
 
         # pylint: disable=protected-access
         self.packages.add(widget._PACKAGE)
@@ -337,10 +300,155 @@ class Layout(object):
         self.controllers.append(_Control(instantiate=widget._instantiate,
                                          caption=getattr(widget, 'caption', None)))
 
-    def _check_and_add_upload(self, widget):
-        if not isinstance(widget, Upload):
-            return
-        self.uploads.append(widget)
+    def _render(self, path, env):
+        """TODO: Docstring for _render.
+
+        Parameters
+        ----------
+        path : TODO
+
+        Returns
+        -------
+        TODO
+
+        """
+        jsx = env.get_template('view.jsx.j2')
+
+        # pylint: disable=protected-access
+        self.widgets = [w._instantiate for w in self.widgets]
+
+        columns = []
+        if self.sidebar:
+            columns.append('18em')
+        columns += self.columns
+
+        with open(os.path.join(path, 'view{}.jsx'.format(self._uuid)), 'w') as f:
+            f.write(
+                jsx.render(
+                    uuid=self._uuid,
+                    sidebar=self.sidebar,
+                    columns=columns,
+                    rows=self.rows,
+                    background_color=self.background_color,
+                    components=self.imports,
+                    controls=self.controllers,
+                    widgets=zip(self.widgets, self.spans)
+                )
+            )
+
+
+Route = namedtuple('Route', ['view', 'path', 'exact'])
+
+
+class App(object):
+    """Core class to layout, connect, build a Bowtie app."""
+
+    def __init__(self, rows=1, columns=1, sidebar=True,
+                 title='Bowtie App', basic_auth=False,
+                 username='username', password='password',
+                 background_color='White', directory='build',
+                 host='0.0.0.0', port=9991, socketio='', debug=False):
+        """Create a Bowtie App.
+
+        Parameters
+        ----------
+        row : int, optional
+            Number of rows in the grid.
+        columns : int, optional
+            Number of columns in the grid.
+        sidebar : bool, optional
+            Enable a sidebar for control widgets.
+        title : str, optional
+            Title of the HTML.
+        basic_auth : bool, optional
+            Enable basic authentication.
+        username : str, optional
+            Username for basic authentication.
+        password : str, optional
+            Password for basic authentication.
+        background_color : str, optional
+            Background color of the control pane.
+        directory : str, optional
+            Location where app is compiled.
+        host : str, optional
+            Host IP address.
+        port : int, optional
+            Host port number.
+        socketio : string, optional
+            Socket.io path prefix, only change this for advanced deployments.
+        debug : bool, optional
+            Enable debugging in Flask. Disable in production!
+
+        """
+        self.background_color = background_color
+        self.basic_auth = basic_auth
+        self.debug = debug
+        self.directory = directory
+        self.functions = []
+        self.host = host
+        self.imports = set()
+        self.init = None
+        self.password = password
+        self.port = port
+        self.socketio = socketio
+        self.schedules = []
+        self.subscriptions = defaultdict(list)
+        self.pages = {}
+        self.title = title
+        self.username = username
+        self.uploads = {}
+        self.root = View(rows=rows, columns=columns, sidebar=sidebar,
+                         background_color=background_color)
+        self.routes = [Route(view=self.root, path='/', exact=True)]
+
+    def add(self, widget, row_start=None, column_start=None,
+            row_end=None, column_end=None):
+        """Add a widget to the grid.
+
+        Zero-based index and inclusive.
+
+        Parameters
+        ----------
+        visual : bowtie._Component
+            A Bowtie widget instance.
+        row_start : int, optional
+            Starting row for the widget.
+        column_start : int, optional
+            Starting column for the widget.
+        row_end : int, optional
+            Ending row for the widget.
+        column_end : int, optional
+            Ending column for the widget.
+
+        """
+        self.root.add(widget, row_start=row_start, column_start=column_start,
+                      row_end=row_end, column_end=column_end)
+
+    def add_sidebar(self, widget):
+        """Add a widget to the sidebar.
+
+        Parameters
+        ----------
+        widget : bowtie._Component
+            Add this widget to the sidebar, it will be appended to the end.
+
+        """
+        self.root.add_sidebar(widget)
+
+    def add_route(self, view, path, exact=True):
+        """Add a view to the app.
+
+        Parameters
+        ----------
+        view : View
+        path : str
+        exact : bool, optional
+
+        """
+        assert path[0] == '/'
+        for route in self.routes:
+            assert path != route.path, 'Cannot use the same path twice'
+        self.routes.append(Route(view=view, path=path, exact=exact))
 
     def respond(self, pager, func):
         """Call a function in response to a page.
@@ -361,7 +469,7 @@ class Layout(object):
         >>>     pass
         >>> def scheduledtask():
         >>>     pager.notify()
-        >>> layout.respond(pager, callback)
+        >>> app.respond(pager, callback)
 
         """
         self.pages[pager] = func.__name__
@@ -387,11 +495,32 @@ class Layout(object):
         >>> slide = Slider()
         >>> def callback(dd_item, slide_value):
         >>>     pass
-        >>> layout.subscribe(callback, dd.on_change, slide.on_change)
+        >>> app.subscribe(callback, dd.on_change, slide.on_change)
 
         """
         all_events = [event]
         all_events.extend(events)
+
+        if len(all_events) > 1:
+            # check if we are using any non stateful events
+            for evt in all_events:
+                if evt[2] is None:
+                    name = evt[0].split(SEPARATOR)[1]
+                    msg = '{}.on_{} is not a stateful event. It must be used alone.'
+                    raise NotStatefulEvent(msg.format(evt[1], name))
+
+        if event[0].split(SEPARATOR)[1] == 'upload':
+            # evt = event[0]
+            uuid = event[0].split(SEPARATOR)[0]
+            if uuid in self.uploads:
+                warnings.warn(
+                    ('Overwriting function "{func1}" with function '
+                     '"{func2}" for upload object "{obj}".').format(
+                         func1=self.uploads[uuid],
+                         func2=func.__name__,
+                         obj=event[1]
+                     ), Warning)
+            self.uploads[uuid] = func.__name__
 
         for evt in all_events:
             self.subscriptions[evt].append((all_events, func.__name__))
@@ -422,24 +551,24 @@ class Layout(object):
 
     def build(self):
         """Compile the Bowtie application."""
-        file_dir = path.dirname(__file__)
+        file_dir = os.path.dirname(__file__)
 
         env = Environment(
-            loader=FileSystemLoader(path.join(file_dir, 'templates')),
+            loader=FileSystemLoader(os.path.join(file_dir, 'templates')),
             trim_blocks=True,
             lstrip_blocks=True
         )
 
         server = env.get_template('server.py.j2')
-        index = env.get_template('index.html.j2')
-        react = env.get_template('index.jsx.j2')
+        indexhtml = env.get_template('index.html.j2')
+        indexjsx = env.get_template('index.jsx.j2')
 
         src, app, templates = create_directories(directory=self.directory)
 
-        webpack_src = path.join(file_dir, 'src/webpack.config.js')
+        webpack_src = os.path.join(file_dir, 'src/webpack.config.js')
         shutil.copy(webpack_src, self.directory)
 
-        server_path = path.join(src, server.name[:-3])
+        server_path = os.path.join(src, server.name[:-3])
         # [1] grabs the parent stack and [1] grabs the filename
         source_filename = inspect.stack()[1][1]
         with open(server_path, 'w') as f:
@@ -454,6 +583,7 @@ class Layout(object):
                     uploads=self.uploads,
                     schedules=self.schedules,
                     initial=self.init,
+                    routes=self.routes,
                     pages=self.pages,
                     host="'{}'".format(self.host),
                     port=self.port,
@@ -463,52 +593,52 @@ class Layout(object):
         perms = os.stat(server_path)
         os.chmod(server_path, perms.st_mode | stat.S_IEXEC)
 
-        with open(path.join(templates, index.name[:-3]), 'w') as f:
+        with open(os.path.join(templates, indexhtml.name[:-3]), 'w') as f:
             f.write(
-                index.render(title=self.title)
+                indexhtml.render(title=self.title)
             )
 
-        for template in self.templates:
-            template_src = path.join(file_dir, 'src', template)
-            shutil.copy(template_src, app)
+        template_src = os.path.join(file_dir, 'src', 'progress.jsx')
+        shutil.copy(template_src, app)
+        template_src = os.path.join(file_dir, 'src', 'utils.js')
+        shutil.copy(template_src, app)
+        for route in self.routes:
+            for template in route.view.templates:
+                template_src = os.path.join(file_dir, 'src', template)
+                shutil.copy(template_src, app)
 
-        # pylint: disable=protected-access
-        self.widgets = [w._instantiate for w in self.widgets]
 
-        columns = []
-        if self.sidebar:
-            columns.append('18em')
-        columns += self.columns
+        packages = set()
+        for route in self.routes:
+            # pylint: disable=protected-access
+            route.view._render(app, env)
+            packages |= route.view.packages
 
-        with open(path.join(app, react.name[:-3]), 'w') as f:
+        with open(os.path.join(app, indexjsx.name[:-3]), 'w') as f:
             f.write(
-                react.render(
+                indexjsx.render(
+                    # pylint: disable=protected-access
+                    maxviewid=View._NEXT_UUID,
                     socketio=self.socketio,
-                    sidebar=self.sidebar,
-                    columns=columns,
-                    rows=self.rows,
                     pages=self.pages,
-                    background_color=self.background_color,
-                    components=self.imports,
-                    controls=self.controllers,
-                    widgets=zip(self.widgets, self.spans)
+                    routes=self.routes
                 )
             )
 
         init = Popen('yarn init -y', shell=True, cwd=self.directory).wait()
         if init != 0:
             raise YarnError('Error running "yarn init -y"')
-        self.packages.discard(None)
+        packages.discard(None)
 
-        packages = path.join(file_dir, 'src/package.json')
-        shutil.copy(packages, self.directory)
+        packagejson = os.path.join(file_dir, 'src/package.json')
+        shutil.copy(packagejson, self.directory)
 
         install = Popen('yarn install', shell=True, cwd=self.directory).wait()
         if install > 1:
             raise YarnError('Error install node packages')
 
-        packages = ' '.join(self.packages)
-        install = Popen('yarn add {}'.format(packages),
+        packagestr = ' '.join(packages)
+        install = Popen('yarn add {}'.format(packagestr),
                         shell=True, cwd=self.directory).wait()
         if install > 1:
             raise YarnError('Error install node packages')
@@ -522,9 +652,9 @@ class Layout(object):
 
 def create_directories(directory='build'):
     """Create all the necessary subdirectories for the build."""
-    src = path.join(directory, 'src')
-    templates = path.join(src, 'templates')
-    app = path.join(src, 'app')
+    src = os.path.join(directory, 'src')
+    templates = os.path.join(src, 'templates')
+    app = os.path.join(src, 'app')
     makedirs(app, exist_ok=True)
     makedirs(templates, exist_ok=True)
     return src, app, templates

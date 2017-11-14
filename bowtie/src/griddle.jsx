@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import Griddle from 'griddle-react';
+import { storeState } from './utils';
 
 var msgpack = require('msgpack-lite');
 
@@ -8,8 +9,13 @@ export default class SmartGrid extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {data: []};
         this.getData = this.getData.bind(this);
+        var local = sessionStorage.getItem(this.props.uuid);
+        if (local === null) {
+            this.state = {data: []};
+        } else {
+            this.state = JSON.parse(local);
+        }
     }
 
     getData(data, fn) {
@@ -21,7 +27,9 @@ export default class SmartGrid extends React.Component {
 
         socket.on(this.props.uuid + '#update', (data) => {
             var arr = new Uint8Array(data['data']);
-            this.setState({data: msgpack.decode(arr)});
+            arr = msgpack.decode(arr);
+            this.setState({data: arr});
+            storeState(this.props.uuid, this.state, {data: arr});
         });
 
         socket.on(this.props.uuid + '#get', this.getData);
@@ -30,12 +38,7 @@ export default class SmartGrid extends React.Component {
     render() {
         return (
             <Griddle
-                results={this.state.data}
-                showFilter={true}
-                showSettings={true}
-                useGriddleStyles={true}
-                columns={this.props.columns}
-                resultsPerPage={this.props.resultsPerPage}
+                data={this.state.data}
             />
         );
     }
@@ -43,7 +46,5 @@ export default class SmartGrid extends React.Component {
 
 SmartGrid.propTypes = {
     uuid: PropTypes.string.isRequired,
-    socket: PropTypes.object.isRequired,
-    columns: PropTypes.array.isRequired,
-    resultsPerPage: PropTypes.number.isRequired
+    socket: PropTypes.object.isRequired
 };

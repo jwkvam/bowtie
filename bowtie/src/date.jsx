@@ -5,17 +5,24 @@ import enUS from 'antd/lib/locale-provider/en_US';
 import 'antd/dist/antd.css';
 // import 'antd/lib/date-picker/style/index.css';
 const { MonthPicker, RangePicker } = DatePicker;
+import { storeState } from './utils';
 
 var msgpack = require('msgpack-lite');
 
 export default class PickDates extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {value: null};
+        var local = sessionStorage.getItem(this.props.uuid);
+        if (local === null) {
+            this.state = {value: null};
+        } else {
+            this.state = JSON.parse(local);
+        }
     }
 
     handleChange = (moment, ds) => {
         this.setState({value: moment});
+        storeState(this.props.uuid, this.state, {value: moment});
         this.props.socket.emit(this.props.uuid + '#change', msgpack.encode(ds));
     }
 

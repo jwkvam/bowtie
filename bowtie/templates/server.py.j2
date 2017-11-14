@@ -84,7 +84,9 @@ class Scheduler(object):
             self.thread.cancel()
 
 
-@app.route('/')
+{% for route in routes %}
+@app.route('{{ route.path }}')
+{% endfor %}
 {% if basic_auth %}
 @requires_auth
 {% endif %}
@@ -128,11 +130,11 @@ def _():
 {% endif %}
 
 
-{% for upload in uploads %}
-@app.route('/upload{{ upload._uuid }}', methods=['POST'])
+{% for uuid, function in uploads.items() %}
+@app.route('/upload{{ uuid }}', methods=['POST'])
 def _():
     upfile = request.files['file']
-    retval = {{ source_module }}.{{ upload.function }}(upfile.filename, upfile.stream)
+    retval = {{ source_module }}.{{ function }}(upfile.filename, upfile.stream)
     if retval:
         return make_response(jsonify(), 400)
     return make_response(jsonify(), 200)

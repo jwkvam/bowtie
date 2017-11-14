@@ -1,14 +1,18 @@
 import 'normalize.css';
 import React from 'react';
-import {render} from 'react-dom';
+import ReactDOM from 'react-dom';
 import io from 'socket.io-client';
 import {message} from 'antd';
-import 'antd/dist/antd.css'
+import 'antd/dist/antd.css';
+import {
+    BrowserRouter,
+    Switch,
+    Route,
+    Link
+} from 'react-router-dom';
 
-import AntProgress from './progress';
-
-{% for component in components %}
-import {{ component.component }} from './{{ component.module }}';
+{% for viewid in range(1, maxviewid + 1) %}
+import View{{ viewid }} from './view{{ viewid }}';
 {% endfor %}
 
 var msgpack = require('msgpack-lite');
@@ -71,47 +75,23 @@ class Dashboard extends React.Component {
 
     render() {
         return (
-            <div style={{ '{{' }}display: 'grid',
-                    gridTemplateColumns: '{{ columns|join(' ') }}',
-                    gridTemplateRows: '{{ rows|join(' ') }}',
-                    width: '100%', height: '100%',
-                    minHeight: '100vh', maxHeight: '100%',
-                    minWidth: '100vw', maxWidth: '100%'{{ '}}' }}>
-
-                {% if sidebar %}
-                <div style={{ '{{' }}padding: '7px', backgroundColor: '{{background_color}}',
-                        gridColumn: '1 / 2',
-                        gridRow: '1 / -1'
-                        {{ '}}' }}>
-
-                    {% for control in controls %}
-                        {% if control.caption is not none %}
-                            <div style={{ '{{' }}paddingBottom: '3px'{{ '}}' }}>
-                            {{ control.caption }}
-                            </div>
-                        {% endif %}
-
-                        <div style={{ '{{' }}paddingBottom: '7px'{{ '}}' }}>
-                        {{ control.instantiate }}
-                        </div>
+            <BrowserRouter>
+                <Switch>
+                    {% for route in routes %}
+                        <Route
+                            {% if route.exact %}
+                            exact
+                            {% endif %}
+                            path='{{ route.path }}'
+                            render={()=><View{{ route.view._uuid }} socket={socket}/>}
+                        />
                     {% endfor %}
-                </div>
-                {% endif %}
-
-                {% for widget, span in widgets %}
-                <div style={{ '{{' }}
-                        gridColumn: '{{ span.column_start + sidebar }} / {{ span.column_end + sidebar }}',
-                        gridRow: '{{ span.row_start }} / {{ span.row_end }}',
-                        position: 'relative'
-                        {{ '}}' }}>
-                    {{ widget }}
-                </div>
-                {% endfor %}
-            </div>
+                </Switch>
+            </BrowserRouter>
         );
     }
 }
 
-render(<Dashboard />, document.getElementById('app'));
+ReactDOM.render(<Dashboard />, document.getElementById('app'));
 
 // vim: set ft=javascript.jsx:

@@ -2,13 +2,19 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { InputNumber } from 'antd';
 import 'antd/dist/antd.css';
+import { storeState } from './utils';
 
 var msgpack = require('msgpack-lite');
 
 export default class AntNumber extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {value: this.props.start};
+        var local = sessionStorage.getItem(this.props.uuid);
+        if (local === null) {
+            this.state = {value: this.props.start};
+        } else {
+            this.state = JSON.parse(local);
+        }
     }
 
     componentDidMount() {
@@ -21,12 +27,9 @@ export default class AntNumber extends React.Component {
         fn(msgpack.encode(this.state.value));
     }
 
-    // onChange = value => {
-    //     this.setState({value: value.target.value});
-    //     this.props.socket.emit(this.props.uuid + '#change', msgpack.encode(value.target.value));
-    // }
     onChange = value => {
         this.setState({value: value});
+        storeState(this.props.uuid, this.state, {value: value});
         this.props.socket.emit(this.props.uuid + '#change', msgpack.encode(value));
     }
 

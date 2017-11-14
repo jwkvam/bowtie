@@ -3,17 +3,24 @@ import React from 'react';
 import { Switch, LocaleProvider } from 'antd';
 import enUS from 'antd/lib/locale-provider/en_US';
 import 'antd/dist/antd.css';
+import { storeState } from './utils';
 
 var msgpack = require('msgpack-lite');
 
 export default class Toggle extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {checked: this.props.defaultChecked};
+        var local = sessionStorage.getItem(this.props.uuid);
+        if (local === null) {
+            this.state = {checked: this.props.defaultChecked};
+        } else {
+            this.state = JSON.parse(local);
+        }
     }
 
     handleChange = (checked) => {
         this.setState({checked: checked});
+        storeState(this.props.uuid, this.state, {checked: checked});
         this.props.socket.emit(this.props.uuid + '#switch', msgpack.encode(checked));
     }
 
