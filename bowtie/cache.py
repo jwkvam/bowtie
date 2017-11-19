@@ -15,7 +15,7 @@ def save(key, value):
 
     Parameters
     ----------
-    key : object
+    key : str
         The key to determine where it's stored, you'll need this to load the value later.
     value : object
         The value to store in the cache.
@@ -39,7 +39,7 @@ def load(key):
 
     Parameters
     ----------
-    key : object
+    key : str
         The key to lookup the value stored.
 
     Returns
