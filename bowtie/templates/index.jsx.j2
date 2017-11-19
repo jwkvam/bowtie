@@ -28,20 +28,23 @@ class Dashboard extends React.Component {
     saveValue = data => {
         var arr = new Uint8Array(data['key']);
         var key = msgpack.decode(arr);
-        this.cache[key] = data['data'];
+        var value = new Uint8Array(data['data']).toString();
+        sessionStorage.setItem('cache' + key, value);
     }
 
     loadValue = (data, fn) => {
         var arr = new Uint8Array(data['data']);
         var key = msgpack.decode(arr);
-        if (this.cache.hasOwnProperty(key)) {
-            fn(this.cache[key]);
-        } else {
+        var x = sessionStorage.getItem('cache' + key)
+        if (x === null) {
             var buffer = new ArrayBuffer(1);
             var x = new DataView(buffer, 0);
             // msgpack encodes null to 0xc0
             x.setUint8(0, 0xc0);
             fn(buffer);
+        } else {
+            x = new Uint8Array(x.split(','));
+            fn(x.buffer);
         }
     }
 
