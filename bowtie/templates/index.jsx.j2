@@ -29,7 +29,7 @@ class Dashboard extends React.Component {
         var arr = new Uint8Array(data['key']);
         var key = msgpack.decode(arr);
         var value = new Uint8Array(data['data']).toString();
-        sessionStorage.setItem('cache' + key, str);
+        sessionStorage.setItem('cache' + key, value);
     }
 
     loadValue = (data, fn) => {
