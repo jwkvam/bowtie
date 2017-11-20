@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 0.5.0 / 2017-11-19
+
+### Added
+
+  * Create multiple views to create subpages (#158)
+  * Cache is now backed by session storage (#160)
+  * Link component for switching views without a page reload
+
+## Breaking
+
+  * Renamed `Layout` class to `App`
+
 ## 0.4.2 / 2017-09-05
 
 ### Added
