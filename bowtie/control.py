@@ -62,7 +62,10 @@ class Button(_Controller):
 
 
 class Link(_Controller):
-    """An internal link."""
+    """An internal link.
+
+    This doesn't create a page reload.
+    """
 
     _TEMPLATE = 'link.jsx'
     _COMPONENT = 'ALink'

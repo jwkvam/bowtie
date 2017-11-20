@@ -134,3 +134,10 @@ Upload
 .. autoclass:: bowtie.control.Upload
     :members:
     :undoc-members:
+
+Link
+~~~~
+
+.. autoclass:: bowtie.control.Link
+    :members:
+    :undoc-members:
