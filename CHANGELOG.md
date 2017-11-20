@@ -8,7 +8,7 @@
   * Cache is now backed by session storage (#160)
   * Link component for switching views without a page reload
 
-## Breaking
+### Breaking
 
   * Renamed `Layout` class to `App`
 
