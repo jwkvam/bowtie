@@ -2,6 +2,7 @@ FROM node:8.9
 
 LABEL maintainer="jwkvam@gmail.com"
 
+ENV FLIT_ROOT_INSTALL 1
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
 RUN apt-get update --fix-missing && \
