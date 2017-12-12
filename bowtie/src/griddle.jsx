@@ -5,6 +5,25 @@ import { storeState } from './utils';
 
 var msgpack = require('msgpack-lite');
 
+const styleConfig = {
+    icons: {
+        TableHeadingCell: {
+            sortDescendingIcon: '▼',
+            sortAscendingIcon: '▲',
+        },
+    },
+    styles: {
+        TableHeadingCell: {
+            padding: '0.2em 0.5em',
+            border: '1px solid #555'
+        },
+        Cell: {
+            border: '1px solid #555',
+            padding: '0.2em 0.5em'
+        }
+    }
+};
+
 export default class SmartGrid extends React.Component {
 
     constructor(props) {
@@ -39,6 +58,7 @@ export default class SmartGrid extends React.Component {
         return (
             <Griddle
                 data={this.state.data}
+                styleConfig={styleConfig}
             />
         );
     }

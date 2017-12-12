@@ -168,7 +168,7 @@ class SmartGrid(_Visual):
 
     _TEMPLATE = 'griddle.jsx'
     _COMPONENT = 'SmartGrid'
-    _PACKAGE = 'griddle-react@1.9.0'
+    _PACKAGE = 'griddle-react@1.10.1'
     _ATTRS = None #('columns={{{columns}}} '
 
     def __init__(self):
