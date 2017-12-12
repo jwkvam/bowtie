@@ -14,12 +14,12 @@ const styleConfig = {
     },
     styles: {
         TableHeadingCell: {
-            padding: "0.2em 0.5em",
-            border: "1px solid #555"
+            padding: '0.2em 0.5em',
+            border: '1px solid #555'
         },
         Cell: {
-            border: "1px solid #555",
-            padding: "0.2em 0.5em"
+            border: '1px solid #555',
+            padding: '0.2em 0.5em'
         }
     }
 }
