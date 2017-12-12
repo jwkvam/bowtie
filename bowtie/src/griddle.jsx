@@ -22,7 +22,7 @@ const styleConfig = {
             padding: '0.2em 0.5em'
         }
     }
-}
+};
 
 export default class SmartGrid extends React.Component {
 
