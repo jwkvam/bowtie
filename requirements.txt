@@ -14,5 +14,4 @@ pylint
 pytest
 pytest-cov
 pytest-pylint
-pytest-codestyle
 selenium
