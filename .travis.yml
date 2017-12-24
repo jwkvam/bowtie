@@ -50,7 +50,7 @@ install:
     - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
     - source activate test-environment
     - pip install -r requirements.txt
-    - if [[ "$TRAVIS_PYTHON_VERSION" != "2.7" ]]; then
+    - if [[ "$TRAVIS_PYTHON_VERSION" -ne "2.7" ]]; then
       pip install pytest-codestyle
       fi
     - make checkdocs
@@ -61,7 +61,7 @@ install:
 
 script:
     - make test
-    - if [[ "$TRAVIS_PYTHON_VERSION" != "2.7" ]]; then
+    - if [[ "$TRAVIS_PYTHON_VERSION" -ne "2.7" ]]; then
       make style
       fi
 
