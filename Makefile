@@ -1,13 +1,16 @@
 all: test
 
 test:
-	py.test --cov=./ --pylint --pylint-rcfile=pylintrc --pylint-error-types=RCWEF --ignore=doc
+	py.test --cov=./ --codestyle --pylint --pylint-rcfile=pylintrc --pylint-error-types=RCWEF --ignore=doc
 
 unit:
 	py.test --cov=./
 
 lint:
 	py.test --pylint -m pylint --pylint-rcfile=pylintrc --pylint-error-types=RCWEF --ignore=doc
+
+style:
+	py.test --codestyle -m codestyle --ignore=doc
 
 eslint:
 	eslint bowtie/src/*.js{,x}
