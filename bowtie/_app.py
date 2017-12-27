@@ -429,6 +429,7 @@ class App(object):
         self.routes = [Route(view=self.root, path='/', exact=True)]
 
     def __getattr__(self, name):
+        """Export attributes from root view."""
         if name == 'columns':
             return self.root.columns
         elif name == 'rows':
