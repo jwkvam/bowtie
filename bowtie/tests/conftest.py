@@ -6,15 +6,16 @@ import os
 from sys import platform
 import shutil
 from selenium import webdriver
-# pylint: disable=protected-access
-from bowtie._app import View
 
 import pytest
+
+from bowtie import View
 
 
 @pytest.fixture
 def build_path():
     """Path for building apps with pytest."""
+    # pylint: disable=protected-access
     View._NEXT_UUID = 0
     path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'build')
     yield path

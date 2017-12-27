@@ -36,6 +36,7 @@ def varname(variable):
     for name, var in frame.f_globals.items():
         if variable is var:
             return name
+    raise Exception('Could not identify name of variable: {}'.format(variable))
 
 
 def jsbool(x):
