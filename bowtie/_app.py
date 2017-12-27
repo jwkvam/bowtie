@@ -177,6 +177,29 @@ class Size(object):
         return self.maximum
 
 
+class Gap(object):
+    """Margin between rows or columns of the grid."""
+
+    def __init__(self):
+        """Create a default margin of zero."""
+        self.gap = None
+        self.pixels(0)
+
+    def pixels(self, value):
+        """Set the margin in pixels."""
+        raise_not_number(value)
+        self.gap = '{}px'.format(value)
+
+    def percent(self, value):
+        """Set the margin as a percentage."""
+        raise_not_number(value)
+        self.gap = '{}%'.format(value)
+
+    def __repr__(self):
+        """Represent the margin to be inserted into a JSX template."""
+        return self.gap
+
+
 class View(object):
     """Grid of widgets."""
 
@@ -193,6 +216,8 @@ class View(object):
         self._uuid = View._next_uuid()
         self.name = 'view{}'.format(self._uuid)
         self.used = OrderedDict(((key, False) for key in product(range(rows), range(columns))))
+        self.column_gap = Gap()
+        self.row_gap = Gap()
         self.rows = [Size() for _ in range(rows)]
         self.columns = [Size() for _ in range(columns)]
         self.sidebar = sidebar
@@ -329,6 +354,8 @@ class View(object):
                     sidebar=self.sidebar,
                     columns=columns,
                     rows=self.rows,
+                    column_gap=self.column_gap,
+                    row_gap=self.row_gap,
                     background_color=self.background_color,
                     components=self.imports,
                     controls=self.controllers,
@@ -400,6 +427,19 @@ class App(object):
         self.root = View(rows=rows, columns=columns, sidebar=sidebar,
                          background_color=background_color)
         self.routes = [Route(view=self.root, path='/', exact=True)]
+
+    def __getattr__(self, name):
+        """Export attributes from root view."""
+        if name == 'columns':
+            return self.root.columns
+        elif name == 'rows':
+            return self.root.rows
+        elif name == 'column_gap':
+            return self.root.column_gap
+        elif name == 'row_gap':
+            return self.root.row_gap
+        else:
+            raise AttributeError(name)
 
     def add(self, widget, row_start=None, column_start=None,
             row_end=None, column_end=None):
