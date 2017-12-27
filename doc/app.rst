@@ -34,3 +34,12 @@ The space used by each row and column can be changed through the following metho
 .. autoclass:: bowtie._app.Size
     :members:
     :undoc-members:
+
+Gap
+---
+
+Set the margin between the cells of the grid in the App.
+
+.. autoclass:: bowtie._app.Gap
+    :members:
+    :undoc-members:
