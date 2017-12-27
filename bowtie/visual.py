@@ -169,7 +169,7 @@ class SmartGrid(_Visual):
     _TEMPLATE = 'griddle.jsx'
     _COMPONENT = 'SmartGrid'
     _PACKAGE = 'griddle-react@1.10.1'
-    _ATTRS = None #('columns={{{columns}}} '
+    _ATTRS = None
 
     def __init__(self):
         """Create the table, optionally set the columns."""
@@ -295,7 +295,7 @@ class Plotly(_Visual):
             init=jdumps(self.init)
         )
 
-    ## Events
+    # Events
 
     def on_click(self):
         """React to Plotly click event.
@@ -362,7 +362,7 @@ class Plotly(_Visual):
         """
         return self.get_select
 
-    ## Commands
+    # Commands
 
     # pylint: disable=no-self-use
     def do_all(self, plot):

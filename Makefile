@@ -1,3 +1,5 @@
+.PHONY: test unit lint style eslint checkdocs coverage upload
+
 all: test
 
 test:
@@ -8,6 +10,9 @@ unit:
 
 lint:
 	py.test --pylint -m pylint --pylint-rcfile=pylintrc --pylint-error-types=RCWEF --ignore=doc
+
+style:
+	py.test --codestyle -m codestyle --ignore=doc
 
 eslint:
 	eslint bowtie/src/*.js{,x}

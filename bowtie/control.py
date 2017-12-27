@@ -98,6 +98,7 @@ class Link(_Controller):
         """
         pass
 
+
 class Upload(_Controller):
     """Draggable file upload widget."""
 
