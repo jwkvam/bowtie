@@ -10,6 +10,7 @@ numpy
 pandas
 plotlywrapper
 pydocstyle
+pycodestyle
 git+git://github.com/PyCQA/pylint@1.8#pylint
 pytest
 pytest-cov

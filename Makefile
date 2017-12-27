@@ -1,3 +1,5 @@
+.PHONY: test unit lint style eslint checkdocs coverage upload
+
 all: test
 
 test:

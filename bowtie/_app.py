@@ -607,7 +607,6 @@ class App(object):
                 template_src = os.path.join(file_dir, 'src', template)
                 shutil.copy(template_src, app)
 
-
         packages = set()
         for route in self.routes:
             # pylint: disable=protected-access

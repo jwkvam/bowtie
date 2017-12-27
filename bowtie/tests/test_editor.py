@@ -42,7 +42,6 @@ def test_markdown(chrome_driver, build_path):
     app.subscribe(write, text.on_change)
     app.build()
 
-
     env['PYTHONPATH'] = '{}:{}'.format(os.getcwd(), os.environ.get('PYTHONPATH', ''))
     server = subprocess.Popen(os.path.join(build_path, 'src/server.py'), env=env)
 
