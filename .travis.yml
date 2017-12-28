@@ -35,6 +35,7 @@ install:
     - sudo apt-get install xvfb
       # We do this conditionally because it saves us some downloading if the
       # version is the same.
+    - sudo apt-get install libenchant1c2a
     - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
       wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
       else
