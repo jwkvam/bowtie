@@ -62,12 +62,12 @@ install:
     - tar xf vale_0.9.0_Linux_64-bit.tar.gz
 
 script:
-    - make test
+    - cd doc && make spelling
+    - ./vale --glob='*.rst' doc
     - if [[ "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then
       make style;
       fi
-    - cd doc && make spelling
-    - ./vale --glob='*.rst' doc
+    - make test
 
 after_success:
     - codecov
