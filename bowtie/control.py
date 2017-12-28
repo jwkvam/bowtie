@@ -453,7 +453,7 @@ class Number(_Controller):
         maximum : number, optional
             Upper bound
         size : 'default', 'large', 'small', optional
-            Size of the textbox.
+            Size of the text box.
         caption : str, optional
             Heading text.
 
@@ -511,14 +511,14 @@ class Textbox(_Controller):
 
     def __init__(self, placeholder='Enter text', size='default', area=False,
                  autosize=False, disabled=False, caption=None):
-        """Create a textbox.
+        """Create a text box.
 
         Parameters
         ----------
         placeholder : str, optional
             Initial text that appears.
         size : 'default', 'large', 'small', optional
-            Size of the textbox.
+            Size of the text box.
         area : bool, optional
             Create a text area if True else create a single line input.
         autosize : bool, optional
@@ -547,18 +547,18 @@ class Textbox(_Controller):
 
     # pylint: disable=no-self-use
     def do_text(self, text):
-        """Set the text of the textbox.
+        """Set the text of the text box.
 
         Parameters
         ----------
         text : str
-            String of the textbox.
+            String of the text box.
 
         """
         return text
 
     def on_enter(self):
-        """Emit an event when enter is pressed in the textbox.
+        """Emit an event when enter is pressed in the text box.
 
         | **Payload:** ``str``
 

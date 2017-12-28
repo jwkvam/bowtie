@@ -38,6 +38,17 @@ One area that Bowtie lacks in is styling.
 Dash has powerful styling techniques.
 If you need custom styling in Bowtie, you'll need to edit the generated HTML by hand.
 
+Source Code
+~~~~~~~~~~~
+
+Bowtie is a monolithic repo.
+All the Python, Javascript, and HTML is in a single repo.
+Dash has several repos for its core functionality, React components, and HTML components.
+
+I believe Bowtie is easier to understand and maintain because everything is self-contained.
+Instead it's harder to use custom components with Bowtie since they need to be included in the library itself.
+This is decoupled in Dash so custom components are easier to develop.
+
 Other
 ~~~~~
 
@@ -47,7 +58,7 @@ There are many more however that I'll try to address eventually.
 Bokeh
 -----
 
-This is the oldest dashboarding tool in Python I'm aware of that's still maintained.
+This is the oldest dashboard tool in Python I'm aware of.
 I think it hasn't been adopted much because of poor visibility and documentation.
 To be fair I haven't used it a lot and only discovered it after I created Bowtie.
 

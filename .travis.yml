@@ -35,6 +35,7 @@ install:
     - sudo apt-get install xvfb
       # We do this conditionally because it saves us some downloading if the
       # version is the same.
+    - sudo apt-get install libenchant1c2a
     - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
       wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
       else
@@ -58,12 +59,16 @@ install:
     - unzip chromedriver_linux64.zip
     - chmod +x chromedriver
     - sudo mv -f chromedriver /usr/local/bin
+    - wget https://github.com/ValeLint/vale/releases/download/0.9.0/vale_0.9.0_Linux_64-bit.tar.gz
+    - tar xvf vale_0.9.0_Linux_64-bit.tar.gz
 
 script:
-    - make test
+    - cd doc && make spelling && cd ..
+    - ./vale --glob='*.rst' doc
     - if [[ "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then
       make style;
       fi
+    - make test
 
 after_success:
     - codecov

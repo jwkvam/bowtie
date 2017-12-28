@@ -17,7 +17,7 @@ It takes about 10 minutes to go through.
 Notable Features
 ----------------
 
-* Ships with many useful widgets including charts, tables, dropdowns, sliders, and markdown
+* Ships with many useful widgets including charts, tables, dropdown menus, sliders, and markdown
 * All widgets come with many events and commands for interaction
 * Hook into Plotly charts with click, selection, and hover events
 * Run functions periodically
