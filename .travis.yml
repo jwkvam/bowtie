@@ -60,10 +60,10 @@ install:
     - chmod +x chromedriver
     - sudo mv -f chromedriver /usr/local/bin
     - wget https://github.com/ValeLint/vale/releases/download/0.9.0/vale_0.9.0_Linux_64-bit.tar.gz
-    - tar xf vale_0.9.0_Linux_64-bit.tar.gz
+    - tar xvf vale_0.9.0_Linux_64-bit.tar.gz
 
 script:
-    - cd doc && make spelling
+    - cd doc && make spelling && cd ..
     - ./vale --glob='*.rst' doc
     - if [[ "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then
       make style;
