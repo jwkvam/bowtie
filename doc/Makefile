@@ -214,3 +214,7 @@ pseudoxml:
 	$(SPHINXBUILD) -b pseudoxml $(ALLSPHINXOPTS) $(BUILDDIR)/pseudoxml
 	@echo
 	@echo "Build finished. The pseudo-XML files are in $(BUILDDIR)/pseudoxml."
+
+.PHONY: spelling
+spelling:
+	$(SPHINXBUILD) -W -b spelling $(ALLSPHINXOPTS) $(BUILDDIR)/spelling

@@ -19,7 +19,7 @@ Install Node
 ------------
 
 Bowtie uses `npm <https://www.npmjs.com/>`_ and
-`yarn <https://yarnpkg.com/>`_ to install the javascript libraries
+`yarn <https://yarnpkg.com/>`_ to install the Javascript libraries
 and `webpack <https://webpack.js.org/>`_ to compile the application.
 We need to install both of these.
 

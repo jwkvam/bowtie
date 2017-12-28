@@ -87,7 +87,7 @@ class Table(_Visual):
               'resultsPerPage={{{results_per_page}}}')
 
     def __init__(self, data=None, columns=None, results_per_page=10):
-        """Create a table and optionally intialize the data.
+        """Create a table and optionally initialize the data.
 
         Parameters
         ----------

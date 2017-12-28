@@ -39,6 +39,7 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
+    'sphinxcontrib.spelling'
 ]
 
 graphviz_output_format = 'svg'
