@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 0.5.1 / 2017-12-31
+
+### Added
+
+  * Expose root `View` attributes as `App` attributes (#175).
+    You can access `columns` and `rows` from the `App` instance like pre v0.5.
+  * Added column and row gap which inserts space between rows and columns.
+    Accessible through `column_gap` and `row_gap` on `View` and `App` instances.
+  * Added Gitter chat (#179)
+  * Many documentation improvements.
+  * Drop Python 3.4 support following pandas lead.
+
 ## 0.5.0 / 2017-11-19
 
 ### Added
