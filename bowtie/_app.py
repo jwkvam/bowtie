@@ -182,7 +182,7 @@ class Size(object):
 class Gap(object):
     """Margin between rows or columns of the grid.
 
-    Can be accessed through ``.column_gap`` and ``.row_gap`` from App and View instances.
+    This is accessed through ``.row_gap`` and ``.column_gap`` from App and View instances.
     """
 
     def __init__(self):
