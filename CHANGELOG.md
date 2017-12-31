@@ -10,6 +10,7 @@
     Accessible through `column_gap` and `row_gap` on `View` and `App` instances.
   * Added Gitter chat (#179)
   * Many documentation improvements.
+  * Drop Python 3.4 support following pandas lead.
 
 ## 0.5.0 / 2017-11-19
 
