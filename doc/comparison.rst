@@ -38,6 +38,25 @@ One area that Bowtie lacks in is styling.
 Dash has powerful styling techniques.
 If you need custom styling in Bowtie, you'll need to edit the generated HTML by hand.
 
+Building and Running
+~~~~~~~~~~~~~~~~~~~~
+
+Running a Bowtie app consists of two steps: first "building" and then "running" the app.
+The build process figures out what Javascript libraries are needed, creates HTML and Javascript files,
+and finally uses Webpack to assemble it all into one Javascript file, ``bundle.js``.
+Once the Javascript bundle is built the Bowtie app can be run.
+
+Dash uses minified Javascript files and it doesn't pack them.
+Overall this likely results in a better user experience for Dash users since packing the Javascript doesn't
+result in a much smaller file or much better Javascript performance.
+
+Dynamic Layout
+~~~~~~~~~~~~~~
+
+Bowtie's layouts are currently defined at build time.
+Dash can dynamically change the layout.
+This is a feature that I would like to add into Bowtie.
+
 Source Code
 ~~~~~~~~~~~
 

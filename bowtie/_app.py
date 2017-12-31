@@ -122,6 +122,8 @@ class Span(object):
 class Size(object):
     """Size of rows and columns in grid.
 
+    This is accessed through ``.rows`` and ``.columns`` from App and View instances.
+
     This uses CSS's minmax function.
 
     The minmax() CSS function defines a size range greater than or equal
@@ -178,7 +180,10 @@ class Size(object):
 
 
 class Gap(object):
-    """Margin between rows or columns of the grid."""
+    """Margin between rows or columns of the grid.
+
+    This is accessed through ``.row_gap`` and ``.column_gap`` from App and View instances.
+    """
 
     def __init__(self):
         """Create a default margin of zero."""
