@@ -481,8 +481,8 @@ class App(object):
             Ending column for the widget.
 
         """
-        self.root.add(widget, row_start=row_start, column_start=column_start,
-                      row_end=row_end, column_end=column_end)
+        self._root.add(widget, row_start=row_start, column_start=column_start,
+                       row_end=row_end, column_end=column_end)
 
     def add_sidebar(self, widget):
         """Add a widget to the sidebar.
@@ -493,7 +493,7 @@ class App(object):
             Add this widget to the sidebar, it will be appended to the end.
 
         """
-        self.root.add_sidebar(widget)
+        self._root.add_sidebar(widget)
 
     def add_route(self, view, path, exact=True):
         """Add a view to the app.
@@ -506,9 +506,9 @@ class App(object):
 
         """
         assert path[0] == '/'
-        for route in self.routes:
+        for route in self._routes:
             assert path != route.path, 'Cannot use the same path twice'
-        self.routes.append(Route(view=view, path=path, exact=exact))
+        self._routes.append(Route(view=view, path=path, exact=exact))
 
     def respond(self, pager, func):
         """Call a function in response to a page.
@@ -532,7 +532,7 @@ class App(object):
         >>> app.respond(pager, callback)
 
         """
-        self.pages[pager] = func.__name__
+        self._pages[pager] = func.__name__
 
     def subscribe(self, func, event, *events):
         """Call a function in response to an event.
@@ -580,10 +580,10 @@ class App(object):
                          func2=func.__name__,
                          obj=event[1]
                      ), Warning)
-            self.uploads[uuid] = func.__name__
+            self._uploads[uuid] = func.__name__
 
         for evt in all_events:
-            self.subscriptions[evt].append((all_events, func.__name__))
+            self._subscriptions[evt].append((all_events, func.__name__))
 
     def load(self, func):
         """Call a function on page load.
@@ -607,7 +607,7 @@ class App(object):
             Function to be called.
 
         """
-        self.schedules.append(_Schedule(seconds, func.__name__))
+        self._schedules.append(_Schedule(seconds, func.__name__))
 
     def build(self):
         """Compile the Bowtie application."""
@@ -623,10 +623,10 @@ class App(object):
         indexhtml = env.get_template('index.html.j2')
         indexjsx = env.get_template('index.jsx.j2')
 
-        src, app, templates = create_directories(directory=self.directory)
+        src, app, templates = create_directories(directory=self._directory)
 
         webpack_src = os.path.join(file_dir, 'src/webpack.config.js')
-        shutil.copy(webpack_src, self.directory)
+        shutil.copy(webpack_src, self._directory)
 
         server_path = os.path.join(src, server.name[:-3])
         # [1] grabs the parent stack and [1] grabs the filename
@@ -634,20 +634,20 @@ class App(object):
         with open(server_path, 'w') as f:
             f.write(
                 server.render(
-                    socketio=self.socketio,
+                    socketio=self._socketio,
                     basic_auth=self._basic_auth,
-                    username=self.username,
-                    password=self.password,
+                    username=self._username,
+                    password=self._password,
                     source_module=os.path.basename(source_filename)[:-3],
-                    subscriptions=self.subscriptions,
-                    uploads=self.uploads,
-                    schedules=self.schedules,
-                    initial=self.init,
-                    routes=self.routes,
-                    pages=self.pages,
-                    host="'{}'".format(self.host),
-                    port=self.port,
-                    debug=self.debug
+                    subscriptions=self._subscriptions,
+                    uploads=self._uploads,
+                    schedules=self._schedules,
+                    initial=self._init,
+                    routes=self._routes,
+                    pages=self._pages,
+                    host="'{}'".format(self._host),
+                    port=self._port,
+                    debug=self._debug
                 )
             )
         perms = os.stat(server_path)
@@ -655,20 +655,20 @@ class App(object):
 
         with open(os.path.join(templates, indexhtml.name[:-3]), 'w') as f:
             f.write(
-                indexhtml.render(title=self.title)
+                indexhtml.render(title=self._title)
             )
 
         template_src = os.path.join(file_dir, 'src', 'progress.jsx')
         shutil.copy(template_src, app)
         template_src = os.path.join(file_dir, 'src', 'utils.js')
         shutil.copy(template_src, app)
-        for route in self.routes:
+        for route in self._routes:
             for template in route.view.templates:
                 template_src = os.path.join(file_dir, 'src', template)
                 shutil.copy(template_src, app)
 
         packages = set()
-        for route in self.routes:
+        for route in self._routes:
             # pylint: disable=protected-access
             route.view._render(app, env)
             packages |= route.view.packages
@@ -678,33 +678,33 @@ class App(object):
                 indexjsx.render(
                     # pylint: disable=protected-access
                     maxviewid=View._NEXT_UUID,
-                    socketio=self.socketio,
-                    pages=self.pages,
-                    routes=self.routes
+                    socketio=self._socketio,
+                    pages=self._pages,
+                    routes=self._routes
                 )
             )
 
-        init = Popen('yarn init -y', shell=True, cwd=self.directory).wait()
+        init = Popen('yarn init -y', shell=True, cwd=self._directory).wait()
         if init != 0:
             raise YarnError('Error running "yarn init -y"')
         packages.discard(None)
 
         packagejson = os.path.join(file_dir, 'src/package.json')
-        shutil.copy(packagejson, self.directory)
+        shutil.copy(packagejson, self._directory)
 
-        install = Popen('yarn install', shell=True, cwd=self.directory).wait()
+        install = Popen('yarn install', shell=True, cwd=self._directory).wait()
         if install > 1:
             raise YarnError('Error install node packages')
 
         packagestr = ' '.join(packages)
         install = Popen('yarn add {}'.format(packagestr),
-                        shell=True, cwd=self.directory).wait()
+                        shell=True, cwd=self._directory).wait()
         if install > 1:
             raise YarnError('Error install node packages')
 
         elif install == 1:
             print('Yarn error but trying to continue build')
-        dev = Popen('webpack -d', shell=True, cwd=self.directory).wait()
+        dev = Popen('webpack -d', shell=True, cwd=self._directory).wait()
         if dev != 0:
             raise WebpackError('Error building with webpack')
 
