@@ -663,7 +663,7 @@ class App(object):
         template_src = os.path.join(file_dir, 'src', 'utils.js')
         shutil.copy(template_src, app)
         for route in self._routes:
-            for template in route.view.templates:
+            for template in route.view._templates:
                 template_src = os.path.join(file_dir, 'src', template)
                 shutil.copy(template_src, app)
 
@@ -671,7 +671,7 @@ class App(object):
         for route in self._routes:
             # pylint: disable=protected-access
             route.view._render(app, env)
-            packages |= route.view.packages
+            packages |= route.view._packages
 
         with open(os.path.join(app, indexjsx.name[:-3]), 'w') as f:
             f.write(
