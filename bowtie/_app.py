@@ -217,22 +217,38 @@ class View(object):
 
     def __init__(self, rows=1, columns=1, sidebar=True,
                  background_color='White'):
-        """Create a new grid."""
+        """Create a new grid.
+
+        Parameters
+        ----------
+        row : int, optional
+            Number of rows in the grid.
+        columns : int, optional
+            Number of columns in the grid.
+        sidebar : bool, optional
+            Enable a sidebar for control widgets.
+        background_color : str, optional
+            Background color of the control pane.
+
+        """
         self._uuid = View._next_uuid()
-        self.name = 'view{}'.format(self._uuid)
-        self.used = OrderedDict(((key, False) for key in product(range(rows), range(columns))))
+        self._used = OrderedDict(((key, False) for key in product(range(rows), range(columns))))
         self.column_gap = Gap()
         self.row_gap = Gap()
         self.rows = [Size() for _ in range(rows)]
         self.columns = [Size() for _ in range(columns)]
         self.sidebar = sidebar
         self.background_color = background_color
-        self.packages = set()
-        self.templates = set()
-        self.imports = set()
-        self.controllers = []
-        self.widgets = []
-        self.spans = []
+        self._packages = set()
+        self._templates = set()
+        self._imports = set()
+        self._controllers = []
+        self._widgets = []
+        self._spans = []
+
+    @property
+    def _name(self):
+        return 'view{}'.format(self._uuid)
 
     def add(self, widget, row_start=None, column_start=None,
             row_end=None, column_end=None):
@@ -269,26 +285,26 @@ class View(object):
             raise GridIndexError('Invalid Column Index')
 
         # pylint: disable=protected-access
-        self.packages.add(widget._PACKAGE)
-        self.templates.add(widget._TEMPLATE)
-        self.imports.add(_Import(component=widget._COMPONENT,
-                                 module=widget._TEMPLATE[:widget._TEMPLATE.find('.')]))
+        self._packages.add(widget._PACKAGE)
+        self._templates.add(widget._TEMPLATE)
+        self._imports.add(_Import(component=widget._COMPONENT,
+                                  module=widget._TEMPLATE[:widget._TEMPLATE.find('.')]))
 
         if row_start is None or column_start is None:
             row, col = None, None
-            for (row, col), use in self.used.items():
+            for (row, col), use in self._used.items():
                 if not use:
                     break
             else:
                 raise NoUnusedCellsError()
             span = Span(row, col)
-            self.used[row, col] = True
+            self._used[row, col] = True
         elif row_end is None and column_end is None:
-            if self.used[row_start, column_start]:
+            if self._used[row_start, column_start]:
                 raise UsedCellsError('Cell at {}, {} is already used.'
                                      .format(row_start, column_start))
             span = Span(row_start, column_start)
-            self.used[row_start, column_start] = True
+            self._used[row_start, column_start] = True
         else:
             if row_end is None:
                 row_end = row_start
@@ -297,16 +313,16 @@ class View(object):
 
             for row, col in product(range(row_start, row_end + 1),
                                     range(column_start, column_end + 1)):
-                if self.used[row, col]:
+                if self._used[row, col]:
                     raise UsedCellsError('Cell at {}, {} is already used.'.format(row, col))
 
             for row, col in product(range(row_start, row_end + 1),
                                     range(column_start, column_end + 1)):
-                self.used[row_start, column_start] = True
+                self._used[row_start, column_start] = True
             span = Span(row_start, column_start, row_end, column_end)
 
-        self.widgets.append(widget)
-        self.spans.append(span)
+        self._widgets.append(widget)
+        self._spans.append(span)
 
     def add_sidebar(self, widget):
         """Add a widget to the sidebar.
@@ -323,12 +339,12 @@ class View(object):
         assert isinstance(widget, Component)
 
         # pylint: disable=protected-access
-        self.packages.add(widget._PACKAGE)
-        self.templates.add(widget._TEMPLATE)
-        self.imports.add(_Import(component=widget._COMPONENT,
-                                 module=widget._TEMPLATE[:widget._TEMPLATE.find('.')]))
-        self.controllers.append(_Control(instantiate=widget._instantiate,
-                                         caption=getattr(widget, 'caption', None)))
+        self._packages.add(widget._PACKAGE)
+        self._templates.add(widget._TEMPLATE)
+        self._imports.add(_Import(component=widget._COMPONENT,
+                                  module=widget._TEMPLATE[:widget._TEMPLATE.find('.')]))
+        self._controllers.append(_Control(instantiate=widget._instantiate,
+                                          caption=getattr(widget, 'caption', None)))
 
     def _render(self, path, env):
         """TODO: Docstring for _render.
@@ -345,14 +361,14 @@ class View(object):
         jsx = env.get_template('view.jsx.j2')
 
         # pylint: disable=protected-access
-        self.widgets = [w._instantiate for w in self.widgets]
+        self._widgets = [w._instantiate for w in self._widgets]
 
         columns = []
         if self.sidebar:
             columns.append('18em')
         columns += self.columns
 
-        with open(os.path.join(path, 'view{}.jsx'.format(self._uuid)), 'w') as f:
+        with open(os.path.join(path, self._name), 'w') as f:
             f.write(
                 jsx.render(
                     uuid=self._uuid,
@@ -362,9 +378,9 @@ class View(object):
                     column_gap=self.column_gap,
                     row_gap=self.row_gap,
                     background_color=self.background_color,
-                    components=self.imports,
-                    controls=self.controllers,
-                    widgets=zip(self.widgets, self.spans)
+                    components=self._imports,
+                    controls=self._controllers,
+                    widgets=zip(self._widgets, self._spans)
                 )
             )
 
@@ -412,26 +428,25 @@ class App(object):
             Enable debugging in Flask. Disable in production!
 
         """
-        self.background_color = background_color
-        self.basic_auth = basic_auth
-        self.debug = debug
-        self.directory = directory
-        self.functions = []
-        self.host = host
-        self.imports = set()
-        self.init = None
-        self.password = password
-        self.port = port
-        self.socketio = socketio
-        self.schedules = []
-        self.subscriptions = defaultdict(list)
-        self.pages = {}
-        self.title = title
-        self.username = username
-        self.uploads = {}
-        self.root = View(rows=rows, columns=columns, sidebar=sidebar,
-                         background_color=background_color)
-        self.routes = [Route(view=self.root, path='/', exact=True)]
+        self._basic_auth = basic_auth
+        self._debug = debug
+        self._directory = directory
+        self._functions = []
+        self._host = host
+        self._imports = set()
+        self._init = None
+        self._password = password
+        self._port = port
+        self._socketio = socketio
+        self._schedules = []
+        self._subscriptions = defaultdict(list)
+        self._pages = {}
+        self._title = title
+        self._username = username
+        self._uploads = {}
+        self._root = View(rows=rows, columns=columns, sidebar=sidebar,
+                          background_color=background_color)
+        self._routes = [Route(view=self._root, path='/', exact=True)]
 
     def __getattr__(self, name):
         """Export attributes from root view."""
@@ -579,7 +594,7 @@ class App(object):
             Function to be called.
 
         """
-        self.init = func.__name__
+        self._init = func.__name__
 
     def schedule(self, seconds, func):
         """Call a function periodically.
@@ -620,7 +635,7 @@ class App(object):
             f.write(
                 server.render(
                     socketio=self.socketio,
-                    basic_auth=self.basic_auth,
+                    basic_auth=self._basic_auth,
                     username=self.username,
                     password=self.password,
                     source_module=os.path.basename(source_filename)[:-3],
