@@ -451,13 +451,13 @@ class App(object):
     def __getattr__(self, name):
         """Export attributes from root view."""
         if name == 'columns':
-            return self.root.columns
+            return self._root.columns
         elif name == 'rows':
-            return self.root.rows
+            return self._root.rows
         elif name == 'column_gap':
-            return self.root.column_gap
+            return self._root.column_gap
         elif name == 'row_gap':
-            return self.root.row_gap
+            return self._root.row_gap
         else:
             raise AttributeError(name)
 
