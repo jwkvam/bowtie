@@ -248,7 +248,7 @@ class View(object):
 
     @property
     def _name(self):
-        return 'view{}'.format(self._uuid)
+        return 'view{}.jsx'.format(self._uuid)
 
     def add(self, widget, row_start=None, column_start=None,
             row_end=None, column_end=None):
@@ -572,11 +572,11 @@ class App(object):
         if event[0].split(SEPARATOR)[1] == 'upload':
             # evt = event[0]
             uuid = event[0].split(SEPARATOR)[0]
-            if uuid in self.uploads:
+            if uuid in self._uploads:
                 warnings.warn(
                     ('Overwriting function "{func1}" with function '
                      '"{func2}" for upload object "{obj}".').format(
-                         func1=self.uploads[uuid],
+                         func1=self._uploads[uuid],
                          func2=func.__name__,
                          obj=event[1]
                      ), Warning)
