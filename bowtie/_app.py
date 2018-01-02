@@ -663,6 +663,7 @@ class App(object):
         template_src = os.path.join(file_dir, 'src', 'utils.js')
         shutil.copy(template_src, app)
         for route in self._routes:
+            # pylint: disable=protected-access
             for template in route.view._templates:
                 template_src = os.path.join(file_dir, 'src', template)
                 shutil.copy(template_src, app)
