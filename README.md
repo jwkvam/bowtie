@@ -1,6 +1,7 @@
 # Bowtie
 
 [![Join the chat at https://gitter.im/bowtie-py/Lobby](https://badges.gitter.im/bowtie-py/Lobby.svg)](https://gitter.im/bowtie-py/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Forum](https://img.shields.io/badge/-Google%20Group-blue.svg)](https://groups.google.com/forum/#!forum/bowtie-py)
 [![Documentation Status](https://readthedocs.org/projects/bowtie-py/badge/?version=latest)](http://bowtie-py.readthedocs.io/en/latest/?badge=latest)
 [![Build Status](https://travis-ci.org/jwkvam/bowtie.svg?branch=master)](https://travis-ci.org/jwkvam/bowtie)
 [![PyPI version](https://badge.fury.io/py/bowtie.svg)](https://badge.fury.io/py/bowtie)
