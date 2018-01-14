@@ -6,6 +6,10 @@ import sys
 import traceback
 from functools import wraps
 
+import eventlet
+{% if debug %}
+eventlet.monkey_patch(thread=True, time=True)
+{% endif %}
 from builtins import bytes
 import click
 import msgpack
@@ -13,7 +17,6 @@ import flask
 from flask import (Flask, render_template, make_response, copy_current_request_context,
                    jsonify, request, Response)
 from flask_socketio import SocketIO
-import eventlet
 
 
 class GetterNotDefined(AttributeError):
@@ -194,18 +197,21 @@ def _(*args):
 @click.option('--host', '-h', default={{host}}, help='Host IP')
 @click.option('--port', '-p', default={{port}}, help='port number')
 def main(host, port):
-    scheds = []
-    {% for schedule in schedules %}
-    sched = Scheduler({{ schedule.seconds }},
-                      {{ source_module }}.{{ schedule.function }})
-    scheds.append(sched)
-    {% endfor %}
+    scheduled = not app.debug or os.environ.get('WERKZEUG_RUN_MAIN') == 'true'
+    if scheduled:
+        scheds = []
+        {% for schedule in schedules %}
+        sched = Scheduler({{ schedule.seconds }},
+                          {{ source_module }}.{{ schedule.function }})
+        scheds.append(sched)
+        {% endfor %}
 
-    for sched in scheds:
-        sched.start()
+        for sched in scheds:
+            sched.start()
     socketio.run(app, host=host, port=port)
-    for sched in scheds:
-        sched.stop()
+    if scheduled:
+        for sched in scheds:
+            sched.stop()
 
 if __name__ == '__main__':
     main()
