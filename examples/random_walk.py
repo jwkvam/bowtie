@@ -29,7 +29,8 @@ def walk():
 @command
 def construct():
     from bowtie import App
-    app = App(debug=True)
+    # a bug requires debug=False for scheduled tasks to work
+    app = App(debug=False)
     app.add_sidebar(sigma)
     app.add(mainplot)
     app.schedule(0.1, walk)
