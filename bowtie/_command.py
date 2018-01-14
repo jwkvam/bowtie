@@ -7,6 +7,9 @@ Reference
 https://gist.github.com/carlsmith/800cbe3e11f630ac8aa0
 """
 
+from __future__ import print_function
+
+import os
 import sys
 import inspect
 from subprocess import call
@@ -58,8 +61,12 @@ def command(func):
     @click.pass_context
     def serve(ctx, extra):
         """Serve the Bowtie app."""
-        line = ('./{}/src/server.py'.format(ctx.obj),) + extra
-        call(line)
+        filepath = './{}/src/server.py'.format(ctx.obj)
+        if os.path.isfile(filepath):
+            line = (filepath,) + extra
+            call(line)
+        else:
+            print("Cannot find '{}'. Did you build the app?".format(filepath))
 
     @cmd.command(context_settings=dict(ignore_unknown_options=True),
                  add_help_option=False)
