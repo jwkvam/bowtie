@@ -4,6 +4,7 @@
 Example Bowtie App.
 """
 
+from bowtie import App
 from bowtie.control import Nouislider
 from bowtie.visual import Plotly
 from bowtie import command
@@ -12,6 +13,7 @@ import numpy as np
 from numpy import random as rng
 import plotlywrapper as pw
 
+app = App(debug=False)
 
 sigma = Nouislider(caption='Sigma', start=1, minimum=0.1, maximum=50)
 mainplot = Plotly()
@@ -34,4 +36,5 @@ def construct():
     app.add(mainplot)
     app.schedule(0.1, walk)
 
-    app.build()
+    # app.build()
+    return app
