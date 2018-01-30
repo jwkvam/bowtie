@@ -29,7 +29,8 @@ var config = {
                         'react', 'stage-0'],
                     plugins: [
                         'transform-object-rest-spread',
-                    ]
+                    ],
+                    babelrc: false
                 }
             }, {
                 test: /\.scss$/,
