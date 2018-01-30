@@ -26,7 +26,7 @@ visuals = [getattr(visual, comp)() for comp in dir(visual)
 def test_components(chrome_driver, build_path):
     """Tests plotly."""
 
-    app = App(rows=len(visuals), directory=build_path)
+    app = App(rows=len(visuals)) #, directory=build_path)
     for controller in controllers:
         app.add_sidebar(controller)
 

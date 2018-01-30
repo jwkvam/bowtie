@@ -35,7 +35,7 @@ def write(txt):
 # pylint: disable=unused-argument
 def test_markdown(chrome_driver, build_path):
     """Test markdown and text widgets."""
-    app = App(directory=build_path)
+    app = App() #directory=build_path)
     app.add(mark)
     app.add_sidebar(side)
     app.add_sidebar(text)

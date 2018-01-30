@@ -42,7 +42,7 @@ def callback(*args):
 def test_plotly(chrome_driver, build_path):
     """Tests plotly."""
 
-    app = App(directory=build_path)
+    app = App() #directory=build_path)
     app.add(viz)
     app.add_sidebar(ctrl)
     app.add_sidebar(ctrl2)

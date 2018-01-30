@@ -5,7 +5,6 @@ from __future__ import print_function
 
 import os
 from itertools import product
-from glob import glob
 import inspect
 import shutil
 import stat
@@ -707,7 +706,6 @@ def create_directories():
     src = os.path.join(_DIRECTORY, 'src')
     templates = os.path.join(src, 'templates')
     app = os.path.join(src, 'app')
-    static = os.path.join(src, 'static')
     makedirs(app, exist_ok=True)
     makedirs(templates, exist_ok=True)
     return src, app, templates

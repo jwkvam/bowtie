@@ -33,15 +33,13 @@ def command(func):
     application and turn it into a command line interface.
     """
     @click.group(options_metavar='[--help]')
-    @click.pass_context
-    def cmd(ctx):
+    def cmd():
         """Bowtie CLI to help build and run your app."""
         pass
 
     # pylint: disable=unused-variable
     @cmd.command(add_help_option=False)
-    @click.pass_context
-    def build(ctx):
+    def build():
         """Write the app, downloads the packages, and bundles it with Webpack."""
         nargs = numargs(func)
         if nargs == 0:
@@ -51,13 +49,13 @@ def command(func):
                 'Decorated function "{}" should have no arguments, it has {}.'
                 .format(func.__name__, nargs)
             )
+        # pylint:disable=protected-access
         app._build()
 
     @cmd.command(context_settings=dict(ignore_unknown_options=True),
                  add_help_option=False)
     @click.argument('extra', nargs=-1, type=click.UNPROCESSED)
-    @click.pass_context
-    def run(ctx, extra):
+    def run(extra):
         """Write the app, downloads the packages, and bundles it with Webpack."""
         nargs = numargs(func)
         if nargs == 0:
@@ -68,6 +66,7 @@ def command(func):
                 .format(func.__name__, nargs)
             )
         print('running')
+        # pylint:disable=protected-access
         app._build()
         filepath = './{}/src/server.py'.format(_DIRECTORY)
         line = (filepath,) + extra
@@ -76,8 +75,7 @@ def command(func):
     @cmd.command(context_settings=dict(ignore_unknown_options=True),
                  add_help_option=False)
     @click.argument('extra', nargs=-1, type=click.UNPROCESSED)
-    @click.pass_context
-    def serve(ctx, extra):
+    def serve(extra):
         """Serve the Bowtie app."""
         filepath = './{}/src/server.py'.format(_DIRECTORY)
         if os.path.isfile(filepath):
@@ -89,8 +87,7 @@ def command(func):
     @cmd.command(context_settings=dict(ignore_unknown_options=True),
                  add_help_option=False)
     @click.argument('extra', nargs=-1, type=click.UNPROCESSED)
-    @click.pass_context
-    def dev(ctx, extra):
+    def dev(extra):
         """Recompile the app for development."""
         line = (_WEBPACK, '-d') + extra
         call(line, cwd=_DIRECTORY)
@@ -98,8 +95,7 @@ def command(func):
     @cmd.command(context_settings=dict(ignore_unknown_options=True),
                  add_help_option=False)
     @click.argument('extra', nargs=-1, type=click.UNPROCESSED)
-    @click.pass_context
-    def prod(ctx, extra):
+    def prod(extra):
         """Recompile the app for production."""
         line = (_WEBPACK, '--define', 'process.env.NODE_ENV="production"', '--progress') + extra
         call(line, cwd=_DIRECTORY)
@@ -112,7 +108,7 @@ def command(func):
             arg = sys.argv[1:]
         except IndexError:
             arg = ('--help',)
-        # pylint: disable=no-value-for-parameter
+        # pylint: disable=too-many-function-args
         sys.exit(cmd(arg))
 
     return cmd
