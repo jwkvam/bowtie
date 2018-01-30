@@ -238,7 +238,7 @@ class View(object):
         self.spans = []
 
     @property
-    def name(self):
+    def _name(self):
         return 'view{}.jsx'.format(self._uuid)
 
     def add(self, widget, row_start=None, column_start=None,
@@ -359,7 +359,7 @@ class View(object):
             columns.append('18em')
         columns += self.columns
 
-        with open(os.path.join(path, self.name), 'w') as f:
+        with open(os.path.join(path, self._name), 'w') as f:
             f.write(
                 jsx.render(
                     uuid=self._uuid,
