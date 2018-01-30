@@ -710,5 +710,4 @@ def create_directories():
     static = os.path.join(src, 'static')
     makedirs(app, exist_ok=True)
     makedirs(templates, exist_ok=True)
-    makedirs(static, exist_ok=True)
     return src, app, templates
