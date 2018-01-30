@@ -24,6 +24,7 @@ _Control = namedtuple('_Control', ['instantiate', 'caption'])
 _Schedule = namedtuple('_Schedule', ['seconds', 'function'])
 
 _DIRECTORY = 'build'
+_WEBPACK = './node_modules/bin/webpack'
 
 
 class YarnError(Exception):
@@ -406,8 +407,6 @@ class App(object):
             Password for basic authentication.
         background_color : str, optional
             Background color of the control pane.
-        directory : str, optional
-            Location where app is compiled.
         host : str, optional
             Host IP address.
         port : int, optional
@@ -605,32 +604,7 @@ class App(object):
         """
         self.schedules.append(_Schedule(seconds, func.__name__))
 
-    def _translate(self):
-        init = Popen('yarn init -y', shell=True, cwd=_DIRECTORY).wait()
-        if init != 0:
-            raise YarnError('Error running "yarn init -y"')
-
-        packages = [
-            'babel-cli',
-            'babel-preset-react',
-            'babel-preset-stage-0',
-            'babel-preset-env'
-        ]
-
-        install = Popen('yarn add {}'.format(' '.join(packages)),
-                        shell=True, cwd=_DIRECTORY).wait()
-        if install > 1:
-            raise YarnError('Error install node packages')
-
-        for jsx in glob('{}/src/app/*.js*'.format(_DIRECTORY)):
-            jsx = os.path.basename(jsx)
-            name = jsx.split('.')[0]
-            print(jsx, name)
-            Popen(('./node_modules/.bin/babel '
-                   'src/app/{} --out-file src/static/{}.js').format(jsx, name),
-                  shell=True, cwd=_DIRECTORY).wait()
-
-    def _write_templates(self, compiled=False):
+    def _write_templates(self):
         server = self._jinjaenv.get_template('server.py.j2')
         indexhtml = self._jinjaenv.get_template('index.html.j2')
         indexjsx = self._jinjaenv.get_template('index.jsx.j2')
@@ -659,27 +633,18 @@ class App(object):
                     debug=self.debug
                 )
             )
+
         perms = os.stat(server_path)
         os.chmod(server_path, perms.st_mode | stat.S_IEXEC)
 
-        if not compiled:
-            shutil.copy(os.path.join(self._package_dir, 'src', '.babelrc'), _DIRECTORY)
-            shutil.copy(os.path.join(self._package_dir, 'src', '.babelrc'), '.')
-
-        scripts = ['progress.js', 'utils.js', 'index.js']
         template_src = os.path.join(self._package_dir, 'src', 'progress.jsx')
         shutil.copy(template_src, app)
         template_src = os.path.join(self._package_dir, 'src', 'utils.js')
         shutil.copy(template_src, app)
         for route in self.routes:
             for template in route.view.templates:
-                if template.endswith('.jsx'):
-                    scripts.append(template[:-1])
-                else:
-                    scripts.append(template)
                 template_src = os.path.join(self._package_dir, 'src', template)
                 shutil.copy(template_src, app)
-
 
         packages = set()
         for route in self.routes:
@@ -689,12 +654,9 @@ class App(object):
             packages |= route.view.packages
 
         with open(os.path.join(templates, indexhtml.name[:-3]), 'w') as f:
-            if compiled:
-                scripts = ['bundle.js']
             f.write(
                 indexhtml.render(
                     title=self.title,
-                    scripts=scripts
                 )
             )
 
@@ -709,10 +671,9 @@ class App(object):
                 )
             )
 
-
     def _build(self):
         """Compile the Bowtie application."""
-        self._write_templates(compiled=True)
+        self._write_templates()
         webpack_src = os.path.join(self._package_dir, 'src/webpack.config.js')
         shutil.copy(webpack_src, _DIRECTORY)
 
@@ -736,7 +697,7 @@ class App(object):
 
         elif install == 1:
             print('Yarn error but trying to continue build')
-        dev = Popen('webpack -d', shell=True, cwd=_DIRECTORY).wait()
+        dev = Popen('{} -d'.format(_WEBPACK), shell=True, cwd=_DIRECTORY).wait()
         if dev != 0:
             raise WebpackError('Error building with webpack')
 

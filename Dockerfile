@@ -1,4 +1,4 @@
-FROM node:8.9
+FROM debian:stable
 
 LABEL maintainer="jwkvam@gmail.com"
 
@@ -12,18 +12,16 @@ RUN apt-get update --fix-missing && \
 # miniconda archive
 # https://repo.continuum.io/miniconda/
 RUN echo "export PATH=/opt/conda/bin:$PATH" > /etc/profile.d/conda.sh && \
-    curl -L https://repo.continuum.io/miniconda/Miniconda3-4.3.30-Linux-x86_64.sh -o ~/miniconda.sh && \
+    curl -L https://repo.continuum.io/miniconda/Miniconda3-4.3.31-Linux-x86_64.sh -o ~/miniconda.sh && \
     /bin/bash ~/miniconda.sh -b -p /opt/conda && \
     rm ~/miniconda.sh
 
 ENV PATH /opt/conda/bin:$PATH
 
-RUN npm install -g webpack@3.10.0 yarn
+RUN conda install -y yarn
 RUN pip install flit
 
 WORKDIR /bowtie
 COPY . /bowtie
 RUN flit install
 WORKDIR /work
-
-ENTRYPOINT [ "sleep", "infinity" ]

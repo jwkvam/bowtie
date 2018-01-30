@@ -17,7 +17,7 @@ from subprocess import call
 import click
 
 from bowtie._compat import numargs
-from bowtie._app import _DIRECTORY
+from bowtie._app import _DIRECTORY, _WEBPACK
 
 
 class WrongNumberOfArguments(TypeError):
@@ -51,7 +51,6 @@ def command(func):
                 'Decorated function "{}" should have no arguments, it has {}.'
                 .format(func.__name__, nargs)
             )
-        print('building')
         app._build()
 
     @cmd.command(context_settings=dict(ignore_unknown_options=True),
@@ -69,11 +68,10 @@ def command(func):
                 .format(func.__name__, nargs)
             )
         print('running')
-        app._write_templates()
-        app._translate()
-        # filepath = './{}/src/server.py'.format(_DIRECTORY)
-        # line = (filepath,) + extra
-        # call(line)
+        app._build()
+        filepath = './{}/src/server.py'.format(_DIRECTORY)
+        line = (filepath,) + extra
+        call(line)
 
     @cmd.command(context_settings=dict(ignore_unknown_options=True),
                  add_help_option=False)
@@ -94,7 +92,7 @@ def command(func):
     @click.pass_context
     def dev(ctx, extra):
         """Recompile the app for development."""
-        line = ('webpack', '-d') + extra
+        line = (_WEBPACK, '-d') + extra
         call(line, cwd=_DIRECTORY)
 
     @cmd.command(context_settings=dict(ignore_unknown_options=True),
@@ -103,7 +101,7 @@ def command(func):
     @click.pass_context
     def prod(ctx, extra):
         """Recompile the app for production."""
-        line = ('webpack', '--define', 'process.env.NODE_ENV="production"', '--progress') + extra
+        line = (_WEBPACK, '--define', 'process.env.NODE_ENV="production"', '--progress') + extra
         call(line, cwd=_DIRECTORY)
 
     locale = inspect.stack()[1][0].f_locals
