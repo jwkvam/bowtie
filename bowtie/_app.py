@@ -24,7 +24,7 @@ _Control = namedtuple('_Control', ['instantiate', 'caption'])
 _Schedule = namedtuple('_Schedule', ['seconds', 'function'])
 
 _DIRECTORY = 'build'
-_WEBPACK = './node_modules/bin/webpack'
+_WEBPACK = './node_modules/.bin/webpack'
 
 
 class YarnError(Exception):
@@ -650,7 +650,6 @@ class App(object):
         for route in self.routes:
             # pylint: disable=protected-access
             route.view._render(app, self._jinjaenv)
-            scripts.append(route.view.name[:-1])
             packages |= route.view.packages
 
         with open(os.path.join(templates, indexhtml.name[:-3]), 'w') as f:
@@ -670,10 +669,11 @@ class App(object):
                     routes=self.routes
                 )
             )
+        return packages
 
     def _build(self):
         """Compile the Bowtie application."""
-        self._write_templates()
+        packages = self._write_templates()
         webpack_src = os.path.join(self._package_dir, 'src/webpack.config.js')
         shutil.copy(webpack_src, _DIRECTORY)
 

@@ -18,6 +18,7 @@ RUN echo "export PATH=/opt/conda/bin:$PATH" > /etc/profile.d/conda.sh && \
 
 ENV PATH /opt/conda/bin:$PATH
 
+RUN conda config --add channels conda-forge 
 RUN conda install -y yarn
 RUN pip install flit
 

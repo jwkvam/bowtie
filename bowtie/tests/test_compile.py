@@ -21,8 +21,10 @@ def test_build(build_path):
     ctrl = Nouislider()
     viz = Plotly()
 
-    app = App(directory=build_path)
+    # app = App(directory=build_path)
+    app = App()
     app.add_sidebar(ctrl)
     app.add(viz)
     app.subscribe(callback, ctrl.on_change)
-    app.build()
+    # pylint: disable=protected-access
+    app._build()
