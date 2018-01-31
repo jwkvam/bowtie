@@ -1,11 +1,8 @@
 Using Docker
 ============
 
-Bowtie depends on
-`yarn <https://yarnpkg.com/>`_
-and
-`webpack <https://webpack.js.org/>`_
-which are tools from the Node ecosystem.
+Bowtie depends on `yarn <https://yarnpkg.com/>`_ to
+manage Node packages.
 If you would prefer to not install these on your system you
 can use the provided Dockerfile to build your Bowtie app.
 The file provides a conda environment with python 3.6.

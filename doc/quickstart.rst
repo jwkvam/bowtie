@@ -15,24 +15,31 @@ This quick start will show how to do the following:
 * How to deploy to Heroku.
 
 
-Install Node
+Install Yarn
 ------------
 
-Bowtie uses `npm <https://www.npmjs.com/>`_ and
-`yarn <https://yarnpkg.com/>`_ to install the Javascript libraries
-and `webpack <https://webpack.js.org/>`_ to compile the application.
-We need to install both of these.
+Bowtie uses `Yarn <https://yarnpkg.com/>`_ to manage the Javascript libraries
+We need to install it before we can use Bowtie.
+
+Conda Install
+^^^^^^^^^^^^^
+
+Yarn is available through conda-forge::
+
+    conda install -c conda-forge yarn
 
 MacOS Install
 ^^^^^^^^^^^^^
 
-On MacOS, I recommend using `Homebrew <http://brew.sh/>`_ to get npm::
+Yarn is available through Homebrew::
 
-    brew install node
+    brew install yarn
 
-Then we can use npm to install webpack and yarn globally::
+Other Environments
+^^^^^^^^^^^^^^^^^^
 
-    npm install -g webpack yarn
+For other environments please follow the `install instructions <https://yarnpkg.com/en/docs/install>`_
+on the official website.
 
 Install Bowtie
 --------------
