@@ -3,6 +3,7 @@ Bowtie
 Dict
 Dockerfile
 Heroku
+Homebrew
 Javascript
 Plotly
 Procfile
