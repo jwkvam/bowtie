@@ -105,15 +105,13 @@ To finish, we simply wrap the function with the ``command`` decorator::
 
     from bowtie import command
     @command
-    def construct(path):
+    def main():
         from bowtie import App
-        app = App(directory=path)
+        app = App()
         app.add_sidebar(freq_slider)
         app.add(sine_plot)
         app.subscribe(listener, freq_slider.on_change)
-        app.build()
-
-The ``path`` argument is optional, but it allows you to specify a directory through command line arguments.
+        return app
 
 Now take a look at the CLI we just created by running this script::
 
@@ -121,13 +119,12 @@ Now take a look at the CLI we just created by running this script::
 
 The output should look something like this::
 
-    Usage: app.py [-p <path>] [--help] COMMAND [ARGS]...
+    Usage: app.py [--help] COMMAND [ARGS]...
 
       Bowtie CLI to help build and run your app.
 
     Options:
-      -p, --path TEXT  Path to build the app.
-      --help           Show this message and exit.
+      --help  Show this message and exit.
 
     Commands:
       build  Writes the app, downloads the packages, and...
