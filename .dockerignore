@@ -5,7 +5,6 @@ Dockerfile
 # .gitignore
 *.svg
 *.html
-*.txt
 .DS_Store
 *.mp4
 *.gif

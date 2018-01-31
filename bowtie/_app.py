@@ -4,6 +4,7 @@
 from __future__ import print_function
 
 import os
+import json
 from itertools import product
 import inspect
 import shutil
@@ -676,15 +677,14 @@ class App(object):
     def _build(self):
         """Compile the Bowtie application."""
         packages = self._write_templates()
-        webpack_src = os.path.join(self._package_dir, 'src/webpack.config.js')
-        shutil.copy(webpack_src, _DIRECTORY)
 
-        init = Popen('yarn init -y', shell=True, cwd=_DIRECTORY).wait()
-        if init != 0:
-            raise YarnError('Error running "yarn init -y"')
+        if not os.path.isfile(os.path.join(_DIRECTORY, 'webpack.config.js')):
+            webpack_src = os.path.join(self._package_dir, 'src/webpack.config.js')
+            shutil.copy(webpack_src, _DIRECTORY)
 
-        packagejson = os.path.join(self._package_dir, 'src/package.json')
-        shutil.copy(packagejson, _DIRECTORY)
+        if not os.path.isfile(os.path.join(_DIRECTORY, 'package.json')):
+            packagejson = os.path.join(self._package_dir, 'src/package.json')
+            shutil.copy(packagejson, _DIRECTORY)
 
         install = Popen('yarn install', shell=True, cwd=_DIRECTORY).wait()
         if install > 1:
@@ -692,17 +692,27 @@ class App(object):
 
         packages.discard(None)
         if packages:
-            packagestr = ' '.join(packages)
-            install = Popen('yarn add {}'.format(packagestr),
-                            shell=True, cwd=_DIRECTORY).wait()
-            if install > 1:
-                raise YarnError('Error install node packages')
+            installed = installed_packages()
+            packages = [x for x in packages if x.split('@')[0] not in installed]
+
+            if packages:
+                packagestr = ' '.join(packages)
+                install = Popen('yarn add {}'.format(packagestr),
+                                shell=True, cwd=_DIRECTORY).wait()
+                if install > 1:
+                    raise YarnError('Error install node packages')
 
         elif install == 1:
             print('Yarn error but trying to continue build')
         dev = Popen('{} -d'.format(_WEBPACK), shell=True, cwd=_DIRECTORY).wait()
         if dev != 0:
             raise WebpackError('Error building with webpack')
+
+
+def installed_packages():
+    """Extract installed packages as list from `package.json`."""
+    packagejson = json.load(open(os.path.join(_DIRECTORY, 'package.json'), 'r'))
+    return packagejson['dependencies'].keys()
 
 
 def create_directories():
