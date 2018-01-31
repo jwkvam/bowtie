@@ -6,7 +6,7 @@ ENV FLIT_ROOT_INSTALL 1
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
 RUN apt-get update --fix-missing && \
-    apt-get install -y --no-install-recommends curl bzip2 ca-certificates && \
+    apt-get install -y --no-install-recommends curl bzip2 ca-certificates git && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # miniconda archive
@@ -19,10 +19,10 @@ RUN echo "export PATH=/opt/conda/bin:$PATH" > /etc/profile.d/conda.sh && \
 ENV PATH /opt/conda/bin:$PATH
 
 RUN conda config --add channels conda-forge 
-RUN conda install -y yarn
+RUN conda install -y yarn virtualenv
 RUN pip install flit
 
 WORKDIR /bowtie
 COPY . /bowtie
-RUN flit install
+RUN flit install -s
 WORKDIR /work
