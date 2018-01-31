@@ -34,7 +34,8 @@ I recommend running the Docker interactively::
 
 This runs Docker in your current working directory.
 Run this command in the same directory as your bowtie project.
-This forwards the Docker port 9991 to the host so you can run the webserver.
+This forwards the Docker port 9991 to the host,
+so you can access the dashboard from the host machine.
 
 You may find it convenient to make this command an alias::
 
