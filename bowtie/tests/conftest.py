@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Pytest configuration."""
 
-import os
 from sys import platform
 import shutil
 from selenium import webdriver
@@ -18,7 +17,7 @@ def build_path():
     """Path for building apps with pytest."""
     # pylint: disable=protected-access
     View._NEXT_UUID = 0
-    yield
+    yield _DIRECTORY
     shutil.rmtree(_DIRECTORY)
 
 

@@ -603,6 +603,11 @@ class App(object):
         """
         self.schedules.append(_Schedule(seconds, func.__name__))
 
+    # pylint: disable=no-self-use
+    def _sourcefile(self):
+        # [-1] grabs the top of the stack and [1] grabs the filename
+        return os.path.basename(inspect.stack()[-1][1])[:-3]
+
     def _write_templates(self):
         server = self._jinjaenv.get_template('server.py.j2')
         indexhtml = self._jinjaenv.get_template('index.html.j2')
@@ -611,8 +616,6 @@ class App(object):
         src, app, templates = create_directories()
 
         server_path = os.path.join(src, server.name[:-3])
-        # [-1] grabs the top of the stack and [1] grabs the filename
-        source_filename = inspect.stack()[-1][1]
         with open(server_path, 'w') as f:
             f.write(
                 server.render(
@@ -620,7 +623,7 @@ class App(object):
                     basic_auth=self.basic_auth,
                     username=self.username,
                     password=self.password,
-                    source_module=os.path.basename(source_filename)[:-3],
+                    source_module=self._sourcefile(),
                     subscriptions=self.subscriptions,
                     uploads=self.uploads,
                     schedules=self.schedules,
@@ -679,7 +682,6 @@ class App(object):
         init = Popen('yarn init -y', shell=True, cwd=_DIRECTORY).wait()
         if init != 0:
             raise YarnError('Error running "yarn init -y"')
-        packages.discard(None)
 
         packagejson = os.path.join(self._package_dir, 'src/package.json')
         shutil.copy(packagejson, _DIRECTORY)
@@ -688,11 +690,13 @@ class App(object):
         if install > 1:
             raise YarnError('Error install node packages')
 
-        packagestr = ' '.join(packages)
-        install = Popen('yarn add {}'.format(packagestr),
-                        shell=True, cwd=_DIRECTORY).wait()
-        if install > 1:
-            raise YarnError('Error install node packages')
+        packages.discard(None)
+        if packages:
+            packagestr = ' '.join(packages)
+            install = Popen('yarn add {}'.format(packagestr),
+                            shell=True, cwd=_DIRECTORY).wait()
+            if install > 1:
+                raise YarnError('Error install node packages')
 
         elif install == 1:
             print('Yarn error but trying to continue build')
