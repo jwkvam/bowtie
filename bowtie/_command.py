@@ -65,7 +65,6 @@ def command(func):
                 'Decorated function "{}" should have no arguments, it has {}.'
                 .format(func.__name__, nargs)
             )
-        print('running')
         # pylint:disable=protected-access
         app._build()
         filepath = './{}/src/server.py'.format(_DIRECTORY)
