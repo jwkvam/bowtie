@@ -17,13 +17,26 @@ from subprocess import call
 import click
 
 from bowtie._compat import numargs
-from bowtie._app import _DIRECTORY, _WEBPACK
+from bowtie._app import _DIRECTORY, _WEBPACK, App
 
 
 class WrongNumberOfArguments(TypeError):
     """The "build" function accepts an incorrect number of arguments."""
 
     pass
+
+
+def _build(app):
+    if app is None:
+        print(('No `App` instance was returned. '
+               'In the function decorated with @command, '
+               'return the `App` instance so it can be built.'))
+    else:
+        if not isinstance(app, App):
+            raise Exception(('Returned value {} is of type {}, '
+                             'it needs to be a bowtie.App instance.'.format(app, type(app))))
+        # pylint:disable=protected-access
+        app._build()
 
 
 def command(func):
@@ -49,8 +62,7 @@ def command(func):
                 'Decorated function "{}" should have no arguments, it has {}.'
                 .format(func.__name__, nargs)
             )
-        # pylint:disable=protected-access
-        app._build()
+        _build(app)
 
     @cmd.command(context_settings=dict(ignore_unknown_options=True),
                  add_help_option=False)
@@ -66,7 +78,7 @@ def command(func):
                 .format(func.__name__, nargs)
             )
         # pylint:disable=protected-access
-        app._build()
+        _build(app)
         filepath = './{}/src/server.py'.format(_DIRECTORY)
         line = (filepath,) + extra
         call(line)
