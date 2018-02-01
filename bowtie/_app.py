@@ -309,7 +309,7 @@ class View(object):
 
             for row, col in product(range(row_start, row_end + 1),
                                     range(column_start, column_end + 1)):
-                self.used[row_start, column_start] = True
+                self.used[row, col] = True
             span = Span(row_start, column_start, row_end, column_end)
 
         self.widgets.append(widget)
