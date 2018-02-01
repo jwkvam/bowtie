@@ -1,6 +1,7 @@
 *.svg
 *.html
 .DS_Store
+.pytest_cache
 *.mp4
 *.gif
 tags
