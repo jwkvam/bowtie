@@ -114,7 +114,10 @@ def login():
 def getbundle():
     basedir = os.path.dirname(os.path.realpath(__file__))
     bundle_path = basedir + '/static/bundle.js'
-    if os.path.isfile(bundle_path + '.gz'):
+    bundle_path_gz = bundle_path + '.gz'
+
+    if (os.path.isfile(bundle_path_gz) and
+            os.path.getmtime(bundle_path_gz) > os.path.getmtime(bundle_path)):
         bundle = open(bundle_path + '.gz', 'rb').read()
         response = flask.make_response(bundle)
         response.headers['Content-Encoding'] = 'gzip'
