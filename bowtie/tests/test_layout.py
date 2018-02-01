@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Test layout functionality."""
+# pylint: disable=redefined-outer-name
 
 import pytest
 
@@ -10,11 +11,12 @@ from bowtie._app import MissingRowOrColumn, GridIndexError, UsedCellsError
 
 @pytest.fixture(scope='module')
 def buttons():
+    """Four buttons."""
     return [Button() for _ in range(4)]
 
 
-def test_no_column(buttons):
-    """Test tags for the Markdown widget."""
+def test_no_row(buttons):
+    """Test missing row."""
 
     app = App(rows=2, columns=3)
     with pytest.raises(MissingRowOrColumn):
@@ -24,8 +26,8 @@ def test_no_column(buttons):
         app.add(buttons[0], column_start=0)
 
 
-def test_no_row(buttons):
-    """Test tags for the Markdown widget."""
+def test_no_column(buttons):
+    """Test missing column."""
 
     app = App(rows=2, columns=3)
     with pytest.raises(MissingRowOrColumn):
@@ -36,7 +38,7 @@ def test_no_row(buttons):
 
 
 def test_all_used(buttons):
-    """Test tags for the Markdown widget."""
+    """Test all cells are used."""
 
     app = App(rows=2, columns=2)
     for i in range(4):
@@ -46,7 +48,7 @@ def test_all_used(buttons):
 
 
 def test_used(buttons):
-    """Test tags for the Markdown widget."""
+    """Test cell usage checks."""
 
     app = App(rows=2, columns=2)
     for i in range(3):
@@ -65,7 +67,7 @@ def test_used(buttons):
 
 
 def test_grid_index(buttons):
-    """Test tags for the Markdown widget."""
+    """Test grid indexing checks."""
 
     app = App(rows=2, columns=2)
     with pytest.raises(GridIndexError):

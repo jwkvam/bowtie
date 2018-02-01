@@ -4,15 +4,16 @@ codecov
 eventlet
 flask-socketio
 future
-pylint
 jinja2
 markdown
+matplotlib
 msgpack-python
 numpy
 pandas
 plotlywrapper
 pycodestyle
 pydocstyle
+pylint
 pytest
 pytest-cov
 pytest-pylint
