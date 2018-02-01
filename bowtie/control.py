@@ -144,7 +144,7 @@ class Dropdown(_Controller):
 
     _TEMPLATE = 'dropdown.jsx'
     _COMPONENT = 'Dropdown'
-    _PACKAGE = 'react-select@1.0.0-rc.10'
+    _PACKAGE = 'react-select@1.2.1'
     _ATTRS = ('initOptions={{{options}}} '
               'multi={{{multi}}} '
               'default={{{default}}}')
@@ -755,7 +755,7 @@ class Nouislider(_Controller):
 
     _TEMPLATE = 'nouislider.jsx'
     _COMPONENT = 'Nouislider'
-    _PACKAGE = 'nouislider@10.1.0'
+    _PACKAGE = 'nouislider@11.0.3'
     _ATTRS = ('range={{{{min: {min}, max: {max}}}}} '
               'socket={{socket}} '
               'start={{{start}}} '

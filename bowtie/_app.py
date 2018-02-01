@@ -63,6 +63,12 @@ class UsedCellsError(Exception):
     pass
 
 
+class MissingRowOrColumn(Exception):
+    """Missing a row or column."""
+
+    pass
+
+
 class NoSidebarError(Exception):
     """Cannot add to the sidebar when it doesn't exist."""
 
@@ -135,6 +141,15 @@ class Size(object):
     and minmax(min,max) is treated as min. As a maximum, a <flex> value
     sets the flex factor of a grid track; it is invalid as a minimum.
 
+    Examples
+    --------
+    Laying out an app with the first row using 1/3 of the space
+    and the second row using 2/3 of the space.
+
+    >>> app = App(rows=2, columns=3)
+    >>> app.rows[0].fraction(1)
+    >>> app.rows[1].fraction(2)
+
     """
 
     def __init__(self):
@@ -187,6 +202,14 @@ class Gap(object):
     """Margin between rows or columns of the grid.
 
     This is accessed through ``.row_gap`` and ``.column_gap`` from App and View instances.
+
+    Examples
+    --------
+    Create a gap of 5 pixels between all rows.
+
+    >>> app = App()
+    >>> app.row_gap.pixels(5)
+
     """
 
     def __init__(self):
@@ -282,6 +305,21 @@ class View(object):
                                  module=widget._TEMPLATE[:widget._TEMPLATE.find('.')]))
 
         if row_start is None or column_start is None:
+            if row_start is not None:
+                raise MissingRowOrColumn(
+                    'Only row_start was defined. '
+                    'Please specify both column_start and row_start or neither.'
+                )
+            if column_start is not None:
+                raise MissingRowOrColumn(
+                    'Only column_start was defined. '
+                    'Please specify both column_start and row_start or neither.'
+                )
+            if row_end is not None or column_end is not None:
+                raise MissingRowOrColumn(
+                    'If you specify an end index you must '
+                    'specify both row_start and column_start.'
+                )
             row, col = None, None
             for (row, col), use in self.used.items():
                 if not use:
@@ -300,7 +338,7 @@ class View(object):
             if row_end is None:
                 row_end = row_start
             if column_end is None:
-                column_end = column_end
+                column_end = column_start
 
             for row, col in product(range(row_start, row_end + 1),
                                     range(column_start, column_end + 1)):
@@ -309,7 +347,7 @@ class View(object):
 
             for row, col in product(range(row_start, row_end + 1),
                                     range(column_start, column_end + 1)):
-                self.used[row_start, column_start] = True
+                self.used[row, col] = True
             span = Span(row_start, column_start, row_end, column_end)
 
         self.widgets.append(widget)
@@ -519,11 +557,15 @@ class App(object):
 
         Examples
         --------
+        Using the pager to run a callback function.
+
+        >>> from bowtie.pager import Pager
+        >>> app = App()
         >>> pager = Pager()
         >>> def callback():
-        >>>     pass
+        ...     pass
         >>> def scheduledtask():
-        >>>     pager.notify()
+        ...     pager.notify()
         >>> app.respond(pager, callback)
 
         """
@@ -546,10 +588,14 @@ class App(object):
 
         Examples
         --------
+        Subscribing a function to multiple events.
+
+        >>> from bowtie.control import Dropdown, Slider
+        >>> app = App()
         >>> dd = Dropdown()
         >>> slide = Slider()
         >>> def callback(dd_item, slide_value):
-        >>>     pass
+        ...     pass
         >>> app.subscribe(callback, dd.on_change, slide.on_change)
 
         """

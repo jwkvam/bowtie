@@ -27,7 +27,7 @@ For more examples, check out the [gallery](https://github.com/jwkvam/bowtie/wiki
 
 ## Documentation
 
-Available [here](http://bowtie-py.readthedocs.io/en/latest/).
+Available [here](https://bowtie-py.readthedocs.io/en/latest/).
 
 ## Install
 
@@ -42,8 +42,18 @@ Yarn can be installed through conda:
 ```
 conda install -c conda-forge yarn
 ```
-
 Otherwise follow [install instructions](https://yarnpkg.com/en/docs/install) for Yarn for your OS.
+
+## Docker
+
+Docker images are provided as an alternative way to use Bowtie.
+They are available on [DockerHub](https://hub.docker.com/r/jwkvam/bowtie/).
+
+```
+docker pull jwkvam/bowtie
+```
+
+Read the [documentation](https://bowtie-py.readthedocs.io/en/latest/docker.html) for more details.
 
 ## The Goal
 

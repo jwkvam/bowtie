@@ -168,7 +168,7 @@ class SmartGrid(_Visual):
 
     _TEMPLATE = 'griddle.jsx'
     _COMPONENT = 'SmartGrid'
-    _PACKAGE = 'griddle-react@1.10.1'
+    _PACKAGE = 'griddle-react@1.11.1'
     _ATTRS = None
 
     def __init__(self):
@@ -246,6 +246,8 @@ class SVG(_Visual):
 
         Examples
         --------
+        This shows how to update an SVG widget with Matplotlib.
+
         >>> from io import StringIO
         >>> import matplotlib
         >>> matplotlib.use('Agg')
@@ -253,14 +255,14 @@ class SVG(_Visual):
         >>> image = SVG()
         >>>
         >>> def callback(x):
-        >>>     sio = StringIO()
-        >>>     plt.plot(range(5))
-        >>>     plt.savefig(sio, format='svg')
-        >>>     sio.seek(0)
-        >>>     s = sio.read()
-        >>>     idx = s.find('<svg')
-        >>>     s = s[idx:]
-        >>>     image.do_image(s)
+        ...     sio = StringIO()
+        ...     plt.plot(range(5))
+        ...     plt.savefig(sio, format='svg')
+        ...     sio.seek(0)
+        ...     s = sio.read()
+        ...     idx = s.find('<svg')
+        ...     s = s[idx:]
+        ...     image.do_image(s)
 
         """
         return image
@@ -274,7 +276,7 @@ class Plotly(_Visual):
 
     _TEMPLATE = 'plotly.jsx'
     _COMPONENT = 'PlotlyPlot'
-    _PACKAGE = 'plotly.js@1.31.2'
+    _PACKAGE = 'plotly.js@1.33.1'
     _ATTRS = 'initState={{{init}}}'
 
     def __init__(self, init=None):
