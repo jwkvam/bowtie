@@ -464,7 +464,7 @@ class App(object):
 
         Parameters
         ----------
-        visual : bowtie._Component
+        widget : bowtie._Component
             A Bowtie widget instance.
         row_start : int, optional
             Starting row for the widget.
@@ -578,7 +578,6 @@ class App(object):
             self.uploads[uuid] = func.__name__
 
         for evt in all_events:
-            print(evt)
             self.subscriptions[evt].append((all_events, func.__name__))
 
     def load(self, func):
