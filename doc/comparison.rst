@@ -62,7 +62,7 @@ Source Code
 
 Bowtie is a monolithic repo.
 All the Python, Javascript, and HTML is in a single repo.
-Dash has several repos for its core functionality, React components, and HTML components.
+Dash is modular and has multiple repos for its core functionality, React components, and HTML components.
 
 I believe Bowtie is easier to understand and maintain because everything is self-contained.
 Instead it's harder to use custom components with Bowtie since they need to be included in the library itself.
