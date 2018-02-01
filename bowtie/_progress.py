@@ -30,14 +30,17 @@ class Progress(Component):
 
         Examples
         --------
+        Using the progress widget to provide feedback to the user.
+
+        >>> from bowtie.visual import Plotly
         >>> plotly = Plotly()
         >>> def callback(x):
-        >>>     plotly.progress.do_visible(True)
-        >>>     plotly.progress.do_percent(0)
-        >>>     compute1()
-        >>>     plotly.progress.do_inc(50)
-        >>>     compute2()
-        >>>     plotly.progress.do_visible(False)
+        ...     plotly.progress.do_visible(True)
+        ...     plotly.progress.do_percent(0)
+        ...     compute1()
+        ...     plotly.progress.do_inc(50)
+        ...     compute2()
+        ...     plotly.progress.do_visible(False)
 
         References
         ----------
