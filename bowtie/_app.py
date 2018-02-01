@@ -708,9 +708,8 @@ class App(object):
                                 shell=True, cwd=_DIRECTORY).wait()
                 if install > 1:
                     raise YarnError('Error install node packages')
-
-        elif install == 1:
-            print('Yarn error but trying to continue build')
+                elif install == 1:
+                    print('Yarn error but trying to continue build')
         dev = Popen('{} -d'.format(_WEBPACK), shell=True, cwd=_DIRECTORY).wait()
         if dev != 0:
             raise WebpackError('Error building with webpack')
