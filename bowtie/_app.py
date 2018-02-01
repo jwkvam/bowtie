@@ -675,7 +675,7 @@ class App(object):
         return packages
 
     def build(self):
-        """Deprecated build function."""
+        """Deprecate build function."""
         warnings.warn(
             '`build` is deprecated, return the `App` object instead.',
             DeprecationWarning
@@ -718,7 +718,8 @@ class App(object):
 
 def installed_packages():
     """Extract installed packages as list from `package.json`."""
-    packagejson = json.load(open(os.path.join(_DIRECTORY, 'package.json'), 'r'))
+    with open(os.path.join(_DIRECTORY, 'package.json'), 'r') as f:
+        packagejson = json.load(f)
     return packagejson['dependencies'].keys()
 
 
