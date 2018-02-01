@@ -17,6 +17,7 @@ from subprocess import call
 import click
 
 from bowtie._compat import numargs
+from bowtie._app import _DIRECTORY, _WEBPACK, App
 
 
 class WrongNumberOfArguments(TypeError):
@@ -25,43 +26,69 @@ class WrongNumberOfArguments(TypeError):
     pass
 
 
+def _build(app):
+    if app is None:
+        print(('No `App` instance was returned. '
+               'In the function decorated with @command, '
+               'return the `App` instance so it can be built.'))
+    else:
+        if not isinstance(app, App):
+            raise Exception(('Returned value {} is of type {}, '
+                             'it needs to be a bowtie.App instance.'.format(app, type(app))))
+        # pylint:disable=protected-access
+        app._build()
+
+
 def command(func):
     """Command line interface decorator.
 
     Decorate a function for building a Bowtie
     application and turn it into a command line interface.
     """
-    @click.group(options_metavar='[-p <path>] [--help]')
-    @click.option('--path', '-p', default='build', type=str,
-                  help='Path to build the app.')
-    @click.pass_context
-    def cmd(ctx, path):
+    @click.group(options_metavar='[--help]')
+    def cmd():
         """Bowtie CLI to help build and run your app."""
-        ctx.obj = path
+        pass
 
     # pylint: disable=unused-variable
     @cmd.command(add_help_option=False)
-    @click.pass_context
-    def build(ctx):
+    def build():
         """Write the app, downloads the packages, and bundles it with Webpack."""
         nargs = numargs(func)
         if nargs == 0:
-            func()
-        elif nargs == 1:
-            func(ctx.obj)
+            app = func()
         else:
             raise WrongNumberOfArguments(
-                'Function "{}" should have 0 or 1 argument, it has {}.'
+                'Decorated function "{}" should have no arguments, it has {}.'
                 .format(func.__name__, nargs)
             )
+        _build(app)
 
     @cmd.command(context_settings=dict(ignore_unknown_options=True),
                  add_help_option=False)
     @click.argument('extra', nargs=-1, type=click.UNPROCESSED)
-    @click.pass_context
-    def serve(ctx, extra):
+    def run(extra):
+        """Write the app, downloads the packages, and bundles it with Webpack."""
+        nargs = numargs(func)
+        if nargs == 0:
+            app = func()
+        else:
+            raise WrongNumberOfArguments(
+                'Decorated function "{}" should have no arguments, it has {}.'
+                .format(func.__name__, nargs)
+            )
+        # pylint:disable=protected-access
+        _build(app)
+        filepath = './{}/src/server.py'.format(_DIRECTORY)
+        line = (filepath,) + extra
+        call(line)
+
+    @cmd.command(context_settings=dict(ignore_unknown_options=True),
+                 add_help_option=False)
+    @click.argument('extra', nargs=-1, type=click.UNPROCESSED)
+    def serve(extra):
         """Serve the Bowtie app."""
-        filepath = './{}/src/server.py'.format(ctx.obj)
+        filepath = './{}/src/server.py'.format(_DIRECTORY)
         if os.path.isfile(filepath):
             line = (filepath,) + extra
             call(line)
@@ -71,20 +98,18 @@ def command(func):
     @cmd.command(context_settings=dict(ignore_unknown_options=True),
                  add_help_option=False)
     @click.argument('extra', nargs=-1, type=click.UNPROCESSED)
-    @click.pass_context
-    def dev(ctx, extra):
+    def dev(extra):
         """Recompile the app for development."""
-        line = ('webpack', '-d') + extra
-        call(line, cwd=ctx.obj)
+        line = (_WEBPACK, '-d') + extra
+        call(line, cwd=_DIRECTORY)
 
     @cmd.command(context_settings=dict(ignore_unknown_options=True),
                  add_help_option=False)
     @click.argument('extra', nargs=-1, type=click.UNPROCESSED)
-    @click.pass_context
-    def prod(ctx, extra):
+    def prod(extra):
         """Recompile the app for production."""
-        line = ('webpack', '--define', 'process.env.NODE_ENV="production"', '--progress') + extra
-        call(line, cwd=ctx.obj)
+        line = (_WEBPACK, '--define', 'process.env.NODE_ENV="production"', '--progress') + extra
+        call(line, cwd=_DIRECTORY)
 
     locale = inspect.stack()[1][0].f_locals
     module = locale.get("__name__")
@@ -94,7 +119,7 @@ def command(func):
             arg = sys.argv[1:]
         except IndexError:
             arg = ('--help',)
-        # pylint: disable=no-value-for-parameter
+        # pylint: disable=too-many-function-args
         sys.exit(cmd(arg))
 
     return cmd

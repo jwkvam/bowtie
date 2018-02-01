@@ -1,9 +1,10 @@
+astor
 click
 codecov
 eventlet
 flask-socketio
 future
-git+git://github.com/PyCQA/pylint@1.8#pylint
+pylint
 jinja2
 markdown
 msgpack-python

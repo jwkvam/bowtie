@@ -1,34 +1,42 @@
 Using Docker
 ============
 
-Bowtie depends on
-`yarn <https://yarnpkg.com/>`_
-and
-`webpack <https://webpack.js.org/>`_
-which are tools from the Node ecosystem.
-If you would prefer to not install these on your system you
+Bowtie depends on `yarn <https://yarnpkg.com/>`_ to manage Node packages.
+If you would prefer to not install this on your system you
 can use the provided Dockerfile to build your Bowtie app.
 The file provides a conda environment with python 3.6.
+
+Docker Hub
+----------
+
+The Docker image is hosted on DockerHub.
+To pull the bleeding edge release::
+
+    docker pull jwkvam/bowtie
+
+To pull a specific version::
+
+    docker pull jwkvam/bowtie:0.6.0
 
 Building
 --------
 
-I don't host a docker image anywhere so you'll need to build it yourself for now::
+If you prefer to build the Docker yourself::
 
     docker build . -t bowtie
 
-Then I recommend running it in detached mode so we can give it multiple commands.
-We also share your working directory so you can use the built files::
+Usage
+-----
 
-    docker run --name bt -v /your/apps/path:/work -d bowtie
+I recommend running the Docker interactively::
 
-Now you can install any pip or conda requirements::
+    docker run -ti -p 9991:9991 -v (pwd):/work -rm bowtie bash
 
-    docker exec bt conda install --file conda-requirements.txt
-    docker exec bt pip install -r requirements.txt
+This runs Docker in your current working directory.
+Run this command in the same directory as your bowtie project.
+This forwards the Docker port 9991 to the host,
+so you can access the dashboard from the host machine.
 
-Then finally build your app::
+You may find it convenient to make this command an alias::
 
-    docker exec bt ./app.py build
-
-Upon completion you should be able to run the app locally.
+    alias bowtie='docker run -ti -p 9991:9991 -v (pwd):/work -rm bowtie bash'

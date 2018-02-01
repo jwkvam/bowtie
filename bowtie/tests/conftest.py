@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Pytest configuration."""
 
-import os
 from sys import platform
 import shutil
 from selenium import webdriver
@@ -10,6 +9,7 @@ from selenium import webdriver
 import pytest
 
 from bowtie import View
+from bowtie._app import _DIRECTORY
 
 
 @pytest.fixture
@@ -17,9 +17,8 @@ def build_path():
     """Path for building apps with pytest."""
     # pylint: disable=protected-access
     View._NEXT_UUID = 0
-    path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'build')
-    yield path
-    shutil.rmtree(path)
+    yield _DIRECTORY
+    shutil.rmtree(_DIRECTORY)
 
 
 @pytest.fixture

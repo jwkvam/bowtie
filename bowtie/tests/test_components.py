@@ -23,16 +23,18 @@ visuals = [getattr(visual, comp)() for comp in dir(visual)
 
 
 # pylint: disable=unused-argument
-def test_components(chrome_driver, build_path):
+def test_components(chrome_driver, build_path, monkeypatch):
     """Tests plotly."""
+    monkeypatch.setattr(App, '_sourcefile', lambda self: 'bowtie.tests.test_components')
 
-    app = App(rows=len(visuals), directory=build_path)
+    app = App(rows=len(visuals))
     for controller in controllers:
         app.add_sidebar(controller)
 
     for vis in visuals:
         app.add(vis)
-    app.build()
+    # pylint: disable=protected-access
+    app._build()
 
     env['PYTHONPATH'] = '{}:{}'.format(os.getcwd(), os.environ.get('PYTHONPATH', ''))
     server = subprocess.Popen(os.path.join(build_path, 'src/server.py'), env=env)

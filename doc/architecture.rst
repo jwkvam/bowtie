@@ -75,9 +75,9 @@ There are a few key parts to any Bowtie application.
 
     from bowtie import command
     @command
-    def construct():
+    def main():
         app = App(rows=1, columns=1, sidebar=True)
         app.add_sidebar(dropdown)
         app.add(plotly)
         app.subscribe(callback, dropdown.on_change)
-        app.build()
+        return app

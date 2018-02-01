@@ -33,14 +33,17 @@ def write(txt):
 
 
 # pylint: disable=unused-argument
-def test_markdown(chrome_driver, build_path):
+def test_markdown(chrome_driver, build_path, monkeypatch):
     """Test markdown and text widgets."""
-    app = App(directory=build_path)
+    monkeypatch.setattr(App, '_sourcefile', lambda self: 'bowtie.tests.test_editor')
+
+    app = App()
     app.add(mark)
     app.add_sidebar(side)
     app.add_sidebar(text)
     app.subscribe(write, text.on_change)
-    app.build()
+    # pylint: disable=protected-access
+    app._build()
 
     env['PYTHONPATH'] = '{}:{}'.format(os.getcwd(), os.environ.get('PYTHONPATH', ''))
     server = subprocess.Popen(os.path.join(build_path, 'src/server.py'), env=env)

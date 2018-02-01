@@ -27,11 +27,10 @@ def walk():
 
 
 @command
-def construct():
+def main():
     from bowtie import App
     app = App(debug=True)
     app.add_sidebar(sigma)
     app.add(mainplot)
     app.schedule(0.1, walk)
-
-    app.build()
+    return app

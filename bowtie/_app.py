@@ -4,6 +4,7 @@
 from __future__ import print_function
 
 import os
+import json
 from itertools import product
 import inspect
 import shutil
@@ -21,6 +22,9 @@ from bowtie._component import Component, SEPARATOR
 _Import = namedtuple('_Import', ['module', 'component'])
 _Control = namedtuple('_Control', ['instantiate', 'caption'])
 _Schedule = namedtuple('_Schedule', ['seconds', 'function'])
+
+_DIRECTORY = 'build'
+_WEBPACK = './node_modules/.bin/webpack'
 
 
 class YarnError(Exception):
@@ -219,7 +223,6 @@ class View(object):
                  background_color='White'):
         """Create a new grid."""
         self._uuid = View._next_uuid()
-        self.name = 'view{}'.format(self._uuid)
         self.used = OrderedDict(((key, False) for key in product(range(rows), range(columns))))
         self.column_gap = Gap()
         self.row_gap = Gap()
@@ -234,6 +237,10 @@ class View(object):
         self.widgets = []
         self.spans = []
 
+    @property
+    def _name(self):
+        return 'view{}.jsx'.format(self._uuid)
+
     def add(self, widget, row_start=None, column_start=None,
             row_end=None, column_end=None):
         """Add a widget to the grid.
@@ -242,7 +249,7 @@ class View(object):
 
         Parameters
         ----------
-        visual : bowtie._Component
+        widget : bowtie._Component
             A Bowtie widget instance.
         row_start : int, optional
             Starting row for the widget.
@@ -352,7 +359,7 @@ class View(object):
             columns.append('18em')
         columns += self.columns
 
-        with open(os.path.join(path, 'view{}.jsx'.format(self._uuid)), 'w') as f:
+        with open(os.path.join(path, self._name), 'w') as f:
             f.write(
                 jsx.render(
                     uuid=self._uuid,
@@ -378,8 +385,8 @@ class App(object):
     def __init__(self, rows=1, columns=1, sidebar=True,
                  title='Bowtie App', basic_auth=False,
                  username='username', password='password',
-                 background_color='White', directory='build',
-                 host='0.0.0.0', port=9991, socketio='', debug=False):
+                 background_color='White', host='0.0.0.0', port=9991,
+                 socketio='', debug=False):
         """Create a Bowtie App.
 
         Parameters
@@ -400,8 +407,6 @@ class App(object):
             Password for basic authentication.
         background_color : str, optional
             Background color of the control pane.
-        directory : str, optional
-            Location where app is compiled.
         host : str, optional
             Host IP address.
         port : int, optional
@@ -415,7 +420,6 @@ class App(object):
         self.background_color = background_color
         self.basic_auth = basic_auth
         self.debug = debug
-        self.directory = directory
         self.functions = []
         self.host = host
         self.imports = set()
@@ -432,6 +436,12 @@ class App(object):
         self.root = View(rows=rows, columns=columns, sidebar=sidebar,
                          background_color=background_color)
         self.routes = [Route(view=self.root, path='/', exact=True)]
+        self._package_dir = os.path.dirname(__file__)
+        self._jinjaenv = Environment(
+            loader=FileSystemLoader(os.path.join(self._package_dir, 'templates')),
+            trim_blocks=True,
+            lstrip_blocks=True
+        )
 
     def __getattr__(self, name):
         """Export attributes from root view."""
@@ -454,7 +464,7 @@ class App(object):
 
         Parameters
         ----------
-        visual : bowtie._Component
+        widget : bowtie._Component
             A Bowtie widget instance.
         row_start : int, optional
             Starting row for the widget.
@@ -594,28 +604,19 @@ class App(object):
         """
         self.schedules.append(_Schedule(seconds, func.__name__))
 
-    def build(self):
-        """Compile the Bowtie application."""
-        file_dir = os.path.dirname(__file__)
+    # pylint: disable=no-self-use
+    def _sourcefile(self):
+        # [-1] grabs the top of the stack and [1] grabs the filename
+        return os.path.basename(inspect.stack()[-1][1])[:-3]
 
-        env = Environment(
-            loader=FileSystemLoader(os.path.join(file_dir, 'templates')),
-            trim_blocks=True,
-            lstrip_blocks=True
-        )
+    def _write_templates(self):
+        server = self._jinjaenv.get_template('server.py.j2')
+        indexhtml = self._jinjaenv.get_template('index.html.j2')
+        indexjsx = self._jinjaenv.get_template('index.jsx.j2')
 
-        server = env.get_template('server.py.j2')
-        indexhtml = env.get_template('index.html.j2')
-        indexjsx = env.get_template('index.jsx.j2')
-
-        src, app, templates = create_directories(directory=self.directory)
-
-        webpack_src = os.path.join(file_dir, 'src/webpack.config.js')
-        shutil.copy(webpack_src, self.directory)
+        src, app, templates = create_directories()
 
         server_path = os.path.join(src, server.name[:-3])
-        # [1] grabs the parent stack and [1] grabs the filename
-        source_filename = inspect.stack()[1][1]
         with open(server_path, 'w') as f:
             f.write(
                 server.render(
@@ -623,7 +624,7 @@ class App(object):
                     basic_auth=self.basic_auth,
                     username=self.username,
                     password=self.password,
-                    source_module=os.path.basename(source_filename)[:-3],
+                    source_module=self._sourcefile(),
                     subscriptions=self.subscriptions,
                     uploads=self.uploads,
                     schedules=self.schedules,
@@ -635,28 +636,31 @@ class App(object):
                     debug=self.debug
                 )
             )
+
         perms = os.stat(server_path)
         os.chmod(server_path, perms.st_mode | stat.S_IEXEC)
 
-        with open(os.path.join(templates, indexhtml.name[:-3]), 'w') as f:
-            f.write(
-                indexhtml.render(title=self.title)
-            )
-
-        template_src = os.path.join(file_dir, 'src', 'progress.jsx')
+        template_src = os.path.join(self._package_dir, 'src', 'progress.jsx')
         shutil.copy(template_src, app)
-        template_src = os.path.join(file_dir, 'src', 'utils.js')
+        template_src = os.path.join(self._package_dir, 'src', 'utils.js')
         shutil.copy(template_src, app)
         for route in self.routes:
             for template in route.view.templates:
-                template_src = os.path.join(file_dir, 'src', template)
+                template_src = os.path.join(self._package_dir, 'src', template)
                 shutil.copy(template_src, app)
 
         packages = set()
         for route in self.routes:
             # pylint: disable=protected-access
-            route.view._render(app, env)
+            route.view._render(app, self._jinjaenv)
             packages |= route.view.packages
+
+        with open(os.path.join(templates, indexhtml.name[:-3]), 'w') as f:
+            f.write(
+                indexhtml.render(
+                    title=self.title,
+                )
+            )
 
         with open(os.path.join(app, indexjsx.name[:-3]), 'w') as f:
             f.write(
@@ -668,35 +672,59 @@ class App(object):
                     routes=self.routes
                 )
             )
+        return packages
 
-        init = Popen('yarn init -y', shell=True, cwd=self.directory).wait()
-        if init != 0:
-            raise YarnError('Error running "yarn init -y"')
+    def build(self):
+        """Deprecate build function."""
+        warnings.warn(
+            '`build` is deprecated, return the `App` object instead.',
+            DeprecationWarning
+        )
+
+    def _build(self):
+        """Compile the Bowtie application."""
+        packages = self._write_templates()
+
+        if not os.path.isfile(os.path.join(_DIRECTORY, 'webpack.config.js')):
+            webpack_src = os.path.join(self._package_dir, 'src/webpack.config.js')
+            shutil.copy(webpack_src, _DIRECTORY)
+
+        if not os.path.isfile(os.path.join(_DIRECTORY, 'package.json')):
+            packagejson = os.path.join(self._package_dir, 'src/package.json')
+            shutil.copy(packagejson, _DIRECTORY)
+
+        install = Popen('yarn install', shell=True, cwd=_DIRECTORY).wait()
+        if install > 1:
+            raise YarnError('Error install node packages')
+
         packages.discard(None)
+        if packages:
+            installed = installed_packages()
+            packages = [x for x in packages if x.split('@')[0] not in installed]
 
-        packagejson = os.path.join(file_dir, 'src/package.json')
-        shutil.copy(packagejson, self.directory)
-
-        install = Popen('yarn install', shell=True, cwd=self.directory).wait()
-        if install > 1:
-            raise YarnError('Error install node packages')
-
-        packagestr = ' '.join(packages)
-        install = Popen('yarn add {}'.format(packagestr),
-                        shell=True, cwd=self.directory).wait()
-        if install > 1:
-            raise YarnError('Error install node packages')
-
-        elif install == 1:
-            print('Yarn error but trying to continue build')
-        dev = Popen('webpack -d', shell=True, cwd=self.directory).wait()
+            if packages:
+                packagestr = ' '.join(packages)
+                install = Popen('yarn add {}'.format(packagestr),
+                                shell=True, cwd=_DIRECTORY).wait()
+                if install > 1:
+                    raise YarnError('Error install node packages')
+                elif install == 1:
+                    print('Yarn error but trying to continue build')
+        dev = Popen('{} -d'.format(_WEBPACK), shell=True, cwd=_DIRECTORY).wait()
         if dev != 0:
             raise WebpackError('Error building with webpack')
 
 
-def create_directories(directory='build'):
+def installed_packages():
+    """Extract installed packages as list from `package.json`."""
+    with open(os.path.join(_DIRECTORY, 'package.json'), 'r') as f:
+        packagejson = json.load(f)
+    return packagejson['dependencies'].keys()
+
+
+def create_directories():
     """Create all the necessary subdirectories for the build."""
-    src = os.path.join(directory, 'src')
+    src = os.path.join(_DIRECTORY, 'src')
     templates = os.path.join(src, 'templates')
     app = os.path.join(src, 'app')
     makedirs(app, exist_ok=True)

@@ -39,16 +39,18 @@ def callback(*args):
 
 
 # pylint: disable=unused-argument
-def test_plotly(chrome_driver, build_path):
+def test_plotly(chrome_driver, build_path, monkeypatch):
     """Tests plotly."""
+    monkeypatch.setattr(App, '_sourcefile', lambda self: 'bowtie.tests.test_plotly')
 
-    app = App(directory=build_path)
+    app = App()
     app.add(viz)
     app.add_sidebar(ctrl)
     app.add_sidebar(ctrl2)
     app.subscribe(callback, ctrl.on_change)
     app.subscribe(callback, ctrl2.on_click)
-    app.build()
+    # pylint: disable=protected-access
+    app._build()
 
     env['PYTHONPATH'] = '{}:{}'.format(os.getcwd(), os.environ.get('PYTHONPATH', ''))
     server = subprocess.Popen(os.path.join(build_path, 'src/server.py'), env=env)

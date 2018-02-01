@@ -37,11 +37,13 @@ pip install bowtie
 
 ## Requirements
 
-Install [node](https://nodejs.org/en/) and install `webpack` and `yarn` globally.
+Bowtie uses [Yarn](https://yarnpkg.com) to manage node packages.
+Yarn can be installed through conda:
+```
+conda install -c conda-forge yarn
+```
 
-```
-npm install -g webpack yarn
-```
+Otherwise follow [install instructions](https://yarnpkg.com/en/docs/install) for Yarn for your OS.
 
 ## The Goal
 

@@ -7,6 +7,7 @@ var CompressionPlugin = require('compression-webpack-plugin');
 
 var BUILD_DIR = path.resolve(__dirname, 'src/static');
 var APP_DIR = path.resolve(__dirname, 'src/app');
+var HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 var config = {
     // context: path.resolve(__dirname, './src'),
@@ -16,6 +17,9 @@ var config = {
         path: BUILD_DIR,
         filename: 'bundle.js'
     },
+    plugins: [
+        new HardSourceWebpackPlugin()
+    ],
     module: {
         rules: [
             {
@@ -29,7 +33,8 @@ var config = {
                         'react', 'stage-0'],
                     plugins: [
                         'transform-object-rest-spread',
-                    ]
+                    ],
+                    babelrc: false
                 }
             }, {
                 test: /\.scss$/,
