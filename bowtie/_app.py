@@ -283,7 +283,8 @@ class View(object):
 
         if row_start is None or column_start is None:
             if row_end is not None or column_end is not None:
-                raise Exception('If you specify an end index you must specify both row_start and column_start.')
+                raise Exception('If you specify an end index you must '
+                                'specify both row_start and column_start.')
             row, col = None, None
             for (row, col), use in self.used.items():
                 if not use:
