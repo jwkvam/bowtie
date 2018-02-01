@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## 0.6.0 / 2018-01-31
+
+### Added
+
+  * Removed node and webpack dependencies, the only dependency is yarn.
+  * Added a run command that simply combines build and serve together.
+  * Smarter build process that saves time on subsequent builds.
+  * Handle scheduled tasks when running with debug=True (#185)
+  * Improve the Docker experience and docs.
+  * Always use the latest compiled bundle.
+
+### Breaking
+
+  * Instead of building the app by running `app.build()` you simply return the App instance.
+    See the quick start guide for an example.
+
 ## 0.5.1 / 2017-12-31
 
 ### Added
