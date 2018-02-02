@@ -114,7 +114,7 @@ class Span(object):
         else:
             self.row_end = row_end + 1
         if column_end is None:
-            self.column_end = self.column_start + 2
+            self.column_end = self.column_start + 1
         else:
             self.column_end = column_end + 1
 
