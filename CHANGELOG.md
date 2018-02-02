@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 0.6.1 / 2018-02-01
+
+### Added
+
+  * Docstring examples of sizing components.
+  * More checks to ensure adding components works as expected.
+
+### Fixed
+
+  * Bug which incorrectly tracked which parts of the grid were occupied by widgets.
+
 ## 0.6.0 / 2018-01-31
 
 ### Added
