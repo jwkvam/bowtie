@@ -8,7 +8,6 @@ author = "Jacques Kvam"
 author-email = "jwkvam+pypi@gmail.com"
 home-page = "https://github.com/jwkvam/bowtie"
 description-file = "README.rst"
-requires-python = ">=2.7"
 classifiers = [
 "License :: OSI Approved :: MIT License",
 "Programming Language :: Python :: 2",
