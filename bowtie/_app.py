@@ -291,9 +291,11 @@ class View(object):
         return 'view{}.jsx'.format(self._uuid)
 
     def __getitem__(self, key):
+        """Get item from the view."""
         raise NotImplementedError('Accessor is not implemented.')
 
     def __setitem__(self, key, widget):
+        """Add widget to the view."""
         if isinstance(key, tuple):
             if len(key) == 1:
                 self[key[0]] = widget
@@ -568,9 +570,11 @@ class App(object):
             raise AttributeError(name)
 
     def __getitem__(self, key):
+        """Get item from root view."""
         self.root.__getitem__(key)
 
     def __setitem__(self, key, value):
+        """Add widget to the root view."""
         self.root.__setitem__(key, value)
 
     def add(self, widget, row_start=None, column_start=None,
