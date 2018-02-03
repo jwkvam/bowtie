@@ -7,8 +7,6 @@ Bowtie
 .. figure:: https://cloud.githubusercontent.com/assets/86304/20045988/69e5678a-a45a-11e6-853b-7f60a615c9da.gif
    :alt: Demo
 
-   Demo
-
 Introduction
 ------------
 
@@ -74,21 +72,19 @@ for more details.
 The Goal
 --------
 
-![@astrobiased @treycausey @vagabondjack the lack of a comprehensive
-production-grade Shiny-alike for Python is a Big
-Problem](https://cloud.githubusercontent.com/assets/86304/18606859/8ced55a6-7c70-11e6-8b5e-fba0ffcd78da.png)
+.. figure:: https://cloud.githubusercontent.com/assets/86304/18606859/8ced55a6-7c70-11e6-8b5e-fba0ffcd78da.png
+      :alt: @astrobiased @treycausey @vagabondjack the lack of a comprehensive production-grade Shiny-alike for Python is a Big Problem
 
 Contributing
 ------------
 
-You can help Bowtie in many ways including: - Try it
-`out <http://bowtie-py.readthedocs.io/en/latest/quickstart.html>`__ and
-report bugs or what was difficult. - Help improve the
-`documentation <https://github.com/jwkvam/bowtie/tree/master/doc>`__. -
-Write new
-`widgets <http://bowtie-py.readthedocs.io/en/latest/newcomponents.html>`__.
-- Provide hosting for apps in the gallery. - Say
-`thanks <https://saythanks.io/to/jwkvam>`__!
+You can help Bowtie in many ways including:
+
+- Try it `out <http://bowtie-py.readthedocs.io/en/latest/quickstart.html>`__ and report bugs or what was difficult.
+- Help improve the `documentation <https://github.com/jwkvam/bowtie/tree/master/doc>`__.
+- Write new `widgets <http://bowtie-py.readthedocs.io/en/latest/newcomponents.html>`__.
+- Provide hosting for apps in the gallery.
+- Say `thanks <https://saythanks.io/to/jwkvam>`__!
 
 .. |Join the chat at https://gitter.im/bowtie-py/Lobby| image:: https://badges.gitter.im/bowtie-py/Lobby.svg
    :target: https://gitter.im/bowtie-py/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
