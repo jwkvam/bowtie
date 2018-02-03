@@ -323,24 +323,37 @@ class View(object):
                     raise GridIndexError(
                         'Cannot index with {}, pass in a int or a slice.'.format(column_key)
                     )
-                self.add(
+                self._add(
                     widget, row_start=row_start, column_start=column_start,
                     row_end=row_end, column_end=column_end
                 )
 
         elif isinstance(key, slice):
             start, end = _slice_to_start_end(key, len(self.rows))
-            self.add(
+            self._add(
                 widget, row_start=start, column_start=0,
                 row_end=end, column_end=len(self.columns)
             )
         elif isinstance(key, int):
-            self.add(widget, row_start=key, column_start=0, column_end=len(self.columns))
+            self._add(widget, row_start=key, column_start=0, column_end=len(self.columns))
         else:
             raise GridIndexError('Invalid index {}'.format(key))
 
-    def add(self, widget, row_start=None, column_start=None,
-            row_end=None, column_end=None):
+    def add(self, widget):
+        """Add a widget to the grid in the next available cell.
+
+        Searches over columns then rows for available cells.
+
+        Parameters
+        ----------
+        widget : bowtie._Component
+            A Bowtie widget instance.
+
+        """
+        self._add(widget)
+
+    def _add(self, widget, row_start=None, column_start=None,
+             row_end=None, column_end=None):
         """Add a widget to the grid.
 
         Zero-based index and exclusive.
@@ -577,28 +590,19 @@ class App(object):
         """Add widget to the root view."""
         self.root.__setitem__(key, value)
 
-    def add(self, widget, row_start=None, column_start=None,
-            row_end=None, column_end=None):
-        """Add a widget to the grid.
+    def add(self, widget):
+        """Add a widget to the grid in the next available cell.
 
-        Zero-based index and inclusive.
+        Searches over columns then rows for available cells.
 
         Parameters
         ----------
         widget : bowtie._Component
             A Bowtie widget instance.
-        row_start : int, optional
-            Starting row for the widget.
-        column_start : int, optional
-            Starting column for the widget.
-        row_end : int, optional
-            Ending row for the widget.
-        column_end : int, optional
-            Ending column for the widget.
 
         """
-        self.root.add(widget, row_start=row_start, column_start=column_start,
-                      row_end=row_end, column_end=column_end)
+        # pylint: disable=protected-access
+        self.root._add(widget)
 
     def add_sidebar(self, widget):
         """Add a widget to the sidebar.

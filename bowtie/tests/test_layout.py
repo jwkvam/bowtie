@@ -6,7 +6,7 @@ import pytest
 
 from bowtie import App
 from bowtie.control import Button
-from bowtie._app import MissingRowOrColumn, GridIndexError, UsedCellsError, NoUnusedCellsError
+from bowtie._app import GridIndexError, UsedCellsError, NoUnusedCellsError
 
 
 @pytest.fixture(scope='module')
@@ -18,31 +18,6 @@ def buttons():
 def app():
     """Simple app."""
     return App(rows=2, columns=2)
-
-
-def test_no_row(buttons):
-    """Test missing row."""
-
-    app = App(rows=2, columns=3)
-    with pytest.raises(MissingRowOrColumn):
-        app.add(buttons[0], column_start=0, column_end=3)
-
-    with pytest.raises(MissingRowOrColumn):
-        app.add(buttons[0], column_start=0)
-
-    with pytest.raises(MissingRowOrColumn):
-        app.add(buttons[0], column_end=1)
-
-
-def test_no_column(buttons):
-    """Test missing column."""
-
-    app = App(rows=2, columns=3)
-    with pytest.raises(MissingRowOrColumn):
-        app.add(buttons[0], row_start=0, row_end=2)
-
-    with pytest.raises(MissingRowOrColumn):
-        app.add(buttons[0], row_start=0)
 
 
 def test_all_used(buttons):
@@ -84,15 +59,15 @@ def test_used(buttons):
         app.add(buttons[i])
 
     with pytest.raises(UsedCellsError):
-        app.add(buttons[3], row_start=0, column_start=0)
+        app[0, 0] = buttons[3]
 
     with pytest.raises(UsedCellsError):
-        app.add(buttons[3], row_start=0, column_start=1, row_end=1)
+        app[0:1, 1] = buttons[3]
 
     with pytest.raises(UsedCellsError):
-        app.add(buttons[3], row_start=1, column_start=0, column_end=1)
+        app[1, 0:1] = buttons[3]
 
-    app.add(buttons[3], row_start=1, column_start=1)
+    app[1, 1] = buttons[3]
 
 
 def test_grid_index(buttons):
@@ -100,13 +75,15 @@ def test_grid_index(buttons):
 
     app = App(rows=2, columns=2)
     with pytest.raises(GridIndexError):
-        app.add(buttons[0], row_start=-5)
+        app[-5] = buttons[0]
 
-    with pytest.raises(MissingRowOrColumn):
-        app.add(buttons[0], row_start=-1)
+    app[-1] = buttons[0]
 
     with pytest.raises(GridIndexError):
-        app.add(buttons[0], row_start=2)
+        app[2] = buttons[0]
+
+    with pytest.raises(UsedCellsError):
+        app[1] = buttons[0]
 
 
 def test_getitem(buttons):
