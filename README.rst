@@ -45,9 +45,7 @@ Requirements
 ------------
 
 Bowtie uses `Yarn <https://yarnpkg.com>`__ to manage node packages. Yarn
-can be installed through conda:
-
-::
+can be installed through conda::
 
     conda install -c conda-forge yarn
 
@@ -59,9 +57,7 @@ Docker
 ------
 
 Docker images are provided as an alternative way to use Bowtie. They are
-available on `DockerHub <https://hub.docker.com/r/jwkvam/bowtie/>`__.
-
-::
+available on `DockerHub <https://hub.docker.com/r/jwkvam/bowtie/>`__::
 
     docker pull jwkvam/bowtie
 
