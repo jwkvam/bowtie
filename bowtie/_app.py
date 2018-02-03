@@ -45,7 +45,7 @@ class SizeError(Exception):
     pass
 
 
-class GridIndexError(Exception):
+class GridIndexError(IndexError):
     """Invalid index into the grid layout."""
 
     pass
@@ -108,16 +108,15 @@ class Span(object):
         """
         self.row_start = row_start + 1
         self.column_start = column_start + 1
-        # add 2 to then ends because they start counting from 1
-        # and they are exclusive
+        # add 1 to then ends because they start counting from 1
         if row_end is None:
-            self.row_end = row_start + 2
+            self.row_end = self.row_start + 1
         else:
-            self.row_end = row_end + 2
+            self.row_end = row_end + 1
         if column_end is None:
-            self.column_end = column_start + 2
+            self.column_end = self.column_start + 1
         else:
-            self.column_end = column_end + 2
+            self.column_end = column_end + 1
 
     def __repr__(self):
         """Show the starting and ending points."""
@@ -232,6 +231,33 @@ class Gap(object):
         return self.gap
 
 
+def _check_index(value, length, bound):
+    if value is not None:
+        if not isinstance(value, int):
+            raise GridIndexError('Indices must be integers, found {}.'.format(value))
+        if value < 0:
+            value = value + length
+        if value < 0 + bound or value >= length + bound:
+            raise GridIndexError('Index out of range.')
+    return value
+
+
+def _slice_to_start_end(slc, length):
+    if slc.step is not None and slc.step != 1:
+        raise GridIndexError(
+            'slice step is not supported must be None or 1, was {}'.format(slc.step)
+        )
+
+    start = 0
+    if slc.start is not None:
+        start = slc.start
+
+    end = length
+    if slc.stop is not None:
+        end = slc.stop
+    return start, end
+
+
 class View(object):
     """Grid of widgets."""
 
@@ -264,11 +290,60 @@ class View(object):
     def _name(self):
         return 'view{}.jsx'.format(self._uuid)
 
+    def __getitem__(self, key):
+        """Get item from the view."""
+        raise NotImplementedError('Accessor is not implemented.')
+
+    def __setitem__(self, key, widget):
+        """Add widget to the view."""
+        if isinstance(key, tuple):
+            if len(key) == 1:
+                self[key[0]] = widget
+            else:
+                try:
+                    row_key, column_key = key
+                except ValueError:
+                    raise GridIndexError('Index must be 1 or 2 values, found {}'.format(key))
+                if isinstance(row_key, int):
+                    row_start = row_key
+                    row_end = None
+                elif isinstance(row_key, slice):
+                    row_start, row_end = _slice_to_start_end(row_key, len(self.rows))
+                else:
+                    raise GridIndexError(
+                        'Cannot index with {}, pass in a int or a slice.'.format(row_key)
+                    )
+
+                if isinstance(column_key, int):
+                    column_start = column_key
+                    column_end = None
+                elif isinstance(column_key, slice):
+                    column_start, column_end = _slice_to_start_end(column_key, len(self.columns))
+                else:
+                    raise GridIndexError(
+                        'Cannot index with {}, pass in a int or a slice.'.format(column_key)
+                    )
+                self.add(
+                    widget, row_start=row_start, column_start=column_start,
+                    row_end=row_end, column_end=column_end
+                )
+
+        elif isinstance(key, slice):
+            start, end = _slice_to_start_end(key, len(self.rows))
+            self.add(
+                widget, row_start=start, column_start=0,
+                row_end=end, column_end=len(self.columns)
+            )
+        elif isinstance(key, int):
+            self.add(widget, row_start=key, column_start=0, column_end=len(self.columns))
+        else:
+            raise GridIndexError('Invalid index {}'.format(key))
+
     def add(self, widget, row_start=None, column_start=None,
             row_end=None, column_end=None):
         """Add a widget to the grid.
 
-        Zero-based index and inclusive.
+        Zero-based index and exclusive.
 
         Parameters
         ----------
@@ -286,17 +361,17 @@ class View(object):
         """
         assert isinstance(widget, Component)
 
-        for index in [row_start, row_end]:
-            if index is not None and not 0 <= index < len(self.rows):
-                raise GridIndexError('Invalid Row Index')
-        for index in [column_start, column_end]:
-            if index is not None and not 0 <= index < len(self.columns):
-                raise GridIndexError('Invalid Column Index')
+        row_start = _check_index(row_start, len(self.rows), False)
+        column_start = _check_index(column_start, len(self.columns), False)
+        row_end = _check_index(row_end, len(self.rows), True)
+        column_end = _check_index(column_end, len(self.columns), True)
 
-        if row_start is not None and row_end is not None and row_start > row_end:
-            raise GridIndexError('Invalid Column Index')
-        if column_start is not None and column_end is not None and column_start > column_end:
-            raise GridIndexError('Invalid Column Index')
+        if row_start is not None and row_end is not None and row_start >= row_end:
+            raise GridIndexError('row_start: {} must be less than row_end: {}'
+                                 .format(row_start, row_end))
+        if column_start is not None and column_end is not None and column_start >= column_end:
+            raise GridIndexError('column_start: {} must be less than column_end: {}'
+                                 .format(column_start, column_end))
 
         # pylint: disable=protected-access
         self.packages.add(widget._PACKAGE)
@@ -336,17 +411,17 @@ class View(object):
             self.used[row_start, column_start] = True
         else:
             if row_end is None:
-                row_end = row_start
+                row_end = row_start + 1
             if column_end is None:
-                column_end = column_start
+                column_end = column_start + 1
 
-            for row, col in product(range(row_start, row_end + 1),
-                                    range(column_start, column_end + 1)):
+            for row, col in product(range(row_start, row_end),
+                                    range(column_start, column_end)):
                 if self.used[row, col]:
                     raise UsedCellsError('Cell at {}, {} is already used.'.format(row, col))
 
-            for row, col in product(range(row_start, row_end + 1),
-                                    range(column_start, column_end + 1)):
+            for row, col in product(range(row_start, row_end),
+                                    range(column_start, column_end)):
                 self.used[row, col] = True
             span = Span(row_start, column_start, row_end, column_end)
 
@@ -493,6 +568,14 @@ class App(object):
             return self.root.row_gap
         else:
             raise AttributeError(name)
+
+    def __getitem__(self, key):
+        """Get item from root view."""
+        self.root.__getitem__(key)
+
+    def __setitem__(self, key, value):
+        """Add widget to the root view."""
+        self.root.__setitem__(key, value)
 
     def add(self, widget, row_start=None, column_start=None,
             row_end=None, column_end=None):

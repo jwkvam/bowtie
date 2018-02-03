@@ -7,6 +7,7 @@ from os import environ as env
 import subprocess
 import time
 
+import pytest
 from plotly.graph_objs import Scatter
 from plotly.graph_objs import Layout as PlotLayout
 
@@ -39,8 +40,9 @@ def callback(*args):
 
 
 # pylint: disable=unused-argument
-def test_plotly(chrome_driver, build_path, monkeypatch):
-    """Tests plotly."""
+@pytest.fixture
+def plotly(build_path, monkeypatch):
+    """Create plotly app."""
     monkeypatch.setattr(App, '_sourcefile', lambda self: 'bowtie.tests.test_plotly')
 
     app = App()
@@ -56,7 +58,13 @@ def test_plotly(chrome_driver, build_path, monkeypatch):
     server = subprocess.Popen(os.path.join(build_path, 'src/server.py'), env=env)
 
     time.sleep(5)
+    yield
+    server.kill()
 
+
+# pylint: disable=redefined-outer-name,unused-argument
+def test_plotly(plotly, chrome_driver):
+    """Test plotly component."""
     chrome_driver.get('http://localhost:9991')
     chrome_driver.implicitly_wait(5)
 
@@ -73,5 +81,3 @@ def test_plotly(chrome_driver, build_path, monkeypatch):
             raise Exception(log['message'])
 
     assert len(points) == 4
-
-    server.kill()

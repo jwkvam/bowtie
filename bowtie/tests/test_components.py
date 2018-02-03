@@ -7,6 +7,7 @@ from os import environ as env
 import subprocess
 import time
 
+import pytest
 from bowtie import App
 from bowtie import control, visual
 from bowtie.tests.utils import reset_uuid
@@ -22,9 +23,9 @@ visuals = [getattr(visual, comp)() for comp in dir(visual)
            if comp[0].isupper() and issubclass(getattr(visual, comp), visual._Visual)]
 
 
-# pylint: disable=unused-argument
-def test_components(chrome_driver, build_path, monkeypatch):
-    """Tests plotly."""
+@pytest.fixture
+def components(build_path, monkeypatch):
+    """App with all components."""
     monkeypatch.setattr(App, '_sourcefile', lambda self: 'bowtie.tests.test_components')
 
     app = App(rows=len(visuals))
@@ -40,7 +41,13 @@ def test_components(chrome_driver, build_path, monkeypatch):
     server = subprocess.Popen(os.path.join(build_path, 'src/server.py'), env=env)
 
     time.sleep(5)
+    yield
+    server.kill()
 
+
+# pylint: disable=redefined-outer-name,unused-argument
+def test_components(components, chrome_driver):
+    """Test that no components cause an error."""
     chrome_driver.get('http://localhost:9991')
     chrome_driver.implicitly_wait(5)
 
@@ -48,5 +55,3 @@ def test_components(chrome_driver, build_path, monkeypatch):
     for log in logs:
         if log['level'] == 'SEVERE':
             raise Exception(log['message'])
-
-    server.kill()

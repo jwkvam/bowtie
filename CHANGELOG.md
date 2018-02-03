@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 0.7.0 / ???
+
+### Added
+
+  * Implemented `__getitem__` for the layout enabling for example: `app[1, 0:2] = widget`.
+
+### Breaking
+
+  * `row_end` and `column_end` are now exclusive instead of inclusive.
+
 ## 0.6.1 / 2018-02-01
 
 ### Added

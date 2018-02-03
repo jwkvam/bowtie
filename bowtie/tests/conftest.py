@@ -3,6 +3,7 @@
 """Pytest configuration."""
 
 from sys import platform
+import socket
 import shutil
 from selenium import webdriver
 
@@ -15,6 +16,10 @@ from bowtie._app import _DIRECTORY
 @pytest.fixture
 def build_path():
     """Path for building apps with pytest."""
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    result = sock.connect_ex(('127.0.0.1', 9991))
+    if result == 0:
+        raise Exception('Port 9991 is unavailable, aborting test.')
     # pylint: disable=protected-access
     View._NEXT_UUID = 0
     yield _DIRECTORY

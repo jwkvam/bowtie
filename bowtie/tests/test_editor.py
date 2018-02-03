@@ -6,6 +6,7 @@ from os import environ as env
 import subprocess
 import time
 
+import pytest
 from bowtie import App
 from bowtie.visual import Markdown
 from bowtie.control import Textbox
@@ -32,9 +33,9 @@ def write(txt):
     mark.do_text(txt)
 
 
-# pylint: disable=unused-argument
-def test_markdown(chrome_driver, build_path, monkeypatch):
-    """Test markdown and text widgets."""
+@pytest.fixture
+def markdown(build_path, monkeypatch):
+    """Create markdown and text widgets."""
     monkeypatch.setattr(App, '_sourcefile', lambda self: 'bowtie.tests.test_editor')
 
     app = App()
@@ -49,7 +50,13 @@ def test_markdown(chrome_driver, build_path, monkeypatch):
     server = subprocess.Popen(os.path.join(build_path, 'src/server.py'), env=env)
 
     time.sleep(5)
+    yield
+    server.kill()
 
+
+# pylint: disable=redefined-outer-name,unused-argument
+def test_markdown(markdown, chrome_driver):
+    """Test markdown and text widgets."""
     chrome_driver.get('http://localhost:9991')
     chrome_driver.implicitly_wait(5)
 
@@ -74,5 +81,3 @@ def test_markdown(chrome_driver, build_path, monkeypatch):
 
     assert 'apple' in output.text
     assert 'banana' in output.text
-
-    server.kill()
