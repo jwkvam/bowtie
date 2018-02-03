@@ -67,8 +67,15 @@ def json_conversion(obj):
         # pandas isn't an explicit dependency of bowtie
         # so we can't assume it's available
         import pandas as pd
+        if isinstance(obj, pd.DatetimeIndex):
+            return [x.isoformat() for x in obj.to_pydatetime()]
         if isinstance(obj, pd.Index):
             return obj.tolist()
+        if isinstance(obj, pd.Series):
+            try:
+                return [x.isoformat() for x in obj.dt.to_pydatetime()]
+            except AttributeError:
+                return obj.tolist()
     except ImportError:
         pass
 
@@ -98,8 +105,15 @@ def encoders(obj):
         # pandas isn't an explicit dependency of bowtie
         # so we can't assume it's available
         import pandas as pd
+        if isinstance(obj, pd.DatetimeIndex):
+            return [x.isoformat() for x in obj.to_pydatetime()]
         if isinstance(obj, pd.Index):
             return obj.tolist()
+        if isinstance(obj, pd.Series):
+            try:
+                return [x.isoformat() for x in obj.dt.to_pydatetime()]
+            except AttributeError:
+                return obj.tolist()
     except ImportError:
         pass
 
