@@ -42,6 +42,7 @@ Contents
     feedback
     cache
     docker
+    exceptions
     architecture
     newcomponents
     comparison

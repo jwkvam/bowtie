@@ -60,7 +60,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Bowtie'
-copyright = u'2016, Jacques Kvam'
+copyright = u'2016-2018, Jacques Kvam'
 author = u'Jacques Kvam'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -130,6 +130,7 @@ html_theme = 'sphinx_rtd_theme'
 html_theme_options = {
     'collapse_navigation': False,
     'display_version': False,
+    'prev_next_buttons_location': 'both',
     'sticky_navigation': True,
     'analytics_id': 'UA-45051049-3',
     # 'navigation_depth': 2,
