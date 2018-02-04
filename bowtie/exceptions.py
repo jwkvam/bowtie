@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Custom Bowtie exceptions."""
+"""Bowtie exceptions."""
 
 
 class YarnError(Exception):
@@ -33,7 +33,7 @@ class NoUnusedCellsError(Exception):
 
 
 class UsedCellsError(Exception):
-    """All cells are used."""
+    """At least one cell is used, when placing the widget."""
 
     pass
 
@@ -57,6 +57,6 @@ class NotStatefulEvent(Exception):
 
 
 class SerializationError(TypeError):
-    """Cannot (de)serialize data."""
+    """Cannot serialize the data for command."""
 
     pass
