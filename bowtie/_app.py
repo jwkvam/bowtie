@@ -33,8 +33,6 @@ _DIRECTORY = 'build'
 _WEBPACK = './node_modules/.bin/webpack'
 
 
-
-
 def raise_not_number(x):
     """Raise ``SizeError`` if ``x`` is not a number``."""
     try:
