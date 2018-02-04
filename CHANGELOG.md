@@ -1,14 +1,18 @@
 # CHANGELOG
 
-## 0.7.0 / ???
+## 0.7.0 / 2018-02-03
 
 ### Added
 
   * Implemented `__getitem__` for the layout enabling for example: `app[1, 0:2] = widget`.
+  * Added "on_relayout" event for Plotly widgets.
+  * Serialize Pandas series objects and Pandas datetime objects.
 
 ### Breaking
 
   * `row_end` and `column_end` are now exclusive instead of inclusive.
+  * Simplified the `add` function in favor of the new getitem functionality,
+    which is easier to use and familiar to Python programmers.
 
 ## 0.6.1 / 2018-02-01
 
