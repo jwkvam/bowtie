@@ -33,7 +33,7 @@ class NoUnusedCellsError(Exception):
 
 
 class UsedCellsError(Exception):
-    """At least one cell is used, when placing the widget"""
+    """At least one cell is used, when placing the widget."""
 
     pass
 
