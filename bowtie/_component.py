@@ -26,6 +26,8 @@ from future.utils import with_metaclass
 import eventlet
 from eventlet.queue import LightQueue
 
+from bowtie.exceptions import SerializationError
+
 
 SEPARATOR = '#'
 
@@ -89,6 +91,7 @@ def jdumps(data):
     return json.dumps(data, default=json_conversion)
 
 
+# pylint: disable=too-many-return-statements
 def encoders(obj):
     """Convert Python object to msgpack encodable ones."""
     try:
@@ -125,7 +128,12 @@ def encoders(obj):
 
 def pack(x):
     """Encode ``x`` into msgpack with additional encoders."""
-    return bytes(msgpack.packb(x, default=encoders))
+    try:
+        return bytes(msgpack.packb(x, default=encoders))
+    except TypeError as exc:
+        message = ('Serialization error, check the data passed to a do_ command. '
+                   'Cannot serialize this object:\n') + str(exc)[16:]
+        raise SerializationError(message)
 
 
 def unpack(x):
