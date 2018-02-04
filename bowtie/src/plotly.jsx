@@ -12,6 +12,7 @@ export default class PlotlyPlot extends React.Component {
         this.selection = null;
         this.click = null;
         this.hover = null;
+        this.layout = null;
 
         var local = sessionStorage.getItem(this.props.uuid);
         if (local === null) {
@@ -30,6 +31,7 @@ export default class PlotlyPlot extends React.Component {
         this.props.socket.on(this.props.uuid + '#get_select', this.getSelection);
         this.props.socket.on(this.props.uuid + '#get_click', this.getClick);
         this.props.socket.on(this.props.uuid + '#get_hover', this.getHover);
+        this.props.socket.on(this.props.uuid + '#get_layout', this.getLayout);
     }
 
     setSelection = data => {
@@ -57,6 +59,20 @@ export default class PlotlyPlot extends React.Component {
             hover: (text == null) ? null : text[point.pointNumber]
         };
         return datum;
+    }
+
+    setLayout = data => {
+        // https://plot.ly/javascript/plotlyjs-events/#update-data
+        if (data.hasOwnProperty('xaxis.range[0]') ||
+            data.hasOwnProperty('xaxis.autorange') ||
+            data.hasOwnProperty('scene')) {
+            this.layout = data;
+            this.props.socket.emit(this.props.uuid + '#relayout', msgpack.encode(data));
+        }
+    }
+
+    getLayout = (data, fn) => {
+        fn(msgpack.encode(this.layout));
     }
 
     setClick = data => {
@@ -89,6 +105,7 @@ export default class PlotlyPlot extends React.Component {
         this.container.on('plotly_selected', this.setSelection);
         this.container.on('plotly_click', this.setClick);
         this.container.on('plotly_hover', this.setHover);
+        this.container.on('plotly_relayout', this.setLayout);
     }
 
     componentDidMount() {

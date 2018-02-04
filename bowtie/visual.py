@@ -364,6 +364,19 @@ class Plotly(_Visual):
         """
         return self.get_select
 
+    def on_relayout(self):
+        """Emit an event when the chart axes change.
+
+        | **Payload:** TODO.
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
+        return self.get_layout
+
     # Commands
 
     # pylint: disable=no-self-use
@@ -460,6 +473,16 @@ class Plotly(_Visual):
 
     def get_hover(self, data):
         """Get the current selection of points.
+
+        Returns
+        -------
+        list
+
+        """
+        return data
+
+    def get_layout(self, data):
+        """Get the current layout.
 
         Returns
         -------
