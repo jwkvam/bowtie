@@ -57,6 +57,6 @@ class NotStatefulEvent(Exception):
 
 
 class SerializationError(TypeError):
-    """Cannot (de)serialize data."""
+    """Cannot serialize the data for command."""
 
     pass
