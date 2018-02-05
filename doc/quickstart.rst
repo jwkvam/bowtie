@@ -130,6 +130,7 @@ The output should look something like this::
       build  Writes the app, downloads the packages, and...
       dev    Recompiles the app for development.
       prod   Recompiles the app for production.
+      run    Build the app and serve it.
       serve  Serves the Bowtie app locally.
 
 To construct the app, we run the script with the ``build`` command::
