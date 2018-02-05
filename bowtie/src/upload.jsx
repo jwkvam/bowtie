@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Upload, Icon, LocaleProvider } from 'antd';
 import enUS from 'antd/lib/locale-provider/en_US';
-import 'antd/dist/antd.css';
 
 const Dragger = Upload.Dragger;
 

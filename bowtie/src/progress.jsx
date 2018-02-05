@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Progress } from 'antd';
-import 'antd/dist/antd.css';
 
 var msgpack = require('msgpack-lite');
 

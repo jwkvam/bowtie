@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Input } from 'antd';
-import 'antd/dist/antd.css';
 import { storeState } from './utils';
 
 var msgpack = require('msgpack-lite');

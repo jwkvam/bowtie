@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Switch, LocaleProvider } from 'antd';
 import enUS from 'antd/lib/locale-provider/en_US';
-import 'antd/dist/antd.css';
 import { storeState } from './utils';
 
 var msgpack = require('msgpack-lite');
