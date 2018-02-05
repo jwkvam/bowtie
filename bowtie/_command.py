@@ -68,7 +68,7 @@ def command(func):
                  add_help_option=False)
     @click.argument('extra', nargs=-1, type=click.UNPROCESSED)
     def run(extra):
-        """Write the app, downloads the packages, and bundles it with Webpack."""
+        """Build the app and serve it."""
         nargs = numargs(func)
         if nargs == 0:
             app = func()
