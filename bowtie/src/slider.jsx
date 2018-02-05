@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Slider } from 'antd';
-// import 'antd/dist/antd.less';
 import { storeState } from './utils';
 
 var msgpack = require('msgpack-lite');

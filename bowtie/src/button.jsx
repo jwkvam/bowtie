@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Button } from 'antd';
-// import 'antd/dist/antd.less';
 
 export default class SimpleButton extends React.Component {
 
