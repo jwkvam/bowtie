@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { DatePicker, LocaleProvider } from 'antd';
 import enUS from 'antd/lib/locale-provider/en_US';
-import 'antd/dist/antd.css';
+// import 'antd/dist/antd.less';
 // import 'antd/lib/date-picker/style/index.css';
 const { MonthPicker, RangePicker } = DatePicker;
 import { storeState } from './utils';

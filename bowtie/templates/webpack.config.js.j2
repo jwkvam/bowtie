@@ -4,7 +4,6 @@ const prod = process.argv.indexOf('--define') !== -1;
 var path = require('path');
 var CompressionPlugin = require('compression-webpack-plugin');
 
-
 var BUILD_DIR = path.resolve(__dirname, 'src/static');
 var APP_DIR = path.resolve(__dirname, 'src/app');
 var HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
@@ -27,11 +26,12 @@ var config = {
                 include: APP_DIR,
                 loader: 'babel-loader',
                 exclude: /node_modules/,
-                query: {
+                options: {
                     presets: [
                         ['env', {'modules': false}],
                         'react', 'stage-0'],
                     plugins: [
+                        ["import", { "libraryName": "antd", "style": true }],
                         'transform-object-rest-spread',
                     ],
                     babelrc: false
@@ -44,7 +44,20 @@ var config = {
                 loader: 'style-loader!css-loader!sass-loader',
             }, {
                 test: /\.less$/,
-                loader: 'style-loader!css-loader!less-loader?strictMath&noIeCompat&',
+                use: [
+                    {loader: "style-loader"},
+                    {loader: "css-loader"},
+                    {loader: "less-loader",
+                        options: {
+                            strictMath: false,
+                            noIeCompat: true,
+                            {% if color %}
+                            modifyVars: {"primary-color": "{{ color }}"},
+                            {% endif %}
+                            root: path.resolve(__dirname, './')
+                        }
+                    }
+                ]
             },
         ],
         noParse: [
@@ -102,3 +115,5 @@ if (prod) {
 }
 
 module.exports = config;
+
+// vim: set ft=javascript:

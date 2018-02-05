@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Table, LocaleProvider } from 'antd';
 import enUS from 'antd/lib/locale-provider/en_US';
-import 'antd/dist/antd.css';
+// import 'antd/dist/antd.less';
 import { storeState } from './utils';
 
 var msgpack = require('msgpack-lite');

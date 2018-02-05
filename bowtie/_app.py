@@ -463,8 +463,8 @@ class App(object):
     def __init__(self, rows=1, columns=1, sidebar=True,
                  title='Bowtie App', basic_auth=False,
                  username='username', password='password',
-                 background_color='White', host='0.0.0.0', port=9991,
-                 socketio='', debug=False):
+                 theme=None, background_color='White',
+                 host='0.0.0.0', port=9991, socketio='', debug=False):
         """Create a Bowtie App.
 
         Parameters
@@ -483,6 +483,8 @@ class App(object):
             Username for basic authentication.
         password : str, optional
             Password for basic authentication.
+        theme : str, optional
+            Color for Ant Design components.
         background_color : str, optional
             Background color of the control pane.
         host : str, optional
@@ -511,6 +513,7 @@ class App(object):
         self.title = title
         self.username = username
         self.uploads = {}
+        self.theme = theme
         self.root = View(rows=rows, columns=columns, sidebar=sidebar,
                          background_color=background_color)
         self.routes = [Route(view=self.root, path='/', exact=True)]
@@ -698,8 +701,15 @@ class App(object):
         server = self._jinjaenv.get_template('server.py.j2')
         indexhtml = self._jinjaenv.get_template('index.html.j2')
         indexjsx = self._jinjaenv.get_template('index.jsx.j2')
+        webpack = self._jinjaenv.get_template('webpack.config.js.j2')
 
         src, app, templates = create_directories()
+
+        webpack_path = os.path.join(_DIRECTORY, webpack.name[:-3])
+        with open(webpack_path, 'w') as f:
+            f.write(
+                webpack.render(color=self.theme)
+            )
 
         server_path = os.path.join(src, server.name[:-3])
         with open(server_path, 'w') as f:
@@ -769,10 +779,6 @@ class App(object):
     def _build(self):
         """Compile the Bowtie application."""
         packages = self._write_templates()
-
-        if not os.path.isfile(os.path.join(_DIRECTORY, 'webpack.config.js')):
-            webpack_src = os.path.join(self._package_dir, 'src/webpack.config.js')
-            shutil.copy(webpack_src, _DIRECTORY)
 
         if not os.path.isfile(os.path.join(_DIRECTORY, 'package.json')):
             packagejson = os.path.join(self._package_dir, 'src/package.json')
