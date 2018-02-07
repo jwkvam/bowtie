@@ -3,6 +3,7 @@
 
 import os
 import sys
+import socket
 import traceback
 from functools import wraps
 
@@ -211,6 +212,10 @@ def main(host, port):
 
         for sched in scheds:
             sched.start()
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    result = sock.connect_ex((host, port))
+    if result == 0:
+        raise Exception('Port {} is unavailable on host {}, aborting.'.format(port, host))
     socketio.run(app, host=host, port=port)
     if scheduled:
         for sched in scheds:

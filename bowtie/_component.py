@@ -32,6 +32,9 @@ from bowtie.exceptions import SerializationError
 SEPARATOR = '#'
 
 
+COMPONENT_REGISTRY = {}
+
+
 def varname(variable):
     """Return the name of the given variable."""
     # here there be dragons...starting to feel a little uncomfortable
