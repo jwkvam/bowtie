@@ -136,7 +136,6 @@ def make_event(event):
             sep=SEPARATOR,
             event=name
         )
-        # objname = varname(self)
         try:
             # the getter post processing function
             # is preserved with an underscore
