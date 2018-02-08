@@ -1,8 +1,12 @@
 Bowtie
 ======
 
-|Join the chat at https://gitter.im/bowtie-py/Lobby| |Forum|
-|Documentation Status| |Build Status| |PyPI version| |PyPI| |codecov|
+`Installation <https>`__ |
+`Documentatation <https://google.com>`__ |
+`Gitter Chat <hello>`__ |
+`Google Group <group>`__
+
+|Build Status| |Documentation Status| |PyPI version| |PyPI| |codecov|
 
 .. figure:: https://cloud.githubusercontent.com/assets/86304/20045988/69e5678a-a45a-11e6-853b-7f60a615c9da.gif
    :alt: Demo
@@ -29,11 +33,6 @@ For more examples, check out the
 `gallery <https://github.com/jwkvam/bowtie/wiki/Gallery>`__. Feel free
 to add your own creations!
 
-Documentation
--------------
-
-Available `here <https://bowtie-py.readthedocs.io/en/latest/>`__.
-
 Install
 -------
 
@@ -42,7 +41,7 @@ Install
     pip install bowtie
 
 Requirements
-------------
+^^^^^^^^^^^^
 
 Bowtie uses `Yarn <https://yarnpkg.com>`__ to manage node packages. Yarn
 can be installed through conda::
@@ -52,6 +51,11 @@ can be installed through conda::
 Otherwise follow `install
 instructions <https://yarnpkg.com/en/docs/install>`__ for Yarn for your
 OS.
+
+Documentation
+-------------
+
+Available `here <https://bowtie-py.readthedocs.io/en/latest/>`__.
 
 Docker
 ------
