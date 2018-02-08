@@ -1,10 +1,10 @@
-Bowtie
-======
-
 `Installation <https>`__ |
 `Documentatation <https://google.com>`__ |
 `Gitter Chat <hello>`__ |
 `Google Group <group>`__
+
+Bowtie
+======
 
 |Build Status| |Documentation Status| |PyPI version| |PyPI| |codecov|
 
