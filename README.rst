@@ -1,7 +1,7 @@
-`Installation <https>`__ |
-`Documentatation <https://google.com>`__ |
-`Gitter Chat <hello>`__ |
-`Google Group <group>`__
+`Installation`_ |
+`Documentation`_ |
+`Gitter Chat <https://gitter.im/bowtie-py/Lobby>`__ |
+`Google Group <https://groups.google.com/forum/#!forum/bowtie-py>`__
 
 ======
 Bowtie
@@ -34,8 +34,8 @@ For more examples, check out the
 `gallery <https://github.com/jwkvam/bowtie/wiki/Gallery>`__. Feel free
 to add your own creations!
 
-Install
--------
+Installation
+------------
 
 ::
 
