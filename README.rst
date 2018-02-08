@@ -3,6 +3,7 @@
 `Gitter Chat <hello>`__ |
 `Google Group <group>`__
 
+======
 Bowtie
 ======
 
