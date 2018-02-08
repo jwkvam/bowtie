@@ -1,5 +1,5 @@
 `Installation`_ |
-`Documentation`_ |
+`Documentation <https://bowtie-py.readthedocs.io/en/stable>`__ |
 `Gitter Chat <https://gitter.im/bowtie-py/Lobby>`__ |
 `Google Group <https://groups.google.com/forum/#!forum/bowtie-py>`__
 
