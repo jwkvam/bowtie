@@ -10,7 +10,7 @@ import msgpack
 from bowtie._component import pack
 
 
-def valid(key):
+def validate(key):
     """Check that the key is a string or bytestring.
 
     That's the only valid type of key.
@@ -52,7 +52,7 @@ class _Cache(object):
             The value if the key exists in the cache, otherwise None.
 
         """
-        valid(key)
+        validate(key)
         signal = 'cache_load'
         event = LightQueue(1)
         if flask.has_request_context():
@@ -77,7 +77,7 @@ class _Cache(object):
         None
 
         """
-        valid(key)
+        validate(key)
         signal = 'cache_save'
         if flask.has_request_context():
             emit(signal, {'key': pack(key), 'data': pack(value)})

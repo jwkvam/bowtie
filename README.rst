@@ -57,7 +57,7 @@ Docker
 ------
 
 Docker images are provided as an alternative way to use Bowtie. They are
-available on `DockerHub <https://hub.docker.com/r/jwkvam/bowtie/>`__::
+available on `Docker Hub <https://hub.docker.com/r/jwkvam/bowtie/>`__::
 
     docker pull jwkvam/bowtie
 
