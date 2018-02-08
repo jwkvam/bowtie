@@ -311,3 +311,6 @@ intersphinx_mapping = {'https://docs.python.org/': None}
 # rtd doesn't seem to support the setup function
 # so we'll just combine the class and __init__ docstrings
 autoclass_content = 'both'
+
+def setup(app):
+    app.add_stylesheet('custom.css')
