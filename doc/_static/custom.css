@@ -6,6 +6,10 @@ div.wy-side-nav-search {
     background: #5f4b8b;
 }
 
+nav.wy-nav-top {
+    background: #5f4b8b;
+}
+
 div .wy-side-nav-search input[type=text] {
     border-color: #5f4b8b;
 }
