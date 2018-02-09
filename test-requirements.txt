@@ -1,4 +1,3 @@
-astor
 click
 codecov
 eventlet

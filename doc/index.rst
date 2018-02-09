@@ -35,15 +35,31 @@ Contents
 
 .. toctree::
     :maxdepth: 2
+    :caption: Getting Started
 
     quickstart
+
+.. toctree::
+    :maxdepth: 2
+    :caption: User Guide
+
     app
     components
     feedback
     cache
     docker
     exceptions
+
+.. toctree::
+    :maxdepth: 2
+    :caption: Developer Guide
+
     architecture
     newcomponents
+
+.. toctree::
+    :maxdepth: 2
+    :caption: Miscellaneous
+
     comparison
     indices

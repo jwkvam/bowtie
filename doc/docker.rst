@@ -9,7 +9,7 @@ The file provides a conda environment with python 3.6.
 Docker Hub
 ----------
 
-The Docker image is hosted on DockerHub.
+The Docker image is hosted on `Docker Hub` <https://hub.docker.com/r/jwkvam/bowtie/>`__.
 To pull the bleeding edge release::
 
     docker pull jwkvam/bowtie
@@ -40,3 +40,12 @@ so you can access the dashboard from the host machine.
 You may find it convenient to make this command an alias::
 
     alias bowtie='docker run -ti -p 9991:9991 -v (pwd):/work -rm bowtie bash'
+
+Let's say your dashboard is in ``app.py`` and you have a ``requirements.txt`` file::
+
+    $ bowtie
+    # now inside the docker
+    bowtie $ pip install -r requirements.txt
+    bowtie $ python app.py run
+
+After a few moments you should be able to access the website from your machine.

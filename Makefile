@@ -18,7 +18,7 @@ eslint:
 	eslint bowtie/src/*.js{,x}
 
 checkdocs:
-	pydocstyle --count --match-dir='(?!examples|doc|.*templates)[^\.].*'
+	pydocstyle --count --match-dir='(?!examples|build|doc|.*templates)[^\.].*'
 
 coverage:
 	py.test --cov=./ --cov-report html --ignore=doc

@@ -1,8 +1,13 @@
+`Installation`_ |
+`Documentation <https://bowtie-py.readthedocs.io/en/stable>`__ |
+`Gitter Chat <https://gitter.im/bowtie-py/Lobby>`__ |
+`Google Group <https://groups.google.com/forum/#!forum/bowtie-py>`__
+
+======
 Bowtie
 ======
 
-|Join the chat at https://gitter.im/bowtie-py/Lobby| |Forum|
-|Documentation Status| |Build Status| |PyPI version| |PyPI| |codecov|
+|Build Status| |Documentation Status| |PyPI version| |PyPI| |codecov|
 
 .. figure:: https://cloud.githubusercontent.com/assets/86304/20045988/69e5678a-a45a-11e6-853b-7f60a615c9da.gif
    :alt: Demo
@@ -29,23 +34,23 @@ For more examples, check out the
 `gallery <https://github.com/jwkvam/bowtie/wiki/Gallery>`__. Feel free
 to add your own creations!
 
-Documentation
--------------
+Installation
+------------
 
-Available `here <https://bowtie-py.readthedocs.io/en/latest/>`__.
+If you use ``conda``, you can install with::
 
-Install
--------
+    conda install -c conda-forge bowtie-py
 
-::
+If you use ``pip``, you can install with::
 
     pip install bowtie
 
 Requirements
-------------
+^^^^^^^^^^^^
 
-Bowtie uses `Yarn <https://yarnpkg.com>`__ to manage node packages. Yarn
-can be installed through conda::
+Bowtie uses `Yarn <https://yarnpkg.com>`__ to manage node packages.
+If you installed Bowtie through ``conda``, Yarn was also installed as a dependency.
+Yarn can be installed through conda::
 
     conda install -c conda-forge yarn
 
@@ -53,11 +58,16 @@ Otherwise follow `install
 instructions <https://yarnpkg.com/en/docs/install>`__ for Yarn for your
 OS.
 
+Documentation
+-------------
+
+Available `here <https://bowtie-py.readthedocs.io/en/latest/>`__.
+
 Docker
 ------
 
 Docker images are provided as an alternative way to use Bowtie. They are
-available on `DockerHub <https://hub.docker.com/r/jwkvam/bowtie/>`__::
+available on `Docker Hub <https://hub.docker.com/r/jwkvam/bowtie/>`__::
 
     docker pull jwkvam/bowtie
 

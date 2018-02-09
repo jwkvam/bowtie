@@ -11,6 +11,5 @@ Keep in mind that if you store a large amount of data it will get transferred to
 which could result in a poor user experience.
 That being said, it can be very useful to store results from expensive computations.
 
-.. autofunction:: bowtie.cache.save
-
-.. autofunction:: bowtie.cache.load
+.. autoclass:: bowtie._cache._Cache
+    :members:

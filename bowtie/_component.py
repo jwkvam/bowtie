@@ -10,15 +10,11 @@ from __future__ import unicode_literals
 # pylint: disable=redefined-builtin
 from builtins import bytes
 
-import traceback
-import ast
 import string
-import inspect
 from functools import wraps
 import json
 from datetime import datetime, date, time
 
-import astor
 import msgpack
 import flask
 from flask_socketio import emit
@@ -32,21 +28,7 @@ from bowtie.exceptions import SerializationError
 SEPARATOR = '#'
 
 
-def varname(variable):
-    """Return the name of the given variable."""
-    # here there be dragons...starting to feel a little uncomfortable
-    stack = traceback.extract_stack()
-    code = stack[-3][-1]
-    tree = ast.parse(code)
-
-    frame = inspect.stack()[2][0]
-    for node in ast.walk(tree):
-        if hasattr(node, 'attr') and node.attr.startswith('on_'):
-            name = astor.to_source(node.value).strip()
-            # pylint: disable=eval-used
-            if variable is eval(name, frame.f_globals, frame.f_locals):
-                return name
-    raise Exception('Could not identify name of variable: {}'.format(variable))
+COMPONENT_REGISTRY = {}
 
 
 def jsbool(x):
@@ -154,14 +136,13 @@ def make_event(event):
             sep=SEPARATOR,
             event=name
         )
-        objname = varname(self)
         try:
             # the getter post processing function
             # is preserved with an underscore
             getter = event(self).__name__
         except AttributeError:
             getter = None
-        return ename, objname, getter
+        return ename, self._uuid, getter
 
     return actualevent
 
@@ -280,6 +261,7 @@ class Component(with_metaclass(_Maker, object)):
         self._tag = '<' + self._COMPONENT
         if self._ATTRS:
             self._tag += ' ' + self._ATTRS
+        COMPONENT_REGISTRY[self._uuid] = self
 
     @staticmethod
     def _insert(wrap, tag):
