@@ -14,12 +14,33 @@ This quick start will show how to do the following:
 * Write an app connecting a slider to a plot.
 * How to deploy to Heroku.
 
+Install Bowtie
+--------------
+
+If you use ``conda``, you can install with::
+
+    conda install -c conda-forge bowtie-py
+
+If you use ``pip``, you can install with::
+
+    pip install bowtie
+
+To install bleeding edge, if you are using Python 3 you can use `flit <http://flit.readthedocs.io/en/latest/index.html>`_, to install::
+
+    flit install
+
+If you are on Python 2, create a wheel with flit in Python 3, then
+install that wheel with Python 2::
+
+    py3> flit wheel
+    py2> pip install dist/bowtie*.whl
 
 Install Yarn
 ------------
 
 Bowtie uses `Yarn <https://yarnpkg.com/>`_ to manage the Javascript libraries
 We need to install it before we can use Bowtie.
+If you installed Bowtie with ``conda``, Yarn was installed as a dependency and you can move on to `Creating Your First App`_.
 
 Conda Install
 ^^^^^^^^^^^^^
@@ -41,22 +62,6 @@ Other Environments
 For other environments please follow the `install instructions <https://yarnpkg.com/en/docs/install>`_
 on the official website.
 
-Install Bowtie
---------------
-
-To install the latest release::
-
-    pip install bowtie
-
-To install bleeding edge, if you are using Python 3 you can use `flit <http://flit.readthedocs.io/en/latest/index.html>`_,  to install::
-
-    flit install
-
-If you are on Python 2, create a wheel with flit in Python 3, then
-install that wheel with Python 2::
-
-    py3> flit wheel
-    py2> pip install dist/bowtie*.whl
 
 Creating Your First App
 -----------------------
