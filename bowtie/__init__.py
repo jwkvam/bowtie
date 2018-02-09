@@ -1,4 +1,4 @@
-"""Interactive dashboard toolkit."""
+"""Interactive Dashboard Toolkit."""
 
 __version__ = '0.7.1-dev'
 
