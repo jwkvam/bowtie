@@ -7,7 +7,7 @@
 Bowtie
 ======
 
-|Build Status| |Documentation Status| |PyPI version| |PyPI| |codecov|
+|Build Status| |Documentation Status| |PyPI version| |Conda version| |PyPI| |codecov|
 
 .. figure:: https://cloud.githubusercontent.com/assets/86304/20045988/69e5678a-a45a-11e6-853b-7f60a615c9da.gif
    :alt: Demo
@@ -102,6 +102,8 @@ You can help Bowtie in many ways including:
    :target: https://travis-ci.org/jwkvam/bowtie
 .. |PyPI version| image:: https://badge.fury.io/py/bowtie.svg
    :target: https://badge.fury.io/py/bowtie
+.. |Conda version| image:: https://anaconda.org/conda-forge/bowtie-py/badges/version.svg   
+   :target: https://anaconda.org/conda-forge/bowtie-py
 .. |PyPI| image:: https://img.shields.io/pypi/pyversions/bowtie.svg
    :target: https://pypi.python.org/pypi/bowtie/
 .. |codecov| image:: https://codecov.io/gh/jwkvam/bowtie/branch/master/graph/badge.svg
