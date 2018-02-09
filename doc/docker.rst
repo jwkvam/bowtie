@@ -41,7 +41,7 @@ You may find it convenient to make this command an alias::
 
     alias bowtie='docker run -ti -p 9991:9991 -v (pwd):/work -rm bowtie bash'
 
-Let's say your dashboard is in ``app.py`` and you have a ``requirements.txt`` file:
+Let's say your dashboard is in ``app.py`` and you have a ``requirements.txt`` file::
 
     $ bowtie
     # now inside the docker
