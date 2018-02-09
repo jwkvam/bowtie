@@ -37,11 +37,11 @@ to add your own creations!
 Installation
 ------------
 
-If you use ``conda``, you can install as::
+If you use ``conda``, you can install with::
 
     conda install -c conda-forge bowtie-py
 
-If you use ``pip``, you can install it as::
+If you use ``pip``, you can install with::
 
     pip install bowtie
 
