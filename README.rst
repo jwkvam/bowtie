@@ -37,15 +37,20 @@ to add your own creations!
 Installation
 ------------
 
-::
+If you use ``conda``, you can install as::
+
+    conda install -c conda-forge bowtie-py
+
+If you use ``pip``, you can install it as::
 
     pip install bowtie
 
 Requirements
 ^^^^^^^^^^^^
 
-Bowtie uses `Yarn <https://yarnpkg.com>`__ to manage node packages. Yarn
-can be installed through conda::
+Bowtie uses `Yarn <https://yarnpkg.com>`__ to manage node packages.
+If you installed Bowtie through ``conda``, Yarn was also installed as a dependency.
+Yarn can be installed through conda::
 
     conda install -c conda-forge yarn
 
