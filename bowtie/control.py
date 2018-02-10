@@ -652,7 +652,7 @@ class Slider(_Controller):
             start=start,
             step=step,
             marks={minimum: str(minimum), maximum: str(maximum)},
-            vertical=vertical
+            vertical=jsbool(vertical)
         )
 
     # pylint: disable=no-self-use
