@@ -1,13 +1,14 @@
 # CHANGELOG
 
-## 0.8.0 / ???
+## 0.8.0 / 2018-02-10
 
 ### Added
 
-  * Cache behaves like dict, e.g. `cache['data'] = [1, 2, 3]`
   * Improved widget handling, now use a dict to store components instead of parsing code.
     Makes it possible to subscribe to events with expressions for the component.
+  * Cache behaves like dict, e.g. `cache['data'] = [1, 2, 3]`.
   * Support Ant theme to customize all Ant components, added in the `App` class.
+  * Vertical option for slider. (#204)
   * Document run command.
   * Document exceptions.
 
