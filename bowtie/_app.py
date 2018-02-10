@@ -769,13 +769,6 @@ class App(object):
             )
         return packages
 
-    def build(self):
-        """Deprecate build function."""
-        warnings.warn(
-            '`build` is deprecated, return the `App` object instead.',
-            DeprecationWarning
-        )
-
     def _build(self):
         """Compile the Bowtie application."""
         packages = self._write_templates()
