@@ -88,6 +88,7 @@ export default class AntSlider extends React.Component {
                 max={this.state.max}
                 step={this.props.step}
                 marks={this.props.marks}
+                vertical={this.props.vertical}
                 onChange={this.onChange}
                 onAfterChange={this.onAfterChange}
             />
@@ -107,4 +108,5 @@ AntSlider.propTypes = {
     ]).isRequired,
     step: PropTypes.number.isRequired,
     marks: PropTypes.object.isRequired,
+    vertical: PropTypes.bool.isRequired
 };

@@ -607,10 +607,11 @@ class Slider(_Controller):
               'max={{{maximum}}} '
               'step={{{step}}} '
               'start={{{start}}} '
-              'marks={{{marks}}}')
+              'marks={{{marks}}} '
+              'vertical={{{vertical}}}')
 
     def __init__(self, start=None, ranged=False, minimum=0, maximum=100, step=1,
-                 caption=None):
+                 vertical=False, caption=None):
         """Create a slider.
 
         Parameters
@@ -626,6 +627,8 @@ class Slider(_Controller):
             Maximum value of the slider.
         step : number, optional
             Step size.
+        vertical : bool, optional
+            If True, the slider will be vertical
         caption : str, optional
             Heading text.
 
@@ -648,7 +651,8 @@ class Slider(_Controller):
             maximum=maximum,
             start=start,
             step=step,
-            marks={minimum: str(minimum), maximum: str(maximum)}
+            marks={minimum: str(minimum), maximum: str(maximum)},
+            vertical=jsbool(vertical)
         )
 
     # pylint: disable=no-self-use
