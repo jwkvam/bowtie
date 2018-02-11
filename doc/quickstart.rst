@@ -32,7 +32,7 @@ To install bleeding edge, if you are using Python 3 you can use `flit <http://fl
 If you are on Python 2, create a wheel with flit in Python 3, then
 install that wheel with Python 2::
 
-    py3> flit wheel
+    py3> flit build
     py2> pip install dist/bowtie*.whl
 
 Install Yarn

@@ -25,7 +25,7 @@ from bowtie._component import COMPONENT_REGISTRY
 try:
     FileNotFoundError
 except NameError:
-    FileNotFoundError = IOError
+    FileNotFoundError = OSError
 
 
 class GetterNotDefined(AttributeError):
