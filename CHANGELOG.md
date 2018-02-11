@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 0.8.1 / 2018-02-11
+
+### Fixed
+
+  * Error if only the gzipped bundle is available.
+
 ## 0.8.0 / 2018-02-10
 
 ### Added
