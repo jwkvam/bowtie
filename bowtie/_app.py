@@ -695,9 +695,15 @@ class App(object):
     # pylint: disable=no-self-use
     def _sourcefile(self):
         # [-1] grabs the top of the stack and [1] grabs the filename
-        return os.path.basename(inspect.stack()[-1][1])[:-3]
+        stack = inspect.stack()
+        import numpy as np
+        x = os.path.basename(inspect.stack()[-1][1])[:-3]
+        print('x', x)
+        print(np.array([x.filename for x in stack]))
+        return x
 
-    def _write_templates(self):
+    def _write_templates(self, notebook=None):
+        print('templates', notebook)
         server = self._jinjaenv.get_template('server.py.j2')
         indexhtml = self._jinjaenv.get_template('index.html.j2')
         indexjsx = self._jinjaenv.get_template('index.jsx.j2')
@@ -719,7 +725,8 @@ class App(object):
                     basic_auth=self.basic_auth,
                     username=self.username,
                     password=self.password,
-                    source_module=self._sourcefile(),
+                    notebook=notebook,
+                    source_module=self._sourcefile() if not notebook else None,
                     subscriptions=self.subscriptions,
                     uploads=self.uploads,
                     schedules=self.schedules,
@@ -769,9 +776,10 @@ class App(object):
             )
         return packages
 
-    def _build(self):
+    def _build(self, notebook=None):
         """Compile the Bowtie application."""
-        packages = self._write_templates()
+        print('build', notebook)
+        packages = self._write_templates(notebook=notebook)
 
         if not os.path.isfile(os.path.join(_DIRECTORY, 'package.json')):
             packagejson = os.path.join(self._package_dir, 'src/package.json')

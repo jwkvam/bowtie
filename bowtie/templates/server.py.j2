@@ -55,15 +55,21 @@ def requires_auth(f):
     return decorated
 
 
-# import the user created module
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-import {{source_module}}
-
 app = Flask(__name__)
 app.debug = {{ debug|default(False) }}
 socketio = SocketIO(app, binary=True, path='{{ socketio }}' + 'socket.io')
 # not sure if this is secure or how much it matters
 app.secret_key = os.urandom(256)
+
+
+# import the user created module
+{% if notebook %}
+from bowtie._magic import load_notebook
+sourcemod = load_notebook('{{ notebook }}')
+{% else %}
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+import {{source_module}} as sourcemod
+{% endif %}
 
 def context(func):
     def foo():
@@ -110,7 +116,7 @@ def index():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        success = {{ source_module }}.{{ login }}()
+        success = sourcemod.{{ login }}()
         if success:
             return redirect(url_for('index'))
         else:
@@ -150,7 +156,7 @@ def getbundle():
 {% if initial %}
 @socketio.on('INITIALIZE')
 def _():
-    foo = copy_current_request_context({{ source_module }}.{{ initial }})
+    foo = copy_current_request_context(sourcemod.{{ initial }})
     eventlet.spawn(foo)
 {% endif %}
 
@@ -159,7 +165,7 @@ def _():
 @app.route('/upload{{ uuid }}', methods=['POST'])
 def _():
     upfile = request.files['file']
-    retval = {{ source_module }}.{{ function }}(upfile.filename, upfile.stream)
+    retval = sourcemod.{{ function }}(upfile.filename, upfile.stream)
     if retval:
         return make_response(jsonify(), 400)
     return make_response(jsonify(), 200)
@@ -169,7 +175,7 @@ def _():
 {% for page, function in pages.items() %}
 @socketio.on('resp#{{ page._uuid }}')
 def _():
-    foo = copy_current_request_context({{ source_module }}.{{ function }})
+    foo = copy_current_request_context(sourcemod.{{ function }})
     eventlet.spawn(foo)
 {% endfor %}
 
@@ -212,7 +218,7 @@ def _(*args):
             {% endif %}
 
         # finally call the user method
-        {{ source_module }}.{{ support[1] }}(*user_args)
+        sourcemod.{{ support[1] }}(*user_args)
         {% endfor %}
 
     foo = copy_current_request_context(wrapuser)
@@ -229,7 +235,7 @@ def main(host, port):
         scheds = []
         {% for schedule in schedules %}
         sched = Scheduler({{ schedule.seconds }},
-                          {{ source_module }}.{{ schedule.function }})
+                          sourcemod.{{ schedule.function }})
         scheds.append(sched)
         {% endfor %}
 
