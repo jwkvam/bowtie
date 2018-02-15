@@ -87,10 +87,12 @@ class BowtieMagic(Magics):
     """Bowtie magic commands."""
 
     @line_magic
-    def bowtie(self, appvar=''):
+    def bowtie(self, line=''):
         """Build and serve a Bowtie app."""
-        width = 1500
-        height = 1000
+        opts, appvar = self.parse_options(line, 'w:h:')
+        width = opts.get('w', 1500)
+        height = opts.get('h', 1000)
+
         global_ns = self.shell.user_global_ns
         local_ns = self.shell.user_ns
         try:
