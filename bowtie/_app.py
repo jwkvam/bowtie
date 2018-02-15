@@ -10,7 +10,7 @@ import inspect
 import shutil
 import stat
 from collections import namedtuple, defaultdict, OrderedDict
-from subprocess import Popen
+from subprocess import Popen, PIPE, STDOUT
 import warnings
 
 from jinja2 import Environment, FileSystemLoader
@@ -695,15 +695,9 @@ class App(object):
     # pylint: disable=no-self-use
     def _sourcefile(self):
         # [-1] grabs the top of the stack and [1] grabs the filename
-        stack = inspect.stack()
-        import numpy as np
-        x = os.path.basename(inspect.stack()[-1][1])[:-3]
-        print('x', x)
-        print(np.array([x.filename for x in stack]))
-        return x
+        return os.path.basename(inspect.stack()[-1][1])[:-3]
 
     def _write_templates(self, notebook=None):
-        print('templates', notebook)
         server = self._jinjaenv.get_template('server.py.j2')
         indexhtml = self._jinjaenv.get_template('index.html.j2')
         indexjsx = self._jinjaenv.get_template('index.jsx.j2')
@@ -778,16 +772,14 @@ class App(object):
 
     def _build(self, notebook=None):
         """Compile the Bowtie application."""
-        print('build', notebook)
         packages = self._write_templates(notebook=notebook)
 
         if not os.path.isfile(os.path.join(_DIRECTORY, 'package.json')):
             packagejson = os.path.join(self._package_dir, 'src/package.json')
             shutil.copy(packagejson, _DIRECTORY)
 
-        install = Popen('yarn install', shell=True, cwd=_DIRECTORY).wait()
-        if install > 1:
-            raise YarnError('Error install node packages')
+        if run(['yarn', 'install'], notebook=notebook) > 1:
+            raise YarnError('Error installing node packages')
 
         packages.discard(None)
         if packages:
@@ -795,16 +787,28 @@ class App(object):
             packages = [x for x in packages if x.split('@')[0] not in installed]
 
             if packages:
-                packagestr = ' '.join(packages)
-                install = Popen('yarn add {}'.format(packagestr),
-                                shell=True, cwd=_DIRECTORY).wait()
-                if install > 1:
-                    raise YarnError('Error install node packages')
-                elif install == 1:
+                retval = run(['yarn', 'add'] + packages, notebook=notebook)
+                if retval > 1:
+                    raise YarnError('Error installing node packages')
+                elif retval == 1:
                     print('Yarn error but trying to continue build')
-        dev = Popen('{} -d'.format(_WEBPACK), shell=True, cwd=_DIRECTORY).wait()
-        if dev != 0:
+        retval = run([_WEBPACK, '-d'], notebook=notebook)
+        if retval != 0:
             raise WebpackError('Error building with webpack')
+
+
+def run(command, notebook=None):
+    """Run command from terminal and notebook and view output from subprocess."""
+    if notebook:
+        return Popen(command, cwd=_DIRECTORY).wait()
+    else:
+        while True:
+            cmd = Popen(command, cwd=_DIRECTORY, stdout=PIPE, stderr=STDOUT)
+            line = cmd.stdout.readline()
+            if line == b'' and cmd.poll() is not None:
+                return cmd.poll()
+            print(line.decode('utf-8'), end='')
+    raise Exception()
 
 
 def installed_packages():
