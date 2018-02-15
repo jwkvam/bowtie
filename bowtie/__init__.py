@@ -8,8 +8,10 @@ from bowtie.pager import Pager
 from bowtie._cache import cache
 
 
-def load_ipython_extension(ip):
-    """ API for IPython to recognize this module as an IPython extension.
-    """
+def load_ipython_extension(ipython):
+    """Enable IPython extension."""
+    import sys
+    if sys.version_info < (3,):
+        raise Exception('Bowtie magics only support Python 3.')
     from bowtie._magic import BowtieMagic
-    ip.register_magics(BowtieMagic)
+    ipython.register_magics(BowtieMagic)
