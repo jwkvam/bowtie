@@ -65,7 +65,11 @@ script:
     - if [[ "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then
       make style;
       fi
-    - make test
+    - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+      make test2;
+      else
+      make test;
+      fi
 
 after_success:
     - codecov
