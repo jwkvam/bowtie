@@ -11,6 +11,7 @@ import sys
 import types
 import time
 from subprocess import Popen, PIPE, STDOUT
+from threading import Thread
 
 from IPython import get_ipython
 from IPython.display import display, HTML, clear_output
@@ -78,7 +79,11 @@ def load_notebook(fullname):
                 except SyntaxError:
                     continue
                 # pylint: disable=exec-used
-                exec(cell.source, mod.__dict__)
+                try:
+                    exec(cell.source, mod.__dict__)
+                except NameError:
+                    print(cell.source)
+                    raise
     finally:
         shell.user_ns = save_user_ns
     return mod
@@ -115,6 +120,20 @@ class BowtieMagic(Magics):
             server = Popen(['python', '-u', filepath], stdout=PIPE, stderr=STDOUT)
         else:
             raise FileNotFoundError('Cannot find "{}". Did you build the app?'.format(filepath))
+
+        def flush_stdout(cmd):
+            """Flush stdout from command continuously."""
+            while True:
+                line = cmd.stdout.readline()
+                if line == b'' and cmd.poll() is not None:
+                    return cmd.poll()
+                else:
+                    print(line.decode('utf-8'), end='')
+            raise Exception()
+
+        thread = Thread(target=flush_stdout, args=(server,))
+        thread.daemon = True
+        thread.start()
 
         while server.poll() is None:
             try:
