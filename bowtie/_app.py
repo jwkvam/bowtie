@@ -799,11 +799,11 @@ class App(object):
 
 def run(command, notebook=None):
     """Run command from terminal and notebook and view output from subprocess."""
-    if notebook:
+    if notebook is None:
         return Popen(command, cwd=_DIRECTORY).wait()
     else:
+        cmd = Popen(command, cwd=_DIRECTORY, stdout=PIPE, stderr=STDOUT)
         while True:
-            cmd = Popen(command, cwd=_DIRECTORY, stdout=PIPE, stderr=STDOUT)
             line = cmd.stdout.readline()
             if line == b'' and cmd.poll() is not None:
                 return cmd.poll()
