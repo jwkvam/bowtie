@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Jupyter Integration."""
 
-
 import os
 from os.path import join as pjoin
 from urllib.parse import urljoin
@@ -16,7 +15,6 @@ from IPython.core.error import UsageError
 from IPython.core.interactiveshell import InteractiveShell
 from IPython.core.magic import Magics, magics_class, line_magic
 from nbformat import read
-from notebook.notebookapp import list_running_servers
 import ipykernel
 import requests
 
@@ -31,6 +29,8 @@ def get_notebook_name():
     https://github.com/jupyter/notebook/issues/1000#issuecomment-359875246
 
     """
+    # this redefines a builtin >:( so putting it here to satisfy my linter
+    from notebook.notebookapp import list_running_servers
     kernel_id = re.search('kernel-(.*).json', ipykernel.connect.get_connection_file()).group(1)
     servers = list_running_servers()
     for server in servers:
