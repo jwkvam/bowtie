@@ -51,7 +51,6 @@ install:
     - if [[ "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then
       pip install pytest-codestyle;
       fi
-    - make checkdocs
     - wget https://chromedriver.storage.googleapis.com/2.35/chromedriver_linux64.zip
     - unzip chromedriver_linux64.zip
     - chmod +x chromedriver
@@ -68,6 +67,7 @@ script:
     - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
       make test2;
       else
+      make checkdocs
       make test;
       fi
 
