@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Jupyter Integration."""
 
+import ast
 import os
 from os.path import join as pjoin
 from urllib.parse import urljoin
@@ -8,9 +9,11 @@ import json
 import re
 import sys
 import types
+import time
 from subprocess import Popen, PIPE, STDOUT
 
-from IPython import get_ipython, display
+from IPython import get_ipython
+from IPython.display import display, HTML, clear_output
 from IPython.core.error import UsageError
 from IPython.core.interactiveshell import InteractiveShell
 from IPython.core.magic import Magics, magics_class, line_magic
@@ -69,14 +72,13 @@ def load_notebook(fullname):
     try:
         for cell in notebook.cells:
             if cell.cell_type == 'code':
-                # transform the input to executable Python
-                code = shell.input_transformer_manager.transform_cell(cell.source)
-                # run the code in the module
                 try:
-                    # pylint: disable=exec-used
-                    exec(code, mod.__dict__)
+                    # only run valid python code
+                    ast.parse(cell.source)
                 except SyntaxError:
-                    print('Could not exec: "{}"'.format(code))
+                    continue
+                # pylint: disable=exec-used
+                exec(cell.source, mod.__dict__)
     finally:
         shell.user_ns = save_user_ns
     return mod
@@ -92,6 +94,7 @@ class BowtieMagic(Magics):
         opts, appvar = self.parse_options(line, 'w:h:')
         width = opts.get('w', 1500)
         height = opts.get('h', 1000)
+        border = opts.get('b', 0)
 
         global_ns = self.shell.user_global_ns
         local_ns = self.shell.user_ns
@@ -111,10 +114,22 @@ class BowtieMagic(Magics):
         if os.path.isfile(filepath):
             server = Popen(['python', '-u', filepath], stdout=PIPE, stderr=STDOUT)
         else:
-            print('Cannot find "{}". Did you build the app?'.format(filepath))
+            raise FileNotFoundError('Cannot find "{}". Did you build the app?'.format(filepath))
 
-        display.HTML(
+        while server.poll() is None:
+            try:
+                if requests.get('http://localhost:9991').ok:
+                    break
+            except requests.exceptions.RequestException:
+                continue
+            time.sleep(1)
+        else:
+            print(server.stdout.read().decode('utf-8'), end='')
+            return server
+
+        clear_output()
+        display(HTML(
             '<iframe src=http://localhost:9991 width={} height={} '
-            'frameBorder=0></iframe>'.format(width, height)
-        )
+            'frameBorder={}></iframe>'.format(width, height, border)
+        ))
         return server

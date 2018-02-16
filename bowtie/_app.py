@@ -430,7 +430,7 @@ class View(object):
         jsx = env.get_template('view.jsx.j2')
 
         # pylint: disable=protected-access
-        self.widgets = [w._instantiate for w in self.widgets]
+        widgets = [w._instantiate for w in self.widgets]
 
         columns = []
         if self.sidebar:
@@ -449,7 +449,7 @@ class View(object):
                     background_color=self.background_color,
                     components=self.imports,
                     controls=self.controllers,
-                    widgets=zip(self.widgets, self.spans)
+                    widgets=zip(widgets, self.spans)
                 )
             )
 
