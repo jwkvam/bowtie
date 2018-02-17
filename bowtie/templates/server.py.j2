@@ -18,7 +18,7 @@ import flask
 from flask import (Flask, render_template, make_response, copy_current_request_context,
                    jsonify, request, Response)
 from flask_socketio import SocketIO
-from bowtie._component import COMPONENT_REGISTRY
+from bowtie._component import COMPONENT_REGISTRY, Event
 
 
 # python 2 compatibility
@@ -184,14 +184,14 @@ def _():
 @socketio.on('{{ event.signal }}')
 def _(*args):
     def wrapuser():
+        event_data = {}
         uniq_events = set()
         {% for support in supports %}
         uniq_events.update({{ support[0] }})
         {% endfor %}
         uniq_events.remove({{ event }})
-        event_data = {}
         for ev in uniq_events:
-            comp = COMPONENT_REGISTRY[ev[1]]
+            comp = COMPONENT_REGISTRY[ev.uuid]
             if ev.getter is None:
                 raise GetterNotDefined('{ctype} has no getter associated with event "on_{ename}"'
                                        .format(ctype=type(comp), ename=ev.name))
@@ -202,7 +202,7 @@ def _(*args):
         # if there is a getter, then we need to unpack the data sent
         {% set post = event.getter %}
         {% if post is not none %}
-        event_data['{{ event.uuid }}#{{ event.name }}'] = COMPONENT_REGISTRY[{{ event.uuid }}].{{ '_' ~ post }}(
+        event_data['{{ event.signal }}'] = COMPONENT_REGISTRY[{{ event.uuid }}].{{ '_' ~ post }}(
             msgpack.unpackb(bytes(args[0]['data']), encoding='utf8')
         )
         {% endif %}
@@ -212,7 +212,7 @@ def _(*args):
         user_args = []
             {% if post is not none %}
                 {% for ev in support[0] %}
-        user_args.append(event_data['{{ ev[0] }}'])
+        user_args.append(event_data['{{ ev.signal }}'])
                 {% endfor %}
             {% endif %}
 

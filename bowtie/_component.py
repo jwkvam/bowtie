@@ -47,6 +47,20 @@ class Event:
         """Name of socket.io message."""
         return '{}{}{}'.format(self.uuid, SEPARATOR, self.name)
 
+    @property
+    def _key(self):
+        return self.name, self.uuid, self.getter
+
+    def __repr__(self):
+        """Create an Event."""
+        return "Event('{}', {}, '{}')".format(self.name, self.uuid, self.getter)
+
+    def __eq__(self, other):
+        return isinstance(other, type(self)) and self._key == other._key
+
+    def __hash__(self):
+        return hash(self._key)
+
 
 def jsbool(x: bool) -> str:
     """Convert Python bool to Javascript bool."""

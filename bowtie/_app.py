@@ -115,45 +115,54 @@ class Size(object):
     def auto(self):
         """Set the size to auto or content based."""
         self.maximum = 'auto'
+        return self
 
     def min_auto(self):
         """Set the minimum size to auto or content based."""
         self.minimum = 'auto'
+        return self
 
     def pixels(self, value):
         """Set the size in pixels."""
         raise_not_number(value)
         self.maximum = '{}px'.format(value)
+        return self
 
     def min_pixels(self, value):
         """Set the minimum size in pixels."""
         raise_not_number(value)
         self.minimum = '{}px'.format(value)
+        return self
 
     def ems(self, value):
         """Set the size in ems."""
         raise_not_number(value)
         self.maximum = '{}em'.format(value)
+        return self
 
     def min_ems(self, value):
         """Set the minimum size in ems."""
         raise_not_number(value)
         self.minimum = '{}em'.format(value)
+        return self
 
     def fraction(self, value: int) -> None:
         """Set the fraction of free space to use as an integer."""
         raise_not_number(value)
         self.maximum = '{}fr'.format(int(value))
+        return self
 
     def percent(self, value):
         """Set the percentage of free space to use."""
         raise_not_number(value)
         self.maximum = '{}%'.format(value)
+        return self
 
     def min_percent(self, value):
         """Set the minimum percentage of free space to use."""
         raise_not_number(value)
         self.minimum = '{}%'.format(value)
+        return self
 
     def __repr__(self) -> str:
         """Represent the size to be inserted into a JSX template."""
@@ -185,11 +194,13 @@ class Gap(object):
         """Set the margin in pixels."""
         raise_not_number(value)
         self.gap = '{}px'.format(value)
+        return self
 
     def percent(self, value):
         """Set the margin as a percentage."""
         raise_not_number(value)
         self.gap = '{}%'.format(value)
+        return self
 
     def __repr__(self) -> str:
         """Represent the margin to be inserted into a JSX template."""
@@ -654,8 +665,10 @@ class App(object):
         >>> app.subscribe(callback, dd.on_change, slide.on_change)
 
         """
-        all_events = [event]
-        all_events.extend(events)
+        all_events = [event, *events]
+        if len(all_events) != len(set(all_events)):
+            raise ValueError('Subscribed to the same event multiple times. '
+                             'All events must be unique.')
 
         if len(all_events) > 1:
             # check if we are using any non stateful events
