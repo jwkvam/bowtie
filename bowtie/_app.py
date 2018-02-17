@@ -43,7 +43,7 @@ def raise_not_number(x: int) -> None:
         raise SizeError('Must pass a number, received {}'.format(x))
 
 
-class Span(object):
+class Span:
     """Define the location of a widget."""
 
     # pylint: disable=too-few-public-methods
@@ -83,7 +83,7 @@ class Span(object):
         )
 
 
-class Size(object):
+class Size:
     """Size of rows and columns in grid.
 
     This is accessed through ``.rows`` and ``.columns`` from App and View instances.
@@ -171,7 +171,7 @@ class Size(object):
         return self.maximum
 
 
-class Gap(object):
+class Gap:
     """Margin between rows or columns of the grid.
 
     This is accessed through ``.row_gap`` and ``.column_gap`` from App and View instances.
@@ -234,7 +234,7 @@ def _slice_to_start_end(slc: slice, length: int) -> Tuple[int, int]:
     return start, end
 
 
-class View(object):
+class View:
     """Grid of widgets."""
 
     _NEXT_UUID = 0
@@ -482,7 +482,7 @@ class View(object):
 Route = namedtuple('Route', ['view', 'path', 'exact'])
 
 
-class App(object):
+class App:
     """Core class to layout, connect, build a Bowtie app."""
 
     def __init__(self, rows: int = 1, columns: int = 1, sidebar: bool = True,
