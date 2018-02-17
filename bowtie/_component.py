@@ -56,6 +56,7 @@ class Event:
         return "Event('{}', {}, '{}')".format(self.name, self.uuid, self.getter)
 
     def __eq__(self, other):
+        # pylint: disable=protected-access
         return isinstance(other, type(self)) and self._key == other._key
 
     def __hash__(self):

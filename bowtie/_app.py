@@ -102,7 +102,9 @@ class Size:
 
     >>> app = App(rows=2, columns=3)
     >>> app.rows[0].fraction(1)
+    '1fr'
     >>> app.rows[1].fraction(2)
+    '2fr'
 
     """
 
@@ -182,6 +184,7 @@ class Gap:
 
     >>> app = App()
     >>> app.row_gap.pixels(5)
+    '5px'
 
     """
 
@@ -690,6 +693,42 @@ class App:
 
         for evt in all_events:
             self.subscriptions[evt].append((all_events, func.__name__))
+
+    def listen(self, event: Event, *events: Event) -> Callable:
+        """Call a function in response to an event.
+
+        If more than one event is given, `func` will be given
+        as many arguments as there are events.
+
+        Parameters
+        ----------
+        event : event
+            A Bowtie event.
+        *events : Each is an event, optional
+            Additional events.
+
+        Examples
+        --------
+        Subscribing a function to multiple events.
+
+        >>> from bowtie.control import Dropdown, Slider
+        >>> app = App()
+        >>> dd = Dropdown()
+        >>> slide = Slider()
+        >>> @app.listen(dd.on_change, slide.on_change)
+        ... def callback(dd_item, slide_value):
+        ...     pass
+        >>> @app.listen(dd.on_change)
+        >>> @app.listen(slide.on_change)
+        ... def callback2(value):
+        ...     pass
+
+        """
+        def decorator(func):
+            """Subscribe function to events."""
+            self.subscribe(func.__name__, event, *events)
+            return func
+        return decorator
 
     def load(self, func):
         """Call a function on page load.
