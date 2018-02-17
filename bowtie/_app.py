@@ -3,6 +3,7 @@
 
 from __future__ import print_function
 
+from typing import Any, Callable, List, Optional, Set, Tuple, Union, Dict
 import os
 import json
 from itertools import product
@@ -15,14 +16,15 @@ import warnings
 
 from jinja2 import Environment, FileSystemLoader
 
-from bowtie._compat import makedirs
-from bowtie._component import Component, SEPARATOR
+from bowtie._component import Event, Component, COMPONENT_REGISTRY
 from bowtie.exceptions import (
     GridIndexError, MissingRowOrColumn,
     NoSidebarError, NotStatefulEvent,
     NoUnusedCellsError, SizeError, UsedCellsError,
     WebpackError, YarnError
 )
+from bowtie.control import Button
+from bowtie.pager import Pager
 
 
 _Import = namedtuple('_Import', ['module', 'component'])
@@ -33,7 +35,7 @@ _DIRECTORY = 'build'
 _WEBPACK = './node_modules/.bin/webpack'
 
 
-def raise_not_number(x):
+def raise_not_number(x: int) -> None:
     """Raise ``SizeError`` if ``x`` is not a number``."""
     try:
         float(x)
@@ -45,7 +47,8 @@ class Span(object):
     """Define the location of a widget."""
 
     # pylint: disable=too-few-public-methods
-    def __init__(self, row_start, column_start, row_end=None, column_end=None):
+    def __init__(self, row_start: int, column_start: int, row_end: Optional[int] = None,
+                 column_end: Optional[int] = None) -> None:
         """Create a span for a widget.
 
         Indexing starts at 0. Both start and end are inclusive.
@@ -103,10 +106,10 @@ class Size(object):
 
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Create a default row or column size with fraction = 1."""
-        self.minimum = None
-        self.maximum = None
+        self.minimum: Optional[str] = None
+        self.maximum: Optional[str] = None
         self.fraction(1)
 
     def auto(self):
@@ -127,7 +130,17 @@ class Size(object):
         raise_not_number(value)
         self.minimum = '{}px'.format(value)
 
-    def fraction(self, value):
+    def ems(self, value):
+        """Set the size in ems."""
+        raise_not_number(value)
+        self.maximum = '{}em'.format(value)
+
+    def min_ems(self, value):
+        """Set the minimum size in ems."""
+        raise_not_number(value)
+        self.minimum = '{}em'.format(value)
+
+    def fraction(self, value: int) -> None:
         """Set the fraction of free space to use as an integer."""
         raise_not_number(value)
         self.maximum = '{}fr'.format(int(value))
@@ -142,7 +155,7 @@ class Size(object):
         raise_not_number(value)
         self.minimum = '{}%'.format(value)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Represent the size to be inserted into a JSX template."""
         if self.minimum:
             return 'minmax({}, {})'.format(self.minimum, self.maximum)
@@ -163,12 +176,12 @@ class Gap(object):
 
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Create a default margin of zero."""
-        self.gap = None
+        self.gap: Optional[str] = None
         self.pixels(0)
 
-    def pixels(self, value):
+    def pixels(self, value: int) -> None:
         """Set the margin in pixels."""
         raise_not_number(value)
         self.gap = '{}px'.format(value)
@@ -178,12 +191,12 @@ class Gap(object):
         raise_not_number(value)
         self.gap = '{}%'.format(value)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Represent the margin to be inserted into a JSX template."""
         return self.gap
 
 
-def _check_index(value, length, bound):
+def _check_index(value: Optional[int], length: int, bound: bool) -> Optional[int]:
     if value is not None:
         if not isinstance(value, int):
             raise GridIndexError('Indices must be integers, found {}.'.format(value))
@@ -194,7 +207,7 @@ def _check_index(value, length, bound):
     return value
 
 
-def _slice_to_start_end(slc, length):
+def _slice_to_start_end(slc: slice, length: int) -> Tuple[int, int]:
     if slc.step is not None and slc.step != 1:
         raise GridIndexError(
             'slice step is not supported must be None or 1, was {}'.format(slc.step)
@@ -216,12 +229,12 @@ class View(object):
     _NEXT_UUID = 0
 
     @classmethod
-    def _next_uuid(cls):
+    def _next_uuid(cls) -> int:
         cls._NEXT_UUID += 1
         return cls._NEXT_UUID
 
-    def __init__(self, rows=1, columns=1, sidebar=True,
-                 background_color='White'):
+    def __init__(self, rows: int = 1, columns: int = 1, sidebar: bool = True,
+                 background_color: str = 'White') -> None:
         """Create a new grid."""
         self._uuid = View._next_uuid()
         self.used = OrderedDict(((key, False) for key in product(range(rows), range(columns))))
@@ -231,22 +244,22 @@ class View(object):
         self.columns = [Size() for _ in range(columns)]
         self.sidebar = sidebar
         self.background_color = background_color
-        self.packages = set()
-        self.templates = set()
-        self.imports = set()
-        self.controllers = []
-        self.widgets = []
-        self.spans = []
+        self.packages: Set[str] = set()
+        self.templates: Set[str] = set()
+        self.imports: Set[_Import] = set()
+        self.controllers: List[_Control] = []
+        self.widgets: List[Component] = []
+        self.spans: List[Span] = []
 
     @property
-    def _name(self):
+    def _name(self) -> str:
         return 'view{}.jsx'.format(self._uuid)
 
     def __getitem__(self, key):
         """Get item from the view."""
         raise NotImplementedError('Accessor is not implemented.')
 
-    def __setitem__(self, key, widget):
+    def __setitem__(self, key: Any, widget: Button) -> None:
         """Add widget to the view."""
         if isinstance(key, tuple):
             if len(key) == 1:
@@ -291,7 +304,7 @@ class View(object):
         else:
             raise GridIndexError('Invalid index {}'.format(key))
 
-    def add(self, widget):
+    def add(self, widget: Component):
         """Add a widget to the grid in the next available cell.
 
         Searches over columns then rows for available cells.
@@ -304,8 +317,9 @@ class View(object):
         """
         self._add(widget)
 
-    def _add(self, widget, row_start=None, column_start=None,
-             row_end=None, column_end=None):
+    def _add(self, widget: Component, row_start: Optional[int] = None,
+             column_start: Optional[int] = None, row_end: Optional[int] = None,
+             column_end: Optional[int] = None) -> None:
         """Add a widget to the grid.
 
         Zero-based index and exclusive.
@@ -393,7 +407,7 @@ class View(object):
         self.widgets.append(widget)
         self.spans.append(span)
 
-    def add_sidebar(self, widget):
+    def add_sidebar(self, widget: Component) -> None:
         """Add a widget to the sidebar.
 
         Parameters
@@ -415,7 +429,7 @@ class View(object):
         self.controllers.append(_Control(instantiate=widget._instantiate,
                                          caption=getattr(widget, 'caption', None)))
 
-    def _render(self, path, env):
+    def _render(self, path: str, env: Environment) -> None:
         """TODO: Docstring for _render.
 
         Parameters
@@ -434,7 +448,7 @@ class View(object):
 
         columns = []
         if self.sidebar:
-            columns.append('18em')
+            columns.append(Size().ems(18))
         columns += self.columns
 
         with open(os.path.join(path, self._name), 'w') as f:
@@ -460,11 +474,12 @@ Route = namedtuple('Route', ['view', 'path', 'exact'])
 class App(object):
     """Core class to layout, connect, build a Bowtie app."""
 
-    def __init__(self, rows=1, columns=1, sidebar=True,
-                 title='Bowtie App', basic_auth=False,
-                 username='username', password='password',
-                 theme=None, background_color='White',
-                 host='0.0.0.0', port=9991, socketio='', debug=False):
+    def __init__(self, rows: int = 1, columns: int = 1, sidebar: bool = True,
+                 title: str = 'Bowtie App', basic_auth: bool = False,
+                 username: str = 'username', password: str = 'password',
+                 theme: Optional[str] = None, background_color: str = 'White',
+                 host: str = '0.0.0.0', port: int = 9991, socketio: str = '',
+                 debug: bool = False) -> None:
         """Create a Bowtie App.
 
         Parameters
@@ -500,19 +515,17 @@ class App(object):
         self.background_color = background_color
         self.basic_auth = basic_auth
         self.debug = debug
-        self.functions = []
         self.host = host
-        self.imports = set()
         self.init = None
         self.password = password
         self.port = port
         self.socketio = socketio
-        self.schedules = []
-        self.subscriptions = defaultdict(list)
-        self.pages = {}
+        self.schedules: List[_Schedule] = []
+        self.subscriptions: Dict[Event, List[Tuple[List[Event], str]]] = defaultdict(list)
+        self.pages: Dict[Pager, str] = {}
         self.title = title
         self.username = username
-        self.uploads = {}
+        self.uploads: Dict[int, str] = {}
         self.theme = theme
         self.root = View(rows=rows, columns=columns, sidebar=sidebar,
                          background_color=background_color)
@@ -524,7 +537,7 @@ class App(object):
             lstrip_blocks=True
         )
 
-    def __getattr__(self, name):
+    def __getattr__(self, name: str) -> Union[Gap, List[Size]]:
         """Export attributes from root view."""
         if name == 'columns':
             return self.root.columns
@@ -541,11 +554,11 @@ class App(object):
         """Get item from root view."""
         self.root.__getitem__(key)
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: Any, value: Button) -> None:
         """Add widget to the root view."""
         self.root.__setitem__(key, value)
 
-    def add(self, widget):
+    def add(self, widget: Component) -> None:
         """Add a widget to the grid in the next available cell.
 
         Searches over columns then rows for available cells.
@@ -559,7 +572,7 @@ class App(object):
         # pylint: disable=protected-access
         self.root._add(widget)
 
-    def add_sidebar(self, widget):
+    def add_sidebar(self, widget: Component) -> None:
         """Add a widget to the sidebar.
 
         Parameters
@@ -585,7 +598,7 @@ class App(object):
             assert path != route.path, 'Cannot use the same path twice'
         self.routes.append(Route(view=view, path=path, exact=exact))
 
-    def respond(self, pager, func):
+    def respond(self, pager: Pager, func: Callable) -> None:
         """Call a function in response to a page.
 
         When the pager calls notify, the function will be called.
@@ -613,7 +626,7 @@ class App(object):
         """
         self.pages[pager] = func.__name__
 
-    def subscribe(self, func, event, *events):
+    def subscribe(self, func: Callable, event: Event, *events: Event) -> None:
         """Call a function in response to an event.
 
         If more than one event is given, `func` will be given
@@ -647,23 +660,20 @@ class App(object):
         if len(all_events) > 1:
             # check if we are using any non stateful events
             for evt in all_events:
-                if evt[2] is None:
-                    name = evt[0].split(SEPARATOR)[1]
+                if evt.getter is None:
                     msg = '{}.on_{} is not a stateful event. It must be used alone.'
-                    raise NotStatefulEvent(msg.format(evt[1], name))
+                    raise NotStatefulEvent(msg.format(evt.uuid, evt.name))
 
-        if event[0].split(SEPARATOR)[1] == 'upload':
-            # evt = event[0]
-            uuid = event[0].split(SEPARATOR)[0]
-            if uuid in self.uploads:
+        if event.name == 'upload':
+            if event.uuid in self.uploads:
                 warnings.warn(
                     ('Overwriting function "{func1}" with function '
                      '"{func2}" for upload object "{obj}".').format(
-                         func1=self.uploads[uuid],
+                         func1=self.uploads[event.uuid],
                          func2=func.__name__,
-                         obj=event[1]
+                         obj=COMPONENT_REGISTRY[event.uuid]
                      ), Warning)
-            self.uploads[uuid] = func.__name__
+            self.uploads[event.uuid] = func.__name__
 
         for evt in all_events:
             self.subscriptions[evt].append((all_events, func.__name__))
@@ -694,10 +704,10 @@ class App(object):
 
     # pylint: disable=no-self-use
     def _sourcefile(self):
-        # [-1] grabs the top of the stack and [1] grabs the filename
-        return os.path.basename(inspect.stack()[-1][1])[:-3]
+        # [-1] grabs the top of the stack
+        return os.path.basename(inspect.stack()[-1].filename)[:-3]
 
-    def _write_templates(self, notebook=None):
+    def _write_templates(self, notebook: Optional[str] = None) -> Set[str]:
         server = self._jinjaenv.get_template('server.py.j2')
         indexhtml = self._jinjaenv.get_template('index.html.j2')
         indexjsx = self._jinjaenv.get_template('index.jsx.j2')
@@ -705,13 +715,13 @@ class App(object):
 
         src, app, templates = create_directories()
 
-        webpack_path = os.path.join(_DIRECTORY, webpack.name[:-3])
+        webpack_path = os.path.join(_DIRECTORY, webpack.name[:-3])  # type: ignore
         with open(webpack_path, 'w') as f:
             f.write(
                 webpack.render(color=self.theme)
             )
 
-        server_path = os.path.join(src, server.name[:-3])
+        server_path = os.path.join(src, server.name[:-3])  # type: ignore
         with open(server_path, 'w') as f:
             f.write(
                 server.render(
@@ -745,20 +755,20 @@ class App(object):
                 template_src = os.path.join(self._package_dir, 'src', template)
                 shutil.copy(template_src, app)
 
-        packages = set()
+        packages: Set[str] = set()
         for route in self.routes:
             # pylint: disable=protected-access
             route.view._render(app, self._jinjaenv)
             packages |= route.view.packages
 
-        with open(os.path.join(templates, indexhtml.name[:-3]), 'w') as f:
+        with open(os.path.join(templates, indexhtml.name[:-3]), 'w') as f:  # type: ignore
             f.write(
                 indexhtml.render(
                     title=self.title,
                 )
             )
 
-        with open(os.path.join(app, indexjsx.name[:-3]), 'w') as f:
+        with open(os.path.join(app, indexjsx.name[:-3]), 'w') as f:  # type: ignore
             f.write(
                 indexjsx.render(
                     # pylint: disable=protected-access
@@ -770,7 +780,7 @@ class App(object):
             )
         return packages
 
-    def _build(self, notebook=None):
+    def _build(self, notebook: None = None) -> None:
         """Compile the Bowtie application."""
         packages = self._write_templates(notebook=notebook)
 
@@ -784,10 +794,10 @@ class App(object):
         packages.discard(None)
         if packages:
             installed = installed_packages()
-            packages = [x for x in packages if x.split('@')[0] not in installed]
+            new_packages = [x for x in packages if x.split('@')[0] not in installed]
 
-            if packages:
-                retval = run(['yarn', 'add'] + packages, notebook=notebook)
+            if new_packages:
+                retval = run(['yarn', 'add'] + new_packages, notebook=notebook)
                 if retval > 1:
                     raise YarnError('Error installing node packages')
                 elif retval == 1:
@@ -797,7 +807,7 @@ class App(object):
             raise WebpackError('Error building with webpack')
 
 
-def run(command, notebook=None):
+def run(command: List[str], notebook: None = None) -> int:
     """Run command from terminal and notebook and view output from subprocess."""
     if notebook is None:
         return Popen(command, cwd=_DIRECTORY).wait()
@@ -818,11 +828,11 @@ def installed_packages():
     return packagejson['dependencies'].keys()
 
 
-def create_directories():
+def create_directories() -> Tuple[str, str, str]:
     """Create all the necessary subdirectories for the build."""
     src = os.path.join(_DIRECTORY, 'src')
     templates = os.path.join(src, 'templates')
     app = os.path.join(src, 'app')
-    makedirs(app, exist_ok=True)
-    makedirs(templates, exist_ok=True)
+    os.makedirs(app, exist_ok=True)
+    os.makedirs(templates, exist_ok=True)
     return src, app, templates

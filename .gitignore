@@ -1,3 +1,5 @@
+monkeytype.sqlite3
+*.mypy*
 *.ipynb*
 *.svg
 *.html

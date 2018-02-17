@@ -5,6 +5,7 @@
 import os
 from os import environ as env
 import subprocess
+from inspect import isclass
 import time
 
 import pytest
@@ -18,14 +19,22 @@ def create_components():
     """Create components for this test."""
     reset_uuid()
     # pylint: disable=protected-access
-    controllers = [getattr(control, comp)() for comp in dir(control)
-                   if comp[0].isupper() and issubclass(getattr(control, comp),
-                                                       control._Controller) and comp != 'Upload']
+    controllers = []
+    for compstr in dir(control):
+        comp = getattr(control, compstr)
+        if (compstr[0] != '_' and isclass(comp) and issubclass(comp, control._Controller)
+                and compstr != 'Upload'):
+            controllers.append(comp())
+
     for controller in controllers:
         assert COMPONENT_REGISTRY[controller._uuid] == controller
 
-    visuals = [getattr(visual, comp)() for comp in dir(visual)
-               if comp[0].isupper() and issubclass(getattr(visual, comp), visual._Visual)]
+    visuals = []
+    for compstr in dir(visual):
+        comp = getattr(visual, compstr)
+        if compstr[0] != '_' and isclass(comp) and issubclass(comp, visual._Visual):
+            visuals.append(comp())
+
     for vis in visuals:
         assert COMPONENT_REGISTRY[vis._uuid] == vis
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Compat testing."""
+"""Command testing."""
 
-from bowtie._compat import numargs
+from bowtie._command import numargs
 
 
 def test_numargs():

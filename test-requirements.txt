@@ -8,6 +8,7 @@ jinja2
 markdown
 matplotlib
 msgpack-python
+mypy
 notebook
 numpy
 pandas

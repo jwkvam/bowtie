@@ -20,7 +20,7 @@ def validate(key):
 
 
 # pylint: disable=too-few-public-methods
-class _Cache(object):
+class _Cache:
     """Store data in the browser.
 
     This cache uses session storage so data will stay

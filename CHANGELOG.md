@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 0.9.0 / ???
+
+### Added
+
+  * Jupyter integration.
+
+### Breaking
+
+  * Drop support for Python 2.
+
 ## 0.8.1 / 2018-02-11
 
 ### Fixed

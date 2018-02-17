@@ -15,12 +15,13 @@ class _Visual(Component):
     Used to test if a an object is a visual component.
     """
 
-    def __init__(self):
+    # pylint: disable=abstract-method
+    def __init__(self) -> None:
         self.progress = Progress()
         super(_Visual, self).__init__()
 
     @property
-    def _instantiate(self):
+    def _instantiate(self) -> str:
         # pylint: disable=protected-access
         begin, end = self.progress._tags
         tagwrap = begin + '{component}' + self._tagbase + end
@@ -35,7 +36,7 @@ class Markdown(_Visual):
     _PACKAGE = None
     _ATTRS = "initial={{'{initial}'}}"
 
-    def __init__(self, initial=''):
+    def __init__(self, initial: str = '') -> None:
         """Create a Markdown widget.
 
         Parameters
@@ -86,7 +87,7 @@ class Table(_Visual):
     _ATTRS = ('columns={{{columns}}} '
               'resultsPerPage={{{results_per_page}}}')
 
-    def __init__(self, data=None, columns=None, results_per_page=10):
+    def __init__(self, data: None = None, columns: None = None, results_per_page: int = 10) -> None:
         """Create a table and optionally initialize the data.
 
         Parameters
@@ -171,7 +172,7 @@ class SmartGrid(_Visual):
     _PACKAGE = 'griddle-react@1.11.1'
     _ATTRS = None
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Create the table, optionally set the columns."""
         super(SmartGrid, self).__init__()
         self._comp = self._tag
@@ -215,7 +216,7 @@ class SVG(_Visual):
     _PACKAGE = None
     _ATTRS = 'preserveAspectRatio={{{preserve_aspect_ratio}}}'
 
-    def __init__(self, preserve_aspect_ratio=False):
+    def __init__(self, preserve_aspect_ratio: bool = False) -> None:
         """Create SVG component.
 
         Parameters
@@ -279,7 +280,7 @@ class Plotly(_Visual):
     _PACKAGE = 'plotly.js@1.33.1'
     _ATTRS = 'initState={{{init}}}'
 
-    def __init__(self, init=None):
+    def __init__(self, init: None = None) -> None:
         """Create a Plotly component.
 
         Parameters

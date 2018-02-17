@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Control components."""
 
+from typing import Callable, Optional, List, Union, Tuple
 from collections import Iterable
 
 from bowtie._component import Component, jdumps, jsbool
@@ -13,12 +14,13 @@ class _Controller(Component):
     Used to test if a an object is a controller.
     """
 
-    def __init__(self, caption=None):
+    # pylint: disable=abstract-method
+    def __init__(self, caption: Optional[str] = None) -> None:
         super(_Controller, self).__init__()
         self.caption = caption
 
     @property
-    def _instantiate(self):
+    def _instantiate(self) -> str:
         tagwrap = '{component}' + self._tagbase
         return self._insert(tagwrap, self._comp)
 
@@ -31,7 +33,7 @@ class Button(_Controller):
     _PACKAGE = None
     _ATTRS = "label={{'{label}'}}"
 
-    def __init__(self, label='', caption=None):
+    def __init__(self, label: str = '', caption: Optional[str] = None) -> None:
         """Create a button.
 
         Parameters
@@ -47,7 +49,7 @@ class Button(_Controller):
             label=label
         )
 
-    def on_click(self):
+    def on_click(self) -> None:
         """Emit an event when the button is clicked.
 
         | **Payload:** ``None``.
@@ -72,7 +74,7 @@ class Link(_Controller):
     _PACKAGE = None
     _ATTRS = "to={{'{link}'}}"
 
-    def __init__(self, link='/', caption=None):
+    def __init__(self, link: str = '/', caption: Optional[str] = None) -> None:
         """Create a button.
 
         Parameters
@@ -84,19 +86,6 @@ class Link(_Controller):
         self._comp = self._tag.format(
             link=link
         )
-
-    def on_click(self):
-        """Emit an event when the button is clicked.
-
-        | **Payload:** ``None``.
-
-        Returns
-        -------
-        str
-            Name of click event.
-
-        """
-        pass
 
 
 class Upload(_Controller):
@@ -149,7 +138,9 @@ class Dropdown(_Controller):
               'multi={{{multi}}} '
               'default={{{default}}}')
 
-    def __init__(self, labels=None, values=None, multi=False, default=None, caption=None):
+    def __init__(self, labels: Optional[List[str]] = None,
+                 values: Optional[List[Union[str, int]]] = None, multi: bool = False,
+                 default: Optional[Union[str, int]] = None, caption: Optional[str] = None) -> None:
         """Create a drop down.
 
         Parameters
@@ -160,6 +151,8 @@ class Dropdown(_Controller):
             List of values associated with the labels that are hidden from the user.
         multi : bool, optional
             If multiple selections are allowed.
+        default : str or int, optional
+            The default selected value.
         caption : str, optional
             Heading text.
 
@@ -178,7 +171,7 @@ class Dropdown(_Controller):
             default=jdumps(default),
         )
 
-    def on_change(self):
+    def on_change(self) -> Callable:
         """Emit an event when the selection changes.
 
         | **Payload:** ``dict`` with keys "value" and "label".
@@ -233,7 +226,7 @@ class Switch(_Controller):
     _PACKAGE = None
     _ATTRS = 'defaultChecked={{{defaultChecked}}}'
 
-    def __init__(self, initial=False, caption=None):
+    def __init__(self, initial: bool = False, caption: Optional[str] = None) -> None:
         """Create a toggle switch.
 
         Parameters
@@ -286,8 +279,8 @@ class _DatePickers(_Controller):
               'month={{{month_type}}} '
               'range={{{range_type}}}')
 
-    def __init__(self, date_type=False, month_type=False, range_type=False,
-                 caption=None):
+    def __init__(self, date_type: bool = False, month_type: bool = False, range_type: bool = False,
+                 caption: Optional[str] = None) -> None:
         super(_DatePickers, self).__init__(caption=caption)
         self._comp = self._tag.format(
             date_type=jsbool(date_type),
@@ -302,7 +295,7 @@ class DatePicker(_DatePickers):
     Let's you choose an individual day.
     """
 
-    def __init__(self, caption=None):
+    def __init__(self, caption: Optional[str] = None) -> None:
         """Create a date picker.
 
         Parameters
@@ -346,7 +339,7 @@ class MonthPicker(_DatePickers):
     Let's you choose a month and year.
     """
 
-    def __init__(self, caption=None):
+    def __init__(self, caption: Optional[str] = None) -> None:
         """Create month picker.
 
         Parameters
@@ -390,7 +383,7 @@ class RangePicker(_DatePickers):
     Choose two dates to use as a range.
     """
 
-    def __init__(self, caption=None):
+    def __init__(self, caption: Optional[str] = None) -> None:
         """Create a date range picker.
 
         Parameters
@@ -440,8 +433,8 @@ class Number(_Controller):
               'step={{{step}}} '
               "size={{'{size}'}}")
 
-    def __init__(self, start=0, minimum=-1e100, maximum=1e100,
-                 step=1, size='default', caption=None):
+    def __init__(self, start: int = 0, minimum: float = -1e100, maximum: float = 1e100,
+                 step: int = 1, size: str = 'default', caption: Optional[str] = None) -> None:
         """Create a number input.
 
         Parameters
@@ -509,8 +502,9 @@ class Textbox(_Controller):
               'autosize={{{autosize}}} '
               'disabled={{{disabled}}}')
 
-    def __init__(self, placeholder='Enter text', size='default', area=False,
-                 autosize=False, disabled=False, caption=None):
+    def __init__(self, placeholder: str = 'Enter text', size: str = 'default', area: bool = False,
+                 autosize: bool = False, disabled: bool = False,
+                 caption: Optional[str] = None) -> None:
         """Create a text box.
 
         Parameters
@@ -535,10 +529,8 @@ class Textbox(_Controller):
         """
         super(Textbox, self).__init__(caption=caption)
 
-        area = 'textarea' if area else 'text'
-
         self._comp = self._tag.format(
-            area=area,
+            area='textarea' if area else 'text',
             autosize=jsbool(autosize),
             disabled=jsbool(disabled),
             placeholder=placeholder,
@@ -570,7 +562,7 @@ class Textbox(_Controller):
         """
         return self.get
 
-    def on_change(self):
+    def on_change(self) -> Callable:
         """Emit an event when the text is changed.
 
         | **Payload:** ``str``
@@ -610,8 +602,9 @@ class Slider(_Controller):
               'marks={{{marks}}} '
               'vertical={{{vertical}}}')
 
-    def __init__(self, start=None, ranged=False, minimum=0, maximum=100, step=1,
-                 vertical=False, caption=None):
+    def __init__(self, start: Optional[Union[int, Tuple[int, int]]] = None, ranged: bool = False,
+                 minimum: int = 0, maximum: int = 100, step: int = 1,
+                 vertical: bool = False, caption: Optional[str] = None) -> None:
         """Create a slider.
 
         Parameters
@@ -640,7 +633,10 @@ class Slider(_Controller):
         super(Slider, self).__init__(caption=caption)
 
         if not start:
-            start = [0, 0] if ranged else 0
+            if ranged:
+                start = minimum, maximum
+            else:
+                start = minimum
         elif isinstance(start, Iterable):
             start = list(start)
             ranged = True
@@ -715,7 +711,7 @@ class Slider(_Controller):
         """
         return minimum, maximum, value
 
-    def on_change(self):
+    def on_change(self) -> Callable:
         """Emit an event when the slider's value changes.
 
         | **Payload:** ``number`` or ``list`` of values.
@@ -765,7 +761,8 @@ class Nouislider(_Controller):
               'start={{{start}}} '
               'tooltips={{{tooltips}}}')
 
-    def __init__(self, start=0, minimum=0, maximum=100, tooltips=True, caption=None):
+    def __init__(self, start: Union[int, Tuple[int, int]] = 0, minimum: int = 0,
+                 maximum: int = 100, tooltips: bool = True, caption: Optional[str] = None) -> None:
         """Create a slider.
 
         Parameters
@@ -790,13 +787,13 @@ class Nouislider(_Controller):
         super(Nouislider, self).__init__(caption=caption)
 
         if not isinstance(start, Iterable):
-            start = [start]
+            nstart = [start]
         else:
-            start = list(start)
+            nstart = list(start)
         self._comp = self._tag.format(
             min=minimum,
             max=maximum,
-            start=start,
+            start=nstart,
             tooltips=jsbool(tooltips)
         )
 
@@ -845,7 +842,7 @@ class Nouislider(_Controller):
         """
         return self.get
 
-    def on_change(self):
+    def on_change(self) -> Callable:
         """Emit an event when the slider is moved.
 
         https://refreshless.com/nouislider/events-callbacks/

@@ -181,7 +181,7 @@ def _():
 
 
 {% for event, supports in subscriptions.items() %}
-@socketio.on('{{ event[0] }}')
+@socketio.on('{{ event.uuid }}#{{ event.name }}')
 def _(*args):
     def wrapuser():
         uniq_events = set()
@@ -192,18 +192,17 @@ def _(*args):
         event_data = {}
         for ev in uniq_events:
             comp = COMPONENT_REGISTRY[ev[1]]
-            if ev[2] is None:
-                ename = ev[0]
+            if ev.getter is None:
                 raise GetterNotDefined('{ctype} has no getter associated with event "on_{ename}"'
-                                       .format(ctype=type(comp), ename=ename[ename.find('#') + 1:]))
-            getter = getattr(comp, ev[2])
-            event_data[ev[0]] = getter()
+                                       .format(ctype=type(comp), ename=ev.name))
+            getter = getattr(comp, ev.getter)
+            event_data['{{ ev.uuid }}#{{ ev.name }}'] = getter()
 
         # if there is no getter, then there is no data to unpack
         # if there is a getter, then we need to unpack the data sent
-        {% set post = event[2] %}
+        {% set post = event.getter %}
         {% if post is not none %}
-        event_data['{{ event[0] }}'] = COMPONENT_REGISTRY[{{event[1]}}].{{ '_' ~ post }}(
+        event_data['{{ event.uuid }}#{{ event.name }}'] = COMPONENT_REGISTRY[{{ event.uuid }}].{{ '_' ~ post }}(
             msgpack.unpackb(bytes(args[0]['data']), encoding='utf8')
         )
         {% endif %}
