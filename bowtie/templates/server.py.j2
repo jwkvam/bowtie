@@ -181,7 +181,7 @@ def _():
 
 
 {% for event, supports in subscriptions.items() %}
-@socketio.on('{{ event.uuid }}#{{ event.name }}')
+@socketio.on('{{ event.signal }}')
 def _(*args):
     def wrapuser():
         uniq_events = set()
@@ -196,7 +196,7 @@ def _(*args):
                 raise GetterNotDefined('{ctype} has no getter associated with event "on_{ename}"'
                                        .format(ctype=type(comp), ename=ev.name))
             getter = getattr(comp, ev.getter)
-            event_data['{{ ev.uuid }}#{{ ev.name }}'] = getter()
+            event_data[ev.signal] = getter()
 
         # if there is no getter, then there is no data to unpack
         # if there is a getter, then we need to unpack the data sent
