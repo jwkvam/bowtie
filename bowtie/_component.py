@@ -4,7 +4,7 @@
 All visual and control components inherit these.
 """
 
-from typing import Any, Callable
+from typing import Any, Callable, ClassVar  # pylint: disable=unused-import
 from abc import ABCMeta, abstractmethod
 import string
 from functools import wraps
@@ -264,7 +264,7 @@ class Component(metaclass=_Maker):
     and commands get transformed by the metaclass.
     """
 
-    _NEXT_UUID = 0
+    _NEXT_UUID = 0  # type: ClassVar[int]
 
     # pylint: disable=invalid-name,multiple-statements
     @property

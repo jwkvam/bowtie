@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """Defines the App class."""
 
-from __future__ import print_function
-
-from typing import Any, Callable, List, Optional, Set, Tuple, Union, Dict
+from typing import (  # pylint: disable=unused-import
+    Any, Callable, List, Optional, Set, Tuple, Union, Dict
+)
 import os
 import json
 from itertools import product
@@ -108,8 +108,8 @@ class Size(object):
 
     def __init__(self) -> None:
         """Create a default row or column size with fraction = 1."""
-        self.minimum: Optional[str] = None
-        self.maximum: Optional[str] = None
+        self.minimum = None  # type: Optional[str]
+        self.maximum = None  # type: Optional[str]
         self.fraction(1)
 
     def auto(self):
@@ -178,7 +178,7 @@ class Gap(object):
 
     def __init__(self) -> None:
         """Create a default margin of zero."""
-        self.gap: Optional[str] = None
+        self.gap = None  # type: Optional[str]
         self.pixels(0)
 
     def pixels(self, value: int) -> None:
@@ -244,12 +244,12 @@ class View(object):
         self.columns = [Size() for _ in range(columns)]
         self.sidebar = sidebar
         self.background_color = background_color
-        self.packages: Set[str] = set()
-        self.templates: Set[str] = set()
-        self.imports: Set[_Import] = set()
-        self.controllers: List[_Control] = []
-        self.widgets: List[Component] = []
-        self.spans: List[Span] = []
+        self.packages = set()  # type: Set[str]
+        self.templates = set()  # type: Set[str]
+        self.imports = set()  # type: Set[_Import]
+        self.controllers = []  # type: List[_Control]
+        self.widgets = []  # type: List[Component]
+        self.spans = []  # type: List[Span]
 
     @property
     def _name(self) -> str:
@@ -520,12 +520,12 @@ class App(object):
         self.password = password
         self.port = port
         self.socketio = socketio
-        self.schedules: List[_Schedule] = []
-        self.subscriptions: Dict[Event, List[Tuple[List[Event], str]]] = defaultdict(list)
-        self.pages: Dict[Pager, str] = {}
+        self.schedules = []  # type: List[_Schedule]
+        self.subscriptions = defaultdict(list)  # type: Dict[Event, List[Tuple[List[Event], str]]]
+        self.pages = {}  # type: Dict[Pager, str]
         self.title = title
         self.username = username
-        self.uploads: Dict[int, str] = {}
+        self.uploads = {}  # type: Dict[int, str]
         self.theme = theme
         self.root = View(rows=rows, columns=columns, sidebar=sidebar,
                          background_color=background_color)
@@ -755,7 +755,7 @@ class App(object):
                 template_src = os.path.join(self._package_dir, 'src', template)
                 shutil.copy(template_src, app)
 
-        packages: Set[str] = set()
+        packages = set()  # type: Set[str]
         for route in self.routes:
             # pylint: disable=protected-access
             route.view._render(app, self._jinjaenv)
