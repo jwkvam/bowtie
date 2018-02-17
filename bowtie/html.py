@@ -2,33 +2,28 @@
 """Static HTML Components."""
 
 
+# pylint: disable=too-few-public-methods
 class Div:
+    """Div tag."""
+
     pass
 
 
 class Header:
+    """Header tag."""
 
-    def __init__(self, level):
-        pass
-
-
-class Link:
-    """An internal link.
-
-    This doesn't create a page reload.
-    """
-
-    _TEMPLATE = 'link.jsx'
-    _COMPONENT = 'ALink'
-    _PACKAGE = None
-    _ATTRS = "to={{'{link}'}}"
-
-    def __init__(self) -> None:
-        """Create a button.
+    def __init__(self, text: str, size: int = 1) -> None:
+        """Create header text with a size.
 
         Parameters
         ----------
-        link : str
+        text : str
+            Text of the header tag.
+        size : int
+            Size of the header tag from 1 to 6.
 
         """
-        pass
+        if size not in range(1, 7):
+            raise ValueError('Header size must be in [1..6], found {}.'.format(size))
+        self.size = size
+        self.text = text

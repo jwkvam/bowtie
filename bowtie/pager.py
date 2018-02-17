@@ -6,7 +6,7 @@ from flask_socketio import emit
 import eventlet
 
 
-class Pager(object):
+class Pager:
     """Tell the client to send a message to the server."""
 
     _NEXT_UUID = 0

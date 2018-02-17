@@ -2,7 +2,6 @@ click
 codecov
 eventlet
 flask-socketio
-future
 ipython
 jinja2
 markdown

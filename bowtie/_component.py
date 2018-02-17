@@ -4,7 +4,7 @@
 All visual and control components inherit these.
 """
 
-from typing import Any, Callable, ClassVar  # pylint: disable=unused-import
+from typing import Any, Callable, Optional, ClassVar  # pylint: disable=unused-import
 from abc import ABCMeta, abstractmethod
 import string
 from functools import wraps
@@ -26,18 +26,16 @@ SEPARATOR = '#'
 
 
 class Event:
+    """Data structure to hold information for events."""
 
-    """Docstring for Event. """
-
-    def __init__(self, name, uuid, getter):
-        """TODO: to be defined1.
+    def __init__(self, name: str, uuid: int, getter: Optional[str] = None):
+        """Create an event.
 
         Parameters
         ----------
-        name : TODO
-        uuid : TODO
-        getter : TODO
-
+        name : str
+        uuid : int
+        getter : str, optional
 
         """
         self.name = name

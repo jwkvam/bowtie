@@ -7,8 +7,6 @@ Reference
 https://gist.github.com/carlsmith/800cbe3e11f630ac8aa0
 """
 
-from __future__ import print_function
-
 from typing import Callable
 import os
 import sys
