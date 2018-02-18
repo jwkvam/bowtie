@@ -23,7 +23,6 @@ from bowtie.exceptions import (
     NoUnusedCellsError, SizeError, UsedCellsError,
     WebpackError, YarnError
 )
-from bowtie.control import Button
 from bowtie.pager import Pager
 
 
@@ -279,7 +278,7 @@ class View:
         """Get item from the view."""
         raise NotImplementedError('Accessor is not implemented.')
 
-    def __setitem__(self, key: Any, widget: Button) -> None:
+    def __setitem__(self, key: Any, widget: Component) -> None:
         """Add widget to the view."""
         if isinstance(key, tuple):
             if len(key) == 1:
@@ -574,7 +573,7 @@ class App:
         """Get item from root view."""
         self.root.__getitem__(key)
 
-    def __setitem__(self, key: Any, value: Button) -> None:
+    def __setitem__(self, key: Any, value: Component) -> None:
         """Add widget to the root view."""
         self.root.__setitem__(key, value)
 

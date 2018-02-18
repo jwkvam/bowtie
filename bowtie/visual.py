@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Visual components."""
 
+from typing import Dict, Optional, List, Union
+
 from flask import Markup
 from markdown import markdown
 
@@ -87,11 +89,13 @@ class Table(_Visual):
     _ATTRS = ('columns={{{columns}}} '
               'resultsPerPage={{{results_per_page}}}')
 
-    def __init__(self, data: None = None, columns: None = None, results_per_page: int = 10) -> None:
+    def __init__(self, data=None, columns: Optional[List[Union[int, str]]] = None,
+                 results_per_page: int = 10) -> None:
         """Create a table and optionally initialize the data.
 
         Parameters
         ----------
+        data : pd.DataFrame, optional
         columns : list, optional
             List of column names to display.
         results_per_page : int, optional
@@ -280,7 +284,7 @@ class Plotly(_Visual):
     _PACKAGE = 'plotly.js@1.33.1'
     _ATTRS = 'initState={{{init}}}'
 
-    def __init__(self, init: None = None) -> None:
+    def __init__(self, init: Optional[Dict] = None) -> None:
         """Create a Plotly component.
 
         Parameters
