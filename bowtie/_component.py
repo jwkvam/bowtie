@@ -4,7 +4,7 @@
 All visual and control components inherit these.
 """
 
-from typing import Any, Callable, Optional, ClassVar  # pylint: disable=unused-import
+from typing import Any, Callable, Optional, ClassVar, Tuple  # pylint: disable=unused-import
 from abc import ABCMeta, abstractmethod
 import string
 from functools import wraps
@@ -28,7 +28,7 @@ SEPARATOR = '#'
 class Event:
     """Data structure to hold information for events."""
 
-    def __init__(self, name: str, uuid: int, getter: Optional[str] = None):
+    def __init__(self, name: str, uuid: int, getter: Optional[str] = None) -> None:
         """Create an event.
 
         Parameters
@@ -43,23 +43,25 @@ class Event:
         self.getter = getter
 
     @property
-    def signal(self):
+    def signal(self) -> str:
         """Name of socket.io message."""
         return '{}{}{}'.format(self.uuid, SEPARATOR, self.name)
 
     @property
-    def _key(self):
+    def _key(self) -> Tuple[str, int, Optional[str]]:
         return self.name, self.uuid, self.getter
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Create an Event."""
         return "Event('{}', {}, '{}')".format(self.name, self.uuid, self.getter)
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
+        """Compare Events for equality."""
         # pylint: disable=protected-access
         return isinstance(other, type(self)) and self._key == other._key
 
-    def __hash__(self):
+    def __hash__(self) -> int:
+        """Compute hash for Event."""
         return hash(self._key)
 
 
@@ -143,14 +145,14 @@ def encoders(obj: Any) -> JSON:
 def pack(x: Any) -> bytes:
     """Encode ``x`` into msgpack with additional encoders."""
     try:
-        return bytes(msgpack.packb(x, default=encoders))
+        return msgpack.packb(x, default=encoders)
     except TypeError as exc:
         message = ('Serialization error, check the data passed to a do_ command. '
                    'Cannot serialize this object:\n') + str(exc)[16:]
         raise SerializationError(message)
 
 
-def unpack(x):
+def unpack(x) -> JSON:
     """Decode ``x`` from msgpack into Python object."""
     return msgpack.unpackb(bytes(x['data']), encoding='utf8')
 

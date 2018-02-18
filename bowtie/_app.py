@@ -102,9 +102,9 @@ class Size:
 
     >>> app = App(rows=2, columns=3)
     >>> app.rows[0].fraction(1)
-    '1fr'
+    1fr
     >>> app.rows[1].fraction(2)
-    '2fr'
+    2fr
 
     """
 
@@ -148,7 +148,7 @@ class Size:
         self.minimum = '{}em'.format(value)
         return self
 
-    def fraction(self, value: int) -> None:
+    def fraction(self, value: int):
         """Set the fraction of free space to use as an integer."""
         raise_not_number(value)
         self.maximum = '{}fr'.format(int(value))
@@ -184,7 +184,7 @@ class Gap:
 
     >>> app = App()
     >>> app.row_gap.pixels(5)
-    '5px'
+    5px
 
     """
 
@@ -193,7 +193,7 @@ class Gap:
         self.gap = None  # type: Optional[str]
         self.pixels(0)
 
-    def pixels(self, value: int) -> None:
+    def pixels(self, value: int):
         """Set the margin in pixels."""
         raise_not_number(value)
         self.gap = '{}px'.format(value)
@@ -719,14 +719,14 @@ class App:
         ... def callback(dd_item, slide_value):
         ...     pass
         >>> @app.listen(dd.on_change)
-        >>> @app.listen(slide.on_change)
+        ... @app.listen(slide.on_change)
         ... def callback2(value):
         ...     pass
 
         """
         def decorator(func):
             """Subscribe function to events."""
-            self.subscribe(func.__name__, event, *events)
+            self.subscribe(func, event, *events)
             return func
         return decorator
 
