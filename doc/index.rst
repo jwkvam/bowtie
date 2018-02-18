@@ -47,6 +47,7 @@ Contents
     components
     feedback
     cache
+    jupyter
     docker
     exceptions
 
