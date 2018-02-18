@@ -7,7 +7,7 @@ App
 ===
 
 The App class defines the structure of the application.
-It contains a root view, what you get when you go to '/'.
+It contains a root view, what you get when you go to ``/``.
 It subscribes functions to component events and builds the application.
 
 .. autoclass:: bowtie.App
