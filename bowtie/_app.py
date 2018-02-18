@@ -73,7 +73,7 @@ class Span:
         else:
             self.column_end = column_end + 1
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Show the starting and ending points."""
         return '({}, {}) to ({}, {})'.format(
             self.row_start,
@@ -114,53 +114,53 @@ class Size:
         self.maximum = None  # type: Optional[str]
         self.fraction(1)
 
-    def auto(self):
+    def auto(self) -> 'Size':
         """Set the size to auto or content based."""
         self.maximum = 'auto'
         return self
 
-    def min_auto(self):
+    def min_auto(self) -> 'Size':
         """Set the minimum size to auto or content based."""
         self.minimum = 'auto'
         return self
 
-    def pixels(self, value):
+    def pixels(self, value) -> 'Size':
         """Set the size in pixels."""
         raise_not_number(value)
         self.maximum = '{}px'.format(value)
         return self
 
-    def min_pixels(self, value):
+    def min_pixels(self, value) -> 'Size':
         """Set the minimum size in pixels."""
         raise_not_number(value)
         self.minimum = '{}px'.format(value)
         return self
 
-    def ems(self, value):
+    def ems(self, value) -> 'Size':
         """Set the size in ems."""
         raise_not_number(value)
         self.maximum = '{}em'.format(value)
         return self
 
-    def min_ems(self, value):
+    def min_ems(self, value) -> 'Size':
         """Set the minimum size in ems."""
         raise_not_number(value)
         self.minimum = '{}em'.format(value)
         return self
 
-    def fraction(self, value: int):
+    def fraction(self, value: int) -> 'Size':
         """Set the fraction of free space to use as an integer."""
         raise_not_number(value)
         self.maximum = '{}fr'.format(int(value))
         return self
 
-    def percent(self, value):
+    def percent(self, value) -> 'Size':
         """Set the percentage of free space to use."""
         raise_not_number(value)
         self.maximum = '{}%'.format(value)
         return self
 
-    def min_percent(self, value):
+    def min_percent(self, value) -> 'Size':
         """Set the minimum percentage of free space to use."""
         raise_not_number(value)
         self.minimum = '{}%'.format(value)
@@ -193,13 +193,19 @@ class Gap:
         self.gap = None  # type: Optional[str]
         self.pixels(0)
 
-    def pixels(self, value: int):
+    def pixels(self, value: int) -> 'Gap':
         """Set the margin in pixels."""
         raise_not_number(value)
         self.gap = '{}px'.format(value)
         return self
 
-    def percent(self, value):
+    def ems(self, value: int) -> 'Gap':
+        """Set the margin in ems."""
+        raise_not_number(value)
+        self.gap = '{}em'.format(value)
+        return self
+
+    def percent(self, value) -> 'Gap':
         """Set the margin as a percentage."""
         raise_not_number(value)
         self.gap = '{}%'.format(value)
@@ -318,7 +324,7 @@ class View:
         else:
             raise GridIndexError('Invalid index {}'.format(key))
 
-    def add(self, widget: Component):
+    def add(self, widget: Component) -> None:
         """Add a widget to the grid in the next available cell.
 
         Searches over columns then rows for available cells.
