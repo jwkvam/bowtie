@@ -2,6 +2,7 @@
 """Jupyter Integration."""
 
 import ast
+import socket
 import os
 from os.path import join as pjoin
 from urllib.parse import urljoin
@@ -93,13 +94,34 @@ def load_notebook(fullname):
 class BowtieMagic(Magics):
     """Bowtie magic commands."""
 
+    server = None
+
+    @line_magic
+    def bowtie_stop(self, line=''):  # pylint: disable=unused-argument
+        """Terminate Bowtie app."""
+        if self.server is None:
+            print('No app has been run.')
+        else:
+            print('Terminating Bowtie app.')
+            self.server.terminate()
+            if self.server.poll() is None:
+                time.sleep(1)
+                if self.server.poll() is None:
+                    print('Failed to stop Bowtie app.', file=sys.stderr)
+                    return
+            print('Successfully stopped Bowtie app.')
+            self.server = None
+
+
     @line_magic
     def bowtie(self, line=''):
         """Build and serve a Bowtie app."""
-        opts, appvar = self.parse_options(line, 'w:h:')
+        opts, appvar = self.parse_options(line, 'w:h:b:p:')
         width = opts.get('w', 1500)
         height = opts.get('h', 1000)
-        border = opts.get('b', 0)
+        border = opts.get('b', 2)
+        port = opts.get('p', 9991)
+        host = '0.0.0.0'
 
         global_ns = self.shell.user_global_ns
         local_ns = self.shell.user_ns
@@ -115,9 +137,14 @@ class BowtieMagic(Magics):
         # pylint: disable=protected-access
         app._build(notebook=get_notebook_name())
 
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result = sock.connect_ex((host, port))
+        if result == 0:
+            raise Exception('Port {} is unavailable on host {}, aborting.'.format(port, host))
+
         filepath = './{}/src/server.py'.format(_DIRECTORY)
         if os.path.isfile(filepath):
-            server = Popen(['python', '-u', filepath], stdout=PIPE, stderr=STDOUT)
+            self.server = Popen(['python', '-u', filepath], stdout=PIPE, stderr=STDOUT)
         else:
             raise FileNotFoundError('Cannot find "{}". Did you build the app?'.format(filepath))
 
@@ -131,11 +158,11 @@ class BowtieMagic(Magics):
                     print(line.decode('utf-8'), end='')
             raise Exception()
 
-        thread = Thread(target=flush_stdout, args=(server,))
+        thread = Thread(target=flush_stdout, args=(self.server,))
         thread.daemon = True
         thread.start()
 
-        while server.poll() is None:
+        while self.server.poll() is None:
             try:
                 if requests.get('http://localhost:9991').ok:
                     break
@@ -143,12 +170,10 @@ class BowtieMagic(Magics):
                 continue
             time.sleep(1)
         else:
-            print(server.stdout.read().decode('utf-8'), end='')
-            return server
+            print(self.server.stdout.read().decode('utf-8'), end='')
 
         clear_output()
         display(HTML(
             '<iframe src=http://localhost:9991 width={} height={} '
             'frameBorder={}></iframe>'.format(width, height, border)
         ))
-        return server
