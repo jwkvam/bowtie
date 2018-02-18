@@ -20,7 +20,7 @@ class _Visual(Component):
     # pylint: disable=abstract-method
     def __init__(self) -> None:
         self.progress = Progress()
-        super(_Visual, self).__init__()
+        super().__init__()
 
     @property
     def _instantiate(self) -> str:
@@ -47,7 +47,7 @@ class Markdown(_Visual):
             Default markdown for the widget.
 
         """
-        super(Markdown, self).__init__()
+        super().__init__()
 
         self._comp = self._tag.format(
             initial=Markup(markdown(initial).replace('\n', '\\n'))
@@ -102,7 +102,7 @@ class Table(_Visual):
             Number of rows on each pagination of the table.
 
         """
-        super(Table, self).__init__()
+        super().__init__()
         self.data = []
         self.columns = []
         if data:
@@ -173,12 +173,12 @@ class SmartGrid(_Visual):
 
     _TEMPLATE = 'griddle.jsx'
     _COMPONENT = 'SmartGrid'
-    _PACKAGE = 'griddle-react@1.11.1'
+    _PACKAGE = 'griddle-react@1.11.2'
     _ATTRS = None
 
     def __init__(self) -> None:
         """Create the table, optionally set the columns."""
-        super(SmartGrid, self).__init__()
+        super().__init__()
         self._comp = self._tag
 
     # pylint: disable=no-self-use
@@ -230,7 +230,7 @@ class SVG(_Visual):
             it will stretch to fill up the space available.
 
         """
-        super(SVG, self).__init__()
+        super().__init__()
         self.preserve_aspect_ratio = preserve_aspect_ratio
         self._comp = self._tag.format(
             preserve_aspect_ratio=jsbool(self.preserve_aspect_ratio)
@@ -281,7 +281,7 @@ class Plotly(_Visual):
 
     _TEMPLATE = 'plotly.jsx'
     _COMPONENT = 'PlotlyPlot'
-    _PACKAGE = 'plotly.js@1.33.1'
+    _PACKAGE = 'plotly.js@1.34.0'
     _ATTRS = 'initState={{{init}}}'
 
     def __init__(self, init: Optional[Dict] = None) -> None:
@@ -293,7 +293,7 @@ class Plotly(_Visual):
             Initial Plotly data to plot.
 
         """
-        super(Plotly, self).__init__()
+        super().__init__()
         if init is None:
             init = dict(data=[], layout={'autosize': False})
         self.init = init

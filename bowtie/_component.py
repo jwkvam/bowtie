@@ -260,7 +260,7 @@ class _Maker(ABCMeta):
                 # preserve the post-processor with an underscore
                 namespace['_' + k] = namespace[k]
                 namespace[k] = make_getter(namespace[k])
-        return super(_Maker, mcs).__new__(mcs, name, bases, namespace)
+        return super().__new__(mcs, name, bases, namespace)
 
 
 class FormatDict(dict):
@@ -312,7 +312,7 @@ class Component(metaclass=_Maker):
         # wanted to put "self" instead of "Component"
         # was surprised that didn't work
         self._uuid = Component._next_uuid()
-        super(Component, self).__init__()
+        super().__init__()
         self._tagbase = " socket={{socket}} uuid={{'{uuid}'}} />".format(uuid=self._uuid)
         self._tag = '<' + self._COMPONENT
         if self._ATTRS:

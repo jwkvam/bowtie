@@ -16,7 +16,7 @@ class _Controller(Component):
 
     # pylint: disable=abstract-method
     def __init__(self, caption: Optional[str] = None) -> None:
-        super(_Controller, self).__init__()
+        super().__init__()
         self.caption = caption
 
     @property
@@ -44,7 +44,7 @@ class Button(_Controller):
             Heading text.
 
         """
-        super(Button, self).__init__(caption=caption)
+        super().__init__(caption=caption)
         self._comp = self._tag.format(
             label=label
         )
@@ -82,7 +82,7 @@ class Link(_Controller):
         link : str
 
         """
-        super(Link, self).__init__(caption=caption)
+        super().__init__(caption=caption)
         self._comp = self._tag.format(
             link=link
         )
@@ -110,7 +110,7 @@ class Upload(_Controller):
             Heading text.
 
         """
-        super(Upload, self).__init__(caption=caption)
+        super().__init__(caption=caption)
         self._comp = self._tag.format(
             multiple=jsbool(multiple)
         )
@@ -157,7 +157,7 @@ class Dropdown(_Controller):
             Heading text.
 
         """
-        super(Dropdown, self).__init__(caption=caption)
+        super().__init__(caption=caption)
 
         if labels is None and values is None:
             labels = []
@@ -237,7 +237,7 @@ class Switch(_Controller):
             Label appearing above the widget.
 
         """
-        super(Switch, self).__init__(caption=caption)
+        super().__init__(caption=caption)
         self._comp = self._tag.format(
             defaultChecked=jsbool(initial)
         )
@@ -281,7 +281,7 @@ class _DatePickers(_Controller):
 
     def __init__(self, date_type: bool = False, month_type: bool = False, range_type: bool = False,
                  caption: Optional[str] = None) -> None:
-        super(_DatePickers, self).__init__(caption=caption)
+        super().__init__(caption=caption)
         self._comp = self._tag.format(
             date_type=jsbool(date_type),
             month_type=jsbool(month_type),
@@ -304,7 +304,7 @@ class DatePicker(_DatePickers):
             Heading text.
 
         """
-        super(DatePicker, self).__init__(date_type=True, caption=caption)
+        super().__init__(date_type=True, caption=caption)
 
     def on_change(self):
         """Emit an event when a date is selected.
@@ -348,7 +348,7 @@ class MonthPicker(_DatePickers):
             Heading text.
 
         """
-        super(MonthPicker, self).__init__(month_type=True, caption=caption)
+        super().__init__(month_type=True, caption=caption)
 
     def on_change(self):
         """Emit an event when a month is selected.
@@ -392,7 +392,7 @@ class RangePicker(_DatePickers):
             Heading text.
 
         """
-        super(RangePicker, self).__init__(range_type=True, caption=caption)
+        super().__init__(range_type=True, caption=caption)
 
     def on_change(self):
         """Emit an event when a range is selected.
@@ -455,7 +455,7 @@ class Number(_Controller):
         https://ant.design/components/input/
 
         """
-        super(Number, self).__init__(caption=caption)
+        super().__init__(caption=caption)
         self._comp = self._tag.format(
             start=start,
             minimum=minimum,
@@ -527,7 +527,7 @@ class Textbox(_Controller):
         https://ant.design/components/input/
 
         """
-        super(Textbox, self).__init__(caption=caption)
+        super().__init__(caption=caption)
 
         self._comp = self._tag.format(
             area='textarea' if area else 'text',
@@ -630,7 +630,7 @@ class Slider(_Controller):
         https://ant.design/components/slider/
 
         """
-        super(Slider, self).__init__(caption=caption)
+        super().__init__(caption=caption)
 
         if not start:
             if ranged:
@@ -784,7 +784,7 @@ class Nouislider(_Controller):
         https://refreshless.com/nouislider/events-callbacks/
 
         """
-        super(Nouislider, self).__init__(caption=caption)
+        super().__init__(caption=caption)
 
         if not isinstance(start, Iterable):
             nstart = [start]

@@ -47,7 +47,7 @@ class Progress(Component):
         https://ant.design/components/progress/
 
         """
-        super(Progress, self).__init__()
+        super().__init__()
         self._tagbase = self._tagbase[:-3] + '>'
         self._tags = '<' + self._COMPONENT + self._tagbase, '</AntProgress>'
 
