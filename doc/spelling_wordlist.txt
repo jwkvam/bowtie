@@ -5,6 +5,7 @@ Dockerfile
 Heroku
 Homebrew
 Javascript
+Jupyter
 Plotly
 Procfile
 Textbox
