@@ -112,7 +112,6 @@ class BowtieMagic(Magics):
             print('Successfully stopped Bowtie app.')
             self.server = None
 
-
     @line_magic
     def bowtie(self, line=''):
         """Build and serve a Bowtie app."""
