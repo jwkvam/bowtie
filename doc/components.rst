@@ -141,3 +141,20 @@ Link
 .. autoclass:: bowtie.control.Link
     :members:
     :undoc-members:
+
+HTML
+----
+
+Div
+~~~
+
+.. autoclass:: bowtie.html.Div
+    :members:
+    :undoc-members:
+
+Header
+~~~~~~
+
+.. autoclass:: bowtie.html.Header
+    :members:
+    :undoc-members:

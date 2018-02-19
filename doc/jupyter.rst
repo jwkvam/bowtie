@@ -7,10 +7,9 @@ Instead of using a ``main`` function decorated with ``@command``,
 we use an IPython magic::
 
     app = App()
-    server = %bowtie app
+    %bowtie app
 
 This will run the Bowtie app and create an iframe to view the dashboard.
-The server object is the return value of a subprocess run.
-When you wish to terminate the server call ``terminate`` on it::
+When you want to stop the Bowtie app use the following magic::
 
-    server.terminate()
+    %bowtie_stop
