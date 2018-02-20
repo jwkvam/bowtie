@@ -164,18 +164,13 @@ def make_event(event: Callable) -> Callable:
     @wraps(event)
     def actualevent(self):
         name = event.__name__[3:]
-        # pylint: disable=protected-access
-        # ename = '{uuid}{sep}{event}'.format(
-        #     uuid=self._uuid,
-        #     sep=SEPARATOR,
-        #     event=name
-        # )
         try:
             # the getter post processing function
             # is preserved with an underscore
             getter = event(self).__name__
         except AttributeError:
             getter = None
+        # pylint: disable=protected-access
         return Event(name, self._uuid, getter)
 
     return actualevent

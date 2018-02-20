@@ -43,13 +43,15 @@ export default class View{{ uuid }} extends React.Component {
                 </div>
                 {% endif %}
 
-                {% for widget, span in widgets %}
+                {% for span, widgets in spans.items() %}
                 <div style={{ '{{' }}
                         gridColumn: '{{ span.column_start + sidebar }} / {{ span.column_end + sidebar }}',
                         gridRow: '{{ span.row_start }} / {{ span.row_end }}',
                         position: 'relative'
                         {{ '}}' }}>
-                    {{ widget }}
+                    {% for widget in widgets %}
+                    {{ widget._instantiate }}
+                    {% endfor %}
                 </div>
                 {% endfor %}
             </div>

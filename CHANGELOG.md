@@ -5,6 +5,9 @@
 ### Added
 
   * Jupyter integration.
+  * Basic HTML components: Div and H1-H6.
+  * Add multiple components into a single span/cell.
+    This can be useful for adding multiple control or html elements into a single cell.
 
 ### Breaking
 

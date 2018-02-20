@@ -20,7 +20,7 @@ from bowtie._component import Event, Component, COMPONENT_REGISTRY
 from bowtie.exceptions import (
     GridIndexError, MissingRowOrColumn,
     NoSidebarError, NotStatefulEvent,
-    NoUnusedCellsError, SizeError, UsedCellsError,
+    NoUnusedCellsError, SizeError,
     WebpackError, YarnError
 )
 from bowtie.pager import Pager
@@ -71,6 +71,20 @@ class Span:
             self.column_end = self.column_start + 1
         else:
             self.column_end = column_end + 1
+
+    def __add__(self, widget: Component):
+        pass
+
+    @property
+    def _key(self) -> Tuple[int, int, int, int]:
+        return self.row_start, self.column_start, self.row_end, self.column_end
+
+    def __hash__(self) -> int:
+        return hash(self._key)
+
+    def __eq__(self, other) -> bool:
+        # pylint: disable=protected-access
+        return isinstance(other, type(self)) and self._key == other._key
 
     def __repr__(self) -> str:
         """Show the starting and ending points."""
@@ -242,6 +256,15 @@ def _slice_to_start_end(slc: slice, length: int) -> Tuple[int, int]:
     return start, end
 
 
+class Widgets(list):
+    """List for storing widgets to override iadd."""
+
+    def __iadd__(self, other):
+        """Append items to list when adding."""
+        self.append(other)
+        return self
+
+
 class View:
     """Grid of widgets."""
 
@@ -267,22 +290,16 @@ class View:
         self.templates = set()  # type: Set[str]
         self.imports = set()  # type: Set[_Import]
         self.controllers = []  # type: List[_Control]
-        self.widgets = []  # type: List[Component]
-        self.spans = []  # type: List[Span]
+        self.spans = defaultdict(Widgets)  # type: Dict[Span, List[Component]]
 
     @property
     def _name(self) -> str:
         return 'view{}.jsx'.format(self._uuid)
 
-    def __getitem__(self, key):
-        """Get item from the view."""
-        raise NotImplementedError('Accessor is not implemented.')
-
-    def __setitem__(self, key: Any, widget: Component) -> None:
-        """Add widget to the view."""
+    def _key_to_rows_columns(self, key: Any) -> Tuple[int, int, int, int]:
         if isinstance(key, tuple):
             if len(key) == 1:
-                self[key[0]] = widget
+                rows_cols = self._key_to_rows_columns(key[0])
             else:
                 try:
                     row_key, column_key = key
@@ -290,7 +307,7 @@ class View:
                     raise GridIndexError('Index must be 1 or 2 values, found {}'.format(key))
                 if isinstance(row_key, int):
                     row_start = row_key
-                    row_end = None
+                    row_end = row_key + 1
                 elif isinstance(row_key, slice):
                     row_start, row_end = _slice_to_start_end(row_key, len(self.rows))
                 else:
@@ -300,28 +317,32 @@ class View:
 
                 if isinstance(column_key, int):
                     column_start = column_key
-                    column_end = None
+                    column_end = column_key + 1
                 elif isinstance(column_key, slice):
                     column_start, column_end = _slice_to_start_end(column_key, len(self.columns))
                 else:
                     raise GridIndexError(
                         'Cannot index with {}, pass in a int or a slice.'.format(column_key)
                     )
-                self._add(
-                    widget, row_start=row_start, column_start=column_start,
-                    row_end=row_end, column_end=column_end
-                )
+                rows_cols = row_start, column_start, row_end, column_end
 
         elif isinstance(key, slice):
             start, end = _slice_to_start_end(key, len(self.rows))
-            self._add(
-                widget, row_start=start, column_start=0,
-                row_end=end, column_end=len(self.columns)
-            )
+            rows_cols = start, 0, end, len(self.columns)
         elif isinstance(key, int):
-            self._add(widget, row_start=key, column_start=0, column_end=len(self.columns))
+            rows_cols = key, 0, key + 1, len(self.columns)
         else:
             raise GridIndexError('Invalid index {}'.format(key))
+        return rows_cols
+
+    def __getitem__(self, key):
+        """Get item from the view."""
+        return self.spans[Span(*self._key_to_rows_columns(key))]
+
+    def __setitem__(self, key: Any, widget: Component) -> None:
+        """Add widget to the view."""
+        if not isinstance(widget, Widgets):
+            self._add(widget, *self._key_to_rows_columns(key))
 
     def add(self, widget: Component) -> None:
         """Add a widget to the grid in the next available cell.
@@ -357,7 +378,8 @@ class View:
             Ending column for the widget.
 
         """
-        assert isinstance(widget, Component)
+        if not isinstance(widget, Component):
+            raise ValueError('Widget must be a type of Component, found {}'.format(type(widget)))
 
         row_start = _check_index(row_start, len(self.rows), False)
         column_start = _check_index(column_start, len(self.columns), False)
@@ -402,9 +424,9 @@ class View:
             span = Span(row, col)
             self.used[row, col] = True
         elif row_end is None and column_end is None:
-            if self.used[row_start, column_start]:
-                raise UsedCellsError('Cell at {}, {} is already used.'
-                                     .format(row_start, column_start))
+            # if self.used[row_start, column_start]:
+            #     raise UsedCellsError('Cell at [{}, {}] is already used.'
+            #                          .format(row_start, column_start))
             span = Span(row_start, column_start)
             self.used[row_start, column_start] = True
         else:
@@ -413,18 +435,17 @@ class View:
             if column_end is None:
                 column_end = column_start + 1
 
-            for row, col in product(range(row_start, row_end),
-                                    range(column_start, column_end)):
-                if self.used[row, col]:
-                    raise UsedCellsError('Cell at {}, {} is already used.'.format(row, col))
+            # for row, col in product(range(row_start, row_end),
+            #                         range(column_start, column_end)):
+            #     if self.used[row, col]:
+            #         raise UsedCellsError('Cell at {}, {} is already used.'.format(row, col))
 
             for row, col in product(range(row_start, row_end),
                                     range(column_start, column_end)):
                 self.used[row, col] = True
             span = Span(row_start, column_start, row_end, column_end)
 
-        self.widgets.append(widget)
-        self.spans.append(span)
+        self.spans[span].append(widget)
 
     def add_sidebar(self, widget: Component) -> None:
         """Add a widget to the sidebar.
@@ -463,7 +484,7 @@ class View:
         jsx = env.get_template('view.jsx.j2')
 
         # pylint: disable=protected-access
-        widgets = [w._instantiate for w in self.widgets]
+        # widgets = [w._instantiate for w in self.widgets]
 
         columns = []
         if self.sidebar:
@@ -482,7 +503,7 @@ class View:
                     background_color=self.background_color,
                     components=self.imports,
                     controls=self.controllers,
-                    widgets=zip(widgets, self.spans)
+                    spans=self.spans
                 )
             )
 
@@ -571,7 +592,7 @@ class App:
 
     def __getitem__(self, key):
         """Get item from root view."""
-        self.root.__getitem__(key)
+        return self.root.__getitem__(key)
 
     def __setitem__(self, key: Any, value: Component) -> None:
         """Add widget to the root view."""
@@ -589,7 +610,7 @@ class App:
 
         """
         # pylint: disable=protected-access
-        self.root._add(widget)
+        self.root.add(widget)
 
     def add_sidebar(self, widget: Component) -> None:
         """Add a widget to the sidebar.

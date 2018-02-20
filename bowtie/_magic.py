@@ -122,6 +122,11 @@ class BowtieMagic(Magics):
         port = opts.get('p', 9991)
         host = '0.0.0.0'
 
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result = sock.connect_ex((host, port))
+        if result == 0:
+            raise Exception('Port {} is unavailable on host {}, aborting.'.format(port, host))
+
         global_ns = self.shell.user_global_ns
         local_ns = self.shell.user_ns
         try:
@@ -135,11 +140,6 @@ class BowtieMagic(Magics):
 
         # pylint: disable=protected-access
         app._build(notebook=get_notebook_name())
-
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        result = sock.connect_ex((host, port))
-        if result == 0:
-            raise Exception('Port {} is unavailable on host {}, aborting.'.format(port, host))
 
         filepath = './{}/src/server.py'.format(_DIRECTORY)
         if os.path.isfile(filepath):
