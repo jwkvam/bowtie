@@ -80,7 +80,7 @@ class Span:
         return hash(self._key)
 
     def __eq__(self, other) -> bool:
-        """Compare for dict."""
+        """Compare eq for dict."""
         # pylint: disable=protected-access
         return isinstance(other, type(self)) and self._key == other._key
 
@@ -299,6 +299,7 @@ class View:
         return 'view{}.jsx'.format(self._uuid)
 
     def _key_to_rows_columns(self, key: Any) -> Tuple[int, int, int, int]:
+        # FIXME spaghetti code cleanup needed!
         if isinstance(key, tuple):
             if len(key) == 1:
                 rows_cols = self._key_to_rows_columns(key[0])
@@ -308,20 +309,24 @@ class View:
                 except ValueError:
                     raise GridIndexError('Index must be 1 or 2 values, found {}'.format(key))
                 if isinstance(row_key, int):
-                    row_start = row_key
-                    row_end = row_key + 1
+                    row_start = _check_index(row_key, len(self.rows), False)
+                    row_end = row_start + 1
                 elif isinstance(row_key, slice):
                     row_start, row_end = _slice_to_start_end(row_key, len(self.rows))
+                    row_start = _check_index(row_start, len(self.rows), False)
+                    row_end = _check_index(row_end, len(self.rows), True)
                 else:
                     raise GridIndexError(
                         'Cannot index with {}, pass in a int or a slice.'.format(row_key)
                     )
 
                 if isinstance(column_key, int):
-                    column_start = column_key
-                    column_end = column_key + 1
+                    column_start = _check_index(column_key, len(self.columns), False)
+                    column_end = column_start + 1
                 elif isinstance(column_key, slice):
                     column_start, column_end = _slice_to_start_end(column_key, len(self.columns))
+                    column_start = _check_index(column_start, len(self.columns), False)
+                    column_end = _check_index(column_end, len(self.columns), True)
                 else:
                     raise GridIndexError(
                         'Cannot index with {}, pass in a int or a slice.'.format(column_key)
@@ -330,9 +335,12 @@ class View:
 
         elif isinstance(key, slice):
             start, end = _slice_to_start_end(key, len(self.rows))
+            start = _check_index(start, len(self.rows), False)
+            end = _check_index(end, len(self.rows), True)
             rows_cols = start, 0, end, len(self.columns)
         elif isinstance(key, int):
-            rows_cols = key, 0, key + 1, len(self.columns)
+            row_start = _check_index(key, len(self.rows), False)
+            rows_cols = row_start, 0, row_start + 1, len(self.columns)
         else:
             raise GridIndexError('Invalid index {}'.format(key))
         return rows_cols
@@ -382,11 +390,6 @@ class View:
         """
         if not isinstance(widget, Component):
             raise ValueError('Widget must be a type of Component, found {}'.format(type(widget)))
-
-        row_start = _check_index(row_start, len(self.rows), False)
-        column_start = _check_index(column_start, len(self.columns), False)
-        row_end = _check_index(row_end, len(self.rows), True)
-        column_end = _check_index(column_end, len(self.columns), True)
 
         if row_start is not None and row_end is not None and row_start >= row_end:
             raise GridIndexError('row_start: {} must be less than row_end: {}'
