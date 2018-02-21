@@ -55,5 +55,5 @@ Bowhead.propTypes = {
     uuid: PropTypes.string.isRequired,
     socket: PropTypes.object.isRequired,
     initial: PropTypes.string.isRequired,
-    size: PropTypes.int.isRequired
+    size: PropTypes.number.isRequired
 };
