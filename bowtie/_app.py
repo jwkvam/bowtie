@@ -18,10 +18,9 @@ from jinja2 import Environment, FileSystemLoader
 
 from bowtie._component import Event, Component, COMPONENT_REGISTRY
 from bowtie.exceptions import (
-    GridIndexError, MissingRowOrColumn,
-    NoSidebarError, NotStatefulEvent,
-    NoUnusedCellsError, SizeError,
-    WebpackError, YarnError
+    GridIndexError, MissingRowOrColumn, NoSidebarError,
+    NotStatefulEvent, UsedCellsError, NoUnusedCellsError,
+    SizeError, WebpackError, YarnError
 )
 from bowtie.pager import Pager
 
@@ -72,17 +71,16 @@ class Span:
         else:
             self.column_end = column_end + 1
 
-    def __add__(self, widget: Component):
-        pass
-
     @property
     def _key(self) -> Tuple[int, int, int, int]:
         return self.row_start, self.column_start, self.row_end, self.column_end
 
     def __hash__(self) -> int:
+        """Hash for dict."""
         return hash(self._key)
 
     def __eq__(self, other) -> bool:
+        """Compare for dict."""
         # pylint: disable=protected-access
         return isinstance(other, type(self)) and self._key == other._key
 
@@ -264,6 +262,10 @@ class Widgets(list):
         self.append(other)
         return self
 
+    def __add__(self, other):
+        """Append items to list when adding."""
+        return self + [other]
+
 
 class View:
     """Grid of widgets."""
@@ -424,9 +426,9 @@ class View:
             span = Span(row, col)
             self.used[row, col] = True
         elif row_end is None and column_end is None:
-            # if self.used[row_start, column_start]:
-            #     raise UsedCellsError('Cell at [{}, {}] is already used.'
-            #                          .format(row_start, column_start))
+            if self.used[row_start, column_start]:
+                raise UsedCellsError('Cell at [{}, {}] is already used.'
+                                     .format(row_start, column_start))
             span = Span(row_start, column_start)
             self.used[row_start, column_start] = True
         else:
@@ -435,10 +437,10 @@ class View:
             if column_end is None:
                 column_end = column_start + 1
 
-            # for row, col in product(range(row_start, row_end),
-            #                         range(column_start, column_end)):
-            #     if self.used[row, col]:
-            #         raise UsedCellsError('Cell at {}, {} is already used.'.format(row, col))
+            for row, col in product(range(row_start, row_end),
+                                    range(column_start, column_end)):
+                if self.used[row, col]:
+                    raise UsedCellsError('Cell at {}, {} is already used.'.format(row, col))
 
             for row, col in product(range(row_start, row_end),
                                     range(column_start, column_end)):
