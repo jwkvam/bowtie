@@ -10,7 +10,7 @@ import time
 
 import pytest
 from bowtie import App
-from bowtie import control, visual
+from bowtie import control, visual, html
 from bowtie._component import COMPONENT_REGISTRY
 from bowtie.tests.utils import reset_uuid
 
@@ -38,7 +38,16 @@ def create_components():
     for vis in visuals:
         assert COMPONENT_REGISTRY[vis._uuid] == vis
 
-    return controllers, visuals
+    htmls = []
+    for compstr in dir(html):
+        comp = getattr(html, compstr)
+        if compstr[0] != '_' and isclass(comp) and issubclass(comp, html._HTML):
+            htmls.append(comp())
+
+    for htm in htmls:
+        assert COMPONENT_REGISTRY[htm._uuid] == htm
+
+    return controllers, visuals, htmls
 
 
 create_components()
@@ -49,7 +58,7 @@ def components(build_path, monkeypatch):
     """App with all components."""
     monkeypatch.setattr(App, '_sourcefile', lambda self: 'bowtie.tests.test_components')
 
-    controllers, visuals = create_components()
+    controllers, visuals, htmls = create_components()
 
     app = App(rows=len(visuals))
     for controller in controllers:
@@ -61,6 +70,13 @@ def components(build_path, monkeypatch):
         # pylint: disable=protected-access
         assert COMPONENT_REGISTRY[vis._uuid] == vis
         app.add(vis)
+
+    for htm in htmls:
+        # pylint: disable=protected-access
+        assert COMPONENT_REGISTRY[htm._uuid] == htm
+        app.add_sidebar(htm)
+
+    assert len(COMPONENT_REGISTRY) == len(controllers) + 2 * len(visuals) + len(htmls)
 
     # pylint: disable=protected-access
     app._build()

@@ -4,7 +4,7 @@ import { storeState } from './utils';
 
 var msgpack = require('msgpack-lite');
 
-export default class Bowdiv extends React.Component {
+export default class Bowhead extends React.Component {
     constructor(props) {
         super(props);
         var local = sessionStorage.getItem(this.props.uuid);
@@ -34,12 +34,26 @@ export default class Bowdiv extends React.Component {
     }
 
     render () {
-        return <div dangerouslySetInnerHTML={{__html: this.state.value}} />;
+        switch (this.props.size) {
+            case 1:
+                return <h1 dangerouslySetInnerHTML={{__html: this.state.value}} />;
+            case 2:
+                return <h2 dangerouslySetInnerHTML={{__html: this.state.value}} />;
+            case 3:
+                return <h3 dangerouslySetInnerHTML={{__html: this.state.value}} />;
+            case 4:
+                return <h4 dangerouslySetInnerHTML={{__html: this.state.value}} />;
+            case 5:
+                return <h5 dangerouslySetInnerHTML={{__html: this.state.value}} />;
+            case 6:
+                return <h6 dangerouslySetInnerHTML={{__html: this.state.value}} />;
+        }
     }
 }
 
-Bowdiv.propTypes = {
+Bowhead.propTypes = {
     uuid: PropTypes.string.isRequired,
     socket: PropTypes.object.isRequired,
-    initial: PropTypes.string.isRequired
+    initial: PropTypes.string.isRequired,
+    size: PropTypes.int.isRequired
 };
