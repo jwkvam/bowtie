@@ -35,18 +35,18 @@ export default class Bowhead extends React.Component {
 
     render () {
         switch (this.props.size) {
-            case 1:
-                return <h1 dangerouslySetInnerHTML={{__html: this.state.value}} />;
-            case 2:
-                return <h2 dangerouslySetInnerHTML={{__html: this.state.value}} />;
-            case 3:
-                return <h3 dangerouslySetInnerHTML={{__html: this.state.value}} />;
-            case 4:
-                return <h4 dangerouslySetInnerHTML={{__html: this.state.value}} />;
-            case 5:
-                return <h5 dangerouslySetInnerHTML={{__html: this.state.value}} />;
-            case 6:
-                return <h6 dangerouslySetInnerHTML={{__html: this.state.value}} />;
+        case 1:
+            return <h1 dangerouslySetInnerHTML={{__html: this.state.value}} />;
+        case 2:
+            return <h2 dangerouslySetInnerHTML={{__html: this.state.value}} />;
+        case 3:
+            return <h3 dangerouslySetInnerHTML={{__html: this.state.value}} />;
+        case 4:
+            return <h4 dangerouslySetInnerHTML={{__html: this.state.value}} />;
+        case 5:
+            return <h5 dangerouslySetInnerHTML={{__html: this.state.value}} />;
+        case 6:
+            return <h6 dangerouslySetInnerHTML={{__html: this.state.value}} />;
         }
     }
 }
