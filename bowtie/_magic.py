@@ -58,8 +58,6 @@ def load_notebook(fullname):
         notebook = read(f, 4)
 
     # create the module and add it to sys.modules
-    # if name in sys.modules:
-    #    return sys.modules[name]
     mod = types.ModuleType(fullname)
     mod.__file__ = path
     # mod.__loader__ = self
@@ -79,8 +77,8 @@ def load_notebook(fullname):
                     ast.parse(cell.source)
                 except SyntaxError:
                     continue
-                # pylint: disable=exec-used
                 try:
+                    # pylint: disable=exec-used
                     exec(cell.source, mod.__dict__)
                 except NameError:
                     print(cell.source)

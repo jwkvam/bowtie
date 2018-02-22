@@ -404,6 +404,7 @@ class View:
         self.imports.add(_Import(component=widget._COMPONENT,
                                  module=widget._TEMPLATE[:widget._TEMPLATE.find('.')]))
 
+        used_msg = 'Cell at [{}, {}] is already used.'
         if row_start is None or column_start is None:
             if row_start is not None:
                 raise MissingRowOrColumn(
@@ -430,8 +431,7 @@ class View:
             self.used[row, col] = True
         elif row_end is None and column_end is None:
             if self.used[row_start, column_start]:
-                raise UsedCellsError('Cell at [{}, {}] is already used.'
-                                     .format(row_start, column_start))
+                raise UsedCellsError(used_msg.format(row_start, column_start))
             span = Span(row_start, column_start)
             self.used[row_start, column_start] = True
         else:
@@ -443,7 +443,7 @@ class View:
             for row, col in product(range(row_start, row_end),
                                     range(column_start, column_end)):
                 if self.used[row, col]:
-                    raise UsedCellsError('Cell at {}, {} is already used.'.format(row, col))
+                    raise UsedCellsError(used_msg.format(row, col))
 
             for row, col in product(range(row_start, row_end),
                                     range(column_start, column_end)):
