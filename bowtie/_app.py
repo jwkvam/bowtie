@@ -488,9 +488,6 @@ class View:
         """
         jsx = env.get_template('view.jsx.j2')
 
-        # pylint: disable=protected-access
-        # widgets = [w._instantiate for w in self.widgets]
-
         columns = []
         if self.sidebar:
             columns.append(Size().ems(18))
