@@ -1,3 +1,6 @@
+monkeytype.sqlite3
+*.mypy*
+*.ipynb*
 *.svg
 *.html
 .DS_Store

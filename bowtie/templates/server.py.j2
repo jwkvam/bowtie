@@ -18,7 +18,7 @@ import flask
 from flask import (Flask, render_template, make_response, copy_current_request_context,
                    jsonify, request, Response)
 from flask_socketio import SocketIO
-from bowtie._component import COMPONENT_REGISTRY
+from bowtie._component import COMPONENT_REGISTRY, Event
 
 
 # python 2 compatibility
@@ -55,15 +55,21 @@ def requires_auth(f):
     return decorated
 
 
-# import the user created module
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-import {{source_module}}
-
 app = Flask(__name__)
 app.debug = {{ debug|default(False) }}
 socketio = SocketIO(app, binary=True, path='{{ socketio }}' + 'socket.io')
 # not sure if this is secure or how much it matters
 app.secret_key = os.urandom(256)
+
+
+# import the user created module
+{% if notebook %}
+from bowtie._magic import load_notebook
+sourcemod = load_notebook('{{ notebook }}')
+{% else %}
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+import {{source_module}} as sourcemod
+{% endif %}
 
 def context(func):
     def foo():
@@ -110,7 +116,7 @@ def index():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        success = {{ source_module }}.{{ login }}()
+        success = sourcemod.{{ login }}()
         if success:
             return redirect(url_for('index'))
         else:
@@ -150,7 +156,7 @@ def getbundle():
 {% if initial %}
 @socketio.on('INITIALIZE')
 def _():
-    foo = copy_current_request_context({{ source_module }}.{{ initial }})
+    foo = copy_current_request_context(sourcemod.{{ initial }})
     eventlet.spawn(foo)
 {% endif %}
 
@@ -159,7 +165,7 @@ def _():
 @app.route('/upload{{ uuid }}', methods=['POST'])
 def _():
     upfile = request.files['file']
-    retval = {{ source_module }}.{{ function }}(upfile.filename, upfile.stream)
+    retval = sourcemod.{{ function }}(upfile.filename, upfile.stream)
     if retval:
         return make_response(jsonify(), 400)
     return make_response(jsonify(), 200)
@@ -169,35 +175,34 @@ def _():
 {% for page, function in pages.items() %}
 @socketio.on('resp#{{ page._uuid }}')
 def _():
-    foo = copy_current_request_context({{ source_module }}.{{ function }})
+    foo = copy_current_request_context(sourcemod.{{ function }})
     eventlet.spawn(foo)
 {% endfor %}
 
 
 {% for event, supports in subscriptions.items() %}
-@socketio.on('{{ event[0] }}')
+@socketio.on('{{ event.signal }}')
 def _(*args):
     def wrapuser():
+        event_data = {}
         uniq_events = set()
         {% for support in supports %}
         uniq_events.update({{ support[0] }})
         {% endfor %}
         uniq_events.remove({{ event }})
-        event_data = {}
         for ev in uniq_events:
-            comp = COMPONENT_REGISTRY[ev[1]]
-            if ev[2] is None:
-                ename = ev[0]
+            comp = COMPONENT_REGISTRY[ev.uuid]
+            if ev.getter is None:
                 raise GetterNotDefined('{ctype} has no getter associated with event "on_{ename}"'
-                                       .format(ctype=type(comp), ename=ename[ename.find('#') + 1:]))
-            getter = getattr(comp, ev[2])
-            event_data[ev[0]] = getter()
+                                       .format(ctype=type(comp), ename=ev.name))
+            getter = getattr(comp, ev.getter)
+            event_data[ev.signal] = getter()
 
         # if there is no getter, then there is no data to unpack
         # if there is a getter, then we need to unpack the data sent
-        {% set post = event[2] %}
+        {% set post = event.getter %}
         {% if post is not none %}
-        event_data['{{ event[0] }}'] = COMPONENT_REGISTRY[{{event[1]}}].{{ '_' ~ post }}(
+        event_data['{{ event.signal }}'] = COMPONENT_REGISTRY[{{ event.uuid }}].{{ '_' ~ post }}(
             msgpack.unpackb(bytes(args[0]['data']), encoding='utf8')
         )
         {% endif %}
@@ -207,12 +212,12 @@ def _(*args):
         user_args = []
             {% if post is not none %}
                 {% for ev in support[0] %}
-        user_args.append(event_data['{{ ev[0] }}'])
+        user_args.append(event_data['{{ ev.signal }}'])
                 {% endfor %}
             {% endif %}
 
         # finally call the user method
-        {{ source_module }}.{{ support[1] }}(*user_args)
+        sourcemod.{{ support[1] }}(*user_args)
         {% endfor %}
 
     foo = copy_current_request_context(wrapuser)
@@ -229,7 +234,7 @@ def main(host, port):
         scheds = []
         {% for schedule in schedules %}
         sched = Scheduler({{ schedule.seconds }},
-                          {{ source_module }}.{{ schedule.function }})
+                          sourcemod.{{ schedule.function }})
         scheds.append(sched)
         {% endfor %}
 

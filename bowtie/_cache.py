@@ -20,7 +20,7 @@ def validate(key):
 
 
 # pylint: disable=too-few-public-methods
-class _Cache(object):
+class _Cache:
     """Store data in the browser.
 
     This cache uses session storage so data will stay
@@ -35,6 +35,9 @@ class _Cache(object):
     >>> cache['a'] = True  # doctest: +SKIP
     >>> cache['a']  # doctest: +SKIP
     True
+    >>> cache['b'] = np.arange(5)  # doctest: +SKIP
+    >>> cache['b']  # doctest: +SKIP
+    [1, 2, 3, 4, 5]
 
     """
 

@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## 0.9.0 / ???
+
+### Added
+
+  * Jupyter integration.
+  * Basic HTML components: Div and H1-H6.
+  * Add multiple components into a single span/cell.
+    This can be useful for adding multiple control or html elements into a single cell.
+
+### Breaking
+
+  * Drop support for Python 2.
+  * Moved Markdown widget to HTML components.
+
 ## 0.8.1 / 2018-02-11
 
 ### Fixed

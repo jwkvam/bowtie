@@ -4,12 +4,8 @@
 All visual and control components inherit these.
 """
 
-# need this for get commands on python2
-from __future__ import unicode_literals
-
-# pylint: disable=redefined-builtin
-from builtins import bytes
-
+from typing import Any, Callable, Optional, ClassVar, Tuple  # pylint: disable=unused-import
+from abc import ABCMeta, abstractmethod
 import string
 from functools import wraps
 import json
@@ -18,25 +14,63 @@ from datetime import datetime, date, time
 import msgpack
 import flask
 from flask_socketio import emit
-from future.utils import with_metaclass
 import eventlet
 from eventlet.queue import LightQueue
 
 from bowtie.exceptions import SerializationError
-
-
-SEPARATOR = '#'
+from bowtie._typing import JSON
 
 
 COMPONENT_REGISTRY = {}
+SEPARATOR = '#'
 
 
-def jsbool(x):
+class Event:
+    """Data structure to hold information for events."""
+
+    def __init__(self, name: str, uuid: int, getter: Optional[str] = None) -> None:
+        """Create an event.
+
+        Parameters
+        ----------
+        name : str
+        uuid : int
+        getter : str, optional
+
+        """
+        self.name = name
+        self.uuid = uuid
+        self.getter = getter
+
+    @property
+    def signal(self) -> str:
+        """Name of socket.io message."""
+        return '{}{}{}'.format(self.uuid, SEPARATOR, self.name)
+
+    @property
+    def _key(self) -> Tuple[str, int, Optional[str]]:
+        return self.name, self.uuid, self.getter
+
+    def __repr__(self) -> str:
+        """Create an Event."""
+        return "Event('{}', {}, '{}')".format(self.name, self.uuid, self.getter)
+
+    def __eq__(self, other) -> bool:
+        """Compare Events for equality."""
+        # pylint: disable=protected-access
+        return isinstance(other, type(self)) and self._key == other._key
+
+    def __hash__(self) -> int:
+        """Compute hash for Event."""
+        return hash(self._key)
+
+
+def jsbool(x: bool) -> str:
     """Convert Python bool to Javascript bool."""
     return repr(x).lower()
 
 
-def json_conversion(obj):
+def json_conversion(obj: Any) -> JSON:
     """Encode additional objects to JSON."""
     try:
         # numpy isn't an explicit dependency of bowtie
@@ -68,13 +102,13 @@ def json_conversion(obj):
     raise TypeError('Not sure how to serialize {} of type {}'.format(obj, type(obj)))
 
 
-def jdumps(data):
+def jdumps(data: Any) -> str:
     """Encode Python object to JSON with additional encoders."""
     return json.dumps(data, default=json_conversion)
 
 
 # pylint: disable=too-many-return-statements
-def encoders(obj):
+def encoders(obj: Any) -> JSON:
     """Convert Python object to msgpack encodable ones."""
     try:
         # numpy isn't an explicit dependency of bowtie
@@ -108,51 +142,46 @@ def encoders(obj):
     return obj
 
 
-def pack(x):
+def pack(x: Any) -> bytes:
     """Encode ``x`` into msgpack with additional encoders."""
     try:
-        return bytes(msgpack.packb(x, default=encoders))
+        return msgpack.packb(x, default=encoders)
     except TypeError as exc:
         message = ('Serialization error, check the data passed to a do_ command. '
                    'Cannot serialize this object:\n') + str(exc)[16:]
         raise SerializationError(message)
 
 
-def unpack(x):
+def unpack(x) -> JSON:
     """Decode ``x`` from msgpack into Python object."""
     return msgpack.unpackb(bytes(x['data']), encoding='utf8')
 
 
-def make_event(event):
+def make_event(event: Callable) -> Callable:
     """Create an event from a method signature."""
     # pylint: disable=missing-docstring
-    @property
+    @property  # type: ignore
     @wraps(event)
     def actualevent(self):
         name = event.__name__[3:]
-        # pylint: disable=protected-access
-        ename = '{uuid}{sep}{event}'.format(
-            uuid=self._uuid,
-            sep=SEPARATOR,
-            event=name
-        )
         try:
             # the getter post processing function
             # is preserved with an underscore
             getter = event(self).__name__
         except AttributeError:
             getter = None
-        return ename, self._uuid, getter
+        # pylint: disable=protected-access
+        return Event(name, self._uuid, getter)
 
     return actualevent
 
 
-def is_event(attribute):
+def is_event(attribute: str) -> bool:
     """Test if a method is an event."""
     return attribute.startswith('on_')
 
 
-def make_command(command):
+def make_command(command: Callable) -> Callable:
     """Create an command from a method signature."""
     # pylint: disable=missing-docstring
     @wraps(command)
@@ -175,12 +204,12 @@ def make_command(command):
     return actualcommand
 
 
-def is_command(attribute):
+def is_command(attribute: str) -> bool:
     """Test if a method is an command."""
     return attribute.startswith('do_')
 
 
-def make_getter(getter):
+def make_getter(getter: Callable) -> Callable:
     """Create an command from a method signature."""
     # pylint: disable=missing-docstring
     def get(self, timeout=10):
@@ -206,7 +235,7 @@ def make_getter(getter):
     return get
 
 
-def is_getter(attribute):
+def is_getter(attribute: str) -> bool:
     """Test if a method is a getter.
 
     It can be `get` or `get_*`.
@@ -214,57 +243,80 @@ def is_getter(attribute):
     return attribute.startswith('get')
 
 
-class _Maker(type):
-    def __new__(mcs, name, parents, dct):
-        for k in list(dct.keys()):
+class _Maker(ABCMeta):
+    # pylint: disable=arguments-differ
+    def __new__(mcs, name, bases, namespace):
+        for k in list(namespace.keys()):
             if is_event(k):
-                dct[k] = make_event(dct[k])
+                namespace[k] = make_event(namespace[k])
             if is_command(k):
-                dct[k] = make_command(dct[k])
+                namespace[k] = make_command(namespace[k])
             if is_getter(k):
                 # preserve the post-processor with an underscore
-                dct['_' + k] = dct[k]
-                dct[k] = make_getter(dct[k])
-        return super(_Maker, mcs).__new__(mcs, name, parents, dct)
+                namespace['_' + k] = namespace[k]
+                namespace[k] = make_getter(namespace[k])
+        return super().__new__(mcs, name, bases, namespace)
 
 
 class FormatDict(dict):
     """Dict to replace missing keys."""
 
-    def __missing__(self, key):
-        """Replace missing key with "{key"}"."""
-        return "{" + key + "}"
+    def __missing__(self, key: str) -> str:
+        """Replace missing key with '{key}'."""
+        return '{' + key + '}'
 
 
 # pylint: disable=too-few-public-methods
-class Component(with_metaclass(_Maker, object)):
+class Component(metaclass=_Maker):
     """Abstract class for all components.
 
     All visual and control classes subclass this so their events
     and commands get transformed by the metaclass.
     """
 
-    _NEXT_UUID = 0
+    _NEXT_UUID = 0  # type: ClassVar[int]
+
+    # pylint: disable=invalid-name,multiple-statements
+    @property
+    @abstractmethod
+    def _TEMPLATE(self): pass
+
+    @property
+    @abstractmethod
+    def _COMPONENT(self): pass
+
+    @property
+    @abstractmethod
+    def _PACKAGE(self): pass
+
+    @property
+    @abstractmethod
+    def _ATTRS(self): pass
+
+    @property
+    @abstractmethod
+    def _instantiate(self): pass
 
     @classmethod
-    def _next_uuid(cls):
+    def _next_uuid(cls) -> int:
         cls._NEXT_UUID += 1
         return cls._NEXT_UUID
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Give the component a unique ID."""
         # wanted to put "self" instead of "Component"
         # was surprised that didn't work
         self._uuid = Component._next_uuid()
-        super(Component, self).__init__()
+        super().__init__()
         self._tagbase = " socket={{socket}} uuid={{'{uuid}'}} />".format(uuid=self._uuid)
         self._tag = '<' + self._COMPONENT
         if self._ATTRS:
             self._tag += ' ' + self._ATTRS
+        self._comp = None
         COMPONENT_REGISTRY[self._uuid] = self
 
     @staticmethod
-    def _insert(wrap, tag):
+    def _insert(wrap: str, tag: str) -> str:
         """Insert the component tag into the wrapper html.
 
         This ignores other tags already created like ``{socket}``.

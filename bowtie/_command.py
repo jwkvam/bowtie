@@ -7,8 +7,7 @@ Reference
 https://gist.github.com/carlsmith/800cbe3e11f630ac8aa0
 """
 
-from __future__ import print_function
-
+from typing import Callable
 import os
 import sys
 import inspect
@@ -16,7 +15,6 @@ from subprocess import call
 
 import click
 
-from bowtie._compat import numargs
 from bowtie._app import _DIRECTORY, _WEBPACK, App
 
 
@@ -24,6 +22,11 @@ class WrongNumberOfArguments(TypeError):
     """The "build" function accepts an incorrect number of arguments."""
 
     pass
+
+
+def numargs(func: Callable) -> int:
+    """Get number of arguments."""
+    return len(inspect.signature(func).parameters)
 
 
 def _build(app):

@@ -124,9 +124,10 @@ spelling-store-unknown-words=no
 [MISCELLANEOUS]
 
 # List of note tags to take in consideration, separated by a comma.
-notes=FIXME,
-      XXX,
-      TODO
+notes=
+      # FIXME,
+      # XXX,
+      # TODO
 
 
 [TYPECHECK]
@@ -204,7 +205,7 @@ init-import=no
 
 # List of qualified module names which can have objects that can redefine
 # builtins.
-redefining-builtins-modules=six.moves,future.builtins
+redefining-builtins-modules=
 
 
 [FORMAT]

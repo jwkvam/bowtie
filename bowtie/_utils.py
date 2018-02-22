@@ -4,6 +4,6 @@
 import inspect
 
 
-def func_name():
+def func_name() -> str:
     """Return name of calling function."""
-    return inspect.stack()[1][3]
+    return inspect.stack()[1].function

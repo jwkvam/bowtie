@@ -31,8 +31,9 @@ Gallery
 -------
 
 For more examples, check out the
-`gallery <https://github.com/jwkvam/bowtie/wiki/Gallery>`__. Feel free
-to add your own creations!
+`gallery <https://github.com/jwkvam/bowtie/wiki/Gallery>`__ and
+`repos <https://github.com/jwkvam/bowtie/wiki/Repos`__.
+Feel free to add your own creations!
 
 Installation
 ------------
@@ -62,6 +63,17 @@ Documentation
 -------------
 
 Available `here <https://bowtie-py.readthedocs.io/en/latest/>`__.
+
+Jupyter Integration
+-------------------
+
+An early integration with Jupyter has been prototyped.
+I encourage you to try it out and share feedback.
+I hope this will make it easier to make Bowtie apps.
+
+Read the
+`documentation <https://bowtie-py.readthedocs.io/en/latest/jupyter.html>`__
+for more details.
 
 Docker
 ------
@@ -102,7 +114,7 @@ You can help Bowtie in many ways including:
    :target: https://travis-ci.org/jwkvam/bowtie
 .. |PyPI version| image:: https://badge.fury.io/py/bowtie.svg
    :target: https://badge.fury.io/py/bowtie
-.. |Conda version| image:: https://anaconda.org/conda-forge/bowtie-py/badges/version.svg   
+.. |Conda version| image:: https://anaconda.org/conda-forge/bowtie-py/badges/version.svg
    :target: https://anaconda.org/conda-forge/bowtie-py
 .. |PyPI| image:: https://img.shields.io/pypi/pyversions/bowtie.svg
    :target: https://pypi.python.org/pypi/bowtie/

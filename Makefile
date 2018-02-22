@@ -28,3 +28,6 @@ loop:
 
 debug:
 	py.test --pylint --pylint-rcfile=pylintrc --pylint-error-types=RCWEF -s --pdb --ignore=doc
+
+static:
+	mypy -m bowtie --ignore-missing-imports

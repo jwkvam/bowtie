@@ -15,7 +15,7 @@ class Progress(Component):
     _PACKAGE = None
     _ATTRS = None
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Create a progress indicator.
 
         This component is used by all visual components.
@@ -47,9 +47,17 @@ class Progress(Component):
         https://ant.design/components/progress/
 
         """
-        super(Progress, self).__init__()
+        super().__init__()
         self._tagbase = self._tagbase[:-3] + '>'
         self._tags = '<' + self._COMPONENT + self._tagbase, '</AntProgress>'
+
+    @property
+    def _instantiate(self) -> str:
+        """Instantiate a progress bar.
+
+        This is normally never used.
+        """
+        return ''.join(self._tags)
 
     # pylint: disable=no-self-use
     def do_percent(self, percent):

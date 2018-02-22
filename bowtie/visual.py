@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """Visual components."""
 
-from flask import Markup
-from markdown import markdown
+from typing import Dict, Optional, List, Union
 
 from bowtie._component import Component, jdumps, jsbool
 from bowtie._progress import Progress
@@ -15,66 +14,17 @@ class _Visual(Component):
     Used to test if a an object is a visual component.
     """
 
-    def __init__(self):
+    # pylint: disable=abstract-method
+    def __init__(self) -> None:
         self.progress = Progress()
-        super(_Visual, self).__init__()
+        super().__init__()
 
     @property
-    def _instantiate(self):
+    def _instantiate(self) -> str:
         # pylint: disable=protected-access
         begin, end = self.progress._tags
         tagwrap = begin + '{component}' + self._tagbase + end
         return self._insert(tagwrap, self._comp)
-
-
-class Markdown(_Visual):
-    """Display Markdown."""
-
-    _TEMPLATE = 'markdown.jsx'
-    _COMPONENT = 'Markdown'
-    _PACKAGE = None
-    _ATTRS = "initial={{'{initial}'}}"
-
-    def __init__(self, initial=''):
-        """Create a Markdown widget.
-
-        Parameters
-        ----------
-        initial : str, optional
-            Default markdown for the widget.
-
-        """
-        super(Markdown, self).__init__()
-
-        self._comp = self._tag.format(
-            initial=Markup(markdown(initial).replace('\n', '\\n'))
-        )
-
-    # pylint: disable=no-self-use
-    def do_text(self, text):
-        """Replace widget with this text.
-
-        Parameters
-        ----------
-        test : str
-            Markdown text as a string.
-
-        Returns
-        -------
-        None
-
-        """
-        return Markup(markdown(text))
-
-    def get(self, text):
-        """Get the current text.
-
-        Returns
-        -------
-        String of html.
-
-        """
-        return text
 
 
 class Table(_Visual):
@@ -86,18 +36,20 @@ class Table(_Visual):
     _ATTRS = ('columns={{{columns}}} '
               'resultsPerPage={{{results_per_page}}}')
 
-    def __init__(self, data=None, columns=None, results_per_page=10):
+    def __init__(self, data=None, columns: Optional[List[Union[int, str]]] = None,
+                 results_per_page: int = 10) -> None:
         """Create a table and optionally initialize the data.
 
         Parameters
         ----------
+        data : pd.DataFrame, optional
         columns : list, optional
             List of column names to display.
         results_per_page : int, optional
             Number of rows on each pagination of the table.
 
         """
-        super(Table, self).__init__()
+        super().__init__()
         self.data = []
         self.columns = []
         if data:
@@ -168,12 +120,12 @@ class SmartGrid(_Visual):
 
     _TEMPLATE = 'griddle.jsx'
     _COMPONENT = 'SmartGrid'
-    _PACKAGE = 'griddle-react@1.11.1'
+    _PACKAGE = 'griddle-react@1.11.2'
     _ATTRS = None
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Create the table, optionally set the columns."""
-        super(SmartGrid, self).__init__()
+        super().__init__()
         self._comp = self._tag
 
     # pylint: disable=no-self-use
@@ -215,7 +167,7 @@ class SVG(_Visual):
     _PACKAGE = None
     _ATTRS = 'preserveAspectRatio={{{preserve_aspect_ratio}}}'
 
-    def __init__(self, preserve_aspect_ratio=False):
+    def __init__(self, preserve_aspect_ratio: bool = False) -> None:
         """Create SVG component.
 
         Parameters
@@ -225,7 +177,7 @@ class SVG(_Visual):
             it will stretch to fill up the space available.
 
         """
-        super(SVG, self).__init__()
+        super().__init__()
         self.preserve_aspect_ratio = preserve_aspect_ratio
         self._comp = self._tag.format(
             preserve_aspect_ratio=jsbool(self.preserve_aspect_ratio)
@@ -276,10 +228,10 @@ class Plotly(_Visual):
 
     _TEMPLATE = 'plotly.jsx'
     _COMPONENT = 'PlotlyPlot'
-    _PACKAGE = 'plotly.js@1.33.1'
+    _PACKAGE = 'plotly.js@1.34.0'
     _ATTRS = 'initState={{{init}}}'
 
-    def __init__(self, init=None):
+    def __init__(self, init: Optional[Dict] = None) -> None:
         """Create a Plotly component.
 
         Parameters
@@ -288,7 +240,7 @@ class Plotly(_Visual):
             Initial Plotly data to plot.
 
         """
-        super(Plotly, self).__init__()
+        super().__init__()
         if init is None:
             init = dict(data=[], layout={'autosize': False})
         self.init = init

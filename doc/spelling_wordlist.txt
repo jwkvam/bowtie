@@ -5,6 +5,7 @@ Dockerfile
 Heroku
 Homebrew
 Javascript
+Jupyter
 Plotly
 Procfile
 Textbox
@@ -17,6 +18,7 @@ draggable
 dropdown
 frontend
 func
+iframe
 indices
 io
 matplotlib

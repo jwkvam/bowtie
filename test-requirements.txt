@@ -2,11 +2,13 @@ click
 codecov
 eventlet
 flask-socketio
-future
+ipython
 jinja2
 markdown
 matplotlib
 msgpack-python
+mypy
+notebook
 numpy
 pandas
 plotlywrapper
@@ -16,6 +18,7 @@ pylint
 pytest
 pytest-cov
 pytest-pylint
+requests
 selenium
 sphinx
 sphinxcontrib-spelling

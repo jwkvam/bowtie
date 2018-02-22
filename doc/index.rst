@@ -20,6 +20,7 @@ Notable Features
 * Ships with many useful widgets including charts, tables, dropdown menus, sliders, and markdown
 * All widgets come with many events and commands for interaction
 * Hook into Plotly charts with click, selection, and hover events
+* Jupyter integration allows you to prototype your dashboards
 * Run functions periodically
 * Store and fetch data from the client (browser)
 * Built in progress indicators for all visual widgets
@@ -47,6 +48,7 @@ Contents
     components
     feedback
     cache
+    jupyter
     docker
     exceptions
 
