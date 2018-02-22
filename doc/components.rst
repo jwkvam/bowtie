@@ -11,13 +11,6 @@ Find the list of supported components here and how to use them.
 Visuals
 -------
 
-Markdown
-~~~~~~~~
-
-.. autoclass:: bowtie.visual.Markdown
-    :members:
-    :undoc-members:
-
 Plotly
 ~~~~~~
 
@@ -144,6 +137,13 @@ Link
 
 HTML
 ----
+
+Markdown
+~~~~~~~~
+
+.. autoclass:: bowtie.html.Markdown
+    :members:
+    :undoc-members:
 
 Div
 ~~~

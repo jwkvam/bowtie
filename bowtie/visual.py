@@ -3,9 +3,6 @@
 
 from typing import Dict, Optional, List, Union
 
-from flask import Markup
-from markdown import markdown
-
 from bowtie._component import Component, jdumps, jsbool
 from bowtie._progress import Progress
 
@@ -28,56 +25,6 @@ class _Visual(Component):
         begin, end = self.progress._tags
         tagwrap = begin + '{component}' + self._tagbase + end
         return self._insert(tagwrap, self._comp)
-
-
-class Markdown(_Visual):
-    """Display Markdown."""
-
-    _TEMPLATE = 'markdown.jsx'
-    _COMPONENT = 'Markdown'
-    _PACKAGE = None
-    _ATTRS = "initial={{'{initial}'}}"
-
-    def __init__(self, initial: str = '') -> None:
-        """Create a Markdown widget.
-
-        Parameters
-        ----------
-        initial : str, optional
-            Default markdown for the widget.
-
-        """
-        super().__init__()
-
-        self._comp = self._tag.format(
-            initial=Markup(markdown(initial).replace('\n', '\\n'))
-        )
-
-    # pylint: disable=no-self-use
-    def do_text(self, text):
-        """Replace widget with this text.
-
-        Parameters
-        ----------
-        test : str
-            Markdown text as a string.
-
-        Returns
-        -------
-        None
-
-        """
-        return Markup(markdown(text))
-
-    def get(self, text):
-        """Get the current text.
-
-        Returns
-        -------
-        String of html.
-
-        """
-        return text
 
 
 class Table(_Visual):

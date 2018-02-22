@@ -12,6 +12,7 @@
 ### Breaking
 
   * Drop support for Python 2.
+  * Moved Markdown widget to HTML components.
 
 ## 0.8.1 / 2018-02-11
 

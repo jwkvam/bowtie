@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Test tag instantation for components."""
 
-from bowtie.visual import Markdown
+from bowtie.html import Markdown
 
 
 def test_markdown():

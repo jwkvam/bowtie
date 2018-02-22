@@ -8,7 +8,7 @@ import time
 
 import pytest
 from bowtie import App
-from bowtie.visual import Markdown
+from bowtie.html import Markdown
 from bowtie.control import Textbox
 from bowtie.tests.utils import reset_uuid
 

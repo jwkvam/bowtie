@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 """Static HTML Components."""
 
+from flask import Markup
+from markdown import markdown
+
 from bowtie._component import Component
 
 
@@ -16,6 +19,55 @@ class _HTML(Component):
 
 
 # pylint: disable=too-few-public-methods
+class Markdown(_HTML):
+    """Display Markdown."""
+
+    _TEMPLATE = 'markdown.jsx'
+    _COMPONENT = 'Markdown'
+    _PACKAGE = None
+    _ATTRS = "initial={{'{initial}'}}"
+
+    def __init__(self, initial: str = '') -> None:
+        """Create a Markdown widget.
+
+        Parameters
+        ----------
+        initial : str, optional
+            Default markdown for the widget.
+
+        """
+        super().__init__()
+        self._comp = self._tag.format(
+            initial=Markup(markdown(initial).replace('\n', '\\n'))
+        )
+
+    # pylint: disable=no-self-use
+    def do_text(self, text):
+        """Replace widget with this text.
+
+        Parameters
+        ----------
+        test : str
+            Markdown text as a string.
+
+        Returns
+        -------
+        None
+
+        """
+        return Markup(markdown(text))
+
+    def get(self, text):
+        """Get the current text.
+
+        Returns
+        -------
+        String of html.
+
+        """
+        return text
+
+
 class Div(_HTML):
     """Div tag."""
 
