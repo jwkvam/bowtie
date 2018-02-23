@@ -22,7 +22,7 @@ requires = [
 "flask-socketio",
 "jinja2",
 "markdown",
-"msgpack-python"
+"msgpack"
 ]
 keywords = "dashboard visualization interactive visualize"
 
