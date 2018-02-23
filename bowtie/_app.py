@@ -611,7 +611,6 @@ class App:
             A Bowtie widget instance.
 
         """
-        # pylint: disable=protected-access
         self.root.add(widget)
 
     def add_sidebar(self, widget: Component) -> None:
@@ -782,8 +781,7 @@ class App:
         """
         self.schedules.append(_Schedule(seconds, func.__name__))
 
-    # pylint: disable=no-self-use
-    def _sourcefile(self):
+    def _sourcefile(self):  # pylint: disable=no-self-use
         # [-1] grabs the top of the stack
         return os.path.basename(inspect.stack()[-1].filename)[:-3]
 
@@ -837,8 +835,7 @@ class App:
 
         packages = set()  # type: Set[str]
         for route in self.routes:
-            # pylint: disable=protected-access
-            route.view._render(app, self._jinjaenv)
+            route.view._render(app, self._jinjaenv)  # pylint: disable=protected-access
             packages |= route.view.packages
 
         with open(os.path.join(templates, indexhtml.name[:-3]), 'w') as f:  # type: ignore
@@ -851,8 +848,7 @@ class App:
         with open(os.path.join(app, indexjsx.name[:-3]), 'w') as f:  # type: ignore
             f.write(
                 indexjsx.render(
-                    # pylint: disable=protected-access
-                    maxviewid=View._NEXT_UUID,
+                    maxviewid=View._NEXT_UUID,  # pylint: disable=protected-access
                     socketio=self.socketio,
                     pages=self.pages,
                     routes=self.routes

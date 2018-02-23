@@ -1,3 +1,4 @@
+.gutctags
 monkeytype.sqlite3
 *.mypy*
 *.ipynb*
