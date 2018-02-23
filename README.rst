@@ -32,7 +32,7 @@ Gallery
 
 For more examples, check out the
 `gallery <https://github.com/jwkvam/bowtie/wiki/Gallery>`__ and
-`repos <https://github.com/jwkvam/bowtie/wiki/Repos`__.
+`repos <https://github.com/jwkvam/bowtie/wiki/Repos>`__.
 Feel free to add your own creations!
 
 Installation
