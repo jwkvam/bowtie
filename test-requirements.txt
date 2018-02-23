@@ -6,7 +6,7 @@ ipython
 jinja2
 markdown
 matplotlib
-msgpack-python
+msgpack
 mypy
 notebook
 numpy
