@@ -107,8 +107,7 @@ def jdumps(data: Any) -> str:
     return json.dumps(data, default=json_conversion)
 
 
-# pylint: disable=too-many-return-statements
-def encoders(obj: Any) -> JSON:
+def encoders(obj: Any) -> JSON:  # pylint: disable=too-many-return-statements
     """Convert Python object to msgpack encodable ones."""
     try:
         # numpy isn't an explicit dependency of bowtie
@@ -159,10 +158,9 @@ def unpack(x) -> JSON:
 
 def make_event(event: Callable) -> Callable:
     """Create an event from a method signature."""
-    # pylint: disable=missing-docstring
     @property  # type: ignore
     @wraps(event)
-    def actualevent(self):
+    def actualevent(self):  # pylint: disable=missing-docstring
         name = event.__name__[3:]
         try:
             # the getter post processing function
@@ -170,8 +168,7 @@ def make_event(event: Callable) -> Callable:
             getter = event(self).__name__
         except AttributeError:
             getter = None
-        # pylint: disable=protected-access
-        return Event(name, self._uuid, getter)
+        return Event(name, self._uuid, getter)  # pylint: disable=protected-access
 
     return actualevent
 
@@ -183,14 +180,12 @@ def is_event(attribute: str) -> bool:
 
 def make_command(command: Callable) -> Callable:
     """Create an command from a method signature."""
-    # pylint: disable=missing-docstring
     @wraps(command)
-    def actualcommand(self, *args, **kwds):
+    def actualcommand(self, *args, **kwds):  # pylint: disable=missing-docstring
         data = command(self, *args, **kwds)
         name = command.__name__[3:]
-        # pylint: disable=protected-access
         signal = '{uuid}{sep}{event}'.format(
-            uuid=self._uuid,
+            uuid=self._uuid,  # pylint: disable=protected-access
             sep=SEPARATOR,
             event=name
         )
@@ -211,12 +206,10 @@ def is_command(attribute: str) -> bool:
 
 def make_getter(getter: Callable) -> Callable:
     """Create an command from a method signature."""
-    # pylint: disable=missing-docstring
-    def get(self, timeout=10):
+    def get(self, timeout=10):  # pylint: disable=missing-docstring
         name = getter.__name__
-        # pylint: disable=protected-access
         signal = '{uuid}{sep}{event}'.format(
-            uuid=self._uuid,
+            uuid=self._uuid,  # pylint: disable=protected-access
             sep=SEPARATOR,
             event=name
         )
@@ -244,8 +237,7 @@ def is_getter(attribute: str) -> bool:
 
 
 class _Maker(ABCMeta):
-    # pylint: disable=arguments-differ
-    def __new__(mcs, name, bases, namespace):
+    def __new__(mcs, name, bases, namespace):  # pylint: disable=arguments-differ
         for k in list(namespace.keys()):
             if is_event(k):
                 namespace[k] = make_event(namespace[k])
@@ -266,8 +258,7 @@ class FormatDict(dict):
         return '{' + key + '}'
 
 
-# pylint: disable=too-few-public-methods
-class Component(metaclass=_Maker):
+class Component(metaclass=_Maker):  # pylint: disable=too-few-public-methods
     """Abstract class for all components.
 
     All visual and control classes subclass this so their events

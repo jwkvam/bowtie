@@ -2,6 +2,10 @@ Jupyter Integration
 ===================
 
 Bowtie can run a dashboard defined in a Jupyter notebook.
+First load the extension::
+
+    %load_ext bowtie
+
 Create your app in the same fashion you would in a script.
 Instead of using a ``main`` function decorated with ``@command``,
 we use an IPython magic::
