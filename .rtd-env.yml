@@ -1,0 +1,29 @@
+name: rtd
+dependencies:
+  - python=3.6
+  - pip:
+    - click
+    - codecov
+    - eventlet
+    - flask-socketio
+    - ipython
+    - jinja2
+    - markdown
+    - matplotlib
+    - msgpack
+    - mypy
+    - notebook
+    - numpy
+    - pandas
+    - plotlywrapper
+    - pycodestyle
+    - pydocstyle
+    - pylint
+    - pytest
+    - pytest-cov
+    - pytest-pylint
+    - requests
+    - selenium
+    - sphinx
+    - sphinxcontrib-spelling
+    - sphinx_rtd_theme
