@@ -314,3 +314,14 @@ autoclass_content = 'both'
 
 def setup(app):
     app.add_stylesheet('custom.css')
+
+import sys
+from unittest.mock import MagicMock
+
+class Mock(MagicMock):
+    @classmethod
+    def __getattr__(cls, name):
+        return MagicMock()
+
+MOCK_MODULES = ['typing']
+sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
