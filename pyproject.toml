@@ -25,4 +25,3 @@ requires = [
 "msgpack"
 ]
 keywords = "dashboard visualization interactive visualize"
-
