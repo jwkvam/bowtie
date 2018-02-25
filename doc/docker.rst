@@ -9,7 +9,7 @@ The file provides a conda environment with python 3.6.
 Docker Hub
 ----------
 
-The Docker image is hosted on `Docker Hub` <https://hub.docker.com/r/jwkvam/bowtie/>`__.
+The Docker image is hosted on `Docker Hub <https://hub.docker.com/r/jwkvam/bowtie/>`__.
 To pull the bleeding edge release::
 
     docker pull jwkvam/bowtie
