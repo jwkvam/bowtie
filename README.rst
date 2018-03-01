@@ -104,6 +104,8 @@ You can help Bowtie in many ways including:
 - Provide hosting for apps in the gallery.
 - Say `thanks <https://saythanks.io/to/jwkvam>`__!
 
+|coffee|
+
 .. |Join the chat at https://gitter.im/bowtie-py/Lobby| image:: https://badges.gitter.im/bowtie-py/Lobby.svg
    :target: https://gitter.im/bowtie-py/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 .. |Forum| image:: https://img.shields.io/badge/-Google%20Group-blue.svg
@@ -120,3 +122,5 @@ You can help Bowtie in many ways including:
    :target: https://pypi.python.org/pypi/bowtie/
 .. |codecov| image:: https://codecov.io/gh/jwkvam/bowtie/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/jwkvam/bowtie
+.. |coffee| image:: https://www.buymeacoffee.com/assets/img/custom_images/purple_img.png
+   :target: https://www.buymeacoffee.com/jwkvam
