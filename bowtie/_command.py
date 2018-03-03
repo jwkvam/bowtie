@@ -103,7 +103,7 @@ def command(func):
     @click.argument('extra', nargs=-1, type=click.UNPROCESSED)
     def dev(extra):
         """Recompile the app for development."""
-        line = (_WEBPACK, '-d') + extra
+        line = (_WEBPACK, '--config', 'webpack.dev.js') + extra
         call(line, cwd=_DIRECTORY)
 
     @cmd.command(context_settings=dict(ignore_unknown_options=True),
@@ -111,7 +111,7 @@ def command(func):
     @click.argument('extra', nargs=-1, type=click.UNPROCESSED)
     def prod(extra):
         """Recompile the app for production."""
-        line = (_WEBPACK, '--define', 'process.env.NODE_ENV="production"', '--progress') + extra
+        line = (_WEBPACK, '--config', 'webpack.prod.js', '--progress') + extra
         call(line, cwd=_DIRECTORY)
 
     locale = inspect.stack()[1][0].f_locals
