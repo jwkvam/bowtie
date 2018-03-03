@@ -1,6 +1,6 @@
 """Interactive Dashboard Toolkit."""
 
-__version__ = '0.9.1-dev'
+__version__ = '0.9.1'
 
 from bowtie._app import App, View
 from bowtie._command import command

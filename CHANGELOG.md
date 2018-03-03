@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 0.9.1 / 2018-03-03
+
+### Added
+
+  * Upgraded to webpack 4, users shouldn't see much of a difference other than
+    slightly improved build times.
+
+### Fixed
+
+  * Readthedocs wasn't rendering due to type hints, fixed with conda.
+
 ## 0.9.0 / 2018-02-23
 
 ### Added
