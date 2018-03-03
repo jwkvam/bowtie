@@ -1,9 +1,8 @@
-const merge = require('webpack-merge')
-const common = require('./webpack.common.js')
-var CompressionPlugin = require('compression-webpack-plugin');
+const merge = require('webpack-merge');
+const common = require('./webpack.common.js');
 
 var config = {
     mode: 'development'
-}
+};
 
 module.exports = merge(common, config);

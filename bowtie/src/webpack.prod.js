@@ -1,5 +1,5 @@
-const merge = require('webpack-merge')
-const common = require('./webpack.common.js')
+const merge = require('webpack-merge');
+const common = require('./webpack.common.js');
 var CompressionPlugin = require('compression-webpack-plugin');
 
 var config = {
@@ -10,6 +10,6 @@ var config = {
             algorithm: 'gzip',
         })
     ]
-}
+};
 
 module.exports = merge(common, config);
