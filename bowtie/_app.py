@@ -789,7 +789,7 @@ class App:
         server = self._jinjaenv.get_template('server.py.j2')
         indexhtml = self._jinjaenv.get_template('index.html.j2')
         indexjsx = self._jinjaenv.get_template('index.jsx.j2')
-        webpack = self._jinjaenv.get_template('webpack.config.js.j2')
+        webpack = self._jinjaenv.get_template('webpack.common.js.j2')
 
         src, app, templates = create_directories()
 
@@ -864,6 +864,14 @@ class App:
             packagejson = os.path.join(self._package_dir, 'src/package.json')
             shutil.copy(packagejson, _DIRECTORY)
 
+        if not os.path.isfile(os.path.join(_DIRECTORY, 'webpack.prod.json')):
+            webpackprod = os.path.join(self._package_dir, 'src/webpack.prod.js')
+            shutil.copy(webpackprod, _DIRECTORY)
+
+        if not os.path.isfile(os.path.join(_DIRECTORY, 'webpack.dev.json')):
+            webpackdev = os.path.join(self._package_dir, 'src/webpack.dev.js')
+            shutil.copy(webpackdev, _DIRECTORY)
+
         if run(['yarn', 'install'], notebook=notebook) > 1:
             raise YarnError('Error installing node packages')
 
@@ -878,7 +886,7 @@ class App:
                     raise YarnError('Error installing node packages')
                 elif retval == 1:
                     print('Yarn error but trying to continue build')
-        retval = run([_WEBPACK, '-d'], notebook=notebook)
+        retval = run([_WEBPACK, '--config', 'webpack.dev.js'], notebook=notebook)
         if retval != 0:
             raise WebpackError('Error building with webpack')
 

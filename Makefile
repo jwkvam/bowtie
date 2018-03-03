@@ -31,3 +31,6 @@ debug:
 
 static:
 	mypy -m bowtie --ignore-missing-imports
+
+monkeytype:
+	monkeytype run `which pytest`

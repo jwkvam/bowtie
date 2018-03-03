@@ -43,7 +43,7 @@ install:
     - if [[ "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then
       pip install pytest-codestyle;
       fi
-    - wget https://chromedriver.storage.googleapis.com/2.35/chromedriver_linux64.zip
+    - wget https://chromedriver.storage.googleapis.com/2.36/chromedriver_linux64.zip
     - unzip chromedriver_linux64.zip
     - chmod +x chromedriver
     - sudo mv -f chromedriver /usr/local/bin

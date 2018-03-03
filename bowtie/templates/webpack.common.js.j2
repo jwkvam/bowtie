@@ -1,6 +1,4 @@
 const webpack = require('webpack');
-// this is an ugly hack
-const prod = process.argv.indexOf('--define') !== -1;
 var path = require('path');
 var CompressionPlugin = require('compression-webpack-plugin');
 
@@ -9,7 +7,6 @@ var APP_DIR = path.resolve(__dirname, 'src/app');
 var HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 var config = {
-    // context: path.resolve(__dirname, './src'),
     context: __dirname,
     entry: APP_DIR + '/index.jsx',
     output: {
@@ -71,48 +68,6 @@ var config = {
         ]
     }
 };
-
-// for production
-// https://github.com/webpack/webpack/issues/2537#issuecomment-250950677
-if (prod) {
-    config.devtool = 'cheap-module-source-map';
-    config.plugins = [
-        new webpack.LoaderOptionsPlugin({
-            minimize: true,
-            debug: false
-        }),
-        // https://facebook.github.io/react/docs/optimizing-performance.html
-        new webpack.DefinePlugin({
-            'process.env.NODE_ENV': JSON.stringify('production')
-        }),
-        new webpack.optimize.UglifyJsPlugin({
-            beautify: false,
-            mangle: {
-                screw_ie8: true,
-                keep_fnames: false
-            },
-            compress: {
-                warnings: false,
-                booleans: true,
-                screw_ie8: true,
-                conditionals: true,
-                loops: true,
-                unused: true,
-                comparisons: true,
-                sequences: true,
-                dead_code: true,
-                evaluate: true,
-                join_vars: true,
-                if_return: true
-            },
-            comments: false,
-        }),
-        new CompressionPlugin({
-            asset: '[path].gz[query]',
-            algorithm: 'gzip',
-        })
-    ];
-}
 
 module.exports = config;
 
