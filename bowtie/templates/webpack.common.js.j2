@@ -47,6 +47,7 @@ var config = {
                     {loader: "less-loader",
                         options: {
                             strictMath: false,
+                            javascriptEnabled: true,
                             noIeCompat: true,
                             {% if color %}
                             modifyVars: {"primary-color": "{{ color }}"},
