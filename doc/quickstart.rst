@@ -79,7 +79,7 @@ Next we'll create a listener that generates a plot on slider changes::
     def listener(freq):
         freq = float(freq[0])
         t = np.linspace(0, 10, 100)
-        sine_plot.do_all(pw.line(t, np.sin(freq * t)).to_json())
+        sine_plot.do_all(pw.line(t, np.sin(freq * t)).dict)
 
 If you prefer not to use ``plotlywrapper``::
 
