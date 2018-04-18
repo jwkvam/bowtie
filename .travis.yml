@@ -48,7 +48,7 @@ install:
   - unzip chromedriver_linux64.zip
   - chmod +x chromedriver
   - sudo mv -f chromedriver /usr/local/bin
-  - wget https://github.com/ValeLint/vale/releases/download/0.11.2/vale_0.11.2_Linux_64-bit.tar.gz
+  - wget https://github.com/errata-ai/vale/releases/download/v0.11.2/vale_0.11.2_Linux_64-bit.tar.gz
   - tar xvf vale_0.11.2_Linux_64-bit.tar.gz
 
 script:
