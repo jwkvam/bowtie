@@ -1,4 +1,4 @@
-.PHONY: test unit lint style eslint checkdocs coverage upload
+.PHONY: test unit lint style eslint checkdocs coverage upload outdated
 
 all: test
 
@@ -34,3 +34,6 @@ static:
 
 monkeytype:
 	monkeytype run `which pytest`
+
+outdated:
+	cd bowtie/src && yarn install && yarn outdated
