@@ -121,8 +121,8 @@ class Size:
 
     def __init__(self) -> None:
         """Create a default row or column size with fraction = 1."""
-        self.minimum = None  # type: Optional[str]
-        self.maximum = None  # type: Optional[str]
+        self.minimum = ''  # type: str
+        self.maximum = ''  # type: str
         self.fraction(1)
 
     def auto(self) -> 'Size':
@@ -201,7 +201,7 @@ class Gap:
 
     def __init__(self) -> None:
         """Create a default margin of zero."""
-        self.gap = None  # type: Optional[str]
+        self.gap = ''  # type: str
         self.pixels(0)
 
     def pixels(self, value: int) -> 'Gap':
@@ -227,14 +227,13 @@ class Gap:
         return self.gap
 
 
-def _check_index(value: Optional[int], length: int, bound: bool) -> Optional[int]:
-    if value is not None:
-        if not isinstance(value, int):
-            raise GridIndexError('Indices must be integers, found {}.'.format(value))
-        if value < 0:
-            value = value + length
-        if value < 0 + bound or value >= length + bound:
-            raise GridIndexError('Index out of range.')
+def _check_index(value: int, length: int, bound: bool) -> int:
+    if not isinstance(value, int):
+        raise GridIndexError('Indices must be integers, found {}.'.format(value))
+    if value < 0:
+        value = value + length
+    if value < 0 + bound or value >= length + bound:
+        raise GridIndexError('Index out of range.')
     return value
 
 
@@ -399,7 +398,8 @@ class View:
                                  .format(column_start, column_end))
 
         # pylint: disable=protected-access
-        self.packages.add(widget._PACKAGE)
+        if widget._PACKAGE:
+            self.packages.add(widget._PACKAGE)
         self.templates.add(widget._TEMPLATE)
         self.imports.add(_Import(component=widget._COMPONENT,
                                  module=widget._TEMPLATE[:widget._TEMPLATE.find('.')]))
@@ -467,7 +467,8 @@ class View:
         assert isinstance(widget, Component)
 
         # pylint: disable=protected-access
-        self.packages.add(widget._PACKAGE)
+        if widget._PACKAGE:
+            self.packages.add(widget._PACKAGE)
         self.templates.add(widget._TEMPLATE)
         self.imports.add(_Import(component=widget._COMPONENT,
                                  module=widget._TEMPLATE[:widget._TEMPLATE.find('.')]))
@@ -875,7 +876,6 @@ class App:
         if run(['yarn', 'install'], notebook=notebook) > 1:
             raise YarnError('Error installing node packages')
 
-        packages.discard(None)
         if packages:
             installed = installed_packages()
             new_packages = [x for x in packages if x.split('@')[0] not in installed]
