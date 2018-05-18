@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# pylint: disable=unused-argument,invalid-name
 """Multiple views testing."""
 
 import os
@@ -20,7 +21,6 @@ from bowtie.tests.utils import reset_uuid
 reset_uuid()
 
 
-# pylint: disable=invalid-name
 table = Table()
 ctrl = Nouislider()
 ctrl2 = Button()
@@ -28,12 +28,10 @@ ctrl2 = Button()
 
 def callback(*args):
     """dummy function"""
-    # pylint: disable=unused-argument
     df = pd.DataFrame(rng.randn(10, 10))
     table.do_data(df)
 
 
-# pylint: disable=unused-argument
 @pytest.fixture
 def multiple_views(build_path, monkeypatch):
     """Create multiple views app."""
@@ -41,7 +39,7 @@ def multiple_views(build_path, monkeypatch):
 
     app = App()
     view1 = View()  # pylint: disable=unused-variable
-    assert view1._uuid == 2
+    assert view1._uuid == 2  # pylint: disable=protected-access
     view2 = View()
     view2.add(table)
     app.add_route(view2, 'view2')
@@ -52,8 +50,7 @@ def multiple_views(build_path, monkeypatch):
     app.subscribe(callback, ctrl.on_change)
     app.subscribe(callback, ctrl2.on_click)
 
-    # pylint: disable=protected-access
-    app._build()
+    app._build()  # pylint: disable=protected-access
 
     env['PYTHONPATH'] = '{}:{}'.format(os.getcwd(), os.environ.get('PYTHONPATH', ''))
     server = subprocess.Popen(os.path.join(build_path, 'src/server.py'), env=env)
@@ -82,7 +79,7 @@ def test_multiple(multiple_views, chrome_driver):
         if log['level'] == 'SEVERE':
             raise Exception(log['message'])
 
-    # assert len(data.split('\n')) == 11
+    assert len(data.split('\n')) == 11
 
     chrome_driver.get('http://localhost:9991/view2')
     data = chrome_driver.find_element_by_class_name('ant-table-body').text
