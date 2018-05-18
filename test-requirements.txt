@@ -16,7 +16,9 @@ pycodestyle
 pydocstyle
 pylint
 pytest
+pytest-codestyle
 pytest-cov
+pytest-mypy
 pytest-pylint
 requests
 selenium
