@@ -11,14 +11,16 @@ import {{ component.component }} from './{{ component.module }}';
 {% endfor %}
 
 export default class View{{ uuid }} extends React.Component {
+
+
     render() {
         var socket = this.props.socket;
         return (
             <div style={{ '{{' }}display: 'grid',
-                    gridTemplateColumns: '{{ columns|join(' ') }}',
-                    gridTemplateRows: '{{ rows|join(' ') }}',
-                    gridColumnGap: '{{ column_gap }}',
-                    gridRowGap: '{{ row_gap }}',
+                    gridTemplateColumns: this.props.columns,
+                    gridTemplateRows: this.props.rows,
+                    gridColumnGap: this.props.column_gap,
+                    gridRowGap: this.props.row_gap,
                     width: '100%', height: '100%',
                     minHeight: '100vh', maxHeight: '100%',
                     minWidth: '100vw', maxWidth: '100%'{{ '}}' }}>
@@ -60,7 +62,12 @@ export default class View{{ uuid }} extends React.Component {
 }
 
 View{{ uuid }}.propTypes = {
+    uuid: PropTypes.string.isRequired,
     socket: PropTypes.object.isRequired,
+    columns: PropTypes.string.isRequired,
+    rows: PropTypes.string.isRequired,
+    column_gap: PropTypes.string.isRequired,
+    row_gap: PropTypes.string.isRequired,
 }
 
 // vim: set ft=javascript.jsx:

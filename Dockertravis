@@ -1,0 +1,39 @@
+# FROM travisci/ci-garnet:packer-1512502276-986baf0
+# FROM travisci/ci-garnet:packer-1515445631-7dfb2e1
+FROM travisci/ci-python
+
+
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+RUN google-chrome --version
+RUN google-chrome-stable --version
+RUN sudo apt-get update 
+RUN sudo apt-get install xvfb libenchant1c2a yarn node
+RUN sudo apt-get install yarn
+# RUN which yarn
+# RUN /usr/local/bin/yarn --version
+# RUN sudo yarn --version
+# RUN yarn global add eslint babel-eslint eslint-plugin-react
+# RUN make eslint
+# RUN export PATH="$HOME/miniconda/bin:$PATH"
+# RUN wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+# RUN rm -r ~/miniconda;
+# RUN bash miniconda.sh -b -p $HOME/miniconda;
+# RUN fi
+# RUN hash -r
+# RUN conda config --set always_yes yes --set changeps1 no
+# RUN conda update -q conda
+# RUN # Useful for debugging any issues with conda
+# RUN conda info -a
+# RUN conda create -q -n test-environment python=3.6;
+# RUN source activate test-environment;
+# RUN pip install --upgrade pip
+# RUN pip install -r test-requirements.txt --progress-bar=off
+# RUN wget https://chromedriver.storage.googleapis.com/2.38/chromedriver_linux64.zip
+# RUN unzip chromedriver_linux64.zip
+# RUN chmod +x chromedriver
+# RUN sudo mv -f chromedriver /usr/local/bin
+# RUN wget https://github.com/errata-ai/vale/releases/download/v0.11.2/vale_0.11.2_Linux_64-bit.tar.gz
+# RUN tar xvf vale_0.11.2_Linux_64-bit.tar.gz
+
+# vim: ft=dockerfile

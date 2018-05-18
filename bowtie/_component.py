@@ -267,26 +267,25 @@ class Component(metaclass=_Maker):  # pylint: disable=too-few-public-methods
 
     _NEXT_UUID = 0  # type: ClassVar[int]
 
-    # pylint: disable=invalid-name,multiple-statements
     @property
     @abstractmethod
-    def _TEMPLATE(self): pass
+    def _TEMPLATE(self): pass  # pylint: disable=invalid-name,multiple-statements
 
     @property
     @abstractmethod
-    def _COMPONENT(self): pass
+    def _COMPONENT(self): pass  # pylint: disable=invalid-name,multiple-statements
 
     @property
     @abstractmethod
-    def _PACKAGE(self): pass
+    def _PACKAGE(self): pass  # pylint: disable=invalid-name,multiple-statements
 
     @property
     @abstractmethod
-    def _ATTRS(self): pass
+    def _ATTRS(self): pass  # pylint: disable=invalid-name,multiple-statements
 
     @property
     @abstractmethod
-    def _instantiate(self): pass
+    def _instantiate(self): pass  # pylint: disable=invalid-name,multiple-statements
 
     @classmethod
     def _next_uuid(cls) -> int:

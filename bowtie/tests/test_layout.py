@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Test layout functionality."""
-# pylint: disable=redefined-outer-name
+# pylint: disable=redefined-outer-name,protected-access
 
 import pytest
 
@@ -27,7 +27,7 @@ def test_all_used(buttons):
     for i in range(4):
         app.add(buttons[i])
 
-    assert list(app.root.used.values()) == 4 * [True]
+    assert list(app._root._used.values()) == 4 * [True]
 
     app = App(rows=2, columns=2)
     app[0, 0] = buttons[0]
@@ -35,7 +35,7 @@ def test_all_used(buttons):
     app[1, 0] = buttons[2]
     app[1, 1] = buttons[3]
 
-    assert list(app.root.used.values()) == 4 * [True]
+    assert list(app._root._used.values()) == 4 * [True]
 
     with pytest.raises(NoUnusedCellsError):
         app.add(buttons[2])
@@ -45,7 +45,7 @@ def test_all_used(buttons):
     app[1, 0] = buttons[2]
     app[1, 1] = buttons[3]
 
-    assert list(app.root.used.values()) == 4 * [True]
+    assert list(app._root._used.values()) == 4 * [True]
 
     with pytest.raises(NoUnusedCellsError):
         app.add(buttons[2])
@@ -119,28 +119,28 @@ def test_getitem(buttons):
         app[0, 1:-1:-1] = but
 
     app[1, ] = but
-    assert sum(app.root.used.values()) == 2
+    assert sum(app._root._used.values()) == 2
     app[0, :] = but
-    assert sum(app.root.used.values()) == 4
+    assert sum(app._root._used.values()) == 4
 
     app = App(rows=2, columns=2)
     app[0:1, 1:2] = but
-    assert sum(app.root.used.values()) == 1
+    assert sum(app._root._used.values()) == 1
     app[1:, 0:] = but
-    assert sum(app.root.used.values()) == 3
+    assert sum(app._root._used.values()) == 3
 
     app = App(rows=2, columns=2)
     app[-1, :2] = but
-    assert sum(app.root.used.values()) == 2
+    assert sum(app._root._used.values()) == 2
 
     app = App(rows=1, columns=2)
     app[0, :2] = but
-    assert sum(app.root.used.values()) == 2
+    assert sum(app._root._used.values()) == 2
 
     app = App(rows=1, columns=2)
     app[0] = but
-    assert sum(app.root.used.values()) == 2
+    assert sum(app._root._used.values()) == 2
 
     app = App(rows=2, columns=2)
     app[:2] = but
-    assert sum(app.root.used.values()) == 4
+    assert sum(app._root._used.values()) == 4

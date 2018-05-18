@@ -8,6 +8,7 @@ from contextlib import contextmanager
 from subprocess import Popen, PIPE
 import time
 
+from bowtie import View
 from bowtie._component import Component
 
 
@@ -15,6 +16,7 @@ def reset_uuid():
     """Reset the uuid counter for components."""
     # pylint: disable=protected-access
     Component._NEXT_UUID = 0
+    View._NEXT_UUID = 0
 
 
 @contextmanager
