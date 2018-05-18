@@ -3,7 +3,7 @@
 all: test
 
 test:
-	py.test --cov=./ --codestyle --pylint --pylint-rcfile=pylintrc --pylint-error-types=RCWEF
+	py.test --cov=./ --mypy --codestyle --pylint --pylint-rcfile=pylintrc --pylint-error-types=RCWEF
 
 unit:
 	py.test --cov=./
@@ -30,7 +30,7 @@ debug:
 	py.test --pylint --pylint-rcfile=pylintrc --pylint-error-types=RCWEF -s --pdb
 
 static:
-	mypy -m bowtie --ignore-missing-imports
+	mypy -p bowtie
 
 monkeytype:
 	monkeytype run `which pytest`

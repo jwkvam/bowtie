@@ -61,7 +61,6 @@ script:
   - cd doc && make spelling && cd ..
   - ./vale --glob='*.rst' doc
   - make checkdocs
-  - make static
   - make test
 
 after_success:

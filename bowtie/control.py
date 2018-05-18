@@ -159,11 +159,11 @@ class Dropdown(_Controller):
         """
         super().__init__(caption=caption)
 
-        if labels is None and values is None:
-            labels = []
-            values = []
-
-        options = [dict(value=value, label=str(label)) for value, label in zip(values, labels)]
+        if values is not None and labels is not None:
+            options = [{'value': value, 'label': str(label)}
+                       for value, label in zip(values, labels)]
+        else:
+            options = []
 
         self._comp = self._tag.format(
             options=jdumps(options),
