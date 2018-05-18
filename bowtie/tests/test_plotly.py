@@ -72,7 +72,7 @@ def test_plotly(plotly, chrome_driver):
 
     button = chrome_driver.find_element_by_class_name('ant-btn')
     points = chrome_driver.find_elements_by_class_name('point')
-    assert len(points) == 0
+    assert not points
 
     button.click()
 
