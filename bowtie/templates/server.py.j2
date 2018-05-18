@@ -203,7 +203,7 @@ def _(*args):
         {% set post = event.getter %}
         {% if post is not none %}
         event_data['{{ event.signal }}'] = COMPONENT_REGISTRY[{{ event.uuid }}].{{ '_' ~ post }}(
-            msgpack.unpackb(bytes(args[0]['data']), encoding='utf8')
+            msgpack.unpackb(args[0], encoding='utf8')
         )
         {% endif %}
 

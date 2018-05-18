@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Visual components."""
 
-from typing import Dict, Optional, List, Union
+from typing import Dict, Optional, List, Union, Tuple
 
 from bowtie._component import Component, jdumps, jsbool
 from bowtie._progress import Progress
@@ -50,8 +50,8 @@ class Table(_Visual):
 
         """
         super().__init__()
-        self.data = []
-        self.columns = []
+        self.data = []  # type: List[Dict]
+        self.columns = []  # type: List[Dict]
         if data:
             self.data, self.columns = self._make_data(data)
         elif columns:
@@ -65,7 +65,7 @@ class Table(_Visual):
         )
 
     @staticmethod
-    def _make_columns(columns):
+    def _make_columns(columns: List[Union[int, str]]) -> List[Dict]:
         """Transform list of columns into AntTable format."""
         return [dict(title=str(c),
                      dataIndex=str(c),
@@ -73,7 +73,7 @@ class Table(_Visual):
                 for c in columns]
 
     @staticmethod
-    def _make_data(data):
+    def _make_data(data) -> Tuple[List[Dict], List[Dict]]:
         """Transform table data into JSON."""
         jsdata = []
         for idx, row in data.iterrows():

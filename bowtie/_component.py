@@ -153,7 +153,7 @@ def pack(x: Any) -> bytes:
 
 def unpack(x) -> JSON:
     """Decode ``x`` from msgpack into Python object."""
-    return msgpack.unpackb(bytes(x['data']), encoding='utf8')
+    return msgpack.unpackb(x, encoding='utf8')
 
 
 def make_event(event: Callable) -> Callable:
@@ -307,13 +307,15 @@ class Component(metaclass=_Maker):  # pylint: disable=too-few-public-methods
         COMPONENT_REGISTRY[self._uuid] = self
 
     @staticmethod
-    def _insert(wrap: str, tag: str) -> str:
+    def _insert(wrap: str, tag: Optional[str]) -> str:
         """Insert the component tag into the wrapper html.
 
         This ignores other tags already created like ``{socket}``.
 
         https://stackoverflow.com/a/11284026/744520
         """
+        if tag is None:
+            raise ValueError('tag cannot be None')
         formatter = string.Formatter()
         mapping = FormatDict(component=tag)
         return formatter.vformat(wrap, (), mapping)
