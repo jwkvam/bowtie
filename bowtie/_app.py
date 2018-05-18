@@ -411,7 +411,8 @@ class View:
                                  .format(column_start, column_end))
 
         # pylint: disable=protected-access
-        self._packages.add(widget._PACKAGE)
+        if widget._PACKAGE:
+            self._packages.add(widget._PACKAGE)
         self._templates.add(widget._TEMPLATE)
         self._imports.add(_Import(component=widget._COMPONENT,
                                   module=widget._TEMPLATE[:widget._TEMPLATE.find('.')]))
@@ -479,20 +480,13 @@ class View:
         assert isinstance(widget, Component)
 
         # pylint: disable=protected-access
-        self._packages.add(widget._PACKAGE)
+        if widget._PACKAGE:
+            self._packages.add(widget._PACKAGE)
         self._templates.add(widget._TEMPLATE)
         self._imports.add(_Import(component=widget._COMPONENT,
                                   module=widget._TEMPLATE[:widget._TEMPLATE.find('.')]))
         self._controllers.append(_Control(instantiate=widget._instantiate,
                                           caption=getattr(widget, 'caption', None)))
-
-    @property
-    def _columns_sidebar(self):
-        columns = []
-        if self.sidebar:
-            columns.append(Size().ems(18))
-        columns += self.columns
-        return columns
 
     def _render(self, path: str, env: Environment) -> None:
         """TODO: Docstring for _render.
