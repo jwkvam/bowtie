@@ -69,17 +69,19 @@ def test_multiple(multiple_views, chrome_driver):
     assert chrome_driver.title == 'Bowtie App'
 
     button = chrome_driver.find_element_by_class_name('ant-btn')
+    data = chrome_driver.find_element_by_class_name('ant-table-body').text
+    assert len(data.split('\n')) == 1
     button.click()
-    chrome_driver.implicitly_wait(3)
+    time.sleep(2)
 
     data = chrome_driver.find_element_by_class_name('ant-table-body').text
+    assert len(data.split('\n')) == 11
 
     logs = chrome_driver.get_log('browser')
     for log in logs:
         if log['level'] == 'SEVERE':
             raise Exception(log['message'])
 
-    assert len(data.split('\n')) == 11
 
     chrome_driver.get('http://localhost:9991/view2')
     data = chrome_driver.find_element_by_class_name('ant-table-body').text
