@@ -82,7 +82,6 @@ def test_multiple(multiple_views, chrome_driver):
         if log['level'] == 'SEVERE':
             raise Exception(log['message'])
 
-
     chrome_driver.get('http://localhost:9991/view2')
     data = chrome_driver.find_element_by_class_name('ant-table-body').text
 
