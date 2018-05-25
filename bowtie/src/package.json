@@ -30,7 +30,7 @@
         "sass-loader": "^7.0.1",
         "socket.io-client": "^2.1.1",
         "style-loader": "^0.21.0",
-        "webpack": "^4.9.0",
+        "webpack": "^4.9.1",
         "webpack-cli": "^2.1.4",
         "webpack-merge": "^4.1.2"
     }
