@@ -3,6 +3,7 @@
 *.ipynb*
 *.mp4
 *.mypy*
+*.pyre*
 *.svg
 .gutctags
 .pyre
