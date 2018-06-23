@@ -1,5 +1,4 @@
 dist: trusty
-sudo: required
 language: python
 cache: 
   pip: true
@@ -22,9 +21,9 @@ before_script:
 before_install:
   - docker pull lukasmartinelli/hadolint
   - nvm install node
-  - curl -o- -L https://yarnpkg.com/install.sh | sudo bash
-  - sudo apt-get update -qq
-  - sudo apt-get install -y xvfb libenchant1c2a 
+  - curl -o- -L https://yarnpkg.com/install.sh | bash
+  - apt-get update -qq
+  - apt-get install -y xvfb libenchant1c2a 
 
 install:
   - google-chrome --version
@@ -54,7 +53,7 @@ install:
   - wget https://chromedriver.storage.googleapis.com/2.40/chromedriver_linux64.zip
   - unzip chromedriver_linux64.zip
   - chmod +x chromedriver
-  - sudo mv -f chromedriver /usr/local/bin
+  - mv -f chromedriver /usr/local/bin
   - wget https://github.com/errata-ai/vale/releases/download/v0.11.2/vale_0.11.2_Linux_64-bit.tar.gz
   - tar xvf vale_0.11.2_Linux_64-bit.tar.gz
 
