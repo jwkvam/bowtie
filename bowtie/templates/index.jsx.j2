@@ -10,8 +10,8 @@ import {
     Link
 } from 'react-router-dom';
 
-{% for viewid in range(1, maxviewid + 1) %}
-import View{{ viewid }} from './view{{ viewid }}';
+{% for route in routes %}
+import View{{ route.view._uuid }} from './view{{ route.view._uuid }}';
 {% endfor %}
 
 var msgpack = require('msgpack-lite');
@@ -85,7 +85,16 @@ class Dashboard extends React.Component {
                             exact
                             {% endif %}
                             path='{{ route.path }}'
-                            render={()=><View{{ route.view._uuid }} socket={socket}/>}
+                            render={() => 
+                                    <View{{ route.view._uuid }}
+                                        uuid={'{{route.view._uuid}}'}
+                                        socket={socket}
+                                        columns={'{{ route.view._columns_sidebar|join(' ') }}'}
+                                        rows={'{{ route.view.rows|join(' ') }}'}
+                                        column_gap={'{{ route.view.column_gap }}'}
+                                        row_gap={'{{ route.view.row_gap }}'}
+                                    />
+                            }
                         />
                     {% endfor %}
                 </Switch>

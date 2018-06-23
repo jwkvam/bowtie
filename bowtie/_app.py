@@ -278,27 +278,40 @@ class View:
 
     def __init__(self, rows: int = 1, columns: int = 1, sidebar: bool = True,
                  background_color: str = 'White') -> None:
-        """Create a new grid."""
+        """Create a new grid.
+
+        Parameters
+        ----------
+        rows : int, optional
+            Number of rows in the grid.
+        columns : int, optional
+            Number of columns in the grid.
+        sidebar : bool, optional
+            Enable a sidebar for control widgets.
+        background_color : str, optional
+            Background color of the control pane.
+
+        """
         self._uuid = View._next_uuid()
-        self.used = OrderedDict(((key, False) for key in product(range(rows), range(columns))))
+        self._used = OrderedDict(((key, False) for key in product(range(rows), range(columns))))
         self.column_gap = Gap()
         self.row_gap = Gap()
         self.rows = [Size() for _ in range(rows)]
         self.columns = [Size() for _ in range(columns)]
         self.sidebar = sidebar
         self.background_color = background_color
-        self.packages = set()  # type: Set[str]
-        self.templates = set()  # type: Set[str]
-        self.imports = set()  # type: Set[_Import]
-        self.controllers = []  # type: List[_Control]
-        self.spans = defaultdict(Widgets)  # type: Dict[Span, List[Component]]
+        self._packages = set()  # type: Set[str]
+        self._templates = set()  # type: Set[str]
+        self._imports = set()  # type: Set[_Import]
+        self._controllers = []  # type: List[_Control]
+        self._spans = defaultdict(Widgets)  # type: Dict[Span, List[Component]]
 
     @property
     def _name(self) -> str:
         return 'view{}.jsx'.format(self._uuid)
 
     def _key_to_rows_columns(self, key: Any) -> Tuple[int, int, int, int]:
-        # FIXME spaghetti code cleanup needed!
+        # TODO spaghetti code cleanup needed!
         if isinstance(key, tuple):
             if len(key) == 1:
                 rows_cols = self._key_to_rows_columns(key[0])
@@ -399,10 +412,10 @@ class View:
 
         # pylint: disable=protected-access
         if widget._PACKAGE:
-            self.packages.add(widget._PACKAGE)
-        self.templates.add(widget._TEMPLATE)
-        self.imports.add(_Import(component=widget._COMPONENT,
-                                 module=widget._TEMPLATE[:widget._TEMPLATE.find('.')]))
+            self._packages.add(widget._PACKAGE)
+        self._templates.add(widget._TEMPLATE)
+        self._imports.add(_Import(component=widget._COMPONENT,
+                                  module=widget._TEMPLATE[:widget._TEMPLATE.find('.')]))
 
         used_msg = 'Cell at [{}, {}] is already used.'
         if row_start is None or column_start is None:
@@ -422,18 +435,18 @@ class View:
                     'specify both row_start and column_start.'
                 )
             row, col = None, None
-            for (row, col), use in self.used.items():
+            for (row, col), use in self._used.items():
                 if not use:
                     break
             else:
                 raise NoUnusedCellsError()
             span = Span(row, col)
-            self.used[row, col] = True
+            self._used[row, col] = True
         elif row_end is None and column_end is None:
-            if self.used[row_start, column_start]:
+            if self._used[row_start, column_start]:
                 raise UsedCellsError(used_msg.format(row_start, column_start))
             span = Span(row_start, column_start)
-            self.used[row_start, column_start] = True
+            self._used[row_start, column_start] = True
         else:
             if row_end is None:
                 row_end = row_start + 1
@@ -442,15 +455,15 @@ class View:
 
             for row, col in product(range(row_start, row_end),
                                     range(column_start, column_end)):
-                if self.used[row, col]:
+                if self._used[row, col]:
                     raise UsedCellsError(used_msg.format(row, col))
 
             for row, col in product(range(row_start, row_end),
                                     range(column_start, column_end)):
-                self.used[row, col] = True
+                self._used[row, col] = True
             span = Span(row_start, column_start, row_end, column_end)
 
-        self.spans[span].append(widget)
+        self._spans[span].append(widget)
 
     def add_sidebar(self, widget: Component) -> None:
         """Add a widget to the sidebar.
@@ -468,12 +481,12 @@ class View:
 
         # pylint: disable=protected-access
         if widget._PACKAGE:
-            self.packages.add(widget._PACKAGE)
-        self.templates.add(widget._TEMPLATE)
-        self.imports.add(_Import(component=widget._COMPONENT,
-                                 module=widget._TEMPLATE[:widget._TEMPLATE.find('.')]))
-        self.controllers.append(_Control(instantiate=widget._instantiate,
-                                         caption=getattr(widget, 'caption', None)))
+            self._packages.add(widget._PACKAGE)
+        self._templates.add(widget._TEMPLATE)
+        self._imports.add(_Import(component=widget._COMPONENT,
+                                  module=widget._TEMPLATE[:widget._TEMPLATE.find('.')]))
+        self._controllers.append(_Control(instantiate=widget._instantiate,
+                                          caption=getattr(widget, 'caption', None)))
 
     def _render(self, path: str, env: Environment) -> None:
         """TODO: Docstring for _render.
@@ -499,14 +512,10 @@ class View:
                 jsx.render(
                     uuid=self._uuid,
                     sidebar=self.sidebar,
-                    columns=columns,
-                    rows=self.rows,
-                    column_gap=self.column_gap,
-                    row_gap=self.row_gap,
                     background_color=self.background_color,
-                    components=self.imports,
-                    controls=self.controllers,
-                    spans=self.spans
+                    components=self._imports,
+                    controls=self._controllers,
+                    spans=self._spans
                 )
             )
 
@@ -555,24 +564,23 @@ class App:
             Enable debugging in Flask. Disable in production!
 
         """
-        self.background_color = background_color
-        self.basic_auth = basic_auth
-        self.debug = debug
-        self.host = host
-        self.init = None
-        self.password = password
-        self.port = port
-        self.socketio = socketio
-        self.schedules = []  # type: List[_Schedule]
-        self.subscriptions = defaultdict(list)  # type: Dict[Event, List[Tuple[List[Event], str]]]
-        self.pages = {}  # type: Dict[Pager, str]
-        self.title = title
-        self.username = username
-        self.uploads = {}  # type: Dict[int, str]
+        self._basic_auth = basic_auth
+        self._debug = debug
+        self._host = host
+        self._init = None
+        self._password = password
+        self._port = port
+        self._socketio = socketio
+        self._schedules = []  # type: List[_Schedule]
+        self._subscriptions = defaultdict(list)  # type: Dict[Event, List[Tuple[List[Event], str]]]
+        self._pages = {}  # type: Dict[Pager, str]
+        self._title = title
+        self._username = username
+        self._uploads = {}  # type: Dict[int, str]
         self.theme = theme
-        self.root = View(rows=rows, columns=columns, sidebar=sidebar,
-                         background_color=background_color)
-        self.routes = [Route(view=self.root, path='/', exact=True)]
+        self._root = View(rows=rows, columns=columns, sidebar=sidebar,
+                          background_color=background_color)
+        self._routes = [Route(view=self._root, path='/', exact=True)]
         self._package_dir = os.path.dirname(__file__)
         self._jinjaenv = Environment(
             loader=FileSystemLoader(os.path.join(self._package_dir, 'templates')),
@@ -583,23 +591,23 @@ class App:
     def __getattr__(self, name: str) -> Union[Gap, List[Size]]:
         """Export attributes from root view."""
         if name == 'columns':
-            return self.root.columns
+            return self._root.columns
         elif name == 'rows':
-            return self.root.rows
+            return self._root.rows
         elif name == 'column_gap':
-            return self.root.column_gap
+            return self._root.column_gap
         elif name == 'row_gap':
-            return self.root.row_gap
+            return self._root.row_gap
         else:
             raise AttributeError(name)
 
     def __getitem__(self, key):
         """Get item from root view."""
-        return self.root.__getitem__(key)
+        return self._root.__getitem__(key)
 
     def __setitem__(self, key: Any, value: Component) -> None:
         """Add widget to the root view."""
-        self.root.__setitem__(key, value)
+        self._root.__setitem__(key, value)
 
     def add(self, widget: Component) -> None:
         """Add a widget to the grid in the next available cell.
@@ -612,7 +620,7 @@ class App:
             A Bowtie widget instance.
 
         """
-        self.root.add(widget)
+        self._root.add(widget)
 
     def add_sidebar(self, widget: Component) -> None:
         """Add a widget to the sidebar.
@@ -623,7 +631,7 @@ class App:
             Add this widget to the sidebar, it will be appended to the end.
 
         """
-        self.root.add_sidebar(widget)
+        self._root.add_sidebar(widget)
 
     def add_route(self, view, path, exact=True):
         """Add a view to the app.
@@ -635,10 +643,11 @@ class App:
         exact : bool, optional
 
         """
-        assert path[0] == '/'
-        for route in self.routes:
+        if path[0] != '/':
+            path = '/' + path
+        for route in self._routes:
             assert path != route.path, 'Cannot use the same path twice'
-        self.routes.append(Route(view=view, path=path, exact=exact))
+        self._routes.append(Route(view=view, path=path, exact=exact))
 
     def respond(self, pager: Pager, func: Callable) -> None:
         """Call a function in response to a page.
@@ -666,7 +675,7 @@ class App:
         >>> app.respond(pager, callback)
 
         """
-        self.pages[pager] = func.__name__
+        self._pages[pager] = func.__name__
 
     def subscribe(self, func: Callable, event: Event, *events: Event) -> None:
         """Call a function in response to an event.
@@ -709,18 +718,18 @@ class App:
                     raise NotStatefulEvent(msg.format(evt.uuid, evt.name))
 
         if event.name == 'upload':
-            if event.uuid in self.uploads:
+            if event.uuid in self._uploads:
                 warnings.warn(
                     ('Overwriting function "{func1}" with function '
                      '"{func2}" for upload object "{obj}".').format(
-                         func1=self.uploads[event.uuid],
+                         func1=self._uploads[event.uuid],
                          func2=func.__name__,
                          obj=COMPONENT_REGISTRY[event.uuid]
                      ), Warning)
-            self.uploads[event.uuid] = func.__name__
+            self._uploads[event.uuid] = func.__name__
 
         for evt in all_events:
-            self.subscriptions[evt].append((all_events, func.__name__))
+            self._subscriptions[evt].append((all_events, func.__name__))
 
     def listen(self, event: Event, *events: Event) -> Callable:
         """Call a function in response to an event.
@@ -767,7 +776,7 @@ class App:
             Function to be called.
 
         """
-        self.init = func.__name__
+        self._init = func.__name__
 
     def schedule(self, seconds, func):
         """Call a function periodically.
@@ -780,7 +789,7 @@ class App:
             Function to be called.
 
         """
-        self.schedules.append(_Schedule(seconds, func.__name__))
+        self._schedules.append(_Schedule(seconds, func.__name__))
 
     def _sourcefile(self):  # pylint: disable=no-self-use
         # [-1] grabs the top of the stack
@@ -804,21 +813,21 @@ class App:
         with open(server_path, 'w') as f:
             f.write(
                 server.render(
-                    socketio=self.socketio,
-                    basic_auth=self.basic_auth,
-                    username=self.username,
-                    password=self.password,
+                    socketio=self._socketio,
+                    basic_auth=self._basic_auth,
+                    username=self._username,
+                    password=self._password,
                     notebook=notebook,
                     source_module=self._sourcefile() if not notebook else None,
-                    subscriptions=self.subscriptions,
-                    uploads=self.uploads,
-                    schedules=self.schedules,
-                    initial=self.init,
-                    routes=self.routes,
-                    pages=self.pages,
-                    host="'{}'".format(self.host),
-                    port=self.port,
-                    debug=self.debug
+                    subscriptions=self._subscriptions,
+                    uploads=self._uploads,
+                    schedules=self._schedules,
+                    initial=self._init,
+                    routes=self._routes,
+                    pages=self._pages,
+                    host="'{}'".format(self._host),
+                    port=self._port,
+                    debug=self._debug
                 )
             )
 
@@ -829,20 +838,21 @@ class App:
         shutil.copy(template_src, app)
         template_src = os.path.join(self._package_dir, 'src', 'utils.js')
         shutil.copy(template_src, app)
-        for route in self.routes:
-            for template in route.view.templates:
+        for route in self._routes:
+            # pylint: disable=protected-access
+            for template in route.view._templates:
                 template_src = os.path.join(self._package_dir, 'src', template)
                 shutil.copy(template_src, app)
 
         packages = set()  # type: Set[str]
-        for route in self.routes:
+        for route in self._routes:
             route.view._render(app, self._jinjaenv)  # pylint: disable=protected-access
-            packages |= route.view.packages
+            packages |= route.view._packages  # pylint: disable=protected-access
 
         with open(os.path.join(templates, indexhtml.name[:-3]), 'w') as f:  # type: ignore
             f.write(
                 indexhtml.render(
-                    title=self.title,
+                    title=self._title,
                 )
             )
 
@@ -850,9 +860,9 @@ class App:
             f.write(
                 indexjsx.render(
                     maxviewid=View._NEXT_UUID,  # pylint: disable=protected-access
-                    socketio=self.socketio,
-                    pages=self.pages,
-                    routes=self.routes
+                    socketio=self._socketio,
+                    pages=self._pages,
+                    routes=self._routes
                 )
             )
         return packages
@@ -873,7 +883,7 @@ class App:
             webpackdev = os.path.join(self._package_dir, 'src/webpack.dev.js')
             shutil.copy(webpackdev, _DIRECTORY)
 
-        if run(['yarn', 'install'], notebook=notebook) > 1:
+        if run(['yarn', '--ignore-engines', 'install'], notebook=notebook) > 1:
             raise YarnError('Error installing node packages')
 
         if packages:
@@ -881,7 +891,7 @@ class App:
             new_packages = [x for x in packages if x.split('@')[0] not in installed]
 
             if new_packages:
-                retval = run(['yarn', 'add'] + new_packages, notebook=notebook)
+                retval = run(['yarn', '--ignore-engines', 'add'] + new_packages, notebook=notebook)
                 if retval > 1:
                     raise YarnError('Error installing node packages')
                 elif retval == 1:

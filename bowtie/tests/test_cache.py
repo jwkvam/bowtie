@@ -14,7 +14,6 @@ reset_uuid()
 
 # pylint: disable=invalid-name
 button = Button()
-store = {}
 
 
 def click():

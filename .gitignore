@@ -1,17 +1,19 @@
-.gutctags
-monkeytype.sqlite3
-*.mypy*
-*.ipynb*
-*.svg
-*.html
-.DS_Store
-.pytest_cache
-*.mp4
 *.gif
+*.html
+*.ipynb*
+*.mp4
+*.mypy*
+*.pyre*
+*.svg
+.gutctags
+.pyre
+.pytest_cache
+monkeytype.sqlite3
 tags
 tags.lock
 tags.temp
 yarn.lock
+
 #### joe made this: http://goel.io/joe
 
 #####=== Python ===#####
@@ -106,3 +108,35 @@ build/Release
 # https://docs.npmjs.com/misc/faq#should-i-check-my-node-modules-folder-into-git
 node_modules
 
+
+# Created by https://www.gitignore.io/api/osx
+
+### OSX ###
+*.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+
+# End of https://www.gitignore.io/api/osx

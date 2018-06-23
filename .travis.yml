@@ -1,6 +1,10 @@
 dist: trusty
 language: python
-cache: pip
+cache: 
+  pip: true
+  yarn: true
+  directories:
+    - ~/miniconda
 addons:
   chrome:
     stable
@@ -25,26 +29,28 @@ install:
   - google-chrome --version
   - google-chrome-stable --version
   - sudo apt-get update 
+  - sudo apt-get install xvfb libenchant1c2a yarn
+  - yarn --version
   - yarn global add eslint babel-eslint eslint-plugin-react
   - make eslint
-  - sudo apt-get install xvfb
-  - sudo apt-get install libenchant1c2a
-  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
-  - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
+  - if ! hash conda 2>/dev/null; then
+    wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+    rm -r ~/miniconda;
+    bash miniconda.sh -b -p $HOME/miniconda;
+    fi
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
     # Useful for debugging any issues with conda
   - conda info -a
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
-  - source activate test-environment
-  - pip install -U pip
-  - pip install -r test-requirements.txt
-  - if [[ "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then
-    pip install pytest-codestyle;
+  - if ! source activate test-environment; then
+    conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION;
+    source activate test-environment;
     fi
-  - wget https://chromedriver.storage.googleapis.com/2.38/chromedriver_linux64.zip
+  - pip install --upgrade pip
+  - pip install -r test-requirements.txt --progress-bar=off
+  - wget https://chromedriver.storage.googleapis.com/2.40/chromedriver_linux64.zip
   - unzip chromedriver_linux64.zip
   - chmod +x chromedriver
   - sudo mv -f chromedriver /usr/local/bin
@@ -54,11 +60,7 @@ install:
 script:
   - cd doc && make spelling && cd ..
   - ./vale --glob='*.rst' doc
-  - if [[ "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then
-    make style;
-    fi
   - make checkdocs
-  - make static
   - make test
 
 after_success:
