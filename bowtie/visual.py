@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Visual components."""
 
 from typing import Dict, Optional, List, Union, Tuple

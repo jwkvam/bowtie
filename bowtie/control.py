@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Control components."""
 
 from typing import Callable, Optional, List, Union, Tuple

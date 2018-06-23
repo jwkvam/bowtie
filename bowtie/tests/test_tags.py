@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Test tag instantation for components."""
 
 from bowtie.html import Markdown

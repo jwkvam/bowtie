@@ -1,14 +1,9 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-Example Bowtie App.
-"""
+"""Example Bowtie App."""
 
 from bowtie.control import Nouislider
 from bowtie.visual import Plotly
-from bowtie import command
-from bowtie import Pager
-from bowtie import cache
+from bowtie import Pager, cache, command
 
 import numpy as np
 from numpy import random as rng
@@ -44,4 +39,5 @@ def main():
     app.add_sidebar(sigma)
     app.add(mainplot)
     app.schedule(0.1, walk)
+    app.respond(pager, upgraph)
     return app

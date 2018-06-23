@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Compat testing."""
 
 from bowtie._utils import func_name

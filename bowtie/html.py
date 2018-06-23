@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Static HTML Components."""
 
 from flask import Markup
