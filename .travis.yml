@@ -25,7 +25,7 @@ before_install:
   - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
   - echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
   - curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-  - sudo apt-get update 
+  - sudo apt-get update -q
   - sudo apt-get install -y xvfb libenchant1c2a yarn nodejs
 
 install:
@@ -33,6 +33,7 @@ install:
   - google-chrome --version
   - google-chrome-stable --version
   - node --version
+  - which yarn
   - yarn --version
   - yarn global add eslint babel-eslint eslint-plugin-react
   - make eslint
