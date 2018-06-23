@@ -34,6 +34,7 @@ install:
   - google-chrome --version
   - google-chrome-stable --version
   - node --version
+  - /usr/bin/yarn --version
   - which yarn
   - yarn --version
   - yarn global add eslint babel-eslint eslint-plugin-react
