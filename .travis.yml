@@ -23,8 +23,9 @@ before_install:
   - docker pull lukasmartinelli/hadolint
   - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
   - echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+  - curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
   - sudo apt-get update 
-  - sudo apt-get install xvfb libenchant1c2a yarn
+  - sudo apt-get install -y xvfb libenchant1c2a yarn nodejs
 
 install:
   - docker run --rm -i lukasmartinelli/hadolint hadolint --ignore DL3008 --ignore DL3013 - < Dockerfile
