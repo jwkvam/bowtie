@@ -30,7 +30,6 @@ before_install:
   - sudo apt-get install -y xvfb libenchant1c2a nodejs
 
 install:
-  - docker run --rm -i lukasmartinelli/hadolint hadolint --ignore DL3008 --ignore DL3013 - < Dockerfile
   - google-chrome --version
   - google-chrome-stable --version
   - node --version
@@ -38,7 +37,6 @@ install:
   - which yarn
   - yarn --version
   - yarn global add eslint babel-eslint eslint-plugin-react
-  - make eslint
   - export PATH="$HOME/miniconda/bin:$PATH"
   - if ! hash conda 2>/dev/null; then
     wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
@@ -64,6 +62,8 @@ install:
   - tar xvf vale_0.11.2_Linux_64-bit.tar.gz
 
 script:
+  - docker run --rm -i lukasmartinelli/hadolint hadolint --ignore DL3008 --ignore DL3013 - < Dockerfile
+  - make eslint
   - cd doc && make spelling && cd ..
   - ./vale --glob='*.rst' doc
   - make checkdocs
