@@ -3,7 +3,6 @@ sudo: required
 language: python
 cache: 
   pip: true
-  yarn: true
   directories:
     - ~/miniconda
 addons:
