@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Test markdown and text widgets."""
 
 import os

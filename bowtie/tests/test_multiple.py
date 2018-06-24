@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 # pylint: disable=unused-argument,invalid-name
 """Multiple views testing."""
 

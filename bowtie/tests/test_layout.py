@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Test layout functionality."""
 # pylint: disable=redefined-outer-name,protected-access
 

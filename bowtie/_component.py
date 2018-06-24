@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Bowtie abstract component classes.
 
 All visual and control components inherit these.

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Decorates a function for Bowtie.
 

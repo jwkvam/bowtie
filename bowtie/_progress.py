@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Progress component.
 
 Not for direct use by user.

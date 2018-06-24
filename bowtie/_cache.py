@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Bowtie cache functions."""
 
 import flask

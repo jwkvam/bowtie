@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Bowtie types."""
 
 from typing import Any, Union, Mapping, List

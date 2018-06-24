@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Defines the App class."""
 
 from typing import (  # pylint: disable=unused-import

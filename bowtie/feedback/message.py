@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Messages provide a temporary message that will disappear after a few seconds.
 
 Reference

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Jupyter Integration."""
 
 import ast
