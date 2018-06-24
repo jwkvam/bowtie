@@ -28,12 +28,8 @@ def callback(*args):
     """dummy function"""
     # pylint: disable=unused-argument
     chart = {
-        "data": [
-            Scatter(x=[1, 2, 3, 4], y=[4, 1, 3, 7])
-        ],
-        "app": PlotLayout(
-            title="hello world"
-        )
+        "data": [Scatter(x=[1, 2, 3, 4], y=[4, 1, 3, 7])],
+        "app": PlotLayout(title="hello world"),
     }
     viz.do_all(chart)
 

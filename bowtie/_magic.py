@@ -35,11 +35,13 @@ def get_notebook_name():
     """
     # this redefines a builtin >:( so putting it here to satisfy my linter
     from notebook.notebookapp import list_running_servers
+
     kernel_id = re.search('kernel-(.*).json', ipykernel.connect.get_connection_file()).group(1)
     servers = list_running_servers()
     for server in servers:
-        response = requests.get(urljoin(server['url'], 'api/sessions'),
-                                params={'token': server.get('token', '')})
+        response = requests.get(
+            urljoin(server['url'], 'api/sessions'), params={'token': server.get('token', '')}
+        )
         for session in json.loads(response.text):
             if session['kernel']['id'] == kernel_id:
                 relative_path = session['notebook']['path']
@@ -169,7 +171,9 @@ class BowtieMagic(Magics):
             print(self.server.stdout.read().decode('utf-8'), end='')
 
         clear_output()
-        display(HTML(
-            '<iframe src=http://localhost:9991 width={} height={} '
-            'frameBorder={}></iframe>'.format(width, height, border)
-        ))
+        display(
+            HTML(
+                '<iframe src=http://localhost:9991 width={} height={} '
+                'frameBorder={}></iframe>'.format(width, height, border)
+            )
+        )

@@ -30,13 +30,21 @@ def numargs(func: Callable) -> int:
 
 def _build(app):
     if app is None:
-        print(('No `App` instance was returned. '
-               'In the function decorated with @command, '
-               'return the `App` instance so it can be built.'))
+        print(
+            (
+                'No `App` instance was returned. '
+                'In the function decorated with @command, '
+                'return the `App` instance so it can be built.'
+            )
+        )
     else:
         if not isinstance(app, App):
-            raise Exception(('Returned value {} is of type {}, '
-                             'it needs to be a bowtie.App instance.'.format(app, type(app))))
+            raise Exception(
+                (
+                    'Returned value {} is of type {}, '
+                    'it needs to be a bowtie.App instance.'.format(app, type(app))
+                )
+            )
         # pylint:disable=protected-access
         app._build()
 
@@ -47,6 +55,7 @@ def command(func):
     Decorate a function for building a Bowtie
     application and turn it into a command line interface.
     """
+
     @click.group(options_metavar='[--help]')
     def cmd():
         """Bowtie CLI to help build and run your app."""
@@ -61,13 +70,13 @@ def command(func):
             app = func()
         else:
             raise WrongNumberOfArguments(
-                'Decorated function "{}" should have no arguments, it has {}.'
-                .format(func.__name__, nargs)
+                'Decorated function "{}" should have no arguments, it has {}.'.format(
+                    func.__name__, nargs
+                )
             )
         _build(app)
 
-    @cmd.command(context_settings=dict(ignore_unknown_options=True),
-                 add_help_option=False)
+    @cmd.command(context_settings=dict(ignore_unknown_options=True), add_help_option=False)
     @click.argument('extra', nargs=-1, type=click.UNPROCESSED)
     def run(extra):
         """Build the app and serve it."""
@@ -76,8 +85,9 @@ def command(func):
             app = func()
         else:
             raise WrongNumberOfArguments(
-                'Decorated function "{}" should have no arguments, it has {}.'
-                .format(func.__name__, nargs)
+                'Decorated function "{}" should have no arguments, it has {}.'.format(
+                    func.__name__, nargs
+                )
             )
         # pylint:disable=protected-access
         _build(app)
@@ -85,8 +95,7 @@ def command(func):
         line = (filepath,) + extra
         call(line)
 
-    @cmd.command(context_settings=dict(ignore_unknown_options=True),
-                 add_help_option=False)
+    @cmd.command(context_settings=dict(ignore_unknown_options=True), add_help_option=False)
     @click.argument('extra', nargs=-1, type=click.UNPROCESSED)
     def serve(extra):
         """Serve the Bowtie app."""
@@ -97,16 +106,14 @@ def command(func):
         else:
             print("Cannot find '{}'. Did you build the app?".format(filepath))
 
-    @cmd.command(context_settings=dict(ignore_unknown_options=True),
-                 add_help_option=False)
+    @cmd.command(context_settings=dict(ignore_unknown_options=True), add_help_option=False)
     @click.argument('extra', nargs=-1, type=click.UNPROCESSED)
     def dev(extra):
         """Recompile the app for development."""
         line = (_WEBPACK, '--config', 'webpack.dev.js') + extra
         call(line, cwd=_DIRECTORY)
 
-    @cmd.command(context_settings=dict(ignore_unknown_options=True),
-                 add_help_option=False)
+    @cmd.command(context_settings=dict(ignore_unknown_options=True), add_help_option=False)
     @click.argument('extra', nargs=-1, type=click.UNPROCESSED)
     def prod(extra):
         """Recompile the app for production."""

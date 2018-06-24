@@ -11,4 +11,5 @@ from bowtie._cache import cache
 def load_ipython_extension(ipython):
     """Enable IPython extension."""
     from bowtie._magic import BowtieMagic
+
     ipython.register_magics(BowtieMagic)

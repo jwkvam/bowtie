@@ -44,9 +44,7 @@ class Button(_Controller):
 
         """
         super().__init__(caption=caption)
-        self._comp = self._tag.format(
-            label=label
-        )
+        self._comp = self._tag.format(label=label)
 
     def on_click(self) -> None:
         """Emit an event when the button is clicked.
@@ -82,9 +80,7 @@ class Link(_Controller):
 
         """
         super().__init__(caption=caption)
-        self._comp = self._tag.format(
-            link=link
-        )
+        self._comp = self._tag.format(link=link)
 
 
 class Upload(_Controller):
@@ -110,9 +106,7 @@ class Upload(_Controller):
 
         """
         super().__init__(caption=caption)
-        self._comp = self._tag.format(
-            multiple=jsbool(multiple)
-        )
+        self._comp = self._tag.format(multiple=jsbool(multiple))
 
     def on_upload(self):
         """Emit an event when the selection changes.
@@ -133,13 +127,16 @@ class Dropdown(_Controller):
     _TEMPLATE = 'dropdown.jsx'
     _COMPONENT = 'Dropdown'
     _PACKAGE = 'react-select@1.2.1'
-    _ATTRS = ('initOptions={{{options}}} '
-              'multi={{{multi}}} '
-              'default={{{default}}}')
+    _ATTRS = 'initOptions={{{options}}} ' 'multi={{{multi}}} ' 'default={{{default}}}'
 
-    def __init__(self, labels: Optional[List[str]] = None,
-                 values: Optional[List[Union[str, int]]] = None, multi: bool = False,
-                 default: Optional[Union[str, int]] = None, caption: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        labels: Optional[List[str]] = None,
+        values: Optional[List[Union[str, int]]] = None,
+        multi: bool = False,
+        default: Optional[Union[str, int]] = None,
+        caption: Optional[str] = None,
+    ) -> None:
         """Create a drop down.
 
         Parameters
@@ -159,15 +156,14 @@ class Dropdown(_Controller):
         super().__init__(caption=caption)
 
         if values is not None and labels is not None:
-            options = [{'value': value, 'label': str(label)}
-                       for value, label in zip(values, labels)]
+            options = [
+                {'value': value, 'label': str(label)} for value, label in zip(values, labels)
+            ]
         else:
             options = []
 
         self._comp = self._tag.format(
-            options=jdumps(options),
-            multi=jsbool(multi),
-            default=jdumps(default),
+            options=jdumps(options), multi=jsbool(multi), default=jdumps(default)
         )
 
     def on_change(self) -> Callable:
@@ -237,9 +233,7 @@ class Switch(_Controller):
 
         """
         super().__init__(caption=caption)
-        self._comp = self._tag.format(
-            defaultChecked=jsbool(initial)
-        )
+        self._comp = self._tag.format(defaultChecked=jsbool(initial))
 
     def on_switch(self):
         """Emit an event when the switch is toggled.
@@ -274,17 +268,20 @@ class _DatePickers(_Controller):
     _TEMPLATE = 'date.jsx'
     _COMPONENT = 'PickDates'
     _PACKAGE = None
-    _ATTRS = ('date={{{date_type}}} '
-              'month={{{month_type}}} '
-              'range={{{range_type}}}')
+    _ATTRS = 'date={{{date_type}}} ' 'month={{{month_type}}} ' 'range={{{range_type}}}'
 
-    def __init__(self, date_type: bool = False, month_type: bool = False, range_type: bool = False,
-                 caption: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        date_type: bool = False,
+        month_type: bool = False,
+        range_type: bool = False,
+        caption: Optional[str] = None,
+    ) -> None:
         super().__init__(caption=caption)
         self._comp = self._tag.format(
             date_type=jsbool(date_type),
             month_type=jsbool(month_type),
-            range_type=jsbool(range_type)
+            range_type=jsbool(range_type),
         )
 
 
@@ -426,14 +423,23 @@ class Number(_Controller):
     _TEMPLATE = 'number.jsx'
     _COMPONENT = 'AntNumber'
     _PACKAGE = None
-    _ATTRS = ('start={{{start}}} '
-              'min={{{minimum}}} '
-              'max={{{maximum}}} '
-              'step={{{step}}} '
-              "size={{'{size}'}}")
+    _ATTRS = (
+        'start={{{start}}} '
+        'min={{{minimum}}} '
+        'max={{{maximum}}} '
+        'step={{{step}}} '
+        "size={{'{size}'}}"
+    )
 
-    def __init__(self, start: int = 0, minimum: float = -1e100, maximum: float = 1e100,
-                 step: int = 1, size: str = 'default', caption: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        start: int = 0,
+        minimum: float = -1e100,
+        maximum: float = 1e100,
+        step: int = 1,
+        size: str = 'default',
+        caption: Optional[str] = None,
+    ) -> None:
         """Create a number input.
 
         Parameters
@@ -456,11 +462,7 @@ class Number(_Controller):
         """
         super().__init__(caption=caption)
         self._comp = self._tag.format(
-            start=start,
-            minimum=minimum,
-            maximum=maximum,
-            step=step,
-            size=size
+            start=start, minimum=minimum, maximum=maximum, step=step, size=size
         )
 
     def on_change(self):
@@ -495,15 +497,23 @@ class Textbox(_Controller):
     _TEMPLATE = 'textbox.jsx'
     _COMPONENT = 'Textbox'
     _PACKAGE = None
-    _ATTRS = ("placeholder={{'{placeholder}'}} "
-              "size={{'{size}'}} "
-              "type={{'{area}'}} "
-              'autosize={{{autosize}}} '
-              'disabled={{{disabled}}}')
+    _ATTRS = (
+        "placeholder={{'{placeholder}'}} "
+        "size={{'{size}'}} "
+        "type={{'{area}'}} "
+        'autosize={{{autosize}}} '
+        'disabled={{{disabled}}}'
+    )
 
-    def __init__(self, placeholder: str = 'Enter text', size: str = 'default', area: bool = False,
-                 autosize: bool = False, disabled: bool = False,
-                 caption: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        placeholder: str = 'Enter text',
+        size: str = 'default',
+        area: bool = False,
+        autosize: bool = False,
+        disabled: bool = False,
+        caption: Optional[str] = None,
+    ) -> None:
         """Create a text box.
 
         Parameters
@@ -533,7 +543,7 @@ class Textbox(_Controller):
             autosize=jsbool(autosize),
             disabled=jsbool(disabled),
             placeholder=placeholder,
-            size=size
+            size=size,
         )
 
     # pylint: disable=no-self-use
@@ -593,17 +603,26 @@ class Slider(_Controller):
     _TEMPLATE = 'slider.jsx'
     _COMPONENT = 'AntSlider'
     _PACKAGE = None
-    _ATTRS = ('range={{{range}}} '
-              'min={{{minimum}}} '
-              'max={{{maximum}}} '
-              'step={{{step}}} '
-              'start={{{start}}} '
-              'marks={{{marks}}} '
-              'vertical={{{vertical}}}')
+    _ATTRS = (
+        'range={{{range}}} '
+        'min={{{minimum}}} '
+        'max={{{maximum}}} '
+        'step={{{step}}} '
+        'start={{{start}}} '
+        'marks={{{marks}}} '
+        'vertical={{{vertical}}}'
+    )
 
-    def __init__(self, start: Optional[Union[int, Tuple[int, int]]] = None, ranged: bool = False,
-                 minimum: int = 0, maximum: int = 100, step: int = 1,
-                 vertical: bool = False, caption: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        start: Optional[Union[int, Tuple[int, int]]] = None,
+        ranged: bool = False,
+        minimum: int = 0,
+        maximum: int = 100,
+        step: int = 1,
+        vertical: bool = False,
+        caption: Optional[str] = None,
+    ) -> None:
         """Create a slider.
 
         Parameters
@@ -647,7 +666,7 @@ class Slider(_Controller):
             start=start,
             step=step,
             marks={minimum: str(minimum), maximum: str(maximum)},
-            vertical=jsbool(vertical)
+            vertical=jsbool(vertical),
         )
 
     # pylint: disable=no-self-use
@@ -755,13 +774,21 @@ class Nouislider(_Controller):
     _TEMPLATE = 'nouislider.jsx'
     _COMPONENT = 'Nouislider'
     _PACKAGE = 'nouislider@11.0.3'
-    _ATTRS = ('range={{{{min: {min}, max: {max}}}}} '
-              'socket={{socket}} '
-              'start={{{start}}} '
-              'tooltips={{{tooltips}}}')
+    _ATTRS = (
+        'range={{{{min: {min}, max: {max}}}}} '
+        'socket={{socket}} '
+        'start={{{start}}} '
+        'tooltips={{{tooltips}}}'
+    )
 
-    def __init__(self, start: Union[int, Tuple[int, int]] = 0, minimum: int = 0,
-                 maximum: int = 100, tooltips: bool = True, caption: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        start: Union[int, Tuple[int, int]] = 0,
+        minimum: int = 0,
+        maximum: int = 100,
+        tooltips: bool = True,
+        caption: Optional[str] = None,
+    ) -> None:
         """Create a slider.
 
         Parameters
@@ -790,10 +817,7 @@ class Nouislider(_Controller):
         else:
             nstart = list(start)
         self._comp = self._tag.format(
-            min=minimum,
-            max=maximum,
-            start=nstart,
-            tooltips=jsbool(tooltips)
+            min=minimum, max=maximum, start=nstart, tooltips=jsbool(tooltips)
         )
 
     def on_update(self):

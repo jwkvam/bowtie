@@ -21,8 +21,12 @@ def create_components():
     controllers = []
     for compstr in dir(control):
         comp = getattr(control, compstr)
-        if (compstr[0] != '_' and isclass(comp) and issubclass(comp, control._Controller)
-                and compstr != 'Upload'):
+        if (
+            compstr[0] != '_'
+            and isclass(comp)
+            and issubclass(comp, control._Controller)
+            and compstr != 'Upload'
+        ):
             controllers.append(comp())
 
     for controller in controllers:

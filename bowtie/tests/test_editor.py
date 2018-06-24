@@ -15,15 +15,19 @@ from bowtie.tests.utils import reset_uuid
 reset_uuid()
 
 # pylint: disable=invalid-name
-mark = Markdown('''
+mark = Markdown(
+    '''
 # top
 ## middle
 
 [link]('hello.html')
-''')
-side = Markdown('''
+'''
+)
+side = Markdown(
+    '''
 # sideheader
-''')
+'''
+)
 text = Textbox(area=True)
 
 

@@ -1,7 +1,14 @@
 """Defines the App class."""
 
 from typing import (  # pylint: disable=unused-import
-    Any, Callable, List, Optional, Set, Tuple, Union, Dict
+    Any,
+    Callable,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    Union,
+    Dict,
 )
 import os
 import json
@@ -17,9 +24,15 @@ from jinja2 import Environment, FileSystemLoader
 
 from bowtie._component import Event, Component, COMPONENT_REGISTRY
 from bowtie.exceptions import (
-    GridIndexError, MissingRowOrColumn, NoSidebarError,
-    NotStatefulEvent, UsedCellsError, NoUnusedCellsError,
-    SizeError, WebpackError, YarnError
+    GridIndexError,
+    MissingRowOrColumn,
+    NoSidebarError,
+    NotStatefulEvent,
+    UsedCellsError,
+    NoUnusedCellsError,
+    SizeError,
+    WebpackError,
+    YarnError,
 )
 from bowtie.pager import Pager
 
@@ -44,8 +57,13 @@ class Span:
     """Define the location of a widget."""
 
     # pylint: disable=too-few-public-methods
-    def __init__(self, row_start: int, column_start: int, row_end: Optional[int] = None,
-                 column_end: Optional[int] = None) -> None:
+    def __init__(
+        self,
+        row_start: int,
+        column_start: int,
+        row_end: Optional[int] = None,
+        column_end: Optional[int] = None,
+    ) -> None:
         """Create a span for a widget.
 
         Indexing starts at 0. Both start and end are inclusive.
@@ -86,10 +104,7 @@ class Span:
     def __repr__(self) -> str:
         """Show the starting and ending points."""
         return '({}, {}) to ({}, {})'.format(
-            self.row_start,
-            self.column_start,
-            self.row_end,
-            self.column_end
+            self.row_start, self.column_start, self.row_end, self.column_end
         )
 
 
@@ -275,8 +290,9 @@ class View:
         cls._NEXT_UUID += 1
         return cls._NEXT_UUID
 
-    def __init__(self, rows: int = 1, columns: int = 1, sidebar: bool = True,
-                 background_color: str = 'White') -> None:
+    def __init__(
+        self, rows: int = 1, columns: int = 1, sidebar: bool = True, background_color: str = 'White'
+    ) -> None:
         """Create a new grid.
 
         Parameters
@@ -378,9 +394,14 @@ class View:
         """
         self._add(widget)
 
-    def _add(self, widget: Component, row_start: Optional[int] = None,
-             column_start: Optional[int] = None, row_end: Optional[int] = None,
-             column_end: Optional[int] = None) -> None:
+    def _add(
+        self,
+        widget: Component,
+        row_start: Optional[int] = None,
+        column_start: Optional[int] = None,
+        row_end: Optional[int] = None,
+        column_end: Optional[int] = None,
+    ) -> None:
         """Add a widget to the grid.
 
         Zero-based index and exclusive.
@@ -403,18 +424,23 @@ class View:
             raise ValueError('Widget must be a type of Component, found {}'.format(type(widget)))
 
         if row_start is not None and row_end is not None and row_start >= row_end:
-            raise GridIndexError('row_start: {} must be less than row_end: {}'
-                                 .format(row_start, row_end))
+            raise GridIndexError(
+                'row_start: {} must be less than row_end: {}'.format(row_start, row_end)
+            )
         if column_start is not None and column_end is not None and column_start >= column_end:
-            raise GridIndexError('column_start: {} must be less than column_end: {}'
-                                 .format(column_start, column_end))
+            raise GridIndexError(
+                'column_start: {} must be less than column_end: {}'.format(column_start, column_end)
+            )
 
         # pylint: disable=protected-access
         if widget._PACKAGE:
             self._packages.add(widget._PACKAGE)
         self._templates.add(widget._TEMPLATE)
-        self._imports.add(_Import(component=widget._COMPONENT,
-                                  module=widget._TEMPLATE[:widget._TEMPLATE.find('.')]))
+        self._imports.add(
+            _Import(
+                component=widget._COMPONENT, module=widget._TEMPLATE[: widget._TEMPLATE.find('.')]
+            )
+        )
 
         used_msg = 'Cell at [{}, {}] is already used.'
         if row_start is None or column_start is None:
@@ -452,13 +478,11 @@ class View:
             if column_end is None:
                 column_end = column_start + 1
 
-            for row, col in product(range(row_start, row_end),
-                                    range(column_start, column_end)):
+            for row, col in product(range(row_start, row_end), range(column_start, column_end)):
                 if self._used[row, col]:
                     raise UsedCellsError(used_msg.format(row, col))
 
-            for row, col in product(range(row_start, row_end),
-                                    range(column_start, column_end)):
+            for row, col in product(range(row_start, row_end), range(column_start, column_end)):
                 self._used[row, col] = True
             span = Span(row_start, column_start, row_end, column_end)
 
@@ -482,10 +506,14 @@ class View:
         if widget._PACKAGE:
             self._packages.add(widget._PACKAGE)
         self._templates.add(widget._TEMPLATE)
-        self._imports.add(_Import(component=widget._COMPONENT,
-                                  module=widget._TEMPLATE[:widget._TEMPLATE.find('.')]))
-        self._controllers.append(_Control(instantiate=widget._instantiate,
-                                          caption=getattr(widget, 'caption', None)))
+        self._imports.add(
+            _Import(
+                component=widget._COMPONENT, module=widget._TEMPLATE[: widget._TEMPLATE.find('.')]
+            )
+        )
+        self._controllers.append(
+            _Control(instantiate=widget._instantiate, caption=getattr(widget, 'caption', None))
+        )
 
     def _render(self, path: str, env: Environment) -> None:
         """TODO: Docstring for _render.
@@ -514,7 +542,7 @@ class View:
                     background_color=self.background_color,
                     components=self._imports,
                     controls=self._controllers,
-                    spans=self._spans
+                    spans=self._spans,
                 )
             )
 
@@ -525,12 +553,22 @@ Route = namedtuple('Route', ['view', 'path', 'exact'])
 class App:
     """Core class to layout, connect, build a Bowtie app."""
 
-    def __init__(self, rows: int = 1, columns: int = 1, sidebar: bool = True,
-                 title: str = 'Bowtie App', basic_auth: bool = False,
-                 username: str = 'username', password: str = 'password',
-                 theme: Optional[str] = None, background_color: str = 'White',
-                 host: str = '0.0.0.0', port: int = 9991, socketio: str = '',
-                 debug: bool = False) -> None:
+    def __init__(
+        self,
+        rows: int = 1,
+        columns: int = 1,
+        sidebar: bool = True,
+        title: str = 'Bowtie App',
+        basic_auth: bool = False,
+        username: str = 'username',
+        password: str = 'password',
+        theme: Optional[str] = None,
+        background_color: str = 'White',
+        host: str = '0.0.0.0',
+        port: int = 9991,
+        socketio: str = '',
+        debug: bool = False,
+    ) -> None:
         """Create a Bowtie App.
 
         Parameters
@@ -577,14 +615,15 @@ class App:
         self._username = username
         self._uploads = {}  # type: Dict[int, str]
         self.theme = theme
-        self._root = View(rows=rows, columns=columns, sidebar=sidebar,
-                          background_color=background_color)
+        self._root = View(
+            rows=rows, columns=columns, sidebar=sidebar, background_color=background_color
+        )
         self._routes = [Route(view=self._root, path='/', exact=True)]
         self._package_dir = os.path.dirname(__file__)
         self._jinjaenv = Environment(
             loader=FileSystemLoader(os.path.join(self._package_dir, 'templates')),
             trim_blocks=True,
-            lstrip_blocks=True
+            lstrip_blocks=True,
         )
 
     def __getattr__(self, name: str) -> Union[Gap, List[Size]]:
@@ -706,8 +745,9 @@ class App:
         """
         all_events = [event, *events]
         if len(all_events) != len(set(all_events)):
-            raise ValueError('Subscribed to the same event multiple times. '
-                             'All events must be unique.')
+            raise ValueError(
+                'Subscribed to the same event multiple times. ' 'All events must be unique.'
+            )
 
         if len(all_events) > 1:
             # check if we are using any non stateful events
@@ -719,12 +759,16 @@ class App:
         if event.name == 'upload':
             if event.uuid in self._uploads:
                 warnings.warn(
-                    ('Overwriting function "{func1}" with function '
-                     '"{func2}" for upload object "{obj}".').format(
-                         func1=self._uploads[event.uuid],
-                         func2=func.__name__,
-                         obj=COMPONENT_REGISTRY[event.uuid]
-                     ), Warning)
+                    (
+                        'Overwriting function "{func1}" with function '
+                        '"{func2}" for upload object "{obj}".'
+                    ).format(
+                        func1=self._uploads[event.uuid],
+                        func2=func.__name__,
+                        obj=COMPONENT_REGISTRY[event.uuid],
+                    ),
+                    Warning,
+                )
             self._uploads[event.uuid] = func.__name__
 
         for evt in all_events:
@@ -760,10 +804,12 @@ class App:
         ...     pass
 
         """
+
         def decorator(func):
             """Subscribe function to events."""
             self.subscribe(func, event, *events)
             return func
+
         return decorator
 
     def load(self, func):
@@ -804,9 +850,7 @@ class App:
 
         webpack_path = os.path.join(_DIRECTORY, webpack.name[:-3])  # type: ignore
         with open(webpack_path, 'w') as f:
-            f.write(
-                webpack.render(color=self.theme)
-            )
+            f.write(webpack.render(color=self.theme))
 
         server_path = os.path.join(src, server.name[:-3])  # type: ignore
         with open(server_path, 'w') as f:
@@ -826,7 +870,7 @@ class App:
                     pages=self._pages,
                     host="'{}'".format(self._host),
                     port=self._port,
-                    debug=self._debug
+                    debug=self._debug,
                 )
             )
 
@@ -849,11 +893,7 @@ class App:
             packages |= route.view._packages  # pylint: disable=protected-access
 
         with open(os.path.join(templates, indexhtml.name[:-3]), 'w') as f:  # type: ignore
-            f.write(
-                indexhtml.render(
-                    title=self._title,
-                )
-            )
+            f.write(indexhtml.render(title=self._title))
 
         with open(os.path.join(app, indexjsx.name[:-3]), 'w') as f:  # type: ignore
             f.write(
@@ -861,7 +901,7 @@ class App:
                     maxviewid=View._NEXT_UUID,  # pylint: disable=protected-access
                     socketio=self._socketio,
                     pages=self._pages,
-                    routes=self._routes
+                    routes=self._routes,
                 )
             )
         return packages

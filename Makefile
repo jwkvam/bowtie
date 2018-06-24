@@ -37,3 +37,6 @@ monkeytype:
 
 outdated:
 	cd bowtie/src && yarn --ignore-engines install && yarn outdated
+
+black:
+	black -l 100 -S bowtie --exclude node_modules
