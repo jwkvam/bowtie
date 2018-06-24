@@ -22,6 +22,7 @@ before_install:
   - docker pull lukasmartinelli/hadolint
   - nvm install node
   - curl -o- -L https://yarnpkg.com/install.sh | bash
+  - export PATH="$HOME/.yarn/bin:$PATH"
   # - which xvfb
   # - which libenchant1c2a
   # - apt-get update -qq
