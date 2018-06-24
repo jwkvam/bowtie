@@ -1,4 +1,5 @@
 dist: trusty
+sudo: false
 language: python
 cache: 
   pip: true
@@ -57,7 +58,7 @@ install:
   - wget https://chromedriver.storage.googleapis.com/2.40/chromedriver_linux64.zip
   - unzip chromedriver_linux64.zip
   - chmod +x chromedriver
-  - mv -f chromedriver /usr/local/bin
+  - mv -f chromedriver $HOME/.yarn/bin
   - wget https://github.com/errata-ai/vale/releases/download/v0.11.2/vale_0.11.2_Linux_64-bit.tar.gz
   - tar xvf vale_0.11.2_Linux_64-bit.tar.gz
 
