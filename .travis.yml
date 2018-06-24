@@ -29,12 +29,10 @@ before_install:
   # - apt-get install -y libenchant1c2a 
 
 install:
-  - google-chrome --version
   - google-chrome-stable --version
   - node --version
   - which yarn
   - yarn --version
-  - /usr/bin/yarn --version
   - yarn global add eslint babel-eslint eslint-plugin-react
   - export PATH="$HOME/miniconda/bin:$PATH"
   - if ! hash conda 2>/dev/null; then
