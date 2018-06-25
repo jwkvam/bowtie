@@ -1,6 +1,6 @@
 {
     "dependencies": {
-        "antd": "^3.6.3",
+        "antd": "^3.6.4",
         "babel-core": "^6.26.2",
         "babel-loader": "^7.1.4",
         "babel-plugin-import": "^1.8.0",
@@ -14,7 +14,7 @@
         "core-js": "^2.5.7",
         "css-loader": "^0.28.11",
         "extract-text-webpack-plugin": "^4.0.0-beta.0",
-        "hard-source-webpack-plugin": "^0.8.1",
+        "hard-source-webpack-plugin": "^0.9.0",
         "less": "^3.0.4",
         "less-loader": "^4.1.0",
         "lodash.clonedeep": "^4.5.0",
@@ -30,8 +30,8 @@
         "sass-loader": "^7.0.2",
         "socket.io-client": "^2.1.1",
         "style-loader": "^0.21.0",
-        "webpack": "^4.12.0",
-        "webpack-command": "^0.2.1",
+        "webpack": "^4.12.1",
+        "webpack-command": "^0.3.0",
         "webpack-merge": "^4.1.3"
     }
 }
