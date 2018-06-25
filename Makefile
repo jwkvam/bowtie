@@ -3,7 +3,7 @@
 all: test
 
 test:
-	py.test --cov=./ --mypy --codestyle --pylint --pylint-rcfile=pylintrc --pylint-error-types=RCWEF
+	py.test --cov=./ --mypy --codestyle --docstyle --pylint --pylint-rcfile=pylintrc --pylint-error-types=RCWEF
 
 unit:
 	py.test --cov=./
@@ -18,7 +18,7 @@ eslint:
 	eslint bowtie/src/*.js{,x}
 
 checkdocs:
-	pydocstyle --count --match-dir='(?!examples|build|doc|.*templates)[^\.].*'
+	pydocstyle --count --match-dir='(?!examples|build|node_modules|doc|.*templates)[^\.].*'
 
 coverage:
 	py.test --cov=./ --cov-report html

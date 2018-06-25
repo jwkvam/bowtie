@@ -18,6 +18,7 @@ pylint
 pytest
 pytest-codestyle
 pytest-cov
+pytest-docstyle
 pytest-mypy
 pytest-pylint
 requests

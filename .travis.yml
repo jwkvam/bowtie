@@ -57,7 +57,6 @@ script:
   - make eslint
   - cd doc && make spelling && cd ..
   - ./vale --glob='*.rst' doc
-  - make checkdocs
   - make test
 
 after_success:
