@@ -12,6 +12,13 @@ import {{ component.component }} from './{{ component.module }}';
 
 export default class View{{ uuid }} extends React.Component {
 
+    constructor(props) {
+        super(props);
+        this.selection = null;
+        this.click = null;
+        this.hover = null;
+        this.layout = null;
+    }
 
     render() {
         var socket = this.props.socket;
@@ -25,37 +32,37 @@ export default class View{{ uuid }} extends React.Component {
                     minHeight: '100vh', maxHeight: '100%',
                     minWidth: '100vw', maxWidth: '100%'{{ '}}' }}>
 
-                {% if sidebar %}
-                <div style={{ '{{' }}padding: '7px', backgroundColor: '{{background_color}}',
-                        gridColumn: '1 / 2',
-                        gridRow: '1 / -1'
-                        {{ '}}' }}>
+                {this.state.sidebar == true &&
+                    <div style={{ '{{' }}padding: '7px', backgroundColor: '{{background_color}}',
+                            gridColumn: '1 / 2',
+                            gridRow: '1 / -1'
+                            {{ '}}' }}>
 
-                    {% for control in controls %}
-                        {% if control.caption is not none %}
-                            <div style={{ '{{' }}paddingBottom: '3px'{{ '}}' }}>
-                            {{ control.caption }}
+                        {% for control in controls %}
+                            {% if control.caption is not none %}
+                                <div style={{ '{{' }}paddingBottom: '3px'{{ '}}' }}>
+                                {{ control.caption }}
+                                </div>
+                            {% endif %}
+
+                            <div style={{ '{{' }}paddingBottom: '7px'{{ '}}' }}>
+                            {{ control.instantiate }}
                             </div>
-                        {% endif %}
+                        {% endfor %}
+                    </div>
+                }
 
-                        <div style={{ '{{' }}paddingBottom: '7px'{{ '}}' }}>
-                        {{ control.instantiate }}
-                        </div>
-                    {% endfor %}
-                </div>
-                {% endif %}
-
-                {% for span, widgets in spans.items() %}
-                <div style={{ '{{' }}
-                        gridColumn: '{{ span.column_start + sidebar }} / {{ span.column_end + sidebar }}',
-                        gridRow: '{{ span.row_start }} / {{ span.row_end }}',
-                        position: 'relative'
-                        {{ '}}' }}>
-                    {% for widget in widgets %}
-                    {{ widget._instantiate }}
-                    {% endfor %}
-                </div>
-                {% endfor %}
+                for span, widgets in spans.items() {
+                    <div style={{ '{{' }}
+                            gridColumn: '{{ span.column_start + sidebar }} / {{ span.column_end + sidebar }}',
+                            gridRow: '{{ span.row_start }} / {{ span.row_end }}',
+                            position: 'relative'
+                            {{ '}}' }}>
+                        {% for widget in widgets %}
+                        {{ widget._instantiate }}
+                        {% endfor %}
+                    </div>
+                }
             </div>
         );
     }
@@ -68,6 +75,7 @@ View{{ uuid }}.propTypes = {
     rows: PropTypes.string.isRequired,
     column_gap: PropTypes.string.isRequired,
     row_gap: PropTypes.string.isRequired,
+    sidebar: PropTypes.bool.isRequired,
 }
 
 // vim: set ft=javascript.jsx:
