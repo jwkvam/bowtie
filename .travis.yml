@@ -12,6 +12,7 @@ addons:
   apt:
     packages:
       - libenchant-dev
+      - libnss3
 
 env:
   - PYTHON_VERSION=3.5
