@@ -1,5 +1,6 @@
 dist: trusty
-language: python
+# https://github.com/travis-ci/travis-ci/issues/4895
+language: bash
 cache: 
   pip: true
   yarn: true
