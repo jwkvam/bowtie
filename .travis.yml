@@ -41,10 +41,10 @@ install:
   - conda update -q conda
     # Useful for debugging any issues with conda
   - conda info -a
-  - if ! source activate test-environment; then
-    conda create -q -n test-environment python=$PYTHON_VERSION;
-    source activate test-environment;
+  - if ! -d $HOME/miniconda/test-environment; then
+    conda create -q -n test-environment python=$PYTHON_VERSION
     fi
+  - source activate test-environment
   - pip install --upgrade pip
   - pip install -r test-requirements.txt --progress-bar=off
   - wget https://chromedriver.storage.googleapis.com/2.40/chromedriver_linux64.zip
