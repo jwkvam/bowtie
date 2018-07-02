@@ -1,6 +1,6 @@
 {
     "dependencies": {
-        "antd": "^3.6.4",
+        "antd": "^3.6.5",
         "babel-core": "^6.26.2",
         "babel-loader": "^7.1.4",
         "babel-plugin-import": "^1.8.0",
@@ -29,8 +29,8 @@
         "sass-loader": "^7.0.2",
         "socket.io-client": "^2.1.1",
         "style-loader": "^0.21.0",
-        "webpack": "^4.12.1",
-        "webpack-command": "^0.3.0",
+        "webpack": "^4.14.0",
+        "webpack-command": "^0.4.0",
         "webpack-merge": "^4.1.3"
     }
 }
