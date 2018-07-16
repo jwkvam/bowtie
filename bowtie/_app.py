@@ -591,11 +591,11 @@ class App:
         """Export attributes from root view."""
         if name == 'columns':
             return self._root.columns
-        elif name == 'rows':
+        if name == 'rows':
             return self._root.rows
-        elif name == 'column_gap':
+        if name == 'column_gap':
             return self._root.column_gap
-        elif name == 'row_gap':
+        if name == 'row_gap':
             return self._root.row_gap
         raise AttributeError(name)
 
