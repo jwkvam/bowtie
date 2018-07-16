@@ -597,8 +597,7 @@ class App:
             return self._root.column_gap
         elif name == 'row_gap':
             return self._root.row_gap
-        else:
-            raise AttributeError(name)
+        raise AttributeError(name)
 
     def __getitem__(self, key):
         """Get item from root view."""
@@ -904,13 +903,12 @@ def run(command: List[str], notebook: None = None) -> int:
     """Run command from terminal and notebook and view output from subprocess."""
     if notebook is None:
         return Popen(command, cwd=_DIRECTORY).wait()
-    else:
-        cmd = Popen(command, cwd=_DIRECTORY, stdout=PIPE, stderr=STDOUT)
-        while True:
-            line = cmd.stdout.readline()
-            if line == b'' and cmd.poll() is not None:
-                return cmd.poll()
-            print(line.decode('utf-8'), end='')
+    cmd = Popen(command, cwd=_DIRECTORY, stdout=PIPE, stderr=STDOUT)
+    while True:
+        line = cmd.stdout.readline()
+        if line == b'' and cmd.poll() is not None:
+            return cmd.poll()
+        print(line.decode('utf-8'), end='')
     raise Exception()
 
 
