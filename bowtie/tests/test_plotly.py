@@ -8,8 +8,6 @@ import time
 
 import pytest
 from plotly import graph_objs as go
-# from plotly.graph_objs import Scatter
-# from plotly.graph_objs import Layout as PlotLayout
 
 from bowtie import App
 from bowtie.control import Nouislider, Button
