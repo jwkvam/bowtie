@@ -1,4 +1,5 @@
 """Test markdown and text widgets."""
+# pylint: disable=redefined-outer-name,unused-argument,invalid-name
 
 import os
 from os import environ as env
@@ -14,7 +15,6 @@ from bowtie.tests.utils import reset_uuid
 
 reset_uuid()
 
-# pylint: disable=invalid-name
 mark = Markdown('''
 # top
 ## middle
@@ -53,7 +53,6 @@ def markdown(build_path, monkeypatch):
     server.kill()
 
 
-# pylint: disable=redefined-outer-name,unused-argument
 def test_markdown(markdown, chrome_driver):
     """Test markdown and text widgets."""
     chrome_driver.get('http://localhost:9991')

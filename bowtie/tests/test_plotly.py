@@ -1,5 +1,5 @@
-#!/usr/bin/env python
 """Plotly testing."""
+# pylint: disable=redefined-outer-name,unused-argument,invalid-name
 
 import os
 from os import environ as env
@@ -17,7 +17,6 @@ from bowtie.tests.utils import reset_uuid
 
 reset_uuid()
 
-# pylint: disable=invalid-name
 viz = Plotly()
 ctrl = Nouislider()
 ctrl2 = Button()
@@ -25,14 +24,12 @@ ctrl2 = Button()
 
 def callback(*args):
     """dummy function"""
-    # pylint: disable=unused-argument
     chart = go.Figure()
     chart.add_trace(go.Scatter(x=[1, 2, 3, 4], y=[4, 1, 3, 7]))
     chart.layout.title = 'hello world'
     viz.do_all(chart.to_dict())
 
 
-# pylint: disable=unused-argument
 @pytest.fixture
 def plotly(build_path, monkeypatch):
     """Create plotly app."""
@@ -55,7 +52,6 @@ def plotly(build_path, monkeypatch):
     server.kill()
 
 
-# pylint: disable=redefined-outer-name,unused-argument
 def test_plotly(plotly, chrome_driver):
     """Test plotly component."""
     chrome_driver.get('http://localhost:9991')
