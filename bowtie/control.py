@@ -1,7 +1,7 @@
 """Control components."""
 
 from typing import Callable, Optional, List, Union, Tuple
-from collections import Iterable
+from collections.abc import Iterable
 
 from bowtie._component import Component, jdumps, jsbool
 

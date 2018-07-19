@@ -150,8 +150,7 @@ class BowtieMagic(Magics):
                 line = cmd.stdout.readline()
                 if line == b'' and cmd.poll() is not None:
                     return cmd.poll()
-                else:
-                    print(line.decode('utf-8'), end='')
+                print(line.decode('utf-8'), end='')
             raise Exception()
 
         thread = Thread(target=flush_stdout, args=(self.server,))
