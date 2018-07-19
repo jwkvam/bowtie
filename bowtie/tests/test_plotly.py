@@ -7,8 +7,9 @@ import subprocess
 import time
 
 import pytest
-from plotly.graph_objs import Scatter
-from plotly.graph_objs import Layout as PlotLayout
+from plotly import graph_objs as go
+# from plotly.graph_objs import Scatter
+# from plotly.graph_objs import Layout as PlotLayout
 
 from bowtie import App
 from bowtie.control import Nouislider, Button
@@ -27,15 +28,10 @@ ctrl2 = Button()
 def callback(*args):
     """dummy function"""
     # pylint: disable=unused-argument
-    chart = {
-        "data": [
-            Scatter(x=[1, 2, 3, 4], y=[4, 1, 3, 7])
-        ],
-        "app": PlotLayout(
-            title="hello world"
-        )
-    }
-    viz.do_all(chart)
+    chart = go.Figure()
+    chart.add_trace(go.Scatter(x=[1, 2, 3, 4], y=[4, 1, 3, 7]))
+    chart.layout.title = 'hello world'
+    viz.do_all(chart.to_dict())
 
 
 # pylint: disable=unused-argument
