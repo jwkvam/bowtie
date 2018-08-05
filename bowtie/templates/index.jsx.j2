@@ -24,6 +24,8 @@ class Dashboard extends React.Component {
         socket.emit('INITIALIZE');
     }
 
+    // dict of components to 
+
     saveValue = data => {
         var arr = new Uint8Array(data['key']);
         var key = msgpack.decode(arr);
@@ -89,6 +91,7 @@ class Dashboard extends React.Component {
                                     <View{{ route.view._uuid }}
                                         uuid={'{{route.view._uuid}}'}
                                         socket={socket}
+                                        components={components}
                                         columns={'{{ route.view._columns_sidebar|join(' ') }}'}
                                         rows={'{{ route.view.rows|join(' ') }}'}
                                         column_gap={'{{ route.view.column_gap }}'}
@@ -104,5 +107,3 @@ class Dashboard extends React.Component {
 }
 
 ReactDOM.render(<Dashboard />, document.getElementById('app'));
-
-// vim: set ft=javascript.jsx:

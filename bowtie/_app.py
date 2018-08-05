@@ -1,7 +1,7 @@
 """Defines the App class."""
 
 from typing import (  # pylint: disable=unused-import
-    Any, Callable, List, Optional, Set, Tuple, Union, Dict
+    Any, Callable, Generator, List, Optional, Set, Tuple, Union, Dict
 )
 import os
 import json
@@ -569,7 +569,7 @@ class App:
         self._basic_auth = basic_auth
         self._debug = debug
         self._host = host
-        self._init = None
+        self._init = None  # type: Optional[str]
         self._password = password
         self._port = port
         self._socketio = socketio
@@ -634,7 +634,7 @@ class App:
         """
         self._root.add_sidebar(widget)
 
-    def add_route(self, view, path, exact=True):
+    def add_route(self, view: View, path: str, exact: bool = True) -> None:
         """Add a view to the app.
 
         Parameters
@@ -768,7 +768,7 @@ class App:
             return func
         return decorator
 
-    def load(self, func):
+    def load(self, func: Callable) -> None:
         """Call a function on page load.
 
         Parameters
@@ -779,7 +779,7 @@ class App:
         """
         self._init = func.__name__
 
-    def schedule(self, seconds, func):
+    def schedule(self, seconds: float, func: Callable) -> None:
         """Call a function periodically.
 
         Parameters
@@ -792,7 +792,7 @@ class App:
         """
         self._schedules.append(_Schedule(seconds, func.__name__))
 
-    def _sourcefile(self):  # pylint: disable=no-self-use
+    def _sourcefile(self) -> str:  # pylint: disable=no-self-use
         # [-1] grabs the top of the stack
         return os.path.basename(inspect.stack()[-1].filename)[:-3]
 
@@ -915,11 +915,11 @@ def run(command: List[str], notebook: None = None) -> int:
     raise Exception()
 
 
-def installed_packages():
+def installed_packages() -> Generator[str, None, None]:
     """Extract installed packages as list from `package.json`."""
     with open(os.path.join(_DIRECTORY, 'package.json'), 'r') as f:
         packagejson = json.load(f)
-    return packagejson['dependencies'].keys()
+    yield from packagejson['dependencies'].keys()
 
 
 def create_directories() -> Tuple[str, str, str]:
