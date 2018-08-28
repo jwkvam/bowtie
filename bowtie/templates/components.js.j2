@@ -1,0 +1,12 @@
+import AntProgress from './progress';
+{% for import in imports %}
+import {{ import.component }} from './{{ import.module }}';
+{% endfor %}
+
+var components = {
+{% for component in components %}
+    {{ component._uuid }}: {{ component._instantiate }},
+{% endfor %}
+};
+
+module.exports = components;

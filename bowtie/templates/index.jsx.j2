@@ -91,7 +91,8 @@ class Dashboard extends React.Component {
                                     <View{{ route.view._uuid }}
                                         uuid={'{{route.view._uuid}}'}
                                         socket={socket}
-                                        components={components}
+                                        // TODO trigger state change in child event through prop
+                                        // components={components}
                                         columns={'{{ route.view._columns_sidebar|join(' ') }}'}
                                         rows={'{{ route.view.rows|join(' ') }}'}
                                         column_gap={'{{ route.view.column_gap }}'}

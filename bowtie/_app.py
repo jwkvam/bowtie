@@ -11,6 +11,7 @@ import shutil
 import stat
 from collections import namedtuple, defaultdict, OrderedDict
 from subprocess import Popen, PIPE, STDOUT
+from pathlib import Path
 import warnings
 
 from jinja2 import Environment, FileSystemLoader
@@ -28,7 +29,7 @@ _Import = namedtuple('_Import', ['module', 'component'])
 _Control = namedtuple('_Control', ['instantiate', 'caption'])
 _Schedule = namedtuple('_Schedule', ['seconds', 'function'])
 
-_DIRECTORY = 'build'
+_DIRECTORY = Path('build')
 _WEBPACK = './node_modules/.bin/webpack'
 
 
@@ -43,7 +44,6 @@ def raise_not_number(x: int) -> None:
 class Span:
     """Define the location of a widget."""
 
-    # pylint: disable=too-few-public-methods
     def __init__(self, row_start: int, column_start: int, row_end: Optional[int] = None,
                  column_end: Optional[int] = None) -> None:
         """Create a span for a widget.
@@ -302,8 +302,9 @@ class View:
         self._packages = set()  # type: Set[str]
         self._templates = set()  # type: Set[str]
         self._imports = set()  # type: Set[_Import]
+        self._widgets = set()  # type: Set[Component]
         self._controllers = []  # type: List[_Control]
-        self._spans = defaultdict(Widgets)  # type: Dict[Span, List[Component]]
+        self._spans = defaultdict(Widgets)  # type: Dict[Span, List[int]]
 
     @property
     def _name(self) -> str:
@@ -409,13 +410,6 @@ class View:
             raise GridIndexError('column_start: {} must be less than column_end: {}'
                                  .format(column_start, column_end))
 
-        # pylint: disable=protected-access
-        if widget._PACKAGE:
-            self._packages.add(widget._PACKAGE)
-        self._templates.add(widget._TEMPLATE)
-        self._imports.add(_Import(component=widget._COMPONENT,
-                                  module=widget._TEMPLATE[:widget._TEMPLATE.find('.')]))
-
         used_msg = 'Cell at [{}, {}] is already used.'
         if row_start is None or column_start is None:
             if row_start is not None:
@@ -462,7 +456,8 @@ class View:
                 self._used[row, col] = True
             span = Span(row_start, column_start, row_end, column_end)
 
-        self._spans[span].append(widget)
+        self._track_widget(widget)
+        self._spans[span].append(widget._uuid)  # pylint: disable=protected-access
 
     def add_sidebar(self, widget: Component) -> None:
         """Add a widget to the sidebar.
@@ -476,16 +471,19 @@ class View:
         if not self.sidebar:
             raise NoSidebarError('Set `sidebar=True` if you want to use the sidebar.')
 
-        assert isinstance(widget, Component)
+        if not isinstance(widget, Component):
+            raise ValueError('Widget must be a type of Component, found {}'.format(type(widget)))
+        self._track_widget(widget)
+        self._controllers.append(widget._uuid)  # pylint: disable=protected-access
 
+    def _track_widget(self, widget: Component) -> None:
         # pylint: disable=protected-access
         if widget._PACKAGE:
             self._packages.add(widget._PACKAGE)
         self._templates.add(widget._TEMPLATE)
         self._imports.add(_Import(component=widget._COMPONENT,
                                   module=widget._TEMPLATE[:widget._TEMPLATE.find('.')]))
-        self._controllers.append(_Control(instantiate=widget._instantiate,
-                                          caption=getattr(widget, 'caption', None)))
+        self._widgets.add(widget)
 
     @property
     def _columns_sidebar(self):
@@ -515,7 +513,6 @@ class View:
                     uuid=self._uuid,
                     sidebar=self.sidebar,
                     background_color=self.background_color,
-                    components=self._imports,
                     controls=self._controllers,
                     spans=self._spans
                 )
@@ -583,9 +580,9 @@ class App:
         self._root = View(rows=rows, columns=columns, sidebar=sidebar,
                           background_color=background_color)
         self._routes = [Route(view=self._root, path='/', exact=True)]
-        self._package_dir = os.path.dirname(__file__)
+        self._package_dir = Path(os.path.dirname(__file__))
         self._jinjaenv = Environment(
-            loader=FileSystemLoader(os.path.join(self._package_dir, 'templates')),
+            loader=FileSystemLoader(str(self._package_dir / 'templates')),
             trim_blocks=True,
             lstrip_blocks=True
         )
@@ -800,18 +797,19 @@ class App:
         server = self._jinjaenv.get_template('server.py.j2')
         indexhtml = self._jinjaenv.get_template('index.html.j2')
         indexjsx = self._jinjaenv.get_template('index.jsx.j2')
+        componentsjs = self._jinjaenv.get_template('components.js.j2')
         webpack = self._jinjaenv.get_template('webpack.common.js.j2')
 
         src, app, templates = create_directories()
 
-        webpack_path = os.path.join(_DIRECTORY, webpack.name[:-3])  # type: ignore
-        with open(webpack_path, 'w') as f:
+        webpack_path = _DIRECTORY / webpack.name[:-3]
+        with webpack_path.open('w') as f:
             f.write(
                 webpack.render(color=self.theme)
             )
 
-        server_path = os.path.join(src, server.name[:-3])  # type: ignore
-        with open(server_path, 'w') as f:
+        server_path = src / server.name[:-3]  # type: ignore
+        with server_path.open('w') as f:
             f.write(
                 server.render(
                     socketio=self._socketio,
@@ -835,29 +833,77 @@ class App:
         perms = os.stat(server_path)
         os.chmod(server_path, perms.st_mode | stat.S_IEXEC)
 
-        template_src = os.path.join(self._package_dir, 'src', 'progress.jsx')
+        template_src = self._package_dir / 'src' / 'progress.jsx'
         shutil.copy(template_src, app)
-        template_src = os.path.join(self._package_dir, 'src', 'utils.js')
+        template_src = self._package_dir / 'src' / 'utils.js'
         shutil.copy(template_src, app)
         for route in self._routes:
             # pylint: disable=protected-access
             for template in route.view._templates:
-                template_src = os.path.join(self._package_dir, 'src', template)
+                template_src = self._package_dir / 'src' / template
                 shutil.copy(template_src, app)
 
+        # Layout Design
+        #
+        # Dictionaries that are keyed by the components
+        #
+        # To layout this will need to look through all components that have a key of the route
+        #
+        #
+        # 1. This way they can
+
+        # mapping component -> (route, span, order in list)
+        # comps = defaultdict(list)
+        # # mapping component -> (route, order in list)
+        # conts = {}
+
+        components = set()
+        imports = set()
         packages = set()  # type: Set[str]
         for route in self._routes:
             route.view._render(app, self._jinjaenv)  # pylint: disable=protected-access
             packages |= route.view._packages  # pylint: disable=protected-access
+            imports |= route.view._imports
+            components |= route.view._widgets
 
-        with open(os.path.join(templates, indexhtml.name[:-3]), 'w') as f:  # type: ignore
+            # for k, v in route.view._spans.items():
+            #     components |= set(v)
+            #
+            # for v in route.view._controllers:
+            #     components.add(v)
+            # for k, v in route.view._spans.items():
+            #     comps[].append(ruute.view.uuid, k)
+            #     # controller to list of views
+            #
+            # for i, c in enumerate(route.view._controllers):
+            #     # TODO how to preserve order?
+            #     conts[c].append((route.view.uuid, i))
+            #
+                # use cases
+                # 1. statically add items to controller in list
+                # 2. remove item from controller
+                # 3. add item back to controller
+                #
+                # issues:
+                # widget reordering
+                # order preserving operations
+
+        with (app / componentsjs.name[:-3]).open('w') as f:  # type: ignore
+            f.write(
+                componentsjs.render(
+                    imports=imports,
+                    components=components
+                )
+            )
+
+        with (templates / indexhtml.name[:-3]).open('w') as f:  # type: ignore
             f.write(
                 indexhtml.render(
                     title=self._title,
                 )
             )
 
-        with open(os.path.join(app, indexjsx.name[:-3]), 'w') as f:  # type: ignore
+        with (app / indexjsx.name[:-3]).open('w') as f:  # type: ignore
             f.write(
                 indexjsx.render(
                     maxviewid=View._NEXT_UUID,  # pylint: disable=protected-access
@@ -868,7 +914,7 @@ class App:
             )
         return packages
 
-    def _build(self, notebook: None = None) -> None:
+    def _build(self, notebook: Optional[str] = None) -> None:
         """Compile the Bowtie application."""
         packages = self._write_templates(notebook=notebook)
 
@@ -902,7 +948,7 @@ class App:
             raise WebpackError('Error building with webpack')
 
 
-def run(command: List[str], notebook: None = None) -> int:
+def run(command: List[str], notebook: Optional[str] = None) -> int:
     """Run command from terminal and notebook and view output from subprocess."""
     if notebook is None:
         return Popen(command, cwd=_DIRECTORY).wait()
@@ -917,16 +963,16 @@ def run(command: List[str], notebook: None = None) -> int:
 
 def installed_packages() -> Generator[str, None, None]:
     """Extract installed packages as list from `package.json`."""
-    with open(os.path.join(_DIRECTORY, 'package.json'), 'r') as f:
-        packagejson = json.load(f)
-    yield from packagejson['dependencies'].keys()
+    with (_DIRECTORY / 'package.json').open('r') as f:
+        packages = json.load(f)
+    yield from packages['dependencies'].keys()
 
 
-def create_directories() -> Tuple[str, str, str]:
+def create_directories() -> Tuple[Path, Path, Path]:
     """Create all the necessary subdirectories for the build."""
-    src = os.path.join(_DIRECTORY, 'src')
-    templates = os.path.join(src, 'templates')
-    app = os.path.join(src, 'app')
+    src = _DIRECTORY / 'src'
+    templates = src / 'templates'
+    app = src / 'app'
     os.makedirs(app, exist_ok=True)
     os.makedirs(templates, exist_ok=True)
     return src, app, templates
