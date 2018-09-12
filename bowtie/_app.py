@@ -812,7 +812,6 @@ class App:
         with server_path.open('w') as f:
             f.write(
                 server.render(
-                    socketio=self._socketio,
                     basic_auth=self._basic_auth,
                     username=self._username,
                     password=self._password,
@@ -892,7 +891,8 @@ class App:
             f.write(
                 componentsjs.render(
                     imports=imports,
-                    components=components
+                    socketio=self._socketio,
+                    components=components,
                 )
             )
 
@@ -909,7 +909,7 @@ class App:
                     maxviewid=View._NEXT_UUID,  # pylint: disable=protected-access
                     socketio=self._socketio,
                     pages=self._pages,
-                    routes=self._routes
+                    routes=self._routes,
                 )
             )
         return packages

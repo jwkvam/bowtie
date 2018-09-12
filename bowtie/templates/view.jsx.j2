@@ -4,8 +4,7 @@ import PropTypes from 'prop-types';
 import {render} from 'react-dom';
 import {message} from 'antd';
 
-import { components } from './components';
-
+import { components, socket } from './components';
 import { str2ints } from './utils';
 
 
@@ -77,7 +76,6 @@ export class View{{ uuid }} extends React.Component {
 
 View{{ uuid }}.propTypes = {
     uuid: PropTypes.string.isRequired,
-    socket: PropTypes.object.isRequired,
     spans: PropTypes.object.isRequired,
     controllers: PropTypes.arrayOf(PropTypes.number).isRequired,
     columns: PropTypes.string.isRequired,
