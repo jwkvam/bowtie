@@ -4,9 +4,12 @@ import PropTypes from 'prop-types';
 import {render} from 'react-dom';
 import {message} from 'antd';
 
-import components from './components';
+import { components } from './components';
 
-export default class View{{ uuid }} extends React.Component {
+import { str2ints } from './utils';
+
+
+export class View{{ uuid }} extends React.Component {
 
     constructor(props) {
         super(props);
@@ -22,6 +25,29 @@ export default class View{{ uuid }} extends React.Component {
 
     render() {
         var socket = this.props.socket;
+
+        var controls = []
+        var widgets = []
+
+        this.state.controllers.forEach(element => {
+            controls.push(components[element])
+        });
+
+        for (var key in spans) {
+            if (spans.hasOwnProperty(key)) {
+                rowcols = str2ints(key)
+                widgets.push(
+                    <div style={{ '{{' }}
+                            gridColumn: `${ rowcols[1] + this.props.sidebar } / ${ rowcols[3] + this.props.sidebar }`,
+                            gridRow: `${rowcols[0]} / ${rowcols[2]}`,
+                            position: 'relative'
+                            {{ '}}' }}>
+                        components[key]
+                    </div>
+                )
+            }
+        }
+
         return (
             <div style={{ '{{' }}display: 'grid',
                     gridTemplateColumns: this.state.columns,
@@ -38,32 +64,12 @@ export default class View{{ uuid }} extends React.Component {
                             gridRow: '1 / -1'
                             {{ '}}' }}>
 
-                        {% for control in controls %}
-                            {% if control.caption is not none %}
-                                <div style={{ '{{' }}paddingBottom: '3px'{{ '}}' }}>
-                                {{ control.caption }}
-                                </div>
-                            {% endif %}
-
-                            <div style={{ '{{' }}paddingBottom: '7px'{{ '}}' }}>
-                            {{ control.instantiate }}
-                            </div>
-                        {% endfor %}
+                        {controls}
                     </div>
                 }
+                
+                {widgets}
 
-                {% for span, widgets in spans.items() %}
-                    <div style={{ '{{' }}
-                            gridColumn: '{{ span.column_start + sidebar }} / {{ span.column_end + sidebar }}',
-                            gridRow: '{{ span.row_start }} / {{ span.row_end }}',
-                            position: 'relative'
-                            {{ '}}' }}>
-                        {% for widget in widgets %}
-                        {{ widget._instantiate }}
-                        {% endfor %}
-                    </div>
-                {% endfor %}
-                }
             </div>
         );
     }

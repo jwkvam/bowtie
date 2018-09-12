@@ -1,7 +1,6 @@
 import 'normalize.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import io from 'socket.io-client';
 import {message} from 'antd';
 import {
     BrowserRouter,
@@ -11,11 +10,11 @@ import {
 } from 'react-router-dom';
 
 {% for route in routes %}
-import View{{ route.view._uuid }} from './view{{ route.view._uuid }}';
+import { View{{ route.view._uuid }} } from './view{{ route.view._uuid }}';
 {% endfor %}
 
 var msgpack = require('msgpack-lite');
-var socket = io({path: '/{{ socketio }}socket.io'});
+import { socket } from './components.js';
 
 class Dashboard extends React.Component {
     constructor(props) {
