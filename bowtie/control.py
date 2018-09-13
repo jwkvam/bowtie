@@ -755,7 +755,7 @@ class Nouislider(_Controller):
 
     _TEMPLATE = 'nouislider.jsx'
     _COMPONENT = 'Nouislider'
-    _PACKAGE = 'nouislider@11.0.3'
+    _PACKAGE = 'nouislider@11.1.0'
     _ATTRS = ('range={{{{min: {min}, max: {max}}}}} '
               'socket={{socket}} '
               'start={{{start}}} '
