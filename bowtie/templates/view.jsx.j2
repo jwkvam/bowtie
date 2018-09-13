@@ -18,7 +18,8 @@ export class View{{ uuid }} extends React.Component {
             column_gap: this.props.column_gap,
             row_gap: this.props.row_gap,
             spans: this.props.spans,
-            conrollers: this.props.controllers,
+            controllers: this.props.controllers,
+            sidebar: this.props.sidebar,
         };
     }
 
@@ -32,16 +33,21 @@ export class View{{ uuid }} extends React.Component {
             controls.push(components[element])
         });
 
-        for (var key in spans) {
-            if (spans.hasOwnProperty(key)) {
-                rowcols = str2ints(key)
+        for (var key in this.state.spans) {
+            if (this.state.spans.hasOwnProperty(key)) {
+                var comps = this.state.spans[key].map((number) =>
+                    <div key={number.toString()}>
+                        {components[number]}
+                    </div>
+                );
+                var rowcols = str2ints(key)
                 widgets.push(
-                    <div style={{ '{{' }}
-                            gridColumn: `${ rowcols[1] + this.props.sidebar } / ${ rowcols[3] + this.props.sidebar }`,
+                    <div key={rowcols} style={{ '{{' }}
+                            gridColumn: `${ rowcols[1] + this.state.sidebar } / ${ rowcols[3] + this.state.sidebar }`,
                             gridRow: `${rowcols[0]} / ${rowcols[2]}`,
                             position: 'relative'
                             {{ '}}' }}>
-                        components[key]
+                        {comps}
                     </div>
                 )
             }
@@ -57,7 +63,7 @@ export class View{{ uuid }} extends React.Component {
                     minHeight: '100vh', maxHeight: '100%',
                     minWidth: '100vw', maxWidth: '100%'{{ '}}' }}>
 
-                {this.state.sidebar == true &&
+                {this.state.sidebar &&
                     <div style={{ '{{' }}padding: '7px', backgroundColor: '{{background_color}}',
                             gridColumn: '1 / 2',
                             gridRow: '1 / -1'

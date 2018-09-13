@@ -93,6 +93,13 @@ class Dashboard extends React.Component {
                                         rows={'{{ route.view.rows|join(' ') }}'}
                                         column_gap={'{{ route.view.column_gap }}'}
                                         row_gap={'{{ route.view.row_gap }}'}
+                                        spans={{ '{{' }}
+                                        {% for k, v in route.view._spans.items() %}
+                                           '{{k}}': {{v}},
+                                        {% endfor %}
+                                        {{ '}}'}}
+                                        controllers={ {{ route.view._controllers }} }
+                                        sidebar={ {{ route.view.sidebar|lower }} }
                                     />
                             }
                         />

@@ -85,7 +85,7 @@ class Span:
 
     def __repr__(self) -> str:
         """Show the starting and ending points."""
-        return '({}, {}) to ({}, {})'.format(
+        return '{},{},{},{}'.format(
             self.row_start,
             self.column_start,
             self.row_end,
