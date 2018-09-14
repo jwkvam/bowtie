@@ -303,7 +303,7 @@ class View:
         self._templates = set()  # type: Set[str]
         self._imports = set()  # type: Set[_Import]
         self._widgets = set()  # type: Set[Component]
-        self._controllers = []  # type: List[_Control]
+        self._controllers = []  # type: List[int]
         self._spans = defaultdict(Widgets)  # type: Dict[Span, List[int]]
 
     @property
@@ -802,7 +802,7 @@ class App:
 
         src, app, templates = create_directories()
 
-        webpack_path = _DIRECTORY / webpack.name[:-3]
+        webpack_path = _DIRECTORY / webpack.name[:-3]  # type: ignore
         with webpack_path.open('w') as f:
             f.write(
                 webpack.render(color=self.theme)
@@ -856,8 +856,8 @@ class App:
         # # mapping component -> (route, order in list)
         # conts = {}
 
-        components = set()
-        imports = set()
+        components = set()  # type: Set[Component]
+        imports = set()  # type: Set[_Import]
         packages = set()  # type: Set[str]
         for route in self._routes:
             route.view._render(app, self._jinjaenv)  # pylint: disable=protected-access

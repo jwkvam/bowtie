@@ -35,7 +35,10 @@ def get_notebook_name() -> str:
     """
     # this redefines a builtin >:( so putting it here to satisfy my linter
     from notebook.notebookapp import list_running_servers
-    kernel_id = re.search('kernel-(.*).json', ipykernel.connect.get_connection_file()).group(1)
+    kernel_id = re.search(  # type: ignore
+        'kernel-(.*).json',
+        ipykernel.connect.get_connection_file()
+    ).group(1)
     servers = list_running_servers()
     for server in servers:
         response = requests.get(urljoin(server['url'], 'api/sessions'),
