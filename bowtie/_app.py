@@ -851,10 +851,14 @@ class App:
         #
         # 1. This way they can
 
-        # mapping component -> (route, span, order in list)
-        # comps = defaultdict(list)
-        # # mapping component -> (route, order in list)
-        # conts = {}
+        # use cases
+        # 1. statically add items to controller in list
+        # 2. remove item from controller
+        # 3. add item back to controller
+        #
+        # issues:
+        # widget reordering
+        # order preserving operations
 
         components = set()  # type: Set[Component]
         imports = set()  # type: Set[_Import]
@@ -864,28 +868,6 @@ class App:
             packages |= route.view._packages  # pylint: disable=protected-access
             imports |= route.view._imports
             components |= route.view._widgets
-
-            # for k, v in route.view._spans.items():
-            #     components |= set(v)
-            #
-            # for v in route.view._controllers:
-            #     components.add(v)
-            # for k, v in route.view._spans.items():
-            #     comps[].append(ruute.view.uuid, k)
-            #     # controller to list of views
-            #
-            # for i, c in enumerate(route.view._controllers):
-            #     # TODO how to preserve order?
-            #     conts[c].append((route.view.uuid, i))
-            #
-                # use cases
-                # 1. statically add items to controller in list
-                # 2. remove item from controller
-                # 3. add item back to controller
-                #
-                # issues:
-                # widget reordering
-                # order preserving operations
 
         with (app / componentsjs.name[:-3]).open('w') as f:  # type: ignore
             f.write(
