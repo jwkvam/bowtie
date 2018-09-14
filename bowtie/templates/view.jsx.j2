@@ -24,25 +24,18 @@ export class View{{ uuid }} extends React.Component {
     }
 
     render() {
-        var socket = this.props.socket;
-
-        var controls = []
         var widgets = []
-
-        this.state.controllers.forEach(element => {
-            controls.push(components[element])
-        });
-
-        for (var key in this.state.spans) {
+        const controls = this.state.controllers.map(index =>
+            <div key={index.toString()}>{components[index]}</div>
+        );
+        for (const key in this.state.spans) {
             if (this.state.spans.hasOwnProperty(key)) {
-                var comps = this.state.spans[key].map((number) =>
-                    <div key={number.toString()}>
-                        {components[number]}
-                    </div>
+                const comps = this.state.spans[key].map((number) =>
+                    {components[number]}
                 );
-                var rowcols = str2ints(key)
+                const rowcols = str2ints(key)
                 widgets.push(
-                    <div key={rowcols} style={{ '{{' }}
+                    <div key={key} style={{ '{{' }}
                             gridColumn: `${ rowcols[1] + this.state.sidebar } / ${ rowcols[3] + this.state.sidebar }`,
                             gridRow: `${rowcols[0]} / ${rowcols[2]}`,
                             position: 'relative'
