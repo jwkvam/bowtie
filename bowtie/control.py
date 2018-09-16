@@ -11,6 +11,7 @@ class _Controller(Component):
 
     Used to test if a an object is a controller.
     """
+
     # pylint: disable=abstract-method
     @property
     def _instantiate(self) -> str:
