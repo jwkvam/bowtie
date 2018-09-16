@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Compat testing."""
 
 from bowtie._utils import func_name
