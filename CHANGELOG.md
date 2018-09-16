@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 0.10.0 / 2018-09-15
+==================
+
+### Added
+
+  * Mostly internal changes so that dynamic layout can be supported
+  * Dropped Python 3.5 compatibility
+  * Added Python 3.7 support (#233)
+  * Update random walk so it can be used with multiple users (#126)
+
 ## 0.9.1 / 2018-03-03
 
 ### Added
