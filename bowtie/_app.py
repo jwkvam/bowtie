@@ -9,7 +9,7 @@ from itertools import product
 import inspect
 import shutil
 import stat
-from collections import namedtuple, defaultdict, OrderedDict
+from collections import namedtuple, defaultdict, OrderedDict, abc
 from subprocess import Popen, PIPE, STDOUT
 from pathlib import Path
 import warnings
@@ -703,6 +703,10 @@ class App:
         >>> app.subscribe(callback, dd.on_change, slide.on_change)
 
         """
+        if not isinstance(func, abc.Callable):
+            raise TypeError(
+                'The first argument to subscribe must be callable, found {}'.format(type(func))
+            )
         all_events = [event, *events]
         if len(all_events) != len(set(all_events)):
             raise ValueError('Subscribed to the same event multiple times. '
