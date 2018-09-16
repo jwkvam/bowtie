@@ -133,7 +133,7 @@ We write the constructor who's main responsibility is creating the string to ins
 the component in Javascript.
 In Bowtie, this gets assigned to the ``_instantiate`` field::
 
-    def __init__(self, options, multi=False, caption=''):
+    def __init__(self, options, multi=False):
         super(Dropdown, self).__init__()
 
         self._instantiate = self._TAG.format(
@@ -141,7 +141,6 @@ In Bowtie, this gets assigned to the ``_instantiate`` field::
             multi='true' if multi else 'false',
             uuid="'{}'".format(self._uuid)
         )
-        self.caption = caption
 
 Lastly we have one *event* (named "change"),
 one *command* (named "options"),

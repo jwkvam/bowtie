@@ -26,7 +26,6 @@ from bowtie.pager import Pager
 
 
 _Import = namedtuple('_Import', ['module', 'component'])
-_Control = namedtuple('_Control', ['instantiate', 'caption'])
 _Schedule = namedtuple('_Schedule', ['seconds', 'function'])
 
 _DIRECTORY = Path('build')

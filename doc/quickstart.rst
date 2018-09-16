@@ -72,7 +72,7 @@ to make the generation of `Plotly <https://plot.ly/>`_ plots easier.
 Now we instantiate the components and configure them::
 
     sine_plot = Plotly()
-    freq_slider = Nouislider(caption='frequency', minimum=1, maximum=10, start=5)
+    freq_slider = Nouislider(minimum=1, maximum=10, start=5)
 
 Next we'll create a listener that generates a plot on slider changes::
 
