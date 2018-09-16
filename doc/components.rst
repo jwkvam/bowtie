@@ -42,7 +42,7 @@ SmartGrid
 Markdown
 ~~~~~~~~
 
-.. autoclass:: bowtie.html.Markdown
+.. autoclass:: bowtie.visual.Markdown
     :members:
     :undoc-members:
 
@@ -153,6 +153,6 @@ Header
 Link
 ~~~~
 
-.. autoclass:: bowtie.control.Link
+.. autoclass:: bowtie.html.Link
     :members:
     :undoc-members:
