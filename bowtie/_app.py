@@ -866,8 +866,8 @@ class App:
         for route in self._routes:
             route.view._render(app, self._jinjaenv)  # pylint: disable=protected-access
             packages |= route.view._packages  # pylint: disable=protected-access
-            imports |= route.view._imports
-            components |= route.view._widgets
+            imports |= route.view._imports  # pylint: disable=protected-access
+            components |= route.view._widgets  # pylint: disable=protected-access
 
         with (app / componentsjs.name[:-3]).open('w') as f:  # type: ignore
             f.write(
