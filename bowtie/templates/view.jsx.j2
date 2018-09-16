@@ -31,7 +31,7 @@ export class View{{ uuid }} extends React.Component {
         for (const key in this.state.spans) {
             if (this.state.spans.hasOwnProperty(key)) {
                 const comps = this.state.spans[key].map((number) =>
-                    {components[number]}
+                    components[number]
                 );
                 const rowcols = str2ints(key)
                 widgets.push(
