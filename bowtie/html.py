@@ -14,6 +14,7 @@ class _HTML(Component):
         return self._insert(tagwrap, self._comp)
 
 
+# pylint: disable=too-few-public-methods
 class Link(_HTML):
     """An internal link.
 
@@ -39,8 +40,6 @@ class Link(_HTML):
         )
 
 
-
-# pylint: disable=too-few-public-methods
 class Div(_HTML):
     """Div tag."""
 
