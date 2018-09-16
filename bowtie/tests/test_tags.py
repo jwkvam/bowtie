@@ -1,6 +1,6 @@
 """Test tag instantation for components."""
 
-from bowtie.html import Markdown
+from bowtie.visual import Markdown
 
 
 def test_markdown():
