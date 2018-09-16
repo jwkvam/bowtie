@@ -9,7 +9,7 @@ from itertools import product
 import inspect
 import shutil
 import stat
-from collections import namedtuple, defaultdict, OrderedDict, abc
+from collections import namedtuple, defaultdict, OrderedDict
 from subprocess import Popen, PIPE, STDOUT
 from pathlib import Path
 import warnings
@@ -703,7 +703,7 @@ class App:
         >>> app.subscribe(callback, dd.on_change, slide.on_change)
 
         """
-        if not isinstance(func, abc.Callable):
+        if not callable(func):
             raise TypeError(
                 'The first argument to subscribe must be callable, found {}'.format(type(func))
             )
