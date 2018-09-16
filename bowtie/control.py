@@ -268,8 +268,8 @@ class _DatePickers(_Controller):
               'month={{{month_type}}} '
               'range={{{range_type}}}')
 
-    def __init__(self, date_type: bool = False, month_type: bool = False, range_type: bool = False,
-                ) -> None:
+    def __init__(self, date_type: bool = False, month_type: bool = False,
+                 range_type: bool = False) -> None:
         super().__init__()
         self._comp = self._tag.format(
             date_type=jsbool(date_type),
@@ -469,8 +469,7 @@ class Textbox(_Controller):
               'disabled={{{disabled}}}')
 
     def __init__(self, placeholder: str = 'Enter text', size: str = 'default', area: bool = False,
-                 autosize: bool = False, disabled: bool = False,
-                ) -> None:
+                 autosize: bool = False, disabled: bool = False) -> None:
         """Create a text box.
 
         Parameters
