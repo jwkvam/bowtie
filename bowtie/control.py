@@ -11,11 +11,7 @@ class _Controller(Component):
 
     Used to test if a an object is a controller.
     """
-
     # pylint: disable=abstract-method
-    def __init__(self) -> None:
-        super().__init__()
-
     @property
     def _instantiate(self) -> str:
         tagwrap = '{component}' + self._tagbase
