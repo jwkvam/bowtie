@@ -55,31 +55,6 @@ class Button(_Controller):
         pass
 
 
-class Link(_Controller):
-    """An internal link.
-
-    This doesn't create a page reload.
-    """
-
-    _TEMPLATE = 'link.jsx'
-    _COMPONENT = 'ALink'
-    _PACKAGE = None
-    _ATTRS = "to={{'{link}'}}"
-
-    def __init__(self, link: str = '/') -> None:
-        """Create a button.
-
-        Parameters
-        ----------
-        link : str
-
-        """
-        super().__init__()
-        self._comp = self._tag.format(
-            link=link
-        )
-
-
 class Upload(_Controller):
     """Draggable file upload widget."""
 

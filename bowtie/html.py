@@ -1,8 +1,5 @@
 """Static HTML Components."""
 
-from flask import Markup
-from markdown import markdown
-
 from bowtie._component import Component
 
 
@@ -17,56 +14,33 @@ class _HTML(Component):
         return self._insert(tagwrap, self._comp)
 
 
-# pylint: disable=too-few-public-methods
-class Markdown(_HTML):
-    """Display Markdown."""
+class Link(_HTML):
+    """An internal link.
 
-    _TEMPLATE = 'markdown.jsx'
-    _COMPONENT = 'Markdown'
+    This doesn't create a page reload.
+    """
+
+    _TEMPLATE = 'link.jsx'
+    _COMPONENT = 'ALink'
     _PACKAGE = None
-    _ATTRS = "initial={{'{initial}'}}"
+    _ATTRS = "to={{'{link}'}}"
 
-    def __init__(self, initial: str = '') -> None:
-        """Create a Markdown widget.
+    def __init__(self, link: str = '/') -> None:
+        """Create a button.
 
         Parameters
         ----------
-        initial : str, optional
-            Default markdown for the widget.
+        link : str
 
         """
         super().__init__()
         self._comp = self._tag.format(
-            initial=Markup(markdown(initial).replace('\n', '\\n'))
+            link=link
         )
 
-    # pylint: disable=no-self-use
-    def do_text(self, text):
-        """Replace widget with this text.
-
-        Parameters
-        ----------
-        test : str
-            Markdown text as a string.
-
-        Returns
-        -------
-        None
-
-        """
-        return Markup(markdown(text))
-
-    def get(self, text):
-        """Get the current text.
-
-        Returns
-        -------
-        String of html.
-
-        """
-        return text
 
 
+# pylint: disable=too-few-public-methods
 class Div(_HTML):
     """Div tag."""
 
