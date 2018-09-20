@@ -80,6 +80,9 @@ def components(build_path, monkeypatch):
     # pylint: disable=protected-access
     app._build()
 
+    # run second time to make sure nothing weird happens with subsequent builds
+    app._build()
+
     env['PYTHONPATH'] = '{}:{}'.format(os.getcwd(), os.environ.get('PYTHONPATH', ''))
     server = subprocess.Popen(os.path.join(build_path, 'src/server.py'), env=env)
 
