@@ -1,7 +1,7 @@
 """Defines the App class."""
 
 from typing import (  # pylint: disable=unused-import
-    Any, Callable, Generator, List, Optional, Set, Tuple, Union, Dict
+    Any, Callable, Generator, List, Optional, Set, Tuple, Union, Dict, Sequence
 )
 import os
 import json
@@ -298,12 +298,12 @@ class View:
         self.columns = [Size() for _ in range(columns)]
         self.sidebar = sidebar
         self.background_color = background_color
-        self._packages = set()  # type: Set[str]
-        self._templates = set()  # type: Set[str]
-        self._imports = set()  # type: Set[_Import]
-        self._widgets = set()  # type: Set[Component]
-        self._controllers = []  # type: List[int]
-        self._spans = defaultdict(Widgets)  # type: Dict[Span, List[int]]
+        self._packages: Set[str] = set()
+        self._templates: Set[str] = set()
+        self._imports: Set[_Import] = set()
+        self._widgets: Set[Component] = set()
+        self._controllers: List[int] = []
+        self._spans: Dict[Span, List[int]] = defaultdict(Widgets)
 
     @property
     def _name(self) -> str:
@@ -378,8 +378,10 @@ class View:
         """
         self._add(widget)
 
-    def _add(self, widget: Component, row_start: Optional[int] = None,
-             column_start: Optional[int] = None, row_end: Optional[int] = None,
+    def _add(self, widget: Union[Component, Sequence[Component]],
+             row_start: Optional[int] = None,
+             column_start: Optional[int] = None,
+             row_end: Optional[int] = None,
              column_end: Optional[int] = None) -> None:
         """Add a widget to the grid.
 
@@ -565,16 +567,16 @@ class App:
         self._basic_auth = basic_auth
         self._debug = debug
         self._host = host
-        self._init = None  # type: Optional[str]
+        self._init: Optional[str] = None
         self._password = password
         self._port = port
         self._socketio = socketio
-        self._schedules = []  # type: List[_Schedule]
-        self._subscriptions = defaultdict(list)  # type: Dict[Event, List[Tuple[List[Event], str]]]
-        self._pages = {}  # type: Dict[Pager, str]
+        self._schedules: List[_Schedule] = []
+        self._subscriptions: Dict[Event, List[Tuple[List[Event], str]]] = defaultdict(list)
+        self._pages: Dict[Pager, str] = {}
         self._title = title
         self._username = username
-        self._uploads = {}  # type: Dict[int, str]
+        self._uploads: Dict[int, str] = {}
         self.theme = theme
         self._root = View(rows=rows, columns=columns, sidebar=sidebar,
                           background_color=background_color)

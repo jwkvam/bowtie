@@ -19,6 +19,7 @@ reset_uuid()
 
 viz = Plotly()
 ctrl = Nouislider()
+ctrl_range = Nouislider(start=(20, 200))
 ctrl2 = Button()
 
 
@@ -38,6 +39,7 @@ def plotly(build_path, monkeypatch):
     app = App()
     app.add(viz)
     app.add_sidebar(ctrl)
+    app.add_sidebar(ctrl_range)
     app.add_sidebar(ctrl2)
     app.subscribe(callback, ctrl.on_change)
     app.subscribe(callback, ctrl2.on_click)
