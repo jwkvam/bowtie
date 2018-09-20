@@ -19,6 +19,22 @@ def app():
     return App(rows=2, columns=2)
 
 
+def test_add_list(buttons):
+    app = App()
+    app[0, 0] = buttons[0]
+    app[0, 0] += buttons[1]
+
+
+def test_set_tuple(buttons):
+    app = App()
+    app[0, 0] = buttons[0], buttons[1]
+
+
+def test_set_list(buttons):
+    app = App()
+    app[0, 0] = [buttons[0], buttons[1]]
+
+
 def test_all_used(buttons):
     """Test all cells are used."""
 
