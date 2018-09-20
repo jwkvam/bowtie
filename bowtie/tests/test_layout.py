@@ -20,19 +20,45 @@ def app():
 
 
 def test_add_list(buttons):
+    """Append button to existing cell."""
     app = App()
     app[0, 0] = buttons[0]
     app[0, 0] += buttons[1]
 
 
 def test_set_tuple(buttons):
+    """Set tuple of components to cell."""
     app = App()
     app[0, 0] = buttons[0], buttons[1]
 
 
 def test_set_list(buttons):
+    """Set list of components to cell."""
     app = App()
     app[0, 0] = [buttons[0], buttons[1]]
+
+
+def test_append_no_init(buttons):
+    """Append button to cell without component."""
+    app = App()
+    with pytest.raises(Exception):
+        app[0, 0] += buttons[0]
+
+
+def test_append_to_partial(buttons):
+    """Append button to partial cell."""
+    app = App(columns=2)
+    app[0] = buttons[0]
+    with pytest.raises(Exception):
+        app[0, 0] += buttons[1]
+
+
+def test_append_to_partial_superset(buttons):
+    """Append button to partial cell."""
+    app = App(columns=2)
+    app[0, 0] = buttons[0]
+    with pytest.raises(Exception):
+        app[0] += buttons[1]
 
 
 def test_all_used(buttons):
