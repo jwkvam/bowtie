@@ -35,6 +35,6 @@ def chrome_driver():
         options.binary_location = '/usr/bin/google-chrome-stable'
     options.add_argument('headless')
     options.add_argument('window-size=1200x800')
-    driver = webdriver.Chrome(chrome_options=options)
+    driver = webdriver.Chrome(options=options)
     yield driver
     driver.quit()
