@@ -12,15 +12,15 @@ export default class PickDates extends React.Component {
         super(props);
         var local = sessionStorage.getItem(this.props.uuid);
         if (local === null) {
-            this.state = {value: null};
+            this.state = {value: null, datestring: null};
         } else {
             this.state = JSON.parse(local);
         }
     }
 
     handleChange = (moment, ds) => {
-        this.setState({value: moment});
-        storeState(this.props.uuid, this.state, {value: moment});
+        this.setState({value: moment, datestring: ds});
+        storeState(this.props.uuid, this.state, {value: moment, datestring: ds});
         this.props.socket.emit(this.props.uuid + '#change', msgpack.encode(ds));
     }
 
@@ -31,7 +31,7 @@ export default class PickDates extends React.Component {
     }
 
     getValue = (data, fn) => {
-        fn(msgpack.encode(this.state.value));
+        fn(msgpack.encode(this.state.datestring));
     }
 
     render () {
