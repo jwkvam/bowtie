@@ -4,6 +4,7 @@ import { DatePicker, LocaleProvider } from 'antd';
 import enUS from 'antd/lib/locale-provider/en_US';
 const { MonthPicker, RangePicker } = DatePicker;
 import { storeState } from './utils';
+import moment from 'moment';
 
 var msgpack = require('msgpack-lite');
 
@@ -14,13 +15,19 @@ export default class PickDates extends React.Component {
         if (local === null) {
             this.state = {value: null, datestring: null};
         } else {
-            this.state = JSON.parse(local);
+            local = JSON.parse(local);
+            if (Array.isArray(local.value)) {
+                local.value = local.value.map(x => moment(x));
+            } else {
+                local.value = moment(local.value);
+            }
+            this.state = local;
         }
     }
 
-    handleChange = (moment, ds) => {
-        this.setState({value: moment, datestring: ds});
-        storeState(this.props.uuid, this.state, {value: moment, datestring: ds});
+    handleChange = (mom, ds) => {
+        this.setState({value: mom, datestring: ds});
+        storeState(this.props.uuid, this.state, {value: mom, datestring: ds});
         this.props.socket.emit(this.props.uuid + '#change', msgpack.encode(ds));
     }
 
