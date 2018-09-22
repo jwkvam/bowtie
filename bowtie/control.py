@@ -1,6 +1,6 @@
 """Control components."""
 
-from typing import Callable, Optional, List, Union, Tuple, Sequence
+from typing import Callable, Optional, List, Union, Sequence
 
 from bowtie._component import Component, jdumps, jsbool
 
