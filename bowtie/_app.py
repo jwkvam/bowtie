@@ -429,18 +429,19 @@ class View:
                     'specify both row_start and column_start.'
                 )
             row, col = None, None
-            for (row, col), use in self._used.items():
-                if not use:
-                    break
-            else:
-                raise NoUnusedCellsError()
+            # TODO replace this logic
+            # for (row, col), use in self._used.items():
+            #     if not use:
+            #         break
+            # else:
+            #     raise NoUnusedCellsError()
             span = Span(row, col)
-            self._used[row, col] = True
+            # self._used[row, col] = True
         elif row_end is None and column_end is None:
-            if self._used[row_start, column_start]:
-                raise UsedCellsError(used_msg.format(row_start, column_start))
+            # if self._used[row_start, column_start]:
+            #     raise UsedCellsError(used_msg.format(row_start, column_start))
             span = Span(row_start, column_start)
-            self._used[row_start, column_start] = True
+            # self._used[row_start, column_start] = True
         else:
             if row_end is None:
                 row_end = row_start + 1
