@@ -1,7 +1,6 @@
 """Control components."""
 
-from typing import Callable, Optional, List, Union, Tuple
-from collections.abc import Iterable
+from typing import Callable, Optional, List, Union, Sequence
 
 from bowtie._component import Component, jdumps, jsbool
 
@@ -601,7 +600,7 @@ class Slider(_Controller):
               'marks={{{marks}}} '
               'vertical={{{vertical}}}')
 
-    def __init__(self, start: Optional[Union[int, Tuple[int, int]]] = None, ranged: bool = False,
+    def __init__(self, start: Optional[Union[int, Sequence[int]]] = None, ranged: bool = False,
                  minimum: int = 0, maximum: int = 100, step: int = 1,
                  vertical: bool = False, caption: Optional[str] = None) -> None:
         """Create a slider.
@@ -631,12 +630,14 @@ class Slider(_Controller):
         """
         super().__init__(caption=caption)
 
-        if not start:
+        if start is None:
             if ranged:
-                start = minimum, maximum
+                start = [minimum, maximum]
             else:
                 start = minimum
-        elif isinstance(start, Iterable):
+        elif isinstance(start, Sequence):
+            if len(start) > 2:
+                raise ValueError('start cannot be more than 2 numbers')
             start = list(start)
             ranged = True
 
@@ -760,7 +761,7 @@ class Nouislider(_Controller):
               'start={{{start}}} '
               'tooltips={{{tooltips}}}')
 
-    def __init__(self, start: Union[int, Tuple[int, int]] = 0, minimum: int = 0,
+    def __init__(self, start: Union[int, Sequence[int]] = 0, minimum: int = 0,
                  maximum: int = 100, tooltips: bool = True, caption: Optional[str] = None) -> None:
         """Create a slider.
 
@@ -785,7 +786,7 @@ class Nouislider(_Controller):
         """
         super().__init__(caption=caption)
 
-        if not isinstance(start, Iterable):
+        if not isinstance(start, Sequence):
             nstart = [start]
         else:
             nstart = list(start)

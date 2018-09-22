@@ -15,13 +15,15 @@ addons:
       - libnss3
 
 env:
-  - PYTHON_VERSION=3.5
-  - PYTHON_VERSION=3.6
-  - PYTHON_VERSION=3.7
+  - PYTHON_VERSION=3.5 NODE_VERSION=10
+  - PYTHON_VERSION=3.6 NODE_VERSION=10
+  - PYTHON_VERSION=3.7 NODE_VERSION=10
+  - PYTHON_VERSION=3.7 NODE_VERSION=8
+  - PYTHON_VERSION=3.7 NODE_VERSION=6
 
 before_install:
   - docker pull lukasmartinelli/hadolint
-  - nvm install node
+  - nvm install $NODE_VERSION
   - curl -o- -L https://yarnpkg.com/install.sh | bash
   - export PATH="$HOME/.yarn/bin:$PATH"
 
