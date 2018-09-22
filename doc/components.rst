@@ -39,13 +39,6 @@ SmartGrid
     :members:
     :undoc-members:
 
-Markdown
-~~~~~~~~
-
-.. autoclass:: bowtie.visual.Markdown
-    :members:
-    :undoc-members:
-
 Progress
 --------
 
@@ -135,6 +128,13 @@ Upload
 
 HTML
 ----
+
+Markdown
+~~~~~~~~
+
+.. autoclass:: bowtie.html.Markdown
+    :members:
+    :undoc-members:
 
 Div
 ~~~
