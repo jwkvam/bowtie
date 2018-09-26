@@ -5,7 +5,7 @@ from typing import (  # pylint: disable=unused-import
 )
 import os
 import json
-from itertools import product
+import itertools
 import inspect
 import shutil
 import stat
@@ -20,7 +20,7 @@ from bowtie._component import Event, Component, COMPONENT_REGISTRY
 from bowtie.exceptions import (
     GridIndexError, MissingRowOrColumn, NoSidebarError,
     NotStatefulEvent, UsedCellsError, NoUnusedCellsError,
-    SizeError, WebpackError, YarnError
+    SpanOverlapError, SizeError, WebpackError, YarnError
 )
 from bowtie.pager import Pager
 
@@ -47,7 +47,11 @@ class Span:
                  column_end: Optional[int] = None) -> None:
         """Create a span for a widget.
 
-        Indexing starts at 0. Both start and end are inclusive.
+        Indexing starts at 0. Start is inclusive and end is exclusive
+
+        CSS Grid indexing starts at 1 and is [inclusive, exclusive)
+
+        Note: `_start` and `_end` follow css grid naming convention.
 
         Parameters
         ----------
@@ -83,12 +87,25 @@ class Span:
         return isinstance(other, type(self)) and self._key == other._key
 
     def __repr__(self) -> str:
-        """Show the starting and ending points."""
+        """Show the starting and ending points.
+
+        This is used as a key in javascript.
+        """
         return '{},{},{},{}'.format(
             self.row_start,
             self.column_start,
             self.row_end,
             self.column_end
+        )
+
+    def _overlap(self, other: 'Span'):
+        return not (
+            # if one rectangle is left of other
+            other.column_end <= self.column_start
+            or self.column_end <= other.column_start
+            # if one rectangle is above other
+            or other.row_end <= self.row_start
+            or self.row_end <= other.row_start
         )
 
 
@@ -251,21 +268,52 @@ def _slice_to_start_end(slc: slice, length: int) -> Tuple[int, int]:
     return start, end
 
 
-class Widgets(list):
-    """List for storing widgets to override iadd."""
+class Components(Sequence):
+    """List like class for storing components to override iadd.
 
-    def __iadd__(self, other):
-        """Append items to list when adding."""
-        self.append(other)
-        return self
+    The purpose of this class is to override the `iadd` function.
+    I want to be able to support all the following
+    >>> view[0, 0] = button
+    >>> view[0, 0] = button, dropdown
+    >>> view[0, 0] += button
+    >>> view[0, 0] += button, row
+    """
 
-    def __add__(self, other):
+    TYPE_MSG: str = 'Must add a component or sequence of components, found {}.'
+
+    def __init__(self):
+        self.data: List[Component] = []
+
+    def append(self, component: Component):
+        return self.data.append(component)
+
+    def __iter__(self):
+        return self.data.__iter__()
+
+    def __getitem__(self, key):
+        return self.data.__getitem__(key)
+
+    def _add(self, method, other: Union[Component, Sequence[Component]]) -> 'Components':
+        if isinstance(other, Component):
+            return method([other])
+        if isinstance(other, Sequence):
+            other = list(other)
+            if not all(True for x in other if isinstance(x, Component)):
+                raise TypeError(self.TYPE_MSG.format(other))
+            return method(other)
+        raise TypeError(self.TYPE_MSG.format(other))
+
+    def __iadd__(self, other: Union[Component, Sequence[Component]]):
         """Append items to list when adding."""
-        return self + [other]
+        return self._add(self.data.__iadd__, other)
+
+    def __add__(self, other: Union[Component, Sequence[Component]]):
+        """Append items to list when adding."""
+        return self._add(self.data.__add__, other)
 
 
 class View:
-    """Grid of widgets."""
+    """Grid of components."""
 
     _NEXT_UUID = 0
 
@@ -285,64 +333,96 @@ class View:
         columns : int, optional
             Number of columns in the grid.
         sidebar : bool, optional
-            Enable a sidebar for control widgets.
+            Enable a sidebar for control components.
         background_color : str, optional
             Background color of the control pane.
 
         """
         self._uuid = View._next_uuid()
-        self._used = OrderedDict(((key, False) for key in product(range(rows), range(columns))))
+        # self._used = OrderedDict(((key, False) for key in product(range(rows), range(columns))))
         self.column_gap = Gap()
         self.row_gap = Gap()
+        self.border = Gap()
         self.rows = [Size() for _ in range(rows)]
         self.columns = [Size() for _ in range(columns)]
         self.sidebar = sidebar
         self.background_color = background_color
-        self._packages: Set[str] = set()
-        self._templates: Set[str] = set()
-        self._imports: Set[_Import] = set()
-        self._widgets: Set[Component] = set()
-        self._controllers: List[int] = []
-        self._spans: Dict[Span, List[int]] = defaultdict(Widgets)
+        # self._packages: Set[str] = set()
+        # self._templates: Set[str] = set()
+        # self._imports: Set[_Import] = set()
+        # self._components: Set[Component] = set()
+        self._controllers: List[Component] = []
+        self._spans: Dict[Span, Components] = defaultdict(Components)
+
+        # # pylint: disable=protected-access
+        # if widget._PACKAGE:
+        #     self._packages.add(widget._PACKAGE)
+        # self._templates.add(widget._TEMPLATE)
+        # self._imports.add(_Import(component=widget._COMPONENT,
+        #                           module=widget._TEMPLATE[:widget._TEMPLATE.find('.')]))
+        # self._components.add(widget)
+
+    def _all_components(self) -> Generator[Component, None, None]:
+        yield from self._controllers
+        yield from itertools.chain.from_iterable(self._spans.values())
+
+    @property
+    def _packages(self) -> Set[str]:
+        packages = set(x._PACKAGE for x in self._all_components())
+        packages.discard(None)
+        return packages
+
+    @property
+    def _templates(self) -> Set[str]:
+        return set(x._TEMPLATE for x in self._all_components())
+
+    @property
+    def _imports(self) -> Set[_Import]:
+        return set(_Import(component=x._COMPONENT,
+                           module=x._TEMPLATE[:x._TEMPLATE.find('.')])
+                   for x in self._all_components())
+
+    @property
+    def _components(self) -> Set[Component]:
+        return set(self._all_components())
 
     @property
     def _name(self) -> str:
         return 'view{}.jsx'.format(self._uuid)
 
-    def _key_to_rows_columns(self, key: Any) -> Tuple[int, int, int, int]:
+    def _key_to_span(self, key: Any) -> Span:
         # TODO spaghetti code cleanup needed!
         if isinstance(key, tuple):
             if len(key) == 1:
-                rows_cols = self._key_to_rows_columns(key[0])
+                return self._key_to_span(key[0])
+            try:
+                row_key, column_key = key
+            except ValueError:
+                raise GridIndexError('Index must be 1 or 2 values, found {}'.format(key))
+            if isinstance(row_key, int):
+                row_start = _check_index(row_key, len(self.rows), False)
+                row_end = row_start + 1
+            elif isinstance(row_key, slice):
+                row_start, row_end = _slice_to_start_end(row_key, len(self.rows))
+                row_start = _check_index(row_start, len(self.rows), False)
+                row_end = _check_index(row_end, len(self.rows), True)
             else:
-                try:
-                    row_key, column_key = key
-                except ValueError:
-                    raise GridIndexError('Index must be 1 or 2 values, found {}'.format(key))
-                if isinstance(row_key, int):
-                    row_start = _check_index(row_key, len(self.rows), False)
-                    row_end = row_start + 1
-                elif isinstance(row_key, slice):
-                    row_start, row_end = _slice_to_start_end(row_key, len(self.rows))
-                    row_start = _check_index(row_start, len(self.rows), False)
-                    row_end = _check_index(row_end, len(self.rows), True)
-                else:
-                    raise GridIndexError(
-                        'Cannot index with {}, pass in a int or a slice.'.format(row_key)
-                    )
+                raise GridIndexError(
+                    'Cannot index with {}, pass in a int or a slice.'.format(row_key)
+                )
 
-                if isinstance(column_key, int):
-                    column_start = _check_index(column_key, len(self.columns), False)
-                    column_end = column_start + 1
-                elif isinstance(column_key, slice):
-                    column_start, column_end = _slice_to_start_end(column_key, len(self.columns))
-                    column_start = _check_index(column_start, len(self.columns), False)
-                    column_end = _check_index(column_end, len(self.columns), True)
-                else:
-                    raise GridIndexError(
-                        'Cannot index with {}, pass in a int or a slice.'.format(column_key)
-                    )
-                rows_cols = row_start, column_start, row_end, column_end
+            if isinstance(column_key, int):
+                column_start = _check_index(column_key, len(self.columns), False)
+                column_end = column_start + 1
+            elif isinstance(column_key, slice):
+                column_start, column_end = _slice_to_start_end(column_key, len(self.columns))
+                column_start = _check_index(column_start, len(self.columns), False)
+                column_end = _check_index(column_end, len(self.columns), True)
+            else:
+                raise GridIndexError(
+                    'Cannot index with {}, pass in a int or a slice.'.format(column_key)
+                )
+            rows_cols = row_start, column_start, row_end, column_end
 
         elif isinstance(key, slice):
             start, end = _slice_to_start_end(key, len(self.rows))
@@ -354,16 +434,16 @@ class View:
             rows_cols = row_start, 0, row_start + 1, len(self.columns)
         else:
             raise GridIndexError('Invalid index {}'.format(key))
-        return rows_cols
+        return Span(*rows_cols)
 
     def __getitem__(self, key):
         """Get item from the view."""
-        return self.spans[Span(*self._key_to_rows_columns(key))]
+        return self._spans[Span(*self._key_to_rows_columns(key))]
 
-    def __setitem__(self, key: Any, widget: Component) -> None:
+    def __setitem__(self, key: Any, component: Component) -> None:
         """Add widget to the view."""
-        if not isinstance(widget, Widgets):
-            self._add(widget, *self._key_to_rows_columns(key))
+        if not isinstance(component, Components):
+            self._add(component, self._key_to_span(key))
 
     def add(self, widget: Component) -> None:
         """Add a widget to the grid in the next available cell.
@@ -376,116 +456,136 @@ class View:
             A Bowtie widget instance.
 
         """
-        self._add(widget)
+        # TODO find first available span
+        # TODO if not spans are available append to most recently used one
+        return self._add(widget)
 
-    def _add(self, widget: Union[Component, Sequence[Component]],
-             row_start: Optional[int] = None,
-             column_start: Optional[int] = None,
-             row_end: Optional[int] = None,
-             column_end: Optional[int] = None) -> None:
-        """Add a widget to the grid.
+    # def _add(self, widget: Union[Component, Sequence[Component]],
+    #          row_start: Optional[int] = None,
+    #          column_start: Optional[int] = None,
+    #          row_end: Optional[int] = None,
+    #          column_end: Optional[int] = None) -> None:
+    def _add(self, component: Union[Component, Sequence[Component]], span: Span) -> None:
+        """Add a component to the grid.
 
         Zero-based index and exclusive.
 
         Parameters
         ----------
-        widget : bowtie._Component
-            A Bowtie widget instance.
+        component : bowtie._Component
+            A Bowtie component instance.
         row_start : int, optional
-            Starting row for the widget.
+            Starting row for the component.
         column_start : int, optional
-            Starting column for the widget.
+            Starting column for the component.
         row_end : int, optional
-            Ending row for the widget.
+            Ending row for the component.
         column_end : int, optional
-            Ending column for the widget.
+            Ending column for the component.
 
         """
-        if not isinstance(widget, Component):
-            raise ValueError('Widget must be a type of Component, found {}'.format(type(widget)))
+        if not isinstance(component, Component):
+            raise ValueError('component must be Component type, found {}'.format(component))
 
-        if row_start is not None and row_end is not None and row_start >= row_end:
-            raise GridIndexError('row_start: {} must be less than row_end: {}'
-                                 .format(row_start, row_end))
-        if column_start is not None and column_end is not None and column_start >= column_end:
-            raise GridIndexError('column_start: {} must be less than column_end: {}'
-                                 .format(column_start, column_end))
+        # TODO move this elsewhere
+        # if row_start is not None and row_end is not None and row_start >= row_end:
+        #     raise GridIndexError('row_start: {} must be less than row_end: {}'
+        #                          .format(row_start, row_end))
+        # if column_start is not None and column_end is not None and column_start >= column_end:
+        #     raise GridIndexError('column_start: {} must be less than column_end: {}'
+        #                          .format(column_start, column_end))
 
-        used_msg = 'Cell at [{}, {}] is already used.'
-        if row_start is None or column_start is None:
-            if row_start is not None:
-                raise MissingRowOrColumn(
-                    'Only row_start was defined. '
-                    'Please specify both column_start and row_start or neither.'
-                )
-            if column_start is not None:
-                raise MissingRowOrColumn(
-                    'Only column_start was defined. '
-                    'Please specify both column_start and row_start or neither.'
-                )
-            if row_end is not None or column_end is not None:
-                raise MissingRowOrColumn(
-                    'If you specify an end index you must '
-                    'specify both row_start and column_start.'
-                )
-            row, col = None, None
-            # TODO replace this logic
-            # for (row, col), use in self._used.items():
-            #     if not use:
-            #         break
-            # else:
-            #     raise NoUnusedCellsError()
-            span = Span(row, col)
-            # self._used[row, col] = True
-        elif row_end is None and column_end is None:
-            # if self._used[row_start, column_start]:
-            #     raise UsedCellsError(used_msg.format(row_start, column_start))
-            span = Span(row_start, column_start)
-            # self._used[row_start, column_start] = True
-        else:
-            if row_end is None:
-                row_end = row_start + 1
-            if column_end is None:
-                column_end = column_start + 1
+        for used_span in self._spans:
+            if span != used_span and span._overlap(used_span):
+                raise SpanOverlapError(f'Spans {span} and {used_span} overlap. '
+                                       'This is not permitted. '
+                                       'If you want to do this please open an issue '
+                                       'and explain your use case. '
+                                       'https://github.com/jwkvam/bowtie/issues')
 
-            for row, col in product(range(row_start, row_end),
-                                    range(column_start, column_end)):
-                if self._used[row, col]:
-                    raise UsedCellsError(used_msg.format(row, col))
+        # used_msg = 'Cell at [{}, {}] is already used.'
+        # if row_start is None or column_start is None:
+        #     if row_start is not None:
+        #         raise MissingRowOrColumn(
+        #             'Only row_start was defined. '
+        #             'Please specify both column_start and row_start or neither.'
+        #         )
+        #     if column_start is not None:
+        #         raise MissingRowOrColumn(
+        #             'Only column_start was defined. '
+        #             'Please specify both column_start and row_start or neither.'
+        #         )
+        #     if row_end is not None or column_end is not None:
+        #         raise MissingRowOrColumn(
+        #             'If you specify an end index you must '
+        #             'specify both row_start and column_start.'
+        #         )
+        #     row, col = None, None
+        #     # TODO replace this logic
+        #     # for (row, col), use in self._used.items():
+        #     #     if not use:
+        #     #         break
+        #     # else:
+        #     #     raise NoUnusedCellsError()
+        #     span = Span(row, col)
+        #     # self._used[row, col] = True
+        # elif row_end is None and column_end is None:
+        #     # if self._used[row_start, column_start]:
+        #     #     raise UsedCellsError(used_msg.format(row_start, column_start))
+        #     span = Span(row_start, column_start)
+        #     # self._used[row_start, column_start] = True
+        # else:
+        #     if row_end is None:
+        #         row_end = row_start + 1
+        #     if column_end is None:
+        #         column_end = column_start + 1
+        #
+        #     for row, col in product(range(row_start, row_end),
+        #                             range(column_start, column_end)):
+        #         if self._used[row, col]:
+        #             raise UsedCellsError(used_msg.format(row, col))
+        #
+        #     for row, col in product(range(row_start, row_end),
+        #                             range(column_start, column_end)):
+        #         self._used[row, col] = True
+        #     span = Span(row_start, column_start, row_end, column_end)
 
-            for row, col in product(range(row_start, row_end),
-                                    range(column_start, column_end)):
-                self._used[row, col] = True
-            span = Span(row_start, column_start, row_end, column_end)
+        # self._track_widget(widget)
+        self._spans[span].append(component)  # pylint: disable=protected-access
 
-        self._track_widget(widget)
-        self._spans[span].append(widget._uuid)  # pylint: disable=protected-access
+    def _available_cell(self):
+        """Find next available cell first by row then column.
 
-    def add_sidebar(self, widget: Component) -> None:
+        First, construct a set containing all cells.
+        Then iterate over the spans and remove occupied cells.
+        """
+        set(itertools.product(range(len(self.rows)), range(len(self.columns)))
+
+    def add_sidebar(self, component: Component) -> None:
         """Add a widget to the sidebar.
 
         Parameters
         ----------
-        widget : bowtie._Component
-            Add this widget to the sidebar, it will be appended to the end.
+        component : bowtie._Component
+            Add this component to the sidebar, it will be appended to the end.
 
         """
         if not self.sidebar:
             raise NoSidebarError('Set `sidebar=True` if you want to use the sidebar.')
 
-        if not isinstance(widget, Component):
-            raise ValueError('Widget must be a type of Component, found {}'.format(type(widget)))
-        self._track_widget(widget)
-        self._controllers.append(widget._uuid)  # pylint: disable=protected-access
+        if not isinstance(component, Component):
+            raise ValueError('component must be Component type, found {}'.format(component))
+        # self._track_widget(widget)
+        self._controllers.append(component)  # pylint: disable=protected-access
 
-    def _track_widget(self, widget: Component) -> None:
-        # pylint: disable=protected-access
-        if widget._PACKAGE:
-            self._packages.add(widget._PACKAGE)
-        self._templates.add(widget._TEMPLATE)
-        self._imports.add(_Import(component=widget._COMPONENT,
-                                  module=widget._TEMPLATE[:widget._TEMPLATE.find('.')]))
-        self._widgets.add(widget)
+    # def _track_widget(self, widget: Component) -> None:
+    #     # pylint: disable=protected-access
+    #     if widget._PACKAGE:
+    #         self._packages.add(widget._PACKAGE)
+    #     self._templates.add(widget._TEMPLATE)
+    #     self._imports.add(_Import(component=widget._COMPONENT,
+    #                               module=widget._TEMPLATE[:widget._TEMPLATE.find('.')]))
+    #     self._components.add(widget)
 
     @property
     def _columns_sidebar(self):
@@ -542,7 +642,7 @@ class App:
         columns : int, optional
             Number of columns in the grid.
         sidebar : bool, optional
-            Enable a sidebar for control widgets.
+            Enable a sidebar for control components.
         title : str, optional
             Title of the HTML.
         basic_auth : bool, optional
@@ -873,7 +973,7 @@ class App:
             route.view._render(app, self._jinjaenv)  # pylint: disable=protected-access
             packages |= route.view._packages  # pylint: disable=protected-access
             imports |= route.view._imports  # pylint: disable=protected-access
-            components |= route.view._widgets  # pylint: disable=protected-access
+            components |= route.view._components  # pylint: disable=protected-access
 
         with (app / componentsjs.name[:-3]).open('w') as f:  # type: ignore
             f.write(

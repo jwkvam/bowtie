@@ -37,6 +37,12 @@ class UsedCellsError(Exception):
     pass
 
 
+class SpanOverlapError(Exception):
+    """Spans may not overlap."""
+
+    pass
+
+
 class MissingRowOrColumn(Exception):
     """Missing a row or column."""
 
