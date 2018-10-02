@@ -9,7 +9,7 @@ import itertools
 import inspect
 import shutil
 import stat
-from collections import namedtuple, defaultdict, OrderedDict
+from collections import namedtuple, defaultdict
 from subprocess import Popen, PIPE, STDOUT
 from pathlib import Path
 import warnings
@@ -17,12 +17,12 @@ import warnings
 from jinja2 import Environment, FileSystemLoader
 
 from bowtie._component import Event, Component, COMPONENT_REGISTRY
+from bowtie.pager import Pager
 from bowtie.exceptions import (
-    GridIndexError, MissingRowOrColumn, NoSidebarError,
-    NotStatefulEvent, UsedCellsError, NoUnusedCellsError,
+    GridIndexError, NoSidebarError,
+    NotStatefulEvent, NoUnusedCellsError,
     SpanOverlapError, SizeError, WebpackError, YarnError
 )
-from bowtie.pager import Pager
 
 
 _Import = namedtuple('_Import', ['module', 'component'])
@@ -61,17 +61,17 @@ class Span:
         column_end : int, optional
 
         """
-        self.row_start = row_start + 1
-        self.column_start = column_start + 1
+        self.row_start = row_start
+        self.column_start = column_start
         # add 1 to then ends because they start counting from 1
         if row_end is None:
             self.row_end = self.row_start + 1
         else:
-            self.row_end = row_end + 1
+            self.row_end = row_end
         if column_end is None:
             self.column_end = self.column_start + 1
         else:
-            self.column_end = column_end + 1
+            self.column_end = column_end
 
     @property
     def _key(self) -> Tuple[int, int, int, int]:
@@ -92,13 +92,14 @@ class Span:
         This is used as a key in javascript.
         """
         return '{},{},{},{}'.format(
-            self.row_start,
-            self.column_start,
-            self.row_end,
-            self.column_end
+            self.row_start + 1,
+            self.column_start + 1,
+            self.row_end + 1,
+            self.column_end + 1
         )
 
-    def _overlap(self, other: 'Span'):
+    def overlap(self, other: 'Span'):
+        """Detect if two spans overlap."""
         return not (
             # if one rectangle is left of other
             other.column_end <= self.column_start
@@ -106,6 +107,14 @@ class Span:
             # if one rectangle is above other
             or other.row_end <= self.row_start
             or self.row_end <= other.row_start
+        )
+
+    @property
+    def cells(self) -> Generator[Tuple[int, int], None, None]:
+        """Generate cells in span."""
+        yield from itertools.product(
+            range(self.row_start, self.row_end),
+            range(self.column_start, self.column_end)
         )
 
 
@@ -273,18 +282,34 @@ class Components(Sequence):
 
     The purpose of this class is to override the `iadd` function.
     I want to be able to support all the following
-    >>> view[0, 0] = button
-    >>> view[0, 0] = button, dropdown
-    >>> view[0, 0] += button
-    >>> view[0, 0] += button, row
+    >>> from bowtie import App
+    >>> from bowtie.control import Button
+    >>> app = App()
+    >>> button = Button()
+    >>> app[0, 0] = button
+    >>> app[0, 0] = button, button
+    >>> app[0, 0] += button
+    >>> app[0, 0] += button, button
     """
 
     TYPE_MSG: str = 'Must add a component or sequence of components, found {}.'
 
-    def __init__(self):
-        self.data: List[Component] = []
+    def __init__(self,
+                 component: Optional[Union[Component, Sequence[Component]]] = None
+                 ) -> None:
+        self.data: List[Component]
+        if component is None:
+            self.data = []
+        elif isinstance(component, Component):
+            self.data = [component]
+        else:
+            self.data = list(component)
+
+    def __len__(self):
+        return self.data.__len__()
 
     def append(self, component: Component):
+        """Append component to the list."""
         return self.data.append(component)
 
     def __iter__(self):
@@ -339,7 +364,6 @@ class View:
 
         """
         self._uuid = View._next_uuid()
-        # self._used = OrderedDict(((key, False) for key in product(range(rows), range(columns))))
         self.column_gap = Gap()
         self.row_gap = Gap()
         self.border = Gap()
@@ -347,20 +371,8 @@ class View:
         self.columns = [Size() for _ in range(columns)]
         self.sidebar = sidebar
         self.background_color = background_color
-        # self._packages: Set[str] = set()
-        # self._templates: Set[str] = set()
-        # self._imports: Set[_Import] = set()
-        # self._components: Set[Component] = set()
         self._controllers: List[Component] = []
-        self._spans: Dict[Span, Components] = defaultdict(Components)
-
-        # # pylint: disable=protected-access
-        # if widget._PACKAGE:
-        #     self._packages.add(widget._PACKAGE)
-        # self._templates.add(widget._TEMPLATE)
-        # self._imports.add(_Import(component=widget._COMPONENT,
-        #                           module=widget._TEMPLATE[:widget._TEMPLATE.find('.')]))
-        # self._components.add(widget)
+        self._spans: Dict[Span, Components] = {}
 
     def _all_components(self) -> Generator[Component, None, None]:
         yield from self._controllers
@@ -368,16 +380,19 @@ class View:
 
     @property
     def _packages(self) -> Set[str]:
+        # pylint: disable=protected-access
         packages = set(x._PACKAGE for x in self._all_components())
         packages.discard(None)
         return packages
 
     @property
     def _templates(self) -> Set[str]:
+        # pylint: disable=protected-access
         return set(x._TEMPLATE for x in self._all_components())
 
     @property
     def _imports(self) -> Set[_Import]:
+        # pylint: disable=protected-access
         return set(_Import(component=x._COMPONENT,
                            module=x._TEMPLATE[:x._TEMPLATE.find('.')])
                    for x in self._all_components())
@@ -392,6 +407,8 @@ class View:
 
     def _key_to_span(self, key: Any) -> Span:
         # TODO spaghetti code cleanup needed!
+        if isinstance(key, Span):
+            return key
         if isinstance(key, tuple):
             if len(key) == 1:
                 return self._key_to_span(key[0])
@@ -436,130 +453,58 @@ class View:
             raise GridIndexError('Invalid index {}'.format(key))
         return Span(*rows_cols)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: Any) -> Components:
         """Get item from the view."""
-        return self._spans[Span(*self._key_to_rows_columns(key))]
+        span = self._key_to_span(key)
+        if span not in self._spans:
+            raise KeyError(f'Key {key} has not been used')
+        return self._spans[span]
 
-    def __setitem__(self, key: Any, component: Component) -> None:
+    def __setitem__(self, key: Any,
+                    component: Union[Component, Sequence[Component]]) -> None:
         """Add widget to the view."""
-        if not isinstance(component, Components):
-            self._add(component, self._key_to_span(key))
 
-    def add(self, widget: Component) -> None:
+        span = self._key_to_span(key)
+        for used_span in self._spans:
+            if span != used_span and span.overlap(used_span):
+                raise SpanOverlapError(f'Spans {span} and {used_span} overlap. '
+                                       'This is not permitted. '
+                                       'If you want to do this please open an issue '
+                                       'and explain your use case. '
+                                       'https://github.com/jwkvam/bowtie/issues')
+        self._spans[span] = Components(component)
+
+    def add(self, component: Union[Component, Sequence[Component]]) -> None:
         """Add a widget to the grid in the next available cell.
 
         Searches over columns then rows for available cells.
 
         Parameters
         ----------
-        widget : bowtie._Component
+        components : bowtie._Component
             A Bowtie widget instance.
 
         """
-        # TODO find first available span
-        # TODO if not spans are available append to most recently used one
-        return self._add(widget)
+        try:
+            self[Span(*self._available_cell())] = component
+        except NoUnusedCellsError:
+            span = list(self._spans.keys())[-1]
+            self._spans[span] += component
 
-    # def _add(self, widget: Union[Component, Sequence[Component]],
-    #          row_start: Optional[int] = None,
-    #          column_start: Optional[int] = None,
-    #          row_end: Optional[int] = None,
-    #          column_end: Optional[int] = None) -> None:
-    def _add(self, component: Union[Component, Sequence[Component]], span: Span) -> None:
-        """Add a component to the grid.
-
-        Zero-based index and exclusive.
-
-        Parameters
-        ----------
-        component : bowtie._Component
-            A Bowtie component instance.
-        row_start : int, optional
-            Starting row for the component.
-        column_start : int, optional
-            Starting column for the component.
-        row_end : int, optional
-            Ending row for the component.
-        column_end : int, optional
-            Ending column for the component.
-
-        """
-        if not isinstance(component, Component):
-            raise ValueError('component must be Component type, found {}'.format(component))
-
-        # TODO move this elsewhere
-        # if row_start is not None and row_end is not None and row_start >= row_end:
-        #     raise GridIndexError('row_start: {} must be less than row_end: {}'
-        #                          .format(row_start, row_end))
-        # if column_start is not None and column_end is not None and column_start >= column_end:
-        #     raise GridIndexError('column_start: {} must be less than column_end: {}'
-        #                          .format(column_start, column_end))
-
-        for used_span in self._spans:
-            if span != used_span and span._overlap(used_span):
-                raise SpanOverlapError(f'Spans {span} and {used_span} overlap. '
-                                       'This is not permitted. '
-                                       'If you want to do this please open an issue '
-                                       'and explain your use case. '
-                                       'https://github.com/jwkvam/bowtie/issues')
-
-        # used_msg = 'Cell at [{}, {}] is already used.'
-        # if row_start is None or column_start is None:
-        #     if row_start is not None:
-        #         raise MissingRowOrColumn(
-        #             'Only row_start was defined. '
-        #             'Please specify both column_start and row_start or neither.'
-        #         )
-        #     if column_start is not None:
-        #         raise MissingRowOrColumn(
-        #             'Only column_start was defined. '
-        #             'Please specify both column_start and row_start or neither.'
-        #         )
-        #     if row_end is not None or column_end is not None:
-        #         raise MissingRowOrColumn(
-        #             'If you specify an end index you must '
-        #             'specify both row_start and column_start.'
-        #         )
-        #     row, col = None, None
-        #     # TODO replace this logic
-        #     # for (row, col), use in self._used.items():
-        #     #     if not use:
-        #     #         break
-        #     # else:
-        #     #     raise NoUnusedCellsError()
-        #     span = Span(row, col)
-        #     # self._used[row, col] = True
-        # elif row_end is None and column_end is None:
-        #     # if self._used[row_start, column_start]:
-        #     #     raise UsedCellsError(used_msg.format(row_start, column_start))
-        #     span = Span(row_start, column_start)
-        #     # self._used[row_start, column_start] = True
-        # else:
-        #     if row_end is None:
-        #         row_end = row_start + 1
-        #     if column_end is None:
-        #         column_end = column_start + 1
-        #
-        #     for row, col in product(range(row_start, row_end),
-        #                             range(column_start, column_end)):
-        #         if self._used[row, col]:
-        #             raise UsedCellsError(used_msg.format(row, col))
-        #
-        #     for row, col in product(range(row_start, row_end),
-        #                             range(column_start, column_end)):
-        #         self._used[row, col] = True
-        #     span = Span(row_start, column_start, row_end, column_end)
-
-        # self._track_widget(widget)
-        self._spans[span].append(component)  # pylint: disable=protected-access
-
-    def _available_cell(self):
+    def _available_cell(self) -> Tuple[int, int]:
         """Find next available cell first by row then column.
 
         First, construct a set containing all cells.
         Then iterate over the spans and remove occupied cells.
         """
-        set(itertools.product(range(len(self.rows)), range(len(self.columns)))
+        cells = set(itertools.product(range(len(self.rows)), range(len(self.columns))))
+        for span in self._spans:
+            for cell in span.cells:
+                cells.remove(cell)
+
+        if not cells:
+            raise NoUnusedCellsError('No available cells')
+        return min(cells)
 
     def add_sidebar(self, component: Component) -> None:
         """Add a widget to the sidebar.
@@ -577,15 +522,6 @@ class View:
             raise ValueError('component must be Component type, found {}'.format(component))
         # self._track_widget(widget)
         self._controllers.append(component)  # pylint: disable=protected-access
-
-    # def _track_widget(self, widget: Component) -> None:
-    #     # pylint: disable=protected-access
-    #     if widget._PACKAGE:
-    #         self._packages.add(widget._PACKAGE)
-    #     self._templates.add(widget._TEMPLATE)
-    #     self._imports.add(_Import(component=widget._COMPONENT,
-    #                               module=widget._TEMPLATE[:widget._TEMPLATE.find('.')]))
-    #     self._components.add(widget)
 
     @property
     def _columns_sidebar(self):
@@ -699,28 +635,31 @@ class App:
             return self._root.column_gap
         if name == 'row_gap':
             return self._root.row_gap
+        if name == 'border':
+            return self._root.border
         raise AttributeError(name)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: Any):
         """Get item from root view."""
         return self._root.__getitem__(key)
 
-    def __setitem__(self, key: Any, value: Component) -> None:
+    def __setitem__(self, key: Any,
+                    value: Union[Component, Sequence[Component]]) -> None:
         """Add widget to the root view."""
         self._root.__setitem__(key, value)
 
-    def add(self, widget: Component) -> None:
+    def add(self, component: Component) -> None:
         """Add a widget to the grid in the next available cell.
 
         Searches over columns then rows for available cells.
 
         Parameters
         ----------
-        widget : bowtie._Component
-            A Bowtie widget instance.
+        component : bowtie._Component
+            A Bowtie component instance.
 
         """
-        self._root.add(widget)
+        self._root.add(component)
 
     def add_sidebar(self, widget: Component) -> None:
         """Add a widget to the sidebar.

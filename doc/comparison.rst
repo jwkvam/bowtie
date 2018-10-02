@@ -84,7 +84,7 @@ To be fair I haven't used it a lot and only discovered it after I created Bowtie
 Shiny
 -----
 
-Not a Python library but is the gold standard in the R world.
+Not a Python library but is the gold standard.
 
 .. todo::
     should try using shiny so I know what it's like

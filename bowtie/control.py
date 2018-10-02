@@ -697,7 +697,7 @@ class Nouislider(_Controller):
               'tooltips={{{tooltips}}}')
 
     def __init__(self, start: Union[int, Sequence[int]] = 0, minimum: int = 0,
-                 maximum: int = 100, tooltips: bool = True, caption: Optional[str] = None) -> None:
+                 maximum: int = 100, tooltips: bool = True) -> None:
         """Create a slider.
 
         Parameters

@@ -41,7 +41,7 @@ Events
 ------
 Almost every component has events associated with it.
 For example, a slider generates events when the user moves the slider.
-In Bowtie, these events are class properties with the prefix ``on_``.
+In Bowtie, these events are class attributes with the prefix ``on_``.
 With the App class you can subscribe callbacks to events, so when an
 event happens the callback is called with an argument that is related to the event.
 
@@ -49,7 +49,7 @@ Commands
 --------
 Many components have commands to update their state.
 For example you can update the drop down list or update a plot.
-The commands are class functions that are prefixed ``do_``.
+The commands are instance functions that are prefixed ``do_``.
 For example, to update a Plotly chart in Bowtie you can call ``do_all(dict)``,
 and Plotly will update it's chart with the data and layout options defined in the dictionary.
 
