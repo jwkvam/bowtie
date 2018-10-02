@@ -74,7 +74,7 @@ def test_multiple(multiple_views, chrome_driver):
     time.sleep(2)
 
     data = chrome_driver.find_element_by_class_name('ant-table-body').text
-    assert len(data.split('\n')) == 11
+    assert len(data.split('\n')) == 20
 
     logs = chrome_driver.get_log('browser')
     for log in logs:
@@ -84,7 +84,7 @@ def test_multiple(multiple_views, chrome_driver):
     chrome_driver.get('http://localhost:9991/view2')
     data = chrome_driver.find_element_by_class_name('ant-table-body').text
 
-    assert len(data.split('\n')) == 11
+    assert len(data.split('\n')) == 20
 
     chrome_driver.implicitly_wait(5)
 

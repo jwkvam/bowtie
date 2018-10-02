@@ -94,8 +94,12 @@ class Dashboard extends React.Component {
                                         column_gap={'{{ route.view.column_gap }}'}
                                         row_gap={'{{ route.view.row_gap }}'}
                                         spans={{ '{{' }}
-                                        {% for k, v in route.view._spans.items() %}
-                                           '{{k}}': {{v._uuid}},
+                                        {% for k, vs in route.view._spans.items() %}
+                                           '{{k}}': [
+                                           {% for v in vs %}
+                                                {{v._uuid}},
+                                           {% endfor %}
+                                           ],
                                         {% endfor %}
                                         {{ '}}'}}
                                         controllers={[ 
