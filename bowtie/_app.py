@@ -25,6 +25,7 @@ from bowtie.exceptions import (
 )
 
 
+Route = namedtuple('Route', ['view', 'path', 'exact'])
 _Import = namedtuple('_Import', ['module', 'component'])
 _Schedule = namedtuple('_Schedule', ['seconds', 'function'])
 
@@ -534,34 +535,6 @@ class View:
         columns += self.columns
         return columns
 
-    # def _render(self, path: str, env: Environment) -> None:
-    #     """TODO: Docstring for _render.
-    #
-    #     Parameters
-    #     ----------
-    #     path : TODO
-    #
-    #     Returns
-    #     -------
-    #     TODO
-    #
-    #     """
-    #     jsx = env.get_template('view.jsx.j2')
-    #
-    #     with open(os.path.join(path, self._name), 'w') as f:
-    #         f.write(
-    #             jsx.render(
-    #                 uuid=self._uuid,
-    #                 sidebar=self.sidebar,
-    #                 background_color=self.background_color,
-    #                 controls=self._controllers,
-    #                 spans=self._spans
-    #             )
-    #         )
-
-
-Route = namedtuple('Route', ['view', 'path', 'exact'])
-
 
 class App:
     """Core class to layout, connect, build a Bowtie app."""
@@ -913,7 +886,6 @@ class App:
         imports = set()  # type: Set[_Import]
         packages = set()  # type: Set[str]
         for route in self._routes:
-            # route.view._render(app, self._jinjaenv)  # pylint: disable=protected-access
             packages |= route.view._packages  # pylint: disable=protected-access
             imports |= route.view._imports  # pylint: disable=protected-access
             components |= route.view._components  # pylint: disable=protected-access

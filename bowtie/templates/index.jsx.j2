@@ -85,7 +85,7 @@ class Dashboard extends React.Component {
                             {% endif %}
                             path='{{ route.path }}'
                             render={() => 
-                                    <View{{ route.view._uuid }}
+                                    <View
                                         uuid={'{{route.view._uuid}}'}
                                         background_color={'{{route.view.background_color}}'}
                                         columns={'{{ route.view._columns_sidebar|join(' ') }}'}
