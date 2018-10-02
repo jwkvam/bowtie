@@ -277,7 +277,7 @@ def _slice_to_start_end(slc: slice, length: int) -> Tuple[int, int]:
     return start, end
 
 
-class Components(Sequence):
+class Components:
     """List like class for storing components to override iadd.
 
     The purpose of this class is to override the `iadd` function.
@@ -297,6 +297,7 @@ class Components(Sequence):
     def __init__(self,
                  component: Optional[Union[Component, Sequence[Component]]] = None
                  ) -> None:
+        """Create a components list."""
         self.data: List[Component]
         if component is None:
             self.data = []
@@ -306,6 +307,7 @@ class Components(Sequence):
             self.data = list(component)
 
     def __len__(self):
+        """Count components."""
         return self.data.__len__()
 
     def append(self, component: Component):
@@ -313,9 +315,11 @@ class Components(Sequence):
         return self.data.append(component)
 
     def __iter__(self):
+        """Iterate over components."""
         return self.data.__iter__()
 
     def __getitem__(self, key):
+        """Get item as a list."""
         return self.data.__getitem__(key)
 
     def _add(self, method, other: Union[Component, Sequence[Component]]) -> 'Components':
@@ -463,7 +467,6 @@ class View:
     def __setitem__(self, key: Any,
                     component: Union[Component, Sequence[Component]]) -> None:
         """Add widget to the view."""
-
         span = self._key_to_span(key)
         for used_span in self._spans:
             if span != used_span and span.overlap(used_span):

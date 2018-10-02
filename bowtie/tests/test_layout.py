@@ -90,7 +90,6 @@ def test_all_used(buttons):
 
     assert len(app[1, 1]) == 2
 
-
     app = App(rows=2, columns=2)
     app[0] = buttons[0]
     app[1, 0] = buttons[2]
