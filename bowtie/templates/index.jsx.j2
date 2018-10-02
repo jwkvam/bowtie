@@ -1,7 +1,7 @@
 import 'normalize.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {message} from 'antd';
+import { message } from 'antd';
 import {
     BrowserRouter,
     Switch,
@@ -9,9 +9,7 @@ import {
     Link
 } from 'react-router-dom';
 
-{% for route in routes %}
-import { View{{ route.view._uuid }} } from './view{{ route.view._uuid }}';
-{% endfor %}
+import { View } from './view';
 
 var msgpack = require('msgpack-lite');
 import { socket } from './components.js';
@@ -89,6 +87,7 @@ class Dashboard extends React.Component {
                             render={() => 
                                     <View{{ route.view._uuid }}
                                         uuid={'{{route.view._uuid}}'}
+                                        background_color={'{{route.view.background_color}}'}
                                         columns={'{{ route.view._columns_sidebar|join(' ') }}'}
                                         rows={'{{ route.view.rows|join(' ') }}'}
                                         column_gap={'{{ route.view.column_gap }}'}

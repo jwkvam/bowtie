@@ -405,9 +405,9 @@ class View:
     def _components(self) -> Set[Component]:
         return set(self._all_components())
 
-    @property
-    def _name(self) -> str:
-        return 'view{}.jsx'.format(self._uuid)
+    # @property
+    # def _name(self) -> str:
+    #     return 'view{}.jsx'.format(self._uuid)
 
     def _key_to_span(self, key: Any) -> Span:
         # TODO spaghetti code cleanup needed!
@@ -534,30 +534,30 @@ class View:
         columns += self.columns
         return columns
 
-    def _render(self, path: str, env: Environment) -> None:
-        """TODO: Docstring for _render.
-
-        Parameters
-        ----------
-        path : TODO
-
-        Returns
-        -------
-        TODO
-
-        """
-        jsx = env.get_template('view.jsx.j2')
-
-        with open(os.path.join(path, self._name), 'w') as f:
-            f.write(
-                jsx.render(
-                    uuid=self._uuid,
-                    sidebar=self.sidebar,
-                    background_color=self.background_color,
-                    controls=self._controllers,
-                    spans=self._spans
-                )
-            )
+    # def _render(self, path: str, env: Environment) -> None:
+    #     """TODO: Docstring for _render.
+    #
+    #     Parameters
+    #     ----------
+    #     path : TODO
+    #
+    #     Returns
+    #     -------
+    #     TODO
+    #
+    #     """
+    #     jsx = env.get_template('view.jsx.j2')
+    #
+    #     with open(os.path.join(path, self._name), 'w') as f:
+    #         f.write(
+    #             jsx.render(
+    #                 uuid=self._uuid,
+    #                 sidebar=self.sidebar,
+    #                 background_color=self.background_color,
+    #                 controls=self._controllers,
+    #                 spans=self._spans
+    #             )
+    #         )
 
 
 Route = namedtuple('Route', ['view', 'path', 'exact'])
@@ -880,10 +880,11 @@ class App:
         perms = os.stat(server_path)
         os.chmod(server_path, perms.st_mode | stat.S_IEXEC)
 
-        template_src = self._package_dir / 'src' / 'progress.jsx'
-        shutil.copy(template_src, app)
-        template_src = self._package_dir / 'src' / 'utils.js'
-        shutil.copy(template_src, app)
+        # copy js modules that are always needed
+        for name in ['progress.jsx', 'view.jsx', 'utils.js']:
+            template_src = self._package_dir / 'src' / name
+            shutil.copy(template_src, app)
+
         for route in self._routes:
             # pylint: disable=protected-access
             for template in route.view._templates:
@@ -912,7 +913,7 @@ class App:
         imports = set()  # type: Set[_Import]
         packages = set()  # type: Set[str]
         for route in self._routes:
-            route.view._render(app, self._jinjaenv)  # pylint: disable=protected-access
+            # route.view._render(app, self._jinjaenv)  # pylint: disable=protected-access
             packages |= route.view._packages  # pylint: disable=protected-access
             imports |= route.view._imports  # pylint: disable=protected-access
             components |= route.view._components  # pylint: disable=protected-access
