@@ -50,12 +50,16 @@ export class View extends React.Component {
                 gridTemplateRows: this.state.rows,
                 gridColumnGap: this.state.column_gap,
                 gridRowGap: this.state.row_gap,
+                margin: `${this.props.border}`,
                 width: '100%', height: '100%',
                 minHeight: '100vh', maxHeight: '100%',
                 minWidth: '100vw', maxWidth: '100%'}}>
 
                 {this.state.sidebar &&
-                    <div style={{padding: '7px',
+                    <div style={{
+                        padding: `${this.props.border}`,
+                        margin: `-${this.props.border}`,
+                        marginRight: 0,
                         backgroundColor: `${this.props.background_color}`,
                         gridColumn: '1 / 2',
                         gridRow: '1 / -1'
@@ -75,6 +79,7 @@ export class View extends React.Component {
 View.propTypes = {
     uuid: PropTypes.string.isRequired,
     background_color: PropTypes.string.isRequired,
+    border: PropTypes.object.isRequired,
     spans: PropTypes.object.isRequired,
     controllers: PropTypes.arrayOf(PropTypes.number).isRequired,
     columns: PropTypes.string.isRequired,

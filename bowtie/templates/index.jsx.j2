@@ -10,9 +10,9 @@ import {
 } from 'react-router-dom';
 
 import { View } from './view';
+import { socket } from './components';
 
 var msgpack = require('msgpack-lite');
-import { socket } from './components.js';
 
 class Dashboard extends React.Component {
     constructor(props) {
@@ -92,6 +92,7 @@ class Dashboard extends React.Component {
                                         rows={'{{ route.view.rows|join(' ') }}'}
                                         column_gap={'{{ route.view.column_gap }}'}
                                         row_gap={'{{ route.view.row_gap }}'}
+                                        border={'{{ route.view.border }}'}
                                         spans={{ '{{' }}
                                         {% for k, vs in route.view._spans.items() %}
                                            '{{k}}': [

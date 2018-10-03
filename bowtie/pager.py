@@ -4,6 +4,10 @@ import flask
 from flask_socketio import emit
 import eventlet
 
+from bowtie._component import SEPARATOR
+
+_NAME = 'page' + SEPARATOR
+
 
 class Pager:
     """Tell the client to send a message to the server."""
@@ -25,8 +29,8 @@ class Pager:
         The function passed to ``App.respond`` will get called.
         """
         if flask.has_request_context():
-            emit('page#' + str(self._uuid))
+            emit(_NAME + str(self._uuid))
         else:
             sio = flask.current_app.extensions['socketio']
-            sio.emit('page#' + str(self._uuid))
+            sio.emit(_NAME + str(self._uuid))
         eventlet.sleep()

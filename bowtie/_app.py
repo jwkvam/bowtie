@@ -371,7 +371,7 @@ class View:
         self._uuid = View._next_uuid()
         self.column_gap = Gap()
         self.row_gap = Gap()
-        self.border = Gap()
+        self.border = Gap().pixels(7)
         self.rows = [Size() for _ in range(rows)]
         self.columns = [Size() for _ in range(columns)]
         self.sidebar = sidebar
@@ -405,10 +405,6 @@ class View:
     @property
     def _components(self) -> Set[Component]:
         return set(self._all_components())
-
-    # @property
-    # def _name(self) -> str:
-    #     return 'view{}.jsx'.format(self._uuid)
 
     def _key_to_span(self, key: Any) -> Span:
         # TODO spaghetti code cleanup needed!
