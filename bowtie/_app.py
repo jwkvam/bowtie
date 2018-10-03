@@ -970,7 +970,7 @@ def run(command: List[str], notebook: Optional[str] = None) -> int:
 def node_version():
     """Get node version."""
     version = check_output(('node', '--version'))
-    return (int(x) for x in version.strip()[1:].split(b'.'))
+    return tuple(int(x) for x in version.strip()[1:].split(b'.'))
 
 
 def installed_packages() -> Generator[str, None, None]:
