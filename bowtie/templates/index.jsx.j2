@@ -21,8 +21,6 @@ class Dashboard extends React.Component {
         socket.emit('INITIALIZE');
     }
 
-    // dict of components to 
-
     saveValue = data => {
         var arr = new Uint8Array(data['key']);
         var key = msgpack.decode(arr);
