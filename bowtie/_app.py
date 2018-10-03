@@ -10,7 +10,7 @@ import inspect
 import shutil
 import stat
 from collections import namedtuple, defaultdict
-from subprocess import Popen, PIPE, STDOUT
+from subprocess import Popen, PIPE, STDOUT, check_output
 from pathlib import Path
 import warnings
 
@@ -31,6 +31,7 @@ _Schedule = namedtuple('_Schedule', ['seconds', 'function'])
 
 _DIRECTORY = Path('build')
 _WEBPACK = './node_modules/.bin/webpack'
+_MIN_NODE_VERSION = 6, 11, 5
 
 
 def raise_not_number(x: int) -> None:
@@ -915,6 +916,12 @@ class App:
 
     def _build(self, notebook: Optional[str] = None) -> None:
         """Compile the Bowtie application."""
+        if node_version() < _MIN_NODE_VERSION:
+            raise WebpackError(
+                f'Webpack requires at least version {_MIN_NODE_VERSION} of Node, '
+                f'found version {node_version}.'
+            )
+
         packages = self._write_templates(notebook=notebook)
 
         if not os.path.isfile(os.path.join(_DIRECTORY, 'package.json')):
@@ -958,6 +965,12 @@ def run(command: List[str], notebook: Optional[str] = None) -> int:
             return cmd.poll()
         print(line.decode('utf-8'), end='')
     raise Exception()
+
+
+def node_version():
+    """Get node version."""
+    version = check_output(('node', '--version'))
+    return tuple(int(x) for x in version.strip()[1:].split(b'.'))
 
 
 def installed_packages() -> Generator[str, None, None]:
