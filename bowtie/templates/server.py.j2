@@ -20,13 +20,6 @@ from flask_socketio import SocketIO
 from bowtie._component import COMPONENT_REGISTRY, Event
 
 
-# python 2 compatibility
-try:
-    FileNotFoundError
-except NameError:
-    FileNotFoundError = OSError
-
-
 class GetterNotDefined(AttributeError):
     pass
 
