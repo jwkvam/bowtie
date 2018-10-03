@@ -1,5 +1,33 @@
 # CHANGELOG
 
+## 0.10.0 / 2018-09-15
+==================
+
+### Added
+
+  * Mostly internal changes so that dynamic layout can be supported.
+  * Dropped Python 3.5 compatibility.
+  * Added Python 3.7 support. (#233)
+  * Update random walk so it can be used with multiple users. (#126)
+  * Views now have a border attribute for specifying a margin around the whole page, defaults to 7 pixels.
+  * Add multiple components to a cell or span, for example:
+    >>> app = App()
+    >>> app[0, 0] = button
+    >>> app[0, 0] += button2
+    Or
+    >>> app = App()
+    >>> app[0, 0] = button, button2
+  * Moved link component from control to html module
+
+### Fixed
+
+  * Bug with rebuilding apps due to caching problems.
+  * Bug when refreshing apps with date pickers, the stored state wasn't being restored correctly.
+
+### Breaking
+
+  * Captions in controllers have been removed, they can be replaced with HTML components.
+
 ## 0.9.1 / 2018-03-03
 
 ### Added

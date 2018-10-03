@@ -6,7 +6,7 @@ var config = {
     mode: 'production',
     plugins: [
         new CompressionPlugin({
-            asset: '[path].gz[query]',
+            filename: '[path].gz[query]',
             algorithm: 'gzip',
         })
     ]

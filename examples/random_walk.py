@@ -11,7 +11,7 @@ import plotlywrapper as pw
 
 
 pager = Pager()
-sigma = Nouislider(caption='Sigma', start=0., minimum=0.1, maximum=50.)
+sigma = Nouislider(start=0., minimum=0.1, maximum=50.)
 mainplot = Plotly()
 
 

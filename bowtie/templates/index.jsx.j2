@@ -1,8 +1,7 @@
 import 'normalize.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import io from 'socket.io-client';
-import {message} from 'antd';
+import { message } from 'antd';
 import {
     BrowserRouter,
     Switch,
@@ -10,12 +9,10 @@ import {
     Link
 } from 'react-router-dom';
 
-{% for route in routes %}
-import View{{ route.view._uuid }} from './view{{ route.view._uuid }}';
-{% endfor %}
+import { View } from './view';
+import { socket } from './components';
 
 var msgpack = require('msgpack-lite');
-var socket = io({path: '/{{ socketio }}socket.io'});
 
 class Dashboard extends React.Component {
     constructor(props) {
@@ -86,13 +83,29 @@ class Dashboard extends React.Component {
                             {% endif %}
                             path='{{ route.path }}'
                             render={() => 
-                                    <View{{ route.view._uuid }}
+                                    <View
                                         uuid={'{{route.view._uuid}}'}
-                                        socket={socket}
+                                        background_color={'{{route.view.background_color}}'}
                                         columns={'{{ route.view._columns_sidebar|join(' ') }}'}
                                         rows={'{{ route.view.rows|join(' ') }}'}
                                         column_gap={'{{ route.view.column_gap }}'}
                                         row_gap={'{{ route.view.row_gap }}'}
+                                        border={'{{ route.view.border }}'}
+                                        spans={{ '{{' }}
+                                        {% for k, vs in route.view._spans.items() %}
+                                           '{{k}}': [
+                                           {% for v in vs %}
+                                                {{v._uuid}},
+                                           {% endfor %}
+                                           ],
+                                        {% endfor %}
+                                        {{ '}}'}}
+                                        controllers={[ 
+                                        {% for component in route.view._controllers %}
+                                            {{ component._uuid }},
+                                        {% endfor %}
+                                        ]}
+                                        sidebar={ {{ route.view.sidebar|lower }} }
                                     />
                             }
                         />
@@ -104,5 +117,3 @@ class Dashboard extends React.Component {
 }
 
 ReactDOM.render(<Dashboard />, document.getElementById('app'));
-
-// vim: set ft=javascript.jsx:

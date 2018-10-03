@@ -16,7 +16,7 @@ button = Button()
 
 
 def click():
-    """Update markdown text."""
+    """Save and load cache."""
     cache['a'] = 3
     assert cache[b'a'] == 3
     assert cache[u'a'] == 3
@@ -39,7 +39,7 @@ def test_keys():
 
 @pytest.fixture
 def dummy(build_path, monkeypatch):
-    """Create markdown and text widgets."""
+    """Create basic app."""
     monkeypatch.setattr(App, '_sourcefile', lambda self: 'bowtie.tests.test_cache')
 
     app = App()
@@ -54,7 +54,7 @@ def dummy(build_path, monkeypatch):
 
 # pylint: disable=redefined-outer-name,unused-argument
 def test_cache(dummy, chrome_driver):
-    """Test markdown and text widgets."""
+    """Test cache works."""
     chrome_driver.get('http://localhost:9991')
     chrome_driver.implicitly_wait(5)
 

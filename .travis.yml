@@ -15,7 +15,6 @@ addons:
       - libnss3
 
 env:
-  - PYTHON_VERSION=3.5 NODE_VERSION=10
   - PYTHON_VERSION=3.6 NODE_VERSION=10
   - PYTHON_VERSION=3.7 NODE_VERSION=10
   - PYTHON_VERSION=3.7 NODE_VERSION=8
@@ -49,12 +48,12 @@ install:
   - source activate test-environment
   - pip install --upgrade pip
   - pip install -r test-requirements.txt --progress-bar=off
-  - wget https://chromedriver.storage.googleapis.com/2.40/chromedriver_linux64.zip
+  - wget https://chromedriver.storage.googleapis.com/2.42/chromedriver_linux64.zip
   - unzip chromedriver_linux64.zip
   - chmod +x chromedriver
   - mv -f chromedriver $HOME/.yarn/bin
-  - wget https://github.com/errata-ai/vale/releases/download/v0.11.2/vale_0.11.2_Linux_64-bit.tar.gz
-  - tar xvf vale_0.11.2_Linux_64-bit.tar.gz
+  - wget https://github.com/errata-ai/vale/releases/download/v1.0.4/vale_1.0.4_Linux_64-bit.tar.gz
+  - tar xvf vale_1.0.4_Linux_64-bit.tar.gz
 
 script:
   - docker run --rm -i lukasmartinelli/hadolint hadolint --ignore DL3008 --ignore DL3013 - < Dockerfile

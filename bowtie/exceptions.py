@@ -31,8 +31,8 @@ class NoUnusedCellsError(Exception):
     pass
 
 
-class UsedCellsError(Exception):
-    """At least one cell is used, when placing the widget."""
+class SpanOverlapError(Exception):
+    """Spans may not overlap."""
 
     pass
 

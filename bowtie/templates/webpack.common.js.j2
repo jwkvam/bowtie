@@ -21,11 +21,12 @@ var config = {
                 exclude: /node_modules/,
                 options: {
                     presets: [
-                        ['env', {'modules': false}],
-                        'react', 'stage-0'],
+                        ['@babel/preset-env', {'modules': false}],
+                        '@babel/preset-react'],
                     plugins: [
-                        ["import", { "libraryName": "antd", "style": true }],
-                        'transform-object-rest-spread',
+                        ['babel-plugin-import', {'libraryName': 'antd', 'style': true}],
+                        '@babel/plugin-proposal-object-rest-spread',
+                        '@babel/plugin-proposal-class-properties',
                     ],
                     babelrc: false
                 }
@@ -67,5 +68,3 @@ var config = {
 };
 
 module.exports = config;
-
-// vim: set ft=javascript:

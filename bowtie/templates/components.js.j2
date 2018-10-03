@@ -1,0 +1,14 @@
+import React from 'react';
+import io from 'socket.io-client';
+import AntProgress from './progress';
+{% for import in imports %}
+import {{ import.component }} from './{{ import.module }}';
+{% endfor %}
+
+export const socket = io({path: '/{{ socketio }}socket.io'});
+
+export const components = {
+{% for component in components %}
+    {{ component._uuid }}: {{ component._instantiate }},
+{% endfor %}
+};

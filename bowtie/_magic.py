@@ -25,7 +25,7 @@ import requests
 from bowtie._app import _DIRECTORY, App
 
 
-def get_notebook_name():
+def get_notebook_name() -> str:
     """Return the full path of the jupyter notebook.
 
     References
@@ -35,7 +35,10 @@ def get_notebook_name():
     """
     # this redefines a builtin >:( so putting it here to satisfy my linter
     from notebook.notebookapp import list_running_servers
-    kernel_id = re.search('kernel-(.*).json', ipykernel.connect.get_connection_file()).group(1)
+    kernel_id = re.search(  # type: ignore
+        'kernel-(.*).json',
+        ipykernel.connect.get_connection_file()
+    ).group(1)
     servers = list_running_servers()
     for server in servers:
         response = requests.get(urljoin(server['url'], 'api/sessions'),
@@ -47,7 +50,7 @@ def get_notebook_name():
     raise Exception('Noteboook not found.')
 
 
-def load_notebook(fullname):
+def load_notebook(fullname: str):
     """Import a notebook as a module."""
     shell = InteractiveShell.instance()
     path = fullname

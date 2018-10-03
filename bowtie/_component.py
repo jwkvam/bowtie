@@ -150,7 +150,7 @@ def pack(x: Any) -> bytes:
         raise SerializationError(message)
 
 
-def unpack(x) -> JSON:
+def unpack(x: bytes) -> JSON:
     """Decode ``x`` from msgpack into Python object."""
     return msgpack.unpackb(x, encoding='utf8')
 
@@ -317,3 +317,12 @@ class Component(metaclass=_Maker):  # pylint: disable=too-few-public-methods
         formatter = string.Formatter()
         mapping = FormatDict(component=tag)
         return formatter.vformat(wrap, (), mapping)
+
+    def __eq__(self, other) -> bool:
+        """Compare Events for equality."""
+        # pylint: disable=protected-access
+        return isinstance(other, type(self)) and self._uuid == other._uuid
+
+    def __hash__(self) -> int:
+        """Compute hash for Event."""
+        return hash(self._uuid)

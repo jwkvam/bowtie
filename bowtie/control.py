@@ -13,10 +13,6 @@ class _Controller(Component):
     """
 
     # pylint: disable=abstract-method
-    def __init__(self, caption: Optional[str] = None) -> None:
-        super().__init__()
-        self.caption = caption
-
     @property
     def _instantiate(self) -> str:
         tagwrap = '{component}' + self._tagbase
@@ -31,18 +27,16 @@ class Button(_Controller):
     _PACKAGE = None
     _ATTRS = "label={{'{label}'}}"
 
-    def __init__(self, label: str = '', caption: Optional[str] = None) -> None:
+    def __init__(self, label: str = '') -> None:
         """Create a button.
 
         Parameters
         ----------
         label : str, optional
             Label on the button.
-        caption : str, optional
-            Heading text.
 
         """
-        super().__init__(caption=caption)
+        super().__init__()
         self._comp = self._tag.format(
             label=label
         )
@@ -61,31 +55,6 @@ class Button(_Controller):
         pass
 
 
-class Link(_Controller):
-    """An internal link.
-
-    This doesn't create a page reload.
-    """
-
-    _TEMPLATE = 'link.jsx'
-    _COMPONENT = 'ALink'
-    _PACKAGE = None
-    _ATTRS = "to={{'{link}'}}"
-
-    def __init__(self, link: str = '/', caption: Optional[str] = None) -> None:
-        """Create a button.
-
-        Parameters
-        ----------
-        link : str
-
-        """
-        super().__init__(caption=caption)
-        self._comp = self._tag.format(
-            link=link
-        )
-
-
 class Upload(_Controller):
     """Draggable file upload widget."""
 
@@ -94,7 +63,7 @@ class Upload(_Controller):
     _PACKAGE = None
     _ATTRS = "multiple={{{multiple}}}"
 
-    def __init__(self, multiple=True, caption=None):
+    def __init__(self, multiple=True):
         """Create the widget.
 
         Note: the handler parameter may be changed in the future.
@@ -104,11 +73,9 @@ class Upload(_Controller):
         multiple : bool, optional
             If true, you can upload multiple files at once. Even with this set to true,
             the handler will get called once per file uploaded.
-        caption : str, optional
-            Heading text.
 
         """
-        super().__init__(caption=caption)
+        super().__init__()
         self._comp = self._tag.format(
             multiple=jsbool(multiple)
         )
@@ -131,14 +98,14 @@ class Dropdown(_Controller):
 
     _TEMPLATE = 'dropdown.jsx'
     _COMPONENT = 'Dropdown'
-    _PACKAGE = 'react-select@1.2.1'
+    _PACKAGE = 'react-select@1.3.0'
     _ATTRS = ('initOptions={{{options}}} '
               'multi={{{multi}}} '
               'default={{{default}}}')
 
     def __init__(self, labels: Optional[List[str]] = None,
                  values: Optional[List[Union[str, int]]] = None, multi: bool = False,
-                 default: Optional[Union[str, int]] = None, caption: Optional[str] = None) -> None:
+                 default: Optional[Union[str, int]] = None) -> None:
         """Create a drop down.
 
         Parameters
@@ -151,11 +118,9 @@ class Dropdown(_Controller):
             If multiple selections are allowed.
         default : str or int, optional
             The default selected value.
-        caption : str, optional
-            Heading text.
 
         """
-        super().__init__(caption=caption)
+        super().__init__()
 
         if values is not None and labels is not None:
             options = [{'value': value, 'label': str(label)}
@@ -224,18 +189,16 @@ class Switch(_Controller):
     _PACKAGE = None
     _ATTRS = 'defaultChecked={{{defaultChecked}}}'
 
-    def __init__(self, initial: bool = False, caption: Optional[str] = None) -> None:
+    def __init__(self, initial: bool = False) -> None:
         """Create a toggle switch.
 
         Parameters
         ----------
         initial : bool, optional
             Starting state of the switch.
-        caption : str, optional
-            Label appearing above the widget.
 
         """
-        super().__init__(caption=caption)
+        super().__init__()
         self._comp = self._tag.format(
             defaultChecked=jsbool(initial)
         )
@@ -277,9 +240,9 @@ class _DatePickers(_Controller):
               'month={{{month_type}}} '
               'range={{{range_type}}}')
 
-    def __init__(self, date_type: bool = False, month_type: bool = False, range_type: bool = False,
-                 caption: Optional[str] = None) -> None:
-        super().__init__(caption=caption)
+    def __init__(self, date_type: bool = False, month_type: bool = False,
+                 range_type: bool = False) -> None:
+        super().__init__()
         self._comp = self._tag.format(
             date_type=jsbool(date_type),
             month_type=jsbool(month_type),
@@ -293,16 +256,9 @@ class DatePicker(_DatePickers):
     Let's you choose an individual day.
     """
 
-    def __init__(self, caption: Optional[str] = None) -> None:
-        """Create a date picker.
-
-        Parameters
-        ----------
-        caption : str, optional
-            Heading text.
-
-        """
-        super().__init__(date_type=True, caption=caption)
+    def __init__(self) -> None:
+        """Create a date picker."""
+        super().__init__(date_type=True)
 
     def on_change(self):
         """Emit an event when a date is selected.
@@ -337,16 +293,9 @@ class MonthPicker(_DatePickers):
     Let's you choose a month and year.
     """
 
-    def __init__(self, caption: Optional[str] = None) -> None:
-        """Create month picker.
-
-        Parameters
-        ----------
-        caption : str, optional
-            Heading text.
-
-        """
-        super().__init__(month_type=True, caption=caption)
+    def __init__(self) -> None:
+        """Create month picker."""
+        super().__init__(month_type=True)
 
     def on_change(self):
         """Emit an event when a month is selected.
@@ -381,16 +330,9 @@ class RangePicker(_DatePickers):
     Choose two dates to use as a range.
     """
 
-    def __init__(self, caption: Optional[str] = None) -> None:
-        """Create a date range picker.
-
-        Parameters
-        ----------
-        caption : str, optional
-            Heading text.
-
-        """
-        super().__init__(range_type=True, caption=caption)
+    def __init__(self) -> None:
+        """Create a date range picker."""
+        super().__init__(range_type=True)
 
     def on_change(self):
         """Emit an event when a range is selected.
@@ -432,7 +374,7 @@ class Number(_Controller):
               "size={{'{size}'}}")
 
     def __init__(self, start: int = 0, minimum: float = -1e100, maximum: float = 1e100,
-                 step: int = 1, size: str = 'default', caption: Optional[str] = None) -> None:
+                 step: int = 1, size: str = 'default') -> None:
         """Create a number input.
 
         Parameters
@@ -445,15 +387,13 @@ class Number(_Controller):
             Upper bound
         size : 'default', 'large', 'small', optional
             Size of the text box.
-        caption : str, optional
-            Heading text.
 
         References
         ----------
         https://ant.design/components/input/
 
         """
-        super().__init__(caption=caption)
+        super().__init__()
         self._comp = self._tag.format(
             start=start,
             minimum=minimum,
@@ -501,8 +441,7 @@ class Textbox(_Controller):
               'disabled={{{disabled}}}')
 
     def __init__(self, placeholder: str = 'Enter text', size: str = 'default', area: bool = False,
-                 autosize: bool = False, disabled: bool = False,
-                 caption: Optional[str] = None) -> None:
+                 autosize: bool = False, disabled: bool = False) -> None:
         """Create a text box.
 
         Parameters
@@ -517,15 +456,13 @@ class Textbox(_Controller):
             Automatically size the widget based on the content.
         disabled : bool, optional
             Disable input to the widget.
-        caption : str, optional
-            Heading text.
 
         References
         ----------
         https://ant.design/components/input/
 
         """
-        super().__init__(caption=caption)
+        super().__init__()
 
         self._comp = self._tag.format(
             area='textarea' if area else 'text',
@@ -602,7 +539,7 @@ class Slider(_Controller):
 
     def __init__(self, start: Optional[Union[int, Sequence[int]]] = None, ranged: bool = False,
                  minimum: int = 0, maximum: int = 100, step: int = 1,
-                 vertical: bool = False, caption: Optional[str] = None) -> None:
+                 vertical: bool = False) -> None:
         """Create a slider.
 
         Parameters
@@ -620,15 +557,13 @@ class Slider(_Controller):
             Step size.
         vertical : bool, optional
             If True, the slider will be vertical
-        caption : str, optional
-            Heading text.
 
         References
         ----------
         https://ant.design/components/slider/
 
         """
-        super().__init__(caption=caption)
+        super().__init__()
 
         if start is None:
             if ranged:
@@ -755,14 +690,14 @@ class Nouislider(_Controller):
 
     _TEMPLATE = 'nouislider.jsx'
     _COMPONENT = 'Nouislider'
-    _PACKAGE = 'nouislider@11.0.3'
+    _PACKAGE = 'nouislider@11.1.0'
     _ATTRS = ('range={{{{min: {min}, max: {max}}}}} '
               'socket={{socket}} '
               'start={{{start}}} '
               'tooltips={{{tooltips}}}')
 
     def __init__(self, start: Union[int, Sequence[int]] = 0, minimum: int = 0,
-                 maximum: int = 100, tooltips: bool = True, caption: Optional[str] = None) -> None:
+                 maximum: int = 100, tooltips: bool = True) -> None:
         """Create a slider.
 
         Parameters
@@ -776,15 +711,13 @@ class Nouislider(_Controller):
             Maximum value of the slider.
         tooltips : bool, optional
             Show a popup text box.
-        caption : str, optional
-            Heading text.
 
         References
         ----------
         https://refreshless.com/nouislider/events-callbacks/
 
         """
-        super().__init__(caption=caption)
+        super().__init__()
 
         if not isinstance(start, Sequence):
             nstart = [start]

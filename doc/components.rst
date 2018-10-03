@@ -39,14 +39,12 @@ SmartGrid
     :members:
     :undoc-members:
 
-
 Progress
 --------
 
 .. automodule:: bowtie._progress
     :members:
     :undoc-members:
-
 
 Controllers
 -----------
@@ -128,13 +126,6 @@ Upload
     :members:
     :undoc-members:
 
-Link
-~~~~
-
-.. autoclass:: bowtie.control.Link
-    :members:
-    :undoc-members:
-
 HTML
 ----
 
@@ -156,5 +147,12 @@ Header
 ~~~~~~
 
 .. autoclass:: bowtie.html.Header
+    :members:
+    :undoc-members:
+
+Link
+~~~~
+
+.. autoclass:: bowtie.html.Link
     :members:
     :undoc-members:
