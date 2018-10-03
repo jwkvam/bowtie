@@ -146,8 +146,8 @@ class Size:
 
     def __init__(self) -> None:
         """Create a default row or column size with fraction = 1."""
-        self.minimum = ''  # type: str
-        self.maximum = ''  # type: str
+        self.minimum: str = ''
+        self.maximum: str = ''
         self.fraction(1)
 
     def auto(self) -> 'Size':
@@ -226,7 +226,7 @@ class Gap:
 
     def __init__(self) -> None:
         """Create a default margin of zero."""
-        self.gap = ''  # type: str
+        self.gap: str = ''
         self.pixels(0)
 
     def pixels(self, value: int) -> 'Gap':
@@ -878,9 +878,9 @@ class App:
         # widget reordering
         # order preserving operations
 
-        components = set()  # type: Set[Component]
-        imports = set()  # type: Set[_Import]
-        packages = set()  # type: Set[str]
+        components: Set[Component] = set()
+        imports: Set[_Import] = set()
+        packages: Set[str] = set()
         for route in self._routes:
             packages |= route.view._packages  # pylint: disable=protected-access
             imports |= route.view._imports  # pylint: disable=protected-access
