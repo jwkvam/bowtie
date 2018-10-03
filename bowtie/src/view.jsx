@@ -79,12 +79,12 @@ export class View extends React.Component {
 View.propTypes = {
     uuid: PropTypes.string.isRequired,
     background_color: PropTypes.string.isRequired,
-    border: PropTypes.object.isRequired,
     spans: PropTypes.object.isRequired,
     controllers: PropTypes.arrayOf(PropTypes.number).isRequired,
     columns: PropTypes.string.isRequired,
     rows: PropTypes.string.isRequired,
     column_gap: PropTypes.string.isRequired,
     row_gap: PropTypes.string.isRequired,
+    border: PropTypes.string.isRequired,
     sidebar: PropTypes.bool.isRequired,
 };
