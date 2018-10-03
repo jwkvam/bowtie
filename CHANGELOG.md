@@ -10,6 +10,14 @@
   * Added Python 3.7 support. (#233)
   * Update random walk so it can be used with multiple users. (#126)
   * Views now have a border attribute for specifying a margin around the whole page, defaults to 7 pixels.
+  * Add multiple components to a cell or span, for example:
+    >>> app = App()
+    >>> app[0, 0] = button
+    >>> app[0, 0] += button2
+    Or
+    >>> app = App()
+    >>> app[0, 0] = button, button2
+  * Moved link component from control to html module
 
 ### Fixed
 
