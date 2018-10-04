@@ -1,6 +1,16 @@
 # CHANGELOG
 
-## 0.10.0 / 2018-09-15
+## 0.10.1 / 2018-10-03
+
+### Added
+
+  * Minimum node version check.
+
+### Fixed
+
+  * v0.10.0 had a bunch of extra junk generated in it.
+
+## 0.10.0 / 2018-10-03
 
 ### Added
 
