@@ -7,7 +7,6 @@ https://gist.github.com/carlsmith/800cbe3e11f630ac8aa0
 """
 
 from typing import Callable
-import os
 import sys
 import inspect
 from subprocess import call
@@ -39,6 +38,19 @@ def _build(app):
                              'it needs to be a bowtie.App instance.'.format(app, type(app))))
         # pylint:disable=protected-access
         app._build()
+
+
+def _serve(app):
+    if app is None:
+        print(('No `App` instance was returned. '
+               'In the function decorated with @command, '
+               'return the `App` instance so it can be built.'))
+    else:
+        if not isinstance(app, App):
+            raise Exception(('Returned value {} is of type {}, '
+                             'it needs to be a bowtie.App instance.'.format(app, type(app))))
+        # pylint:disable=protected-access
+        app._serve()
 
 
 def command(func):
@@ -79,23 +91,23 @@ def command(func):
                 'Decorated function "{}" should have no arguments, it has {}.'
                 .format(func.__name__, nargs)
             )
-        # pylint:disable=protected-access
         _build(app)
-        filepath = './{}/src/server.py'.format(_DIRECTORY)
-        line = (filepath,) + extra
-        call(line)
+        _serve(app)
 
     @cmd.command(context_settings=dict(ignore_unknown_options=True),
                  add_help_option=False)
     @click.argument('extra', nargs=-1, type=click.UNPROCESSED)
     def serve(extra):
         """Serve the Bowtie app."""
-        filepath = './{}/src/server.py'.format(_DIRECTORY)
-        if os.path.isfile(filepath):
-            line = (filepath,) + extra
-            call(line)
+        nargs = numargs(func)
+        if nargs == 0:
+            app = func()
         else:
-            print("Cannot find '{}'. Did you build the app?".format(filepath))
+            raise WrongNumberOfArguments(
+                'Decorated function "{}" should have no arguments, it has {}.'
+                .format(func.__name__, nargs)
+            )
+        _serve(app)
 
     @cmd.command(context_settings=dict(ignore_unknown_options=True),
                  add_help_option=False)

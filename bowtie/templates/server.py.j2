@@ -30,6 +30,7 @@ def check_auth(username, password):
     """
     return username == '{{ username }}' and password == '{{ password }}'
 
+
 def authenticate():
     """Sends a 401 response that enables basic auth"""
     return Response(
@@ -37,6 +38,7 @@ def authenticate():
         'You have to login with proper credentials', 401,
         {'WWW-Authenticate': 'Basic realm="Login Required"'}
     )
+
 
 def requires_auth(f):
     @wraps(f)
@@ -63,36 +65,6 @@ sourcemod = load_notebook('{{ notebook }}')
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 import {{source_module}} as sourcemod
 {% endif %}
-
-def context(func):
-    def foo():
-        with app.app_context():
-            func()
-    return foo
-
-
-class Scheduler(object):
-
-    def __init__(self, seconds, func):
-        self.seconds = seconds
-        self.func = func
-        self.thread = None
-
-    def start(self):
-        self.thread = eventlet.spawn(self.run)
-
-    def run(self):
-        ret = eventlet.spawn(context(self.func))
-        eventlet.sleep(self.seconds)
-        try:
-            ret.wait()
-        except:
-            traceback.print_exc()
-        self.thread = eventlet.spawn(self.run)
-
-    def stop(self):
-        if self.thread:
-            self.thread.cancel()
 
 
 {% for route in routes %}

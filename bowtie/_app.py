@@ -12,8 +12,15 @@ import stat
 from collections import namedtuple, defaultdict
 from subprocess import Popen, PIPE, STDOUT, check_output
 from pathlib import Path
+import secrets
+import socket
 import warnings
 
+import eventlet
+import flask
+from flask import (Flask, render_template, make_response, copy_current_request_context,
+                   jsonify, request, Response)
+from flask_socketio import SocketIO
 from jinja2 import Environment, FileSystemLoader
 
 from bowtie._component import Event, Component, COMPONENT_REGISTRY
@@ -32,6 +39,37 @@ _Schedule = namedtuple('_Schedule', ['seconds', 'function'])
 _DIRECTORY = Path('build')
 _WEBPACK = './node_modules/.bin/webpack'
 _MIN_NODE_VERSION = 6, 11, 5
+
+
+class Scheduler:
+
+    def __init__(self, app, seconds, func):
+        self.app = app
+        self.seconds = seconds
+        self.func = func
+        self.thread = None
+
+    def context(self, func):
+        def wrap():
+            with self.app.app_context():
+                func()
+        return wrap
+
+    def start(self):
+        self.thread = eventlet.spawn(self.run)
+
+    def run(self):
+        ret = eventlet.spawn(self.context(self.func))
+        eventlet.sleep(self.seconds)
+        try:
+            ret.wait()
+        except Exception:
+            traceback.print_exc()
+        self.thread = eventlet.spawn(self.run)
+
+    def stop(self):
+        if self.thread:
+            self.thread.cancel()
 
 
 def raise_not_number(x: int) -> None:
@@ -370,6 +408,7 @@ class View:
 
         """
         self._uuid = View._next_uuid()
+        self.layout = None
         self.column_gap = Gap()
         self.row_gap = Gap()
         self.border = Gap().pixels(7)
@@ -536,8 +575,8 @@ class View:
 class App:
     """Core class to layout, connect, build a Bowtie app."""
 
-    def __init__(self, rows: int = 1, columns: int = 1, sidebar: bool = True,
-                 title: str = 'Bowtie App', basic_auth: bool = False,
+    def __init__(self, name='__main__', app=None, rows: int = 1, columns: int = 1,
+                 sidebar: bool = True, title: str = 'Bowtie App', basic_auth: bool = False,
                  username: str = 'username', password: str = 'password',
                  theme: Optional[str] = None, background_color: str = 'White',
                  host: str = '0.0.0.0', port: int = 9991, socketio: str = '',
@@ -546,6 +585,14 @@ class App:
 
         Parameters
         ----------
+        name : str, optional
+            Use __name__ or leave as default if using a single module.
+            Consult the Flask docs on "import_name" for details on more
+            complex apps.
+        app : Flask app, optional
+            If you are defining your own Flask app, pass it in here.
+            You only need this if you are doing other stuff with Flask
+            outside of bowtie.
         row : int, optional
             Number of rows in the grid.
         columns : int, optional
@@ -580,8 +627,8 @@ class App:
         self._init: Optional[str] = None
         self._password = password
         self._port = port
-        self._socketio = socketio
-        self._schedules: List[_Schedule] = []
+        self._socketio_path = socketio
+        self._schedules: List[Scheduler] = []
         self._subscriptions: Dict[Event, List[Tuple[List[Event], str]]] = defaultdict(list)
         self._pages: Dict[Pager, str] = {}
         self._title = title
@@ -590,15 +637,24 @@ class App:
         self.theme = theme
         self._root = View(rows=rows, columns=columns, sidebar=sidebar,
                           background_color=background_color)
-        self._routes = [Route(view=self._root, path='/', exact=True)]
+        self._routes = []
+
         self._package_dir = Path(os.path.dirname(__file__))
         self._jinjaenv = Environment(
             loader=FileSystemLoader(str(self._package_dir / 'templates')),
             trim_blocks=True,
             lstrip_blocks=True
         )
+        if app is None:
+            self.app = Flask(name)
+        else:
+            self.app = app
+        self.app.debug = debug
+        self.socketio = SocketIO(self.app, binary=True, path=socketio + 'socket.io')
+        self.app.secret_key = secrets.token_bytes()
+        self.add_route(view=self._root, path='/', exact=True)
 
-    def __getattr__(self, name: str) -> Union[Gap, List[Size]]:
+    def __getattr__(self, name: str):
         """Export attributes from root view."""
         if name == 'columns':
             return self._root.columns
@@ -610,6 +666,8 @@ class App:
             return self._root.row_gap
         if name == 'border':
             return self._root.border
+        if name == 'layout':
+            return self._root.layout
         raise AttributeError(name)
 
     def __getitem__(self, key: Any):
@@ -660,6 +718,10 @@ class App:
         for route in self._routes:
             assert path != route.path, 'Cannot use the same path twice'
         self._routes.append(Route(view=view, path=path, exact=exact))
+
+        @self.app.route(path)
+        def index():
+            return render_template('index.html')
 
     def respond(self, pager: Pager, func: Callable) -> None:
         """Call a function in response to a page.
@@ -805,14 +867,14 @@ class App:
             Function to be called.
 
         """
-        self._schedules.append(_Schedule(seconds, func.__name__))
+        self._schedules.append(Scheduler(self.app, seconds, func))
 
     def _sourcefile(self) -> str:  # pylint: disable=no-self-use
         # [-1] grabs the top of the stack
         return os.path.basename(inspect.stack()[-1].filename)[:-3]
 
     def _write_templates(self, notebook: Optional[str] = None) -> Set[str]:
-        server = self._jinjaenv.get_template('server.py.j2')
+        # server = self._jinjaenv.get_template('server.py.j2')
         indexhtml = self._jinjaenv.get_template('index.html.j2')
         indexjsx = self._jinjaenv.get_template('index.jsx.j2')
         componentsjs = self._jinjaenv.get_template('components.js.j2')
@@ -826,29 +888,28 @@ class App:
                 webpack.render(color=self.theme)
             )
 
-        server_path = src / server.name[:-3]  # type: ignore
-        with server_path.open('w') as f:
-            f.write(
-                server.render(
-                    basic_auth=self._basic_auth,
-                    username=self._username,
-                    password=self._password,
-                    notebook=notebook,
-                    source_module=self._sourcefile() if not notebook else None,
-                    subscriptions=self._subscriptions,
-                    uploads=self._uploads,
-                    schedules=self._schedules,
-                    initial=self._init,
-                    routes=self._routes,
-                    pages=self._pages,
-                    host="'{}'".format(self._host),
-                    port=self._port,
-                    debug=self._debug
-                )
-            )
-
-        perms = os.stat(server_path)
-        os.chmod(server_path, perms.st_mode | stat.S_IEXEC)
+        # server_path = src / server.name[:-3]  # type: ignore
+        # with server_path.open('w') as f:
+        #     f.write(
+        #         server.render(
+        #             basic_auth=self._basic_auth,
+        #             username=self._username,
+        #             password=self._password,
+        #             notebook=notebook,
+        #             source_module=self._sourcefile() if not notebook else None,
+        #             subscriptions=self._subscriptions,
+        #             uploads=self._uploads,
+        #             schedules=self._schedules,
+        #             initial=self._init,
+        #             routes=self._routes,
+        #             pages=self._pages,
+        #             host="'{}'".format(self._host),
+        #             port=self._port,
+        #             debug=self._debug
+        #         )
+        #     )
+        # perms = os.stat(server_path)
+        # os.chmod(server_path, perms.st_mode | stat.S_IEXEC)
 
         # copy js modules that are always needed
         for name in ['progress.jsx', 'view.jsx', 'utils.js']:
@@ -891,7 +952,7 @@ class App:
             f.write(
                 componentsjs.render(
                     imports=imports,
-                    socketio=self._socketio,
+                    socketio=self._socketio_path,
                     components=components,
                 )
             )
@@ -907,7 +968,7 @@ class App:
             f.write(
                 indexjsx.render(
                     maxviewid=View._NEXT_UUID,  # pylint: disable=protected-access
-                    socketio=self._socketio,
+                    socketio=self._socketio_path,
                     pages=self._pages,
                     routes=self._routes,
                 )
@@ -952,6 +1013,22 @@ class App:
         retval = run([_WEBPACK, '--config', 'webpack.dev.js'], notebook=notebook)
         if retval != 0:
             raise WebpackError('Error building with webpack')
+
+    def _serve(self):
+        scheduled = not self.app.debug or os.environ.get('WERKZEUG_RUN_MAIN') == 'true'
+        if scheduled:
+            for schedule in self._schedules:
+                schedule.start()
+        host = self._host
+        port = self._port
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result = sock.connect_ex((host, port))
+        if result == 0:
+            raise Exception('Port {} is unavailable on host {}, aborting.'.format(port, host))
+        self.socketio.run(self.app, host=host, port=port)
+        if scheduled:
+            for schedule in self._schedules:
+                schedule.stop()
 
 
 def run(command: List[str], notebook: Optional[str] = None) -> int:
