@@ -8,20 +8,20 @@ import json
 import itertools
 import inspect
 import shutil
-import stat
 from collections import namedtuple, defaultdict
 from subprocess import Popen, PIPE, STDOUT, check_output
 from pathlib import Path
 import secrets
 import socket
 import warnings
+import traceback
 
 import eventlet
 import flask
 from flask import (Flask, render_template, make_response, copy_current_request_context,
                    jsonify, request, Response)
 from flask_socketio import SocketIO
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, ChoiceLoader
 
 from bowtie._component import Event, Component, COMPONENT_REGISTRY
 from bowtie.pager import Pager
@@ -42,32 +42,38 @@ _MIN_NODE_VERSION = 6, 11, 5
 
 
 class Scheduler:
+    """Run scheduled tasks."""
 
     def __init__(self, app, seconds, func):
+        """Create a scheduled function."""
         self.app = app
         self.seconds = seconds
         self.func = func
         self.thread = None
 
     def context(self, func):
+        """Provide flask context to function."""
         def wrap():
             with self.app.app_context():
                 func()
         return wrap
 
     def start(self):
+        """Start the scheduled task."""
         self.thread = eventlet.spawn(self.run)
 
     def run(self):
+        """Invoke the function repeatedly on a timer."""
         ret = eventlet.spawn(self.context(self.func))
         eventlet.sleep(self.seconds)
         try:
             ret.wait()
-        except Exception:
+        except Exception:  # pylint: disable=broad-except
             traceback.print_exc()
         self.thread = eventlet.spawn(self.run)
 
     def stop(self):
+        """Stop the scheduled task."""
         if self.thread:
             self.thread.cancel()
 
@@ -622,16 +628,15 @@ class App:
 
         """
         self._basic_auth = basic_auth
-        self._debug = debug
-        self._host = host
+        self.host = host
         self._init: Optional[str] = None
         self._password = password
-        self._port = port
+        self.port = port
         self._socketio_path = socketio
         self._schedules: List[Scheduler] = []
         self._subscriptions: Dict[Event, List[Tuple[List[Event], str]]] = defaultdict(list)
         self._pages: Dict[Pager, str] = {}
-        self._title = title
+        self.title = title
         self._username = username
         self._uploads: Dict[int, str] = {}
         self.theme = theme
@@ -653,6 +658,13 @@ class App:
         self.socketio = SocketIO(self.app, binary=True, path=socketio + 'socket.io')
         self.app.secret_key = secrets.token_bytes()
         self.add_route(view=self._root, path='/', exact=True)
+
+        # https://buxty.com/b/2012/05/custom-template-folders-with-flask/
+        templates = Path(__file__).parent / 'templates'
+        self.app.jinja_loader = ChoiceLoader([
+            self.app.jinja_loader,
+            FileSystemLoader(str(templates)),
+        ])
 
     def __getattr__(self, name: str):
         """Export attributes from root view."""
@@ -720,8 +732,8 @@ class App:
         self._routes.append(Route(view=view, path=path, exact=exact))
 
         @self.app.route(path)
-        def index():
-            return render_template('index.html')
+        def _():
+            return render_template('bowtie.html', title=self.title)
 
     def respond(self, pager: Pager, func: Callable) -> None:
         """Call a function in response to a page.
@@ -874,8 +886,6 @@ class App:
         return os.path.basename(inspect.stack()[-1].filename)[:-3]
 
     def _write_templates(self, notebook: Optional[str] = None) -> Set[str]:
-        # server = self._jinjaenv.get_template('server.py.j2')
-        indexhtml = self._jinjaenv.get_template('index.html.j2')
         indexjsx = self._jinjaenv.get_template('index.jsx.j2')
         componentsjs = self._jinjaenv.get_template('components.js.j2')
         webpack = self._jinjaenv.get_template('webpack.common.js.j2')
@@ -957,13 +967,6 @@ class App:
                 )
             )
 
-        with (templates / indexhtml.name[:-3]).open('w') as f:  # type: ignore
-            f.write(
-                indexhtml.render(
-                    title=self._title,
-                )
-            )
-
         with (app / indexjsx.name[:-3]).open('w') as f:  # type: ignore
             f.write(
                 indexjsx.render(
@@ -1015,17 +1018,43 @@ class App:
             raise WebpackError('Error building with webpack')
 
     def _serve(self):
+        # bundle route
+        @self.app.route('/bowtie/bundle.js')
+        def getbundle():
+            bundle_path = self.app.root_path + '/build/src/static/bundle.js'
+            bundle_path_gz = bundle_path + '.gz'
+
+            try:
+                if os.path.getmtime(bundle_path) > os.path.getmtime(bundle_path_gz):
+                    return open(bundle_path, 'r').read()
+                else:
+                    bundle = open(bundle_path_gz, 'rb').read()
+                    response = flask.make_response(bundle)
+                    response.headers['Content-Encoding'] = 'gzip'
+                    response.headers['Vary'] = 'Accept-Encoding'
+                    response.headers['Content-Length'] = len(response.data)
+                    return response
+            except FileNotFoundError:
+                if os.path.isfile(bundle_path_gz):
+                    bundle = open(bundle_path_gz, 'rb').read()
+                    response = flask.make_response(bundle)
+                    response.headers['Content-Encoding'] = 'gzip'
+                    response.headers['Vary'] = 'Accept-Encoding'
+                    response.headers['Content-Length'] = len(response.data)
+                    return response
+                else:
+                    return open(bundle_path, 'r').read()
+
         scheduled = not self.app.debug or os.environ.get('WERKZEUG_RUN_MAIN') == 'true'
         if scheduled:
             for schedule in self._schedules:
                 schedule.start()
-        host = self._host
-        port = self._port
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        result = sock.connect_ex((host, port))
+        result = sock.connect_ex((self.host, self.port))
         if result == 0:
-            raise Exception('Port {} is unavailable on host {}, aborting.'.format(port, host))
-        self.socketio.run(self.app, host=host, port=port)
+            raise Exception(f'Port {self.port} is unavailable on host {self.host}, aborting.')
+        # TODO afford the user some API to change server
+        self.socketio.run(self.app, host=self.host, port=self.port)
         if scheduled:
             for schedule in self._schedules:
                 schedule.stop()
