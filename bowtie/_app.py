@@ -17,6 +17,7 @@ import warnings
 import traceback
 
 import eventlet
+import msgpack
 import flask
 from flask import (Flask, render_template, make_response, copy_current_request_context,
                    jsonify, request, Response)
@@ -634,7 +635,7 @@ class App:
         self.port = port
         self._socketio_path = socketio
         self._schedules: List[Scheduler] = []
-        self._subscriptions: Dict[Event, List[Tuple[List[Event], str]]] = defaultdict(list)
+        self._subscriptions: Dict[Event, List[Tuple[List[Event], Callable]]] = defaultdict(list)
         self._pages: Dict[Pager, str] = {}
         self.title = title
         self._username = username
@@ -761,7 +762,7 @@ class App:
         >>> app.respond(pager, callback)
 
         """
-        self._pages[pager] = func.__name__
+        self._pages[pager] = func
 
     def subscribe(self, func: Callable, event: Event, *events: Event) -> None:
         """Call a function in response to an event.
@@ -816,10 +817,11 @@ class App:
                          func2=func.__name__,
                          obj=COMPONENT_REGISTRY[event.uuid]
                      ), Warning)
-            self._uploads[event.uuid] = func.__name__
+            self._uploads[event.uuid] = func
 
         for evt in all_events:
-            self._subscriptions[evt].append((all_events, func.__name__))
+            # need to have `all_events` here to maintain order of arguments
+            self._subscriptions[evt].append((all_events, func))
 
     def listen(self, event: Event, *events: Event) -> Callable:
         """Call a function in response to an event.
@@ -866,7 +868,7 @@ class App:
             Function to be called.
 
         """
-        self._init = func.__name__
+        self._init = func
 
     def schedule(self, seconds: float, func: Callable) -> None:
         """Call a function periodically.
@@ -1018,9 +1020,77 @@ class App:
             raise WebpackError('Error building with webpack')
 
     def _serve(self):
+
+        def generate_sio_handler(main_event, supports):
+            def handler(*args):
+                def wrapuser():
+
+                    # get all events from all subscriptions associated with this event
+                    uniq_events = set()
+                    for events, _ in supports:
+                        uniq_events.update(events)
+                    uniq_events.remove(main_event)
+
+                    event_data = {}
+                    for ev in uniq_events:
+                        comp = COMPONENT_REGISTRY[ev.uuid]
+                        if ev.getter is None:
+                            raise GetterNotDefined('{ctype} has no getter associated with event "on_{ename}"'
+                                                   .format(ctype=type(comp), ename=ev.name))
+                        getter = getattr(comp, ev.getter)
+                        event_data[ev.signal] = getter()
+
+                    # if there is no getter, then there is no data to unpack
+                    # if there is a getter, then we need to unpack the data sent
+                    main_getter = main_event.getter
+                    if main_getter is not None:
+                        event_data[main_event.signal] = getattr(COMPONENT_REGISTRY[main_event.uuid], main_getter)(
+                            msgpack.unpackb(args[0], encoding='utf8')
+                        )
+
+                    # gather the remaining data from the other events through their getter methods
+                    for events, func in supports:
+                        user_args = []
+                        if main_getter is not None:
+                            for event in events:
+                                user_args.append(event_data[event.signal])
+
+                        func(*user_args)
+
+                foo = copy_current_request_context(wrapuser)
+                eventlet.spawn(foo)
+
+            return handler
+
+        for event, supports in self._subscriptions.items():
+            self.socketio.on(event.signal)(generate_sio_handler(event, supports))
+
+        @self.socketio.on('INITIALIZE')
+        def _():
+            foo = copy_current_request_context(self._init)
+            eventlet.spawn(foo)
+
+        def gen_upload(func):
+            def upload():
+                upfile = request.files['file']
+                retval = func(upfile.filename, upfile.stream)
+                if retval:
+                    return make_response(jsonify(), 400)
+                return make_response(jsonify(), 200)
+            return upload
+
+        for uuid, func in self._uploads.items():
+            self.app.add_url_rule(f'/upload{uuid}', f'upload{uuid}', gen_upload(func), methods=['POST'])
+
+        for page, func in self._pages.items():
+            @self.socketio.on(f'resp#{page._uuid}')
+            def _():
+                foo = copy_current_request_context(func)
+                eventlet.spawn(foo)
+
         # bundle route
         @self.app.route('/bowtie/bundle.js')
-        def getbundle():
+        def bundlejs():
             bundle_path = self.app.root_path + '/build/src/static/bundle.js'
             bundle_path_gz = bundle_path + '.gz'
 

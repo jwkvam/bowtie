@@ -158,10 +158,8 @@ For example, this was done to create `bowtie-demo <https://github.com/jwkvam/bow
 
     python app.py prod
 
-* Commit the following files to your repo::
+* We need to add the Javascript, so commit the following file:
 
-    build/src/server.py
-    build/src/templates/index.html
     build/src/static/bundle.js.gz
 
 * Finally push your repo to Heroku!
