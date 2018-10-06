@@ -19,8 +19,10 @@ import traceback
 import eventlet
 import msgpack
 import flask
-from flask import (Flask, render_template, make_response, copy_current_request_context,
-                   jsonify, request, Response)
+from flask import (
+    Flask, render_template, make_response,
+    copy_current_request_context, jsonify, request
+)
 from flask_socketio import SocketIO
 from jinja2 import Environment, FileSystemLoader, ChoiceLoader
 
@@ -628,22 +630,22 @@ class App:
             Enable debugging in Flask. Disable in production!
 
         """
-        self._basic_auth = basic_auth
         self.host = host
-        self._init: Optional[str] = None
-        self._password = password
         self.port = port
+        self.title = title
+        self.theme = theme
+        self._basic_auth = basic_auth
+        self._init: Optional[Callable] = None
+        self._password = password
         self._socketio_path = socketio
         self._schedules: List[Scheduler] = []
         self._subscriptions: Dict[Event, List[Tuple[List[Event], Callable]]] = defaultdict(list)
-        self._pages: Dict[Pager, str] = {}
-        self.title = title
+        self._pages: Dict[Pager, Callable] = {}
         self._username = username
-        self._uploads: Dict[int, str] = {}
-        self.theme = theme
+        self._uploads: Dict[int, Callable] = {}
         self._root = View(rows=rows, columns=columns, sidebar=sidebar,
                           background_color=background_color)
-        self._routes = []
+        self._routes: List[Route] = []
 
         self._package_dir = Path(os.path.dirname(__file__))
         self._jinjaenv = Environment(
@@ -656,7 +658,7 @@ class App:
         else:
             self.app = app
         self.app.debug = debug
-        self.socketio = SocketIO(self.app, binary=True, path=socketio + 'socket.io')
+        self._socketio = SocketIO(self.app, binary=True, path=socketio + 'socket.io')
         self.app.secret_key = secrets.token_bytes()
         self.add_route(view=self._root, path='/', exact=True)
 
@@ -887,12 +889,12 @@ class App:
         # [-1] grabs the top of the stack
         return os.path.basename(inspect.stack()[-1].filename)[:-3]
 
-    def _write_templates(self, notebook: Optional[str] = None) -> Set[str]:
+    def _write_templates(self) -> Set[str]:
         indexjsx = self._jinjaenv.get_template('index.jsx.j2')
         componentsjs = self._jinjaenv.get_template('components.js.j2')
         webpack = self._jinjaenv.get_template('webpack.common.js.j2')
 
-        src, app, templates = create_directories()
+        src = create_jspath()
 
         webpack_path = _DIRECTORY / webpack.name[:-3]  # type: ignore
         with webpack_path.open('w') as f:
@@ -900,39 +902,16 @@ class App:
                 webpack.render(color=self.theme)
             )
 
-        # server_path = src / server.name[:-3]  # type: ignore
-        # with server_path.open('w') as f:
-        #     f.write(
-        #         server.render(
-        #             basic_auth=self._basic_auth,
-        #             username=self._username,
-        #             password=self._password,
-        #             notebook=notebook,
-        #             source_module=self._sourcefile() if not notebook else None,
-        #             subscriptions=self._subscriptions,
-        #             uploads=self._uploads,
-        #             schedules=self._schedules,
-        #             initial=self._init,
-        #             routes=self._routes,
-        #             pages=self._pages,
-        #             host="'{}'".format(self._host),
-        #             port=self._port,
-        #             debug=self._debug
-        #         )
-        #     )
-        # perms = os.stat(server_path)
-        # os.chmod(server_path, perms.st_mode | stat.S_IEXEC)
-
         # copy js modules that are always needed
         for name in ['progress.jsx', 'view.jsx', 'utils.js']:
             template_src = self._package_dir / 'src' / name
-            shutil.copy(template_src, app)
+            shutil.copy(template_src, src)
 
         for route in self._routes:
             # pylint: disable=protected-access
             for template in route.view._templates:
                 template_src = self._package_dir / 'src' / template
-                shutil.copy(template_src, app)
+                shutil.copy(template_src, src)
 
         # Layout Design
         #
@@ -960,7 +939,7 @@ class App:
             imports |= route.view._imports  # pylint: disable=protected-access
             components |= route.view._components  # pylint: disable=protected-access
 
-        with (app / componentsjs.name[:-3]).open('w') as f:  # type: ignore
+        with (src / componentsjs.name[:-3]).open('w') as f:  # type: ignore
             f.write(
                 componentsjs.render(
                     imports=imports,
@@ -969,7 +948,7 @@ class App:
                 )
             )
 
-        with (app / indexjsx.name[:-3]).open('w') as f:  # type: ignore
+        with (src / indexjsx.name[:-3]).open('w') as f:  # type: ignore
             f.write(
                 indexjsx.render(
                     maxviewid=View._NEXT_UUID,  # pylint: disable=protected-access
@@ -988,7 +967,7 @@ class App:
                 f'found version {node_version}.'
             )
 
-        packages = self._write_templates(notebook=notebook)
+        packages = self._write_templates()
 
         if not os.path.isfile(os.path.join(_DIRECTORY, 'package.json')):
             packagejson = os.path.join(self._package_dir, 'src/package.json')
@@ -1032,19 +1011,20 @@ class App:
                     uniq_events.remove(main_event)
 
                     event_data = {}
-                    for ev in uniq_events:
-                        comp = COMPONENT_REGISTRY[ev.uuid]
-                        if ev.getter is None:
-                            raise GetterNotDefined('{ctype} has no getter associated with event "on_{ename}"'
-                                                   .format(ctype=type(comp), ename=ev.name))
-                        getter = getattr(comp, ev.getter)
-                        event_data[ev.signal] = getter()
+                    for event in uniq_events:
+                        comp = COMPONENT_REGISTRY[event.uuid]
+                        if event.getter is None:
+                            raise AttributeError(
+                                f'{comp} has no getter associated with event "on_{event.name}"'
+                            )
+                        event_data[event.signal] = getattr(comp, event.getter)()
 
                     # if there is no getter, then there is no data to unpack
                     # if there is a getter, then we need to unpack the data sent
                     main_getter = main_event.getter
                     if main_getter is not None:
-                        event_data[main_event.signal] = getattr(COMPONENT_REGISTRY[main_event.uuid], main_getter)(
+                        comp = COMPONENT_REGISTRY[main_event.uuid]
+                        event_data[main_event.signal] = getattr(comp, main_getter)(
                             msgpack.unpackb(args[0], encoding='utf8')
                         )
 
@@ -1057,18 +1037,16 @@ class App:
 
                         func(*user_args)
 
-                foo = copy_current_request_context(wrapuser)
-                eventlet.spawn(foo)
-
+                # TODO replace with flask socketio start_background_task
+                eventlet.spawn(copy_current_request_context(wrapuser))
             return handler
 
         for event, supports in self._subscriptions.items():
-            self.socketio.on(event.signal)(generate_sio_handler(event, supports))
+            self._socketio.on(event.signal)(generate_sio_handler(event, supports))
 
-        @self.socketio.on('INITIALIZE')
-        def _():
-            foo = copy_current_request_context(self._init)
-            eventlet.spawn(foo)
+        self._socketio.on('INITIALIZE')(lambda: eventlet.spawn(
+            copy_current_request_context(self._init)
+        ))
 
         def gen_upload(func):
             def upload():
@@ -1080,30 +1058,33 @@ class App:
             return upload
 
         for uuid, func in self._uploads.items():
-            self.app.add_url_rule(f'/upload{uuid}', f'upload{uuid}', gen_upload(func), methods=['POST'])
+            # TODO secure
+            self.app.add_url_rule(
+                f'/upload{uuid}', f'upload{uuid}', gen_upload(func), methods=['POST']
+            )
 
         for page, func in self._pages.items():
-            @self.socketio.on(f'resp#{page._uuid}')
-            def _():
-                foo = copy_current_request_context(func)
-                eventlet.spawn(foo)
+            # pylint: disable=protected-access
+            self._socketio.on(f'resp#{page._uuid}')(lambda: eventlet.spawn(
+                copy_current_request_context(func)
+            ))
 
         # bundle route
+        # TODO secure
         @self.app.route('/bowtie/bundle.js')
-        def bundlejs():
+        def bundlejs():  # pylint: disable=unused-variable
             bundle_path = self.app.root_path + '/build/src/static/bundle.js'
             bundle_path_gz = bundle_path + '.gz'
 
             try:
                 if os.path.getmtime(bundle_path) > os.path.getmtime(bundle_path_gz):
                     return open(bundle_path, 'r').read()
-                else:
-                    bundle = open(bundle_path_gz, 'rb').read()
-                    response = flask.make_response(bundle)
-                    response.headers['Content-Encoding'] = 'gzip'
-                    response.headers['Vary'] = 'Accept-Encoding'
-                    response.headers['Content-Length'] = len(response.data)
-                    return response
+                bundle = open(bundle_path_gz, 'rb').read()
+                response = flask.make_response(bundle)
+                response.headers['content-encoding'] = 'gzip'
+                response.headers['vary'] = 'accept-encoding'
+                response.headers['content-length'] = len(response.data)
+                return response
             except FileNotFoundError:
                 if os.path.isfile(bundle_path_gz):
                     bundle = open(bundle_path_gz, 'rb').read()
@@ -1112,8 +1093,7 @@ class App:
                     response.headers['Vary'] = 'Accept-Encoding'
                     response.headers['Content-Length'] = len(response.data)
                     return response
-                else:
-                    return open(bundle_path, 'r').read()
+                return open(bundle_path, 'r').read()
 
         scheduled = not self.app.debug or os.environ.get('WERKZEUG_RUN_MAIN') == 'true'
         if scheduled:
@@ -1124,7 +1104,7 @@ class App:
         if result == 0:
             raise Exception(f'Port {self.port} is unavailable on host {self.host}, aborting.')
         # TODO afford the user some API to change server
-        self.socketio.run(self.app, host=self.host, port=self.port)
+        self._socketio.run(self.app, host=self.host, port=self.port)
         if scheduled:
             for schedule in self._schedules:
                 schedule.stop()
@@ -1156,11 +1136,8 @@ def installed_packages() -> Generator[str, None, None]:
     yield from packages['dependencies'].keys()
 
 
-def create_directories() -> Tuple[Path, Path, Path]:
-    """Create all the necessary subdirectories for the build."""
-    src = _DIRECTORY / 'src'
-    templates = src / 'templates'
-    app = src / 'app'
-    os.makedirs(app, exist_ok=True)
-    os.makedirs(templates, exist_ok=True)
-    return src, app, templates
+def create_jspath() -> Path:
+    """Create the source directory for the build."""
+    src = _DIRECTORY / 'bowtiejs'
+    os.makedirs(src, exist_ok=True)
+    return src
