@@ -81,7 +81,7 @@ class Scheduler:
             self.thread.cancel()
 
 
-def raise_not_number(x: int) -> None:
+def raise_not_number(x: float) -> None:
     """Raise ``SizeError`` if ``x`` is not a number``."""
     try:
         float(x)
@@ -208,43 +208,43 @@ class Size:
         self.minimum = 'auto'
         return self
 
-    def pixels(self, value) -> 'Size':
+    def pixels(self, value: float) -> 'Size':
         """Set the size in pixels."""
         raise_not_number(value)
         self.maximum = '{}px'.format(value)
         return self
 
-    def min_pixels(self, value) -> 'Size':
+    def min_pixels(self, value: float) -> 'Size':
         """Set the minimum size in pixels."""
         raise_not_number(value)
         self.minimum = '{}px'.format(value)
         return self
 
-    def ems(self, value) -> 'Size':
+    def ems(self, value: float) -> 'Size':
         """Set the size in ems."""
         raise_not_number(value)
         self.maximum = '{}em'.format(value)
         return self
 
-    def min_ems(self, value) -> 'Size':
+    def min_ems(self, value: float) -> 'Size':
         """Set the minimum size in ems."""
         raise_not_number(value)
         self.minimum = '{}em'.format(value)
         return self
 
-    def fraction(self, value: int) -> 'Size':
-        """Set the fraction of free space to use as an integer."""
+    def fraction(self, value: float) -> 'Size':
+        """Set the fraction of free space to use."""
         raise_not_number(value)
-        self.maximum = '{}fr'.format(int(value))
+        self.maximum = '{}fr'.format(value)
         return self
 
-    def percent(self, value) -> 'Size':
+    def percent(self, value: float) -> 'Size':
         """Set the percentage of free space to use."""
         raise_not_number(value)
         self.maximum = '{}%'.format(value)
         return self
 
-    def min_percent(self, value) -> 'Size':
+    def min_percent(self, value: float) -> 'Size':
         """Set the minimum percentage of free space to use."""
         raise_not_number(value)
         self.minimum = '{}%'.format(value)
@@ -734,6 +734,7 @@ class App:
             assert path != route.path, 'Cannot use the same path twice'
         self._routes.append(Route(view=view, path=path, exact=exact))
 
+        # TODO secure
         @self.app.route(path)
         def _():
             return render_template('bowtie.html', title=self.title)
