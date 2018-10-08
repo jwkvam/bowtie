@@ -14,14 +14,13 @@ def callback(*args):
 
 
 # pylint: disable=unused-argument
-def test_build(build_path, monkeypatch):
+def test_build(build_reset, monkeypatch):
     """Tests the build process."""
-    monkeypatch.setattr(App, '_sourcefile', lambda self: 'bowtie.tests.test_compile')
     reset_uuid()
     ctrl = Nouislider()
     viz = Plotly()
 
-    app = App()
+    app = App(__name__)
     app.add_sidebar(ctrl)
     app.add(viz)
     app.subscribe(callback, ctrl.on_change)

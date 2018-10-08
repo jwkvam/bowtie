@@ -13,7 +13,7 @@ from subprocess import call
 
 import click
 
-from bowtie._app import _DIRECTORY, _WEBPACK, App
+from bowtie._app import _WEBPACK, App
 
 
 class WrongNumberOfArguments(TypeError):
@@ -27,38 +27,31 @@ def numargs(func: Callable) -> int:
     return len(inspect.signature(func).parameters)
 
 
-def _build(app):
-    if app is None:
-        print(('No `App` instance was returned. '
-               'In the function decorated with @command, '
-               'return the `App` instance so it can be built.'))
-    else:
-        if not isinstance(app, App):
-            raise Exception(('Returned value {} is of type {}, '
-                             'it needs to be a bowtie.App instance.'.format(app, type(app))))
-        # pylint:disable=protected-access
-        app._build()
-
-
-def _serve(app):
-    if app is None:
-        print(('No `App` instance was returned. '
-               'In the function decorated with @command, '
-               'return the `App` instance so it can be built.'))
-    else:
-        if not isinstance(app, App):
-            raise Exception(('Returned value {} is of type {}, '
-                             'it needs to be a bowtie.App instance.'.format(app, type(app))))
-        # pylint:disable=protected-access
-        app._serve()
-
-
 def command(func):
     """Command line interface decorator.
 
     Decorate a function for building a Bowtie
     application and turn it into a command line interface.
     """
+    # pylint: disable=protected-access
+    nargs = numargs(func)
+    if nargs > 0:
+        raise WrongNumberOfArguments(
+            f'Decorated function "{func.__name__}" should have no arguments, it has {nargs}.'
+        )
+    app = func()
+    if app is None:
+        raise TypeError(
+            'No `App` instance was returned. '
+            'In the function decorated with @command, '
+            'return the `App` instance so it can be built.'
+        )
+    if not isinstance(app, App):
+        raise TypeError(
+            f'Returned value {app} is of type {type(app)}, '
+            'it needs to be a bowtie.App instance.'
+        )
+
     @click.group(options_metavar='[--help]')
     def cmd():
         """Bowtie CLI to help build and run your app."""
@@ -68,46 +61,18 @@ def command(func):
     @cmd.command(add_help_option=False)
     def build():
         """Write the app, downloads the packages, and bundles it with Webpack."""
-        nargs = numargs(func)
-        if nargs == 0:
-            app = func()
-        else:
-            raise WrongNumberOfArguments(
-                'Decorated function "{}" should have no arguments, it has {}.'
-                .format(func.__name__, nargs)
-            )
-        _build(app)
+        app._build()
 
-    @cmd.command(context_settings=dict(ignore_unknown_options=True),
-                 add_help_option=False)
-    @click.argument('extra', nargs=-1, type=click.UNPROCESSED)
-    def run(extra):
+    @cmd.command(add_help_option=False)
+    def run():
         """Build the app and serve it."""
-        nargs = numargs(func)
-        if nargs == 0:
-            app = func()
-        else:
-            raise WrongNumberOfArguments(
-                'Decorated function "{}" should have no arguments, it has {}.'
-                .format(func.__name__, nargs)
-            )
-        _build(app)
-        _serve(app)
+        app._build()
+        app._serve()
 
-    @cmd.command(context_settings=dict(ignore_unknown_options=True),
-                 add_help_option=False)
-    @click.argument('extra', nargs=-1, type=click.UNPROCESSED)
-    def serve(extra):
+    @cmd.command(add_help_option=False)
+    def serve():
         """Serve the Bowtie app."""
-        nargs = numargs(func)
-        if nargs == 0:
-            app = func()
-        else:
-            raise WrongNumberOfArguments(
-                'Decorated function "{}" should have no arguments, it has {}.'
-                .format(func.__name__, nargs)
-            )
-        _serve(app)
+        app._serve()
 
     @cmd.command(context_settings=dict(ignore_unknown_options=True),
                  add_help_option=False)
@@ -115,7 +80,7 @@ def command(func):
     def dev(extra):
         """Recompile the app for development."""
         line = (_WEBPACK, '--config', 'webpack.dev.js') + extra
-        call(line, cwd=_DIRECTORY)
+        call(line, cwd=app._build_dir)
 
     @cmd.command(context_settings=dict(ignore_unknown_options=True),
                  add_help_option=False)
@@ -123,7 +88,7 @@ def command(func):
     def prod(extra):
         """Recompile the app for production."""
         line = (_WEBPACK, '--config', 'webpack.prod.js', '--progress') + extra
-        call(line, cwd=_DIRECTORY)
+        call(line, cwd=app._build_dir)
 
     locale = inspect.stack()[1][0].f_locals
     module = locale.get("__name__")

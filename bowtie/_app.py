@@ -6,7 +6,6 @@ from typing import (  # pylint: disable=unused-import
 import os
 import json
 import itertools
-import inspect
 import shutil
 from collections import namedtuple, defaultdict
 from subprocess import Popen, PIPE, STDOUT, check_output
@@ -49,6 +48,7 @@ class Scheduler:
 
     def __init__(self, app, seconds, func):
         """Create a scheduled function."""
+        print('created scheduler')
         self.app = app
         self.seconds = seconds
         self.func = func
@@ -668,6 +668,7 @@ class App:
             self.app.jinja_loader,
             FileSystemLoader(str(templates)),
         ])
+        self._build_dir = self.app.root_path / _DIRECTORY
 
     def __getattr__(self, name: str):
         """Export attributes from root view."""
@@ -735,9 +736,9 @@ class App:
         self._routes.append(Route(view=view, path=path, exact=exact))
 
         # TODO secure
-        @self.app.route(path)
-        def _():
-            return render_template('bowtie.html', title=self.title)
+        self.app.add_url_rule(
+            path, path[1:], lambda: render_template('bowtie.html', title=self.title)
+        )
 
     def respond(self, pager: Pager, func: Callable) -> None:
         """Call a function in response to a page.
@@ -886,18 +887,14 @@ class App:
         """
         self._schedules.append(Scheduler(self.app, seconds, func))
 
-    def _sourcefile(self) -> str:  # pylint: disable=no-self-use
-        # [-1] grabs the top of the stack
-        return os.path.basename(inspect.stack()[-1].filename)[:-3]
-
     def _write_templates(self) -> Set[str]:
         indexjsx = self._jinjaenv.get_template('index.jsx.j2')
         componentsjs = self._jinjaenv.get_template('components.js.j2')
         webpack = self._jinjaenv.get_template('webpack.common.js.j2')
 
-        src = create_jspath()
+        src = self._create_jspath()
 
-        webpack_path = _DIRECTORY / webpack.name[:-3]  # type: ignore
+        webpack_path = self._build_dir / webpack.name[:-3]  # type: ignore
         with webpack_path.open('w') as f:
             f.write(
                 webpack.render(color=self.theme)
@@ -970,36 +967,31 @@ class App:
 
         packages = self._write_templates()
 
-        if not os.path.isfile(os.path.join(_DIRECTORY, 'package.json')):
-            packagejson = os.path.join(self._package_dir, 'src/package.json')
-            shutil.copy(packagejson, _DIRECTORY)
+        for filename in ['package.json', 'webpack.prod.js', 'webpack.dev.js']:
+            if not (self._build_dir / filename).is_file():
+                sourcefile = self._package_dir / 'src' / filename
+                shutil.copy(sourcefile, self._build_dir)
 
-        if not os.path.isfile(os.path.join(_DIRECTORY, 'webpack.prod.json')):
-            webpackprod = os.path.join(self._package_dir, 'src/webpack.prod.js')
-            shutil.copy(webpackprod, _DIRECTORY)
-
-        if not os.path.isfile(os.path.join(_DIRECTORY, 'webpack.dev.json')):
-            webpackdev = os.path.join(self._package_dir, 'src/webpack.dev.js')
-            shutil.copy(webpackdev, _DIRECTORY)
-
-        if run(['yarn', '--ignore-engines', 'install'], notebook=notebook) > 1:
+        if self._run(['yarn', '--ignore-engines', 'install'], notebook=notebook) > 1:
             raise YarnError('Error installing node packages')
 
         if packages:
-            installed = installed_packages()
+            installed = self._installed_packages()
             new_packages = [x for x in packages if x.split('@')[0] not in installed]
 
             if new_packages:
-                retval = run(['yarn', '--ignore-engines', 'add'] + new_packages, notebook=notebook)
+                retval = self._run(
+                    ['yarn', '--ignore-engines', 'add'] + new_packages, notebook=notebook
+                )
                 if retval > 1:
                     raise YarnError('Error installing node packages')
                 elif retval == 1:
                     print('Yarn error but trying to continue build')
-        retval = run([_WEBPACK, '--config', 'webpack.dev.js'], notebook=notebook)
+        retval = self._run([_WEBPACK, '--config', 'webpack.dev.js'], notebook=notebook)
         if retval != 0:
             raise WebpackError('Error building with webpack')
 
-    def _serve(self):
+    def _serve(self) -> None:
 
         def generate_sio_handler(main_event, supports):
             def handler(*args):
@@ -1025,7 +1017,7 @@ class App:
                     main_getter = main_event.getter
                     if main_getter is not None:
                         comp = COMPONENT_REGISTRY[main_event.uuid]
-                        event_data[main_event.signal] = getattr(comp, main_getter)(
+                        event_data[main_event.signal] = getattr(comp, '_' + main_getter)(
                             msgpack.unpackb(args[0], encoding='utf8')
                         )
 
@@ -1045,9 +1037,10 @@ class App:
         for event, supports in self._subscriptions.items():
             self._socketio.on(event.signal)(generate_sio_handler(event, supports))
 
-        self._socketio.on('INITIALIZE')(lambda: eventlet.spawn(
-            copy_current_request_context(self._init)
-        ))
+        if self._init is not None:
+            self._socketio.on('INITIALIZE')(lambda: eventlet.spawn(
+                copy_current_request_context(self._init)
+            ))
 
         def gen_upload(func):
             def upload():
@@ -1074,7 +1067,7 @@ class App:
         # TODO secure
         @self.app.route('/bowtie/bundle.js')
         def bundlejs():  # pylint: disable=unused-variable
-            bundle_path = self.app.root_path + '/build/src/static/bundle.js'
+            bundle_path = self.app.root_path + '/build/bundle.js'
             bundle_path_gz = bundle_path + '.gz'
 
             try:
@@ -1110,35 +1103,32 @@ class App:
             for schedule in self._schedules:
                 schedule.stop()
 
+    def _installed_packages(self) -> Generator[str, None, None]:
+        """Extract installed packages as list from `package.json`."""
+        with (self.app.root_path / _DIRECTORY / 'package.json').open('r') as f:
+            packages = json.load(f)
+        yield from packages['dependencies'].keys()
 
-def run(command: List[str], notebook: Optional[str] = None) -> int:
-    """Run command from terminal and notebook and view output from subprocess."""
-    if notebook is None:
-        return Popen(command, cwd=_DIRECTORY).wait()
-    cmd = Popen(command, cwd=_DIRECTORY, stdout=PIPE, stderr=STDOUT)
-    while True:
-        line = cmd.stdout.readline()
-        if line == b'' and cmd.poll() is not None:
-            return cmd.poll()
-        print(line.decode('utf-8'), end='')
-    raise Exception()
+    def _create_jspath(self) -> Path:
+        """Create the source directory for the build."""
+        src = self.app.root_path / _DIRECTORY / 'bowtiejs'
+        os.makedirs(src, exist_ok=True)
+        return src
+
+    def _run(self, command: List[str], notebook: Optional[str] = None) -> int:
+        """Run command from terminal and notebook and view output from subprocess."""
+        if notebook is None:
+            return Popen(command, cwd=self._build_dir).wait()
+        cmd = Popen(command, cwd=self._build_dir, stdout=PIPE, stderr=STDOUT)
+        while True:
+            line = cmd.stdout.readline()
+            if line == b'' and cmd.poll() is not None:
+                return cmd.poll()
+            print(line.decode('utf-8'), end='')
+        raise Exception()
 
 
 def node_version():
     """Get node version."""
     version = check_output(('node', '--version'))
     return tuple(int(x) for x in version.strip()[1:].split(b'.'))
-
-
-def installed_packages() -> Generator[str, None, None]:
-    """Extract installed packages as list from `package.json`."""
-    with (_DIRECTORY / 'package.json').open('r') as f:
-        packages = json.load(f)
-    yield from packages['dependencies'].keys()
-
-
-def create_jspath() -> Path:
-    """Create the source directory for the build."""
-    src = _DIRECTORY / 'bowtiejs'
-    os.makedirs(src, exist_ok=True)
-    return src
