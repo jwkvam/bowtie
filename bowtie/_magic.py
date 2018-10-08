@@ -109,6 +109,7 @@ class BowtieMagic(Magics):
                     print('Failed to stop Bowtie app.', file=sys.stderr)
                     return
             print('Successfully stopped Bowtie app.')
+            self.process.close()
             self.process = None
 
     @line_magic

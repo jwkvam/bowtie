@@ -994,22 +994,25 @@ class App:
     def _serve(self) -> None:
 
         def generate_sio_handler(main_event, supports):
+            # get all events from all subscriptions associated with this event
+            uniq_events = set()
+            for events, _ in supports:
+                uniq_events.update(events)
+            uniq_events.remove(main_event)
+
+            for event in uniq_events:
+                comp = COMPONENT_REGISTRY[event.uuid]
+                if event.getter is None:
+                    raise AttributeError(
+                        f'{comp} has no getter associated with event "on_{event.name}"'
+                    )
+
             def handler(*args):
                 def wrapuser():
-
-                    # get all events from all subscriptions associated with this event
-                    uniq_events = set()
-                    for events, _ in supports:
-                        uniq_events.update(events)
-                    uniq_events.remove(main_event)
-
                     event_data = {}
                     for event in uniq_events:
                         comp = COMPONENT_REGISTRY[event.uuid]
-                        if event.getter is None:
-                            raise AttributeError(
-                                f'{comp} has no getter associated with event "on_{event.name}"'
-                            )
+                        # we already checked that this component has a getter
                         event_data[event.signal] = getattr(comp, event.getter)()
 
                     # if there is no getter, then there is no data to unpack
@@ -1023,12 +1026,10 @@ class App:
 
                     # gather the remaining data from the other events through their getter methods
                     for events, func in supports:
-                        user_args = []
                         if main_getter is not None:
-                            for event in events:
-                                user_args.append(event_data[event.signal])
-
-                        func(*user_args)
+                            func(*(event_data[event.signal] for event in events))
+                        else:
+                            func()
 
                 # TODO replace with flask socketio start_background_task
                 eventlet.spawn(copy_current_request_context(wrapuser))
