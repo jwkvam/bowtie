@@ -1105,13 +1105,13 @@ class App:
 
     def _installed_packages(self) -> Generator[str, None, None]:
         """Extract installed packages as list from `package.json`."""
-        with (self.app.root_path / _DIRECTORY / 'package.json').open('r') as f:
+        with (self.app._build_dir / 'package.json').open('r') as f:
             packages = json.load(f)
         yield from packages['dependencies'].keys()
 
     def _create_jspath(self) -> Path:
         """Create the source directory for the build."""
-        src = self.app.root_path / _DIRECTORY / 'bowtiejs'
+        src = self.app._build_dir / 'bowtiejs'
         os.makedirs(src, exist_ok=True)
         return src
 
