@@ -33,7 +33,7 @@ def command(func):
     Decorate a function for building a Bowtie
     application and turn it into a command line interface.
     """
-    # pylint: disable=protected-access
+    # pylint: disable=protected-access,unused-variable
     nargs = numargs(func)
     if nargs > 0:
         raise WrongNumberOfArguments(
@@ -57,7 +57,6 @@ def command(func):
         """Bowtie CLI to help build and run your app."""
         pass
 
-    # pylint: disable=unused-variable
     @cmd.command(add_help_option=False)
     def build():
         """Write the app, downloads the packages, and bundles it with Webpack."""
