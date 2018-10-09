@@ -236,7 +236,7 @@ def is_getter(attribute: str) -> bool:
 
 
 class _Maker(ABCMeta):
-    def __new__(mcs, name, bases, namespace):  # pylint: disable=arguments-differ
+    def __new__(cls, name, bases, namespace):  # pylint: disable=arguments-differ
         for k in list(namespace.keys()):
             if is_event(k):
                 namespace[k] = make_event(namespace[k])
@@ -246,7 +246,7 @@ class _Maker(ABCMeta):
                 # preserve the post-processor with an underscore
                 namespace['_' + k] = namespace[k]
                 namespace[k] = make_getter(namespace[k])
-        return super().__new__(mcs, name, bases, namespace)
+        return super().__new__(cls, name, bases, namespace)
 
 
 class FormatDict(dict):
