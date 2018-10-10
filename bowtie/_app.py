@@ -587,8 +587,7 @@ class App:
     def __init__(self, name='__main__', app=None, rows: int = 1, columns: int = 1,
                  sidebar: bool = True, title: str = 'Bowtie App',
                  theme: Optional[str] = None, background_color: str = 'White',
-                 host: str = '0.0.0.0', port: int = 9991, socketio: str = '',
-                 debug: bool = False) -> None:
+                 socketio: str = '', debug: bool = False) -> None:
         """Create a Bowtie App.
 
         Parameters
@@ -1081,7 +1080,7 @@ class App:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         result = sock.connect_ex((host, port))
         if result == 0:
-            raise Exception(f'Port {self.port} is unavailable on host {self.host}, aborting.')
+            raise Exception(f'Port {port} is unavailable on host {host}, aborting.')
         # TODO afford the user some API to change server
         self._socketio.run(self.app, host=host, port=port)
         if scheduled:
