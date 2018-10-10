@@ -16,6 +16,7 @@ class Auth(ABC):
         """Create Auth class to protect flask routes and socketio connect."""
         self.app = app
         self._protect_routes()
+        # only need to check credentials on "connect" event
         self.app._socketio.on('connect')(self.socketio_auth)  # pylint: disable=protected-access
 
     def _protect_routes(self) -> None:
@@ -26,13 +27,19 @@ class Auth(ABC):
             self.app.app.view_functions[name] = self.requires_auth(method)
 
     @abstractmethod
-    def requires_auth(self, func: Callable):
-        """Determine if a user is allowed to view this route."""
+    def requires_auth(self, func: Callable) -> Callable:
+        """Determine if a user is allowed to view this route.
+
+        Name is subject to change.
+        """
         pass
 
     @abstractmethod
-    def socketio_auth(self):
-        """Determine if a user is allowed to establish socketio connection."""
+    def socketio_auth(self) -> bool:
+        """Determine if a user is allowed to establish socketio connection.
+
+        Name is subject to change.
+        """
         pass
 
 
@@ -48,11 +55,18 @@ class BasicAuth(Auth):
         credentials : dict
             Usernames and passwords should be passed in as a dictionary.
 
+        Examples
+        --------
+        >>> from bowtie import App
+        >>> from bowtie.auth import BasicAuth
+        >>> app = App(__name__)
+        >>> auth = BasicAuth(app, {'alice': 'secret1', 'bob': 'secret2'})
+
         """
         self.credentials = credentials
         super().__init__(app)
 
-    def check_auth(self, username: str, password: str) -> bool:
+    def _check_auth(self, username: str, password: str) -> bool:
         """Check if a username/password combination is valid."""
         try:
             return self.credentials[username] == password
@@ -71,7 +85,7 @@ class BasicAuth(Auth):
         @wraps(func)
         def decorated(*args, **kwargs):
             auth = request.authorization
-            if not auth or not self.check_auth(auth.username, auth.password):
+            if not auth or not self._check_auth(auth.username, auth.password):
                 return Response(
                     'Could not verify your access level for that URL.\n'
                     'You have to login with proper credentials', 401,

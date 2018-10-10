@@ -63,15 +63,19 @@ def command(func):
         app._build()
 
     @cmd.command(add_help_option=False)
-    def run():
+    @click.option('--host', '-h', default='0.0.0.0', type=str)
+    @click.option('--port', '-p', default=9991, type=int)
+    def run(host, port):
         """Build the app and serve it."""
         app._build()
-        app._serve()
+        app._serve(host, port)
 
-    @cmd.command(add_help_option=False)
-    def serve():
+    @cmd.command(add_help_option=True)
+    @click.option('--host', '-h', default='0.0.0.0', type=str)
+    @click.option('--port', '-p', default=9991, type=int)
+    def serve(host, port):
         """Serve the Bowtie app."""
-        app._serve()
+        app._serve(host, port)
 
     @cmd.command(context_settings=dict(ignore_unknown_options=True),
                  add_help_option=False)

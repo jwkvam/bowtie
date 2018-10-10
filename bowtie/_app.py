@@ -585,8 +585,7 @@ class App:
     """Core class to layout, connect, build a Bowtie app."""
 
     def __init__(self, name='__main__', app=None, rows: int = 1, columns: int = 1,
-                 sidebar: bool = True, title: str = 'Bowtie App', basic_auth: bool = False,
-                 username: str = 'username', password: str = 'password',
+                 sidebar: bool = True, title: str = 'Bowtie App',
                  theme: Optional[str] = None, background_color: str = 'White',
                  host: str = '0.0.0.0', port: int = 9991, socketio: str = '',
                  debug: bool = False) -> None:
@@ -610,38 +609,23 @@ class App:
             Enable a sidebar for control components.
         title : str, optional
             Title of the HTML.
-        basic_auth : bool, optional
-            Enable basic authentication.
-        username : str, optional
-            Username for basic authentication.
-        password : str, optional
-            Password for basic authentication.
         theme : str, optional
             Color for Ant Design components.
         background_color : str, optional
             Background color of the control pane.
-        host : str, optional
-            Host IP address.
-        port : int, optional
-            Host port number.
         socketio : string, optional
             Socket.io path prefix, only change this for advanced deployments.
         debug : bool, optional
             Enable debugging in Flask. Disable in production!
 
         """
-        self.host = host
-        self.port = port
         self.title = title
         self.theme = theme
-        self._basic_auth = basic_auth
         self._init: Optional[Callable] = None
-        self._password = password
         self._socketio_path = socketio
         self._schedules: List[Scheduler] = []
         self._subscriptions: Dict[Event, List[Tuple[List[Event], Callable]]] = defaultdict(list)
         self._pages: Dict[Pager, Callable] = {}
-        self._username = username
         self._uploads: Dict[int, Callable] = {}
         self._root = View(rows=rows, columns=columns, sidebar=sidebar,
                           background_color=background_color)
@@ -991,7 +975,7 @@ class App:
         if retval != 0:
             raise WebpackError('Error building with webpack')
 
-    def _serve(self) -> None:
+    def _serve(self, host='0.0.0.0', port=9991) -> None:
 
         def generate_sio_handler(main_event, supports):
             # get all events from all subscriptions associated with this event
@@ -1095,11 +1079,11 @@ class App:
             for schedule in self._schedules:
                 schedule.start()
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        result = sock.connect_ex((self.host, self.port))
+        result = sock.connect_ex((host, port))
         if result == 0:
             raise Exception(f'Port {self.port} is unavailable on host {self.host}, aborting.')
         # TODO afford the user some API to change server
-        self._socketio.run(self.app, host=self.host, port=self.port)
+        self._socketio.run(self.app, host=host, port=port)
         if scheduled:
             for schedule in self._schedules:
                 schedule.stop()
