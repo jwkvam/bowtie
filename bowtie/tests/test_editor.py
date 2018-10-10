@@ -32,11 +32,11 @@ def write(txt):
 @pytest.fixture
 def markdown(build_reset, monkeypatch):
     """Create markdown and text widgets."""
-    app = App(__name__)
+    app = App(__name__, sidebar=True)
     app.add(mark)
     app.add_sidebar(side)
     app.add_sidebar(text)
-    app.subscribe(write, text.on_change)
+    app.subscribe(text.on_change)(write)
     # pylint: disable=protected-access
     app._build()
 

@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 0.11.0 / 2018-??-??
+
+### Added
+
+
+### Breaking
+
+  * sidebar now defaults to False
+
 ## 0.10.1 / 2018-10-03
 
 ### Added

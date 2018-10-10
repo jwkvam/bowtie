@@ -42,7 +42,7 @@ def dummy(build_reset, monkeypatch):
     """Create basic app."""
     app = App(__name__)
     app.add(button)
-    app.subscribe(click, button.on_click)
+    app.subscribe(button.on_click)(click)
     app._build()  # pylint: disable=protected-access
 
     with server_check(app) as server:

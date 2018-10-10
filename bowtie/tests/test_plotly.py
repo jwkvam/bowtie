@@ -29,13 +29,12 @@ def callback(*args):
 @pytest.fixture
 def plotly(build_reset, monkeypatch):
     """Create plotly app."""
-    app = App(__name__)
+    app = App(__name__, sidebar=True)
     app.add(viz)
     app.add_sidebar(ctrl)
     app.add_sidebar(ctrl_range)
     app.add_sidebar(ctrl2)
-    app.subscribe(callback, ctrl.on_change)
-    app.subscribe(callback, ctrl2.on_click)
+    app.subscribe(ctrl.on_change)(app.subscribe(ctrl2.on_click)(callback))
     # pylint: disable=protected-access
     app._build()
 

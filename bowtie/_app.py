@@ -400,7 +400,7 @@ class View:
         cls._NEXT_UUID += 1
         return cls._NEXT_UUID
 
-    def __init__(self, rows: int = 1, columns: int = 1, sidebar: bool = True,
+    def __init__(self, rows: int = 1, columns: int = 1, sidebar: bool = False,
                  background_color: str = 'White') -> None:
         """Create a new grid.
 
@@ -425,6 +425,7 @@ class View:
         self.columns = [Size() for _ in range(columns)]
         self.sidebar = sidebar
         self.background_color = background_color
+        self.layout: Optional[Callable] = None
         self._controllers: List[Component] = []
         self._spans: Dict[Span, Components] = {}
 
@@ -585,7 +586,7 @@ class App:
     """Core class to layout, connect, build a Bowtie app."""
 
     def __init__(self, name='__main__', app=None, rows: int = 1, columns: int = 1,
-                 sidebar: bool = True, title: str = 'Bowtie App',
+                 sidebar: bool = False, title: str = 'Bowtie App',
                  theme: Optional[str] = None, background_color: str = 'White',
                  socketio: str = '', debug: bool = False) -> None:
         """Create a Bowtie App.
@@ -718,135 +719,122 @@ class App:
             assert path != route.path, 'Cannot use the same path twice'
         self._routes.append(Route(view=view, path=path, exact=exact))
 
-        # TODO secure
         self.app.add_url_rule(
             path, path[1:], lambda: render_template('bowtie.html', title=self.title)
         )
 
-    def respond(self, pager: Pager, func: Callable) -> None:
-        """Call a function in response to a page.
+    # def respond(self, pager: Pager) -> func: Callable):
+    #     """Call a function in response to a page.
+    #
+    #     When the pager calls notify, the function will be called.
+    #
+    #     Parameters
+    #     ----------
+    #     pager : Pager
+    #         Pager that to signal when func is called.
+    #     func : callable
+    #         Function to be called.
+    #
+    #     Examples
+    #     --------
+    #     Using the pager to run a callback function.
+    #
+    #     >>> from bowtie.pager import Pager
+    #     >>> app = App()
+    #     >>> pager = Pager()
+    #     >>> def callback():
+    #     ...     pass
+    #     >>> def scheduledtask():
+    #     ...     pager.notify()
+    #     >>> app.respond(pager, callback)
+    #
+    #     """
+    #     # FIXME move this logic to subscribe and remove this function
+    #     self._pages[pager] = func
 
-        When the pager calls notify, the function will be called.
+    def subscribe(self, *events: Union[Event, Pager]) -> Callable:
+        """Call a function in response to an event.
+
+        If more than one event is given, `func` will be given
+        as many arguments as there are events.
 
         Parameters
         ----------
-        pager : Pager
-            Pager that to signal when func is called.
-        func : callable
-            Function to be called.
+        *event : event or pager
+            Bowtie event, must have at least one.
 
         Examples
         --------
+        Subscribing a function to multiple events.
+
+        >>> from bowtie.control import Dropdown, Slider
+        >>> app = App()
+        >>> dd = Dropdown()
+        >>> slide = Slider()
+        >>> @app.subscribe(dd.on_change, slide.on_change)
+        ... def callback(dd_item, slide_value):
+        ...     pass
+        >>> @app.subscribe(dd.on_change)
+        ... @app.subscribe(slide.on_change)
+        ... def callback2(value):
+        ...     pass
+
         Using the pager to run a callback function.
 
         >>> from bowtie.pager import Pager
         >>> app = App()
         >>> pager = Pager()
-        >>> def callback():
+        >>> @app.subscribe(pager)
+        ... def callback():
         ...     pass
         >>> def scheduledtask():
         ...     pager.notify()
-        >>> app.respond(pager, callback)
 
         """
-        self._pages[pager] = func
-
-    def subscribe(self, func: Callable, event: Event, *events: Event) -> None:
-        """Call a function in response to an event.
-
-        If more than one event is given, `func` will be given
-        as many arguments as there are events.
-
-        Parameters
-        ----------
-        func : callable
-            Function to be called.
-        event : event
-            A Bowtie event.
-        *events : Each is an event, optional
-            Additional events.
-
-        Examples
-        --------
-        Subscribing a function to multiple events.
-
-        >>> from bowtie.control import Dropdown, Slider
-        >>> app = App()
-        >>> dd = Dropdown()
-        >>> slide = Slider()
-        >>> def callback(dd_item, slide_value):
-        ...     pass
-        >>> app.subscribe(callback, dd.on_change, slide.on_change)
-
-        """
-        if not callable(func):
-            raise TypeError(
-                'The first argument to subscribe must be callable, found {}'.format(type(func))
+        try:
+            first_event = events[0]
+        except IndexError:
+            raise IndexError('Must subscribe to at least one event.')
+        if len(events) != len(set(events)):
+            raise ValueError(
+                'Subscribed to the same event multiple times. All events must be unique.'
             )
-        all_events = [event, *events]
-        if len(all_events) != len(set(all_events)):
-            raise ValueError('Subscribed to the same event multiple times. '
-                             'All events must be unique.')
 
-        if len(all_events) > 1:
+        if len(events) > 1:
             # check if we are using any non stateful events
-            for evt in all_events:
-                if evt.getter is None:
-                    msg = '{}.on_{} is not a stateful event. It must be used alone.'
-                    raise NotStatefulEvent(msg.format(evt.uuid, evt.name))
+            for event in events:
+                if isinstance(event, Pager):
+                    raise NotStatefulEvent('Pagers must be subscribed by itself.')
+                if event.getter is None:
+                    raise NotStatefulEvent(
+                        f'{event.uuid}.on_{event.name} is not a stateful event. '
+                        'It must be used alone.'
+                    )
 
-        if event.name == 'upload':
-            if event.uuid in self._uploads:
-                warnings.warn(
-                    ('Overwriting function "{func1}" with function '
-                     '"{func2}" for upload object "{obj}".').format(
-                         func1=self._uploads[event.uuid],
-                         func2=func.__name__,
-                         obj=COMPONENT_REGISTRY[event.uuid]
-                     ), Warning)
-            self._uploads[event.uuid] = func
-
-        for evt in all_events:
-            # need to have `all_events` here to maintain order of arguments
-            self._subscriptions[evt].append((all_events, func))
-
-    def listen(self, event: Event, *events: Event) -> Callable:
-        """Call a function in response to an event.
-
-        If more than one event is given, `func` will be given
-        as many arguments as there are events.
-
-        Parameters
-        ----------
-        event : event
-            A Bowtie event.
-        *events : Each is an event, optional
-            Additional events.
-
-        Examples
-        --------
-        Subscribing a function to multiple events.
-
-        >>> from bowtie.control import Dropdown, Slider
-        >>> app = App()
-        >>> dd = Dropdown()
-        >>> slide = Slider()
-        >>> @app.listen(dd.on_change, slide.on_change)
-        ... def callback(dd_item, slide_value):
-        ...     pass
-        >>> @app.listen(dd.on_change)
-        ... @app.listen(slide.on_change)
-        ... def callback2(value):
-        ...     pass
-
-        """
-        def decorator(func):
-            """Subscribe function to events."""
-            self.subscribe(func, event, *events)
+        def decorator(func: Callable) -> Callable:
+            """Handle three types of events: pages, uploads, and normal events."""
+            if isinstance(first_event, Pager):
+                self._pages[first_event] = func
+            elif first_event.name == 'upload':
+                if first_event.uuid in self._uploads:
+                    warnings.warn(
+                        ('Overwriting function "{func1}" with function '
+                         '"{func2}" for upload object "{obj}".').format(
+                             func1=self._uploads[first_event.uuid],
+                             func2=func.__name__,
+                             obj=COMPONENT_REGISTRY[first_event.uuid]
+                         ), Warning)
+                self._uploads[first_event.uuid] = func
+            else:
+                for event in events:
+                    # need to have `events` here to maintain order of arguments
+                    # not sure how to deal with mypy typing errors on events so ignoring
+                    self._subscriptions[event].append((events, func))  # type: ignore
             return func
+
         return decorator
 
-    def load(self, func: Callable) -> None:
+    def load(self, func: Callable) -> Callable:
         """Call a function on page load.
 
         Parameters
@@ -856,8 +844,9 @@ class App:
 
         """
         self._init = func
+        return func
 
-    def schedule(self, seconds: float, func: Callable) -> None:
+    def schedule(self, seconds: float):
         """Call a function periodically.
 
         Parameters
@@ -868,7 +857,9 @@ class App:
             Function to be called.
 
         """
-        self._schedules.append(Scheduler(self.app, seconds, func))
+        def wrap(func: Callable):
+            self._schedules.append(Scheduler(self.app, seconds, func))
+        return wrap
 
     def _write_templates(self) -> Set[str]:
         indexjsx = self._jinjaenv.get_template('index.jsx.j2')
@@ -888,21 +879,12 @@ class App:
             template_src = self._package_dir / 'src' / name
             shutil.copy(template_src, src)
 
-        for route in self._routes:
-            # pylint: disable=protected-access
-            for template in route.view._templates:
-                template_src = self._package_dir / 'src' / template
-                shutil.copy(template_src, src)
-
         # Layout Design
         #
         # Dictionaries that are keyed by the components
         #
         # To layout this will need to look through all components that have a key of the route
         #
-        #
-        # 1. This way they can
-
         # use cases
         # 1. statically add items to controller in list
         # 2. remove item from controller
@@ -916,9 +898,14 @@ class App:
         imports: Set[_Import] = set()
         packages: Set[str] = set()
         for route in self._routes:
+            if route.view.layout:
+                route.view.layout()
             packages |= route.view._packages  # pylint: disable=protected-access
             imports |= route.view._imports  # pylint: disable=protected-access
             components |= route.view._components  # pylint: disable=protected-access
+            for template in route.view._templates:  # pylint: disable=protected-access
+                template_src = self._package_dir / 'src' / template
+                shutil.copy(template_src, src)
 
         with (src / componentsjs.name[:-3]).open('w') as f:  # type: ignore
             f.write(
@@ -1036,7 +1023,6 @@ class App:
             return upload
 
         for uuid, func in self._uploads.items():
-            # TODO secure
             self.app.add_url_rule(
                 f'/upload{uuid}', f'upload{uuid}', gen_upload(func), methods=['POST']
             )
@@ -1048,9 +1034,8 @@ class App:
             ))
 
         # bundle route
-        # TODO secure
         @self.app.route('/bowtie/bundle.js')
-        def bundlejs():  # pylint: disable=unused-variable
+        def bowtiebundlejs():  # pylint: disable=unused-variable
             bundle_path = self.app.root_path + '/build/bundle.js'
             bundle_path_gz = bundle_path + '.gz'
 
@@ -1082,6 +1067,8 @@ class App:
         if result == 0:
             raise Exception(f'Port {port} is unavailable on host {host}, aborting.')
         # TODO afford the user some API to change server
+        # for example gunicorn or uwsgi
+        # even though this is production grade
         self._socketio.run(self.app, host=host, port=port)
         if scheduled:
             for schedule in self._schedules:

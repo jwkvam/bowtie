@@ -53,7 +53,7 @@ def components(build_reset, monkeypatch):
     """App with all components."""
     controllers, visuals, htmls = create_components()
 
-    app = App(__name__, rows=len(visuals))
+    app = App(__name__, rows=len(visuals), sidebar=True)
     for controller in controllers:
         # pylint: disable=protected-access
         assert COMPONENT_REGISTRY[controller._uuid] == controller

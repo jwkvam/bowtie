@@ -537,8 +537,8 @@ class Slider(_Controller):
               'marks={{{marks}}} '
               'vertical={{{vertical}}}')
 
-    def __init__(self, start: Optional[Union[int, Sequence[int]]] = None, ranged: bool = False,
-                 minimum: int = 0, maximum: int = 100, step: int = 1,
+    def __init__(self, start: Optional[Union[float, Sequence[float]]] = None, ranged: bool = False,
+                 minimum: float = 0, maximum: float = 100, step: float = 1,
                  vertical: bool = False) -> None:
         """Create a slider.
 

@@ -30,7 +30,7 @@ def callback(*args):
 @pytest.fixture
 def multiple_views(build_reset, monkeypatch):
     """Create multiple views app."""
-    app = App(__name__)
+    app = App(__name__, sidebar=True)
     view1 = View()  # pylint: disable=unused-variable
     assert view1._uuid == 2  # pylint: disable=protected-access
     view2 = View()
@@ -40,8 +40,7 @@ def multiple_views(build_reset, monkeypatch):
     app.add(table)
     app.add_sidebar(ctrl)
     app.add_sidebar(ctrl2)
-    app.subscribe(callback, ctrl.on_change)
-    app.subscribe(callback, ctrl2.on_click)
+    app.subscribe(ctrl.on_change)(app.subscribe(ctrl2.on_click)(callback))
 
     app._build()  # pylint: disable=protected-access
 

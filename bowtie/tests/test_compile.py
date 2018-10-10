@@ -20,9 +20,9 @@ def test_build(build_reset, monkeypatch):
     ctrl = Nouislider()
     viz = Plotly()
 
-    app = App(__name__)
+    app = App(__name__, sidebar=True)
     app.add_sidebar(ctrl)
     app.add(viz)
-    app.subscribe(callback, ctrl.on_change)
+    app.subscribe(ctrl.on_change)(callback)
     # pylint: disable=protected-access
     app._build()
