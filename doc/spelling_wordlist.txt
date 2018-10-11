@@ -38,6 +38,7 @@ pythonic
 repo
 repos
 serializable
+sinusoid
 stateful
 todo
 username
