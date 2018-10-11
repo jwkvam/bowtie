@@ -36,7 +36,6 @@ from bowtie.exceptions import (
 
 Route = namedtuple('Route', ['view', 'path', 'exact'])
 _Import = namedtuple('_Import', ['module', 'component'])
-_Schedule = namedtuple('_Schedule', ['seconds', 'function'])
 
 _DIRECTORY = Path('build')
 _WEBPACK = './node_modules/.bin/webpack'
