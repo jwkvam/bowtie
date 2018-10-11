@@ -722,40 +722,13 @@ class App:
             path, path[1:], lambda: render_template('bowtie.html', title=self.title)
         )
 
-    # def respond(self, pager: Pager) -> func: Callable):
-    #     """Call a function in response to a page.
-    #
-    #     When the pager calls notify, the function will be called.
-    #
-    #     Parameters
-    #     ----------
-    #     pager : Pager
-    #         Pager that to signal when func is called.
-    #     func : callable
-    #         Function to be called.
-    #
-    #     Examples
-    #     --------
-    #     Using the pager to run a callback function.
-    #
-    #     >>> from bowtie.pager import Pager
-    #     >>> app = App()
-    #     >>> pager = Pager()
-    #     >>> def callback():
-    #     ...     pass
-    #     >>> def scheduledtask():
-    #     ...     pager.notify()
-    #     >>> app.respond(pager, callback)
-    #
-    #     """
-    #     # FIXME move this logic to subscribe and remove this function
-    #     self._pages[pager] = func
-
     def subscribe(self, *events: Union[Event, Pager]) -> Callable:
         """Call a function in response to an event.
 
         If more than one event is given, `func` will be given
         as many arguments as there are events.
+
+        If the pager calls notify, the decorated function will be called.
 
         Parameters
         ----------

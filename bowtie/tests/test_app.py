@@ -2,7 +2,6 @@
 import pytest
 
 from bowtie import App
-from bowtie.control import Button
 
 
 def test_subscribe_error():
