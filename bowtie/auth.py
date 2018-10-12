@@ -3,11 +3,12 @@
 References
 ----------
 https://stackoverflow.com/questions/13428708/best-way-to-make-flask-logins-login-required-the-default
+https://stackoverflow.com/questions/14367991/flask-before-request-add-exception-for-specific-route
+
 """
 
-from typing import Dict, Callable
+from typing import Dict, Optional
 from abc import ABC, abstractmethod
-from functools import wraps
 
 from flask import Response, request, session
 
@@ -78,7 +79,7 @@ class BasicAuth(Auth):
         except KeyError:
             return False
 
-    def before_request(self):
+    def before_request(self) -> Optional[Response]:
         """Determine if a user is allowed to view this route."""
         auth = request.authorization
         if not auth or not self._check_auth(auth.username, auth.password):
@@ -88,3 +89,4 @@ class BasicAuth(Auth):
                 {'WWW-Authenticate': 'Basic realm="Login Required"'}
             )
         session['logged_in'] = auth.username
+        return None
