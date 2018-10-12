@@ -669,6 +669,11 @@ class App:
             return self._root.layout
         raise AttributeError(name)
 
+    def __setattr__(self, name, value):
+        if name == 'layout':
+            return self._root.__setattr__(name, value)
+        return super().__setattr__(name, value)
+
     def __getitem__(self, key: Any):
         """Get item from root view."""
         return self._root.__getitem__(key)
