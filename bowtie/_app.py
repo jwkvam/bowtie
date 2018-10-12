@@ -670,6 +670,7 @@ class App:
         raise AttributeError(name)
 
     def __setattr__(self, name, value):
+        """Set layout function for root view."""
         if name == 'layout':
             return self._root.__setattr__(name, value)
         return super().__setattr__(name, value)
