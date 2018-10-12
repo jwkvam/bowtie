@@ -89,4 +89,5 @@ class BasicAuth(Auth):
                 {'WWW-Authenticate': 'Basic realm="Login Required"'}
             )
         session['logged_in'] = auth.username
+        # pylint wants this return statement
         return None
