@@ -30,8 +30,12 @@ class Auth(ABC):
         """Determine if a user is allowed to view this route.
 
         Name is subject to change.
+
+        Returns
+        -------
+        None, if no protection is needed.
+
         """
-        pass
 
     @abstractmethod
     def socketio_auth(self) -> bool:
@@ -39,7 +43,6 @@ class Auth(ABC):
 
         Name is subject to change.
         """
-        pass
 
 
 class BasicAuth(Auth):

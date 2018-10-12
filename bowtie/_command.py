@@ -19,8 +19,6 @@ from bowtie._app import _WEBPACK, App
 class WrongNumberOfArguments(TypeError):
     """The "build" function accepts an incorrect number of arguments."""
 
-    pass
-
 
 def numargs(func: Callable) -> int:
     """Get number of arguments."""

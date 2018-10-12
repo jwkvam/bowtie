@@ -113,7 +113,6 @@ class Progress(Component):
         None
 
         """
-        pass
 
     def do_success(self):
         """Display the progress indicator as done.
@@ -123,7 +122,6 @@ class Progress(Component):
         None
 
         """
-        pass
 
     def do_error(self):
         """Display an error in the progress indicator.
@@ -133,4 +131,3 @@ class Progress(Component):
         None
 
         """
-        pass

@@ -44,6 +44,8 @@ class Button(_Controller):
     def on_click(self) -> None:
         """Emit an event when the button is clicked.
 
+        There is no getter associated with this event.
+
         | **Payload:** ``None``.
 
         Returns
@@ -52,7 +54,6 @@ class Button(_Controller):
             Name of click event.
 
         """
-        pass
 
 
 class Upload(_Controller):
@@ -83,6 +84,8 @@ class Upload(_Controller):
     def on_upload(self):
         """Emit an event when the selection changes.
 
+        There is no getter associated with this event.
+
         | **Payload:** ``tuple`` with a str (name) and BytesIO (stream).
 
         The user is responsible for storing the object in this function
@@ -90,7 +93,6 @@ class Upload(_Controller):
         otherwise a return value of None or False indicate success.
 
         """
-        pass
 
 
 class Dropdown(_Controller):
