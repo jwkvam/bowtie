@@ -20,27 +20,9 @@ class Auth(ABC):
     def __init__(self, app: App) -> None:
         """Create Auth class to protect flask routes and socketio connect."""
         self.app = app
-        self._protect_routes()
+        self.app.app.before_request(self.before_request)
         # only need to check credentials on "connect" event
         self.app._socketio.on('connect')(self.socketio_auth)  # pylint: disable=protected-access
-
-    def _protect_routes(self) -> None:
-        """Protect flask routes with authentication."""
-        # TODO all routes? what about index for logins if not basic auth
-        # for name, method in self.app.app.view_functions.items():
-        #     # if view_name != self._index_view_name:
-        #     self.app.app.view_functions[name] = self.requires_auth(method)
-        @self.app.app.before_request
-        def access():
-            return self.before_request()
-
-    @abstractmethod
-    def requires_auth(self, func: Callable) -> Callable:
-        """Determine if a user is allowed to view this route.
-
-        Name is subject to change.
-        """
-        pass
 
     @abstractmethod
     def before_request(self):
@@ -106,13 +88,3 @@ class BasicAuth(Auth):
                 {'WWW-Authenticate': 'Basic realm="Login Required"'}
             )
         session['logged_in'] = auth.username
-
-    def requires_auth(self, func: Callable) -> Callable:
-        """Determine if a user is allowed to view this route."""
-        @wraps(func)
-        def decorator(*args, **kargs):
-            value = self.before_request()
-            if value is None:
-                return func(*args, **kargs)
-            return value
-        return decorator
