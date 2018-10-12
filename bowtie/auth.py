@@ -1,4 +1,9 @@
-"""Authentication out of the box."""
+"""Authentication out of the box.
+
+References
+----------
+https://stackoverflow.com/questions/13428708/best-way-to-make-flask-logins-login-required-the-default
+"""
 
 from typing import Dict, Callable
 from abc import ABC, abstractmethod
@@ -22,12 +27,23 @@ class Auth(ABC):
     def _protect_routes(self) -> None:
         """Protect flask routes with authentication."""
         # TODO all routes? what about index for logins if not basic auth
-        for name, method in self.app.app.view_functions.items():
-            # if view_name != self._index_view_name:
-            self.app.app.view_functions[name] = self.requires_auth(method)
+        # for name, method in self.app.app.view_functions.items():
+        #     # if view_name != self._index_view_name:
+        #     self.app.app.view_functions[name] = self.requires_auth(method)
+        @self.app.app.before_request
+        def access():
+            return self.before_request()
 
     @abstractmethod
     def requires_auth(self, func: Callable) -> Callable:
+        """Determine if a user is allowed to view this route.
+
+        Name is subject to change.
+        """
+        pass
+
+    @abstractmethod
+    def before_request(self):
         """Determine if a user is allowed to view this route.
 
         Name is subject to change.
@@ -80,17 +96,23 @@ class BasicAuth(Auth):
         except KeyError:
             return False
 
+    def before_request(self):
+        """Determine if a user is allowed to view this route."""
+        auth = request.authorization
+        if not auth or not self._check_auth(auth.username, auth.password):
+            return Response(
+                'Could not verify your access level for that URL.\n'
+                'You have to login with proper credentials', 401,
+                {'WWW-Authenticate': 'Basic realm="Login Required"'}
+            )
+        session['logged_in'] = auth.username
+
     def requires_auth(self, func: Callable) -> Callable:
         """Determine if a user is allowed to view this route."""
         @wraps(func)
-        def decorated(*args, **kwargs):
-            auth = request.authorization
-            if not auth or not self._check_auth(auth.username, auth.password):
-                return Response(
-                    'Could not verify your access level for that URL.\n'
-                    'You have to login with proper credentials', 401,
-                    {'WWW-Authenticate': 'Basic realm="Login Required"'}
-                )
-            session['logged_in'] = auth.username
-            return func(*args, **kwargs)
-        return decorated
+        def decorator(*args, **kargs):
+            value = self.before_request()
+            if value is None:
+                return func(*args, **kargs)
+            return value
+        return decorator
