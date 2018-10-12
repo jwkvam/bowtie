@@ -49,6 +49,7 @@ Contents
     feedback
     cache
     authentication
+    deploy
     jupyter
     docker
     exceptions
