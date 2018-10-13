@@ -1,16 +1,13 @@
 """Test markdown and text widgets."""
 # pylint: disable=redefined-outer-name,unused-argument,invalid-name
 
-import os
-from os import environ as env
-import subprocess
 import time
 
 import pytest
 from bowtie import App
 from bowtie.html import Markdown
 from bowtie.control import Textbox
-from bowtie.tests.utils import reset_uuid
+from bowtie.tests.utils import reset_uuid, server_check
 
 
 reset_uuid()
@@ -33,24 +30,18 @@ def write(txt):
 
 
 @pytest.fixture
-def markdown(build_path, monkeypatch):
+def markdown(build_reset, monkeypatch):
     """Create markdown and text widgets."""
-    monkeypatch.setattr(App, '_sourcefile', lambda self: 'bowtie.tests.test_editor')
-
-    app = App()
+    app = App(__name__, sidebar=True)
     app.add(mark)
     app.add_sidebar(side)
     app.add_sidebar(text)
-    app.subscribe(write, text.on_change)
+    app.subscribe(text.on_change)(write)
     # pylint: disable=protected-access
     app._build()
 
-    env['PYTHONPATH'] = '{}:{}'.format(os.getcwd(), os.environ.get('PYTHONPATH', ''))
-    server = subprocess.Popen(os.path.join(build_path, 'src/server.py'), env=env)
-
-    time.sleep(5)
-    yield
-    server.kill()
+    with server_check(app) as server:
+        yield server
 
 
 def test_markdown(markdown, chrome_driver):

@@ -2,8 +2,8 @@ const webpack = require('webpack');
 var path = require('path');
 var CompressionPlugin = require('compression-webpack-plugin');
 
-var BUILD_DIR = path.resolve(__dirname, 'src/static');
-var APP_DIR = path.resolve(__dirname, 'src/app');
+var BUILD_DIR = path.resolve(__dirname);
+var APP_DIR = path.resolve(__dirname, 'bowtiejs');
 
 var config = {
     context: __dirname,

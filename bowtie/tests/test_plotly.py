@@ -1,18 +1,13 @@
 """Plotly testing."""
 # pylint: disable=redefined-outer-name,unused-argument,invalid-name
 
-import os
-from os import environ as env
-import subprocess
-import time
-
 import pytest
 from plotly import graph_objs as go
 
 from bowtie import App
 from bowtie.control import Nouislider, Button
 from bowtie.visual import Plotly
-from bowtie.tests.utils import reset_uuid
+from bowtie.tests.utils import reset_uuid, server_check
 
 
 reset_uuid()
@@ -32,26 +27,19 @@ def callback(*args):
 
 
 @pytest.fixture
-def plotly(build_path, monkeypatch):
+def plotly(build_reset, monkeypatch):
     """Create plotly app."""
-    monkeypatch.setattr(App, '_sourcefile', lambda self: 'bowtie.tests.test_plotly')
-
-    app = App()
+    app = App(__name__, sidebar=True)
     app.add(viz)
     app.add_sidebar(ctrl)
     app.add_sidebar(ctrl_range)
     app.add_sidebar(ctrl2)
-    app.subscribe(callback, ctrl.on_change)
-    app.subscribe(callback, ctrl2.on_click)
+    app.subscribe(ctrl.on_change)(app.subscribe(ctrl2.on_click)(callback))
     # pylint: disable=protected-access
     app._build()
 
-    env['PYTHONPATH'] = '{}:{}'.format(os.getcwd(), os.environ.get('PYTHONPATH', ''))
-    server = subprocess.Popen(os.path.join(build_path, 'src/server.py'), env=env)
-
-    time.sleep(5)
-    yield
-    server.kill()
+    with server_check(app) as server:
+        yield server
 
 
 def test_plotly(plotly, chrome_driver):

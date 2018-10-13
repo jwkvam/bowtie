@@ -1,10 +1,7 @@
 """Utility functions for testing only."""
 
-import os
-from os.path import join as pjoin
-from os import environ as env
 from contextlib import contextmanager
-from subprocess import Popen, PIPE
+from multiprocessing import Process
 import time
 
 from bowtie import View
@@ -19,13 +16,10 @@ def reset_uuid():
 
 
 @contextmanager
-def server_check(build_path):
+def server_check(app):
     """Context manager for testing Bowtie apps and verifying no errors happened."""
-    env['PYTHONPATH'] = '{}:{}'.format(os.getcwd(), os.environ.get('PYTHONPATH', ''))
-    server = Popen(['python', '-u', pjoin(build_path, 'src/server.py')], env=env, stderr=PIPE)
+    process = Process(target=app._serve)  # pylint: disable=protected-access
+    process.start()
     time.sleep(5)
-    yield server
-    server.terminate()
-    _, stderr = server.communicate()
-    assert b'Error' not in stderr
-    assert b'Traceback' not in stderr
+    yield process
+    process.terminate()

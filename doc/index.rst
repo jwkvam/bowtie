@@ -48,6 +48,9 @@ Contents
     components
     feedback
     cache
+    authentication
+    flask
+    deploy
     jupyter
     docker
     exceptions

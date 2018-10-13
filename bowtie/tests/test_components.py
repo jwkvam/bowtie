@@ -1,17 +1,13 @@
-#!/usr/bin/env python
 """Test all components for instatiation issues."""
+# pylint: disable=unused-argument,redefined-outer-name
 
-import os
-from os import environ as env
-import subprocess
 from inspect import isclass
-import time
 
 import pytest
 from bowtie import App
 from bowtie import control, visual, html
 from bowtie._component import COMPONENT_REGISTRY
-from bowtie.tests.utils import reset_uuid
+from bowtie.tests.utils import reset_uuid, server_check
 
 
 def create_components():
@@ -53,13 +49,11 @@ create_components()
 
 
 @pytest.fixture
-def components(build_path, monkeypatch):
+def components(build_reset, monkeypatch):
     """App with all components."""
-    monkeypatch.setattr(App, '_sourcefile', lambda self: 'bowtie.tests.test_components')
-
     controllers, visuals, htmls = create_components()
 
-    app = App(rows=len(visuals))
+    app = App(__name__, rows=len(visuals), sidebar=True)
     for controller in controllers:
         # pylint: disable=protected-access
         assert COMPONENT_REGISTRY[controller._uuid] == controller
@@ -83,15 +77,10 @@ def components(build_path, monkeypatch):
     # run second time to make sure nothing weird happens with subsequent builds
     app._build()
 
-    env['PYTHONPATH'] = '{}:{}'.format(os.getcwd(), os.environ.get('PYTHONPATH', ''))
-    server = subprocess.Popen(os.path.join(build_path, 'src/server.py'), env=env)
-
-    time.sleep(5)
-    yield
-    server.kill()
+    with server_check(app) as server:
+        yield server
 
 
-# pylint: disable=redefined-outer-name,unused-argument
 def test_components(components, chrome_driver):
     """Test that no components cause an error."""
     chrome_driver.get('http://localhost:9991')

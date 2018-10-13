@@ -1,11 +1,7 @@
-#!/usr/bin/env python
-# pylint: disable=unused-argument,invalid-name
 """Multiple views testing."""
+# pylint: disable=unused-argument,redefined-outer-name,invalid-name
 
-import os
-from os import environ as env
-import subprocess
-import time
+from time import sleep
 
 from numpy import random as rng
 import pandas as pd
@@ -14,7 +10,7 @@ import pytest
 from bowtie import App, View
 from bowtie.control import Nouislider, Button
 from bowtie.visual import Table
-from bowtie.tests.utils import reset_uuid
+from bowtie.tests.utils import reset_uuid, server_check
 
 
 reset_uuid()
@@ -32,11 +28,9 @@ def callback(*args):
 
 
 @pytest.fixture
-def multiple_views(build_path, monkeypatch):
+def multiple_views(build_reset, monkeypatch):
     """Create multiple views app."""
-    monkeypatch.setattr(App, '_sourcefile', lambda self: 'bowtie.tests.test_multiple')
-
-    app = App()
+    app = App(__name__, sidebar=True)
     view1 = View()  # pylint: disable=unused-variable
     assert view1._uuid == 2  # pylint: disable=protected-access
     view2 = View()
@@ -46,17 +40,12 @@ def multiple_views(build_path, monkeypatch):
     app.add(table)
     app.add_sidebar(ctrl)
     app.add_sidebar(ctrl2)
-    app.subscribe(callback, ctrl.on_change)
-    app.subscribe(callback, ctrl2.on_click)
+    app.subscribe(ctrl.on_change)(app.subscribe(ctrl2.on_click)(callback))
 
     app._build()  # pylint: disable=protected-access
 
-    env['PYTHONPATH'] = '{}:{}'.format(os.getcwd(), os.environ.get('PYTHONPATH', ''))
-    server = subprocess.Popen(os.path.join(build_path, 'src/server.py'), env=env)
-
-    time.sleep(5)
-    yield
-    server.kill()
+    with server_check(app) as server:
+        yield server
 
 
 # pylint: disable=redefined-outer-name,unused-argument
@@ -71,7 +60,7 @@ def test_multiple(multiple_views, chrome_driver):
     data = chrome_driver.find_element_by_class_name('ant-table-body').text
     assert len(data.split('\n')) == 1
     button.click()
-    time.sleep(2)
+    sleep(2)
 
     data = chrome_driver.find_element_by_class_name('ant-table-body').text
     assert len(data.split('\n')) == 20

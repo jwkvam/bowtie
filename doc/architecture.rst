@@ -57,27 +57,33 @@ Bowtie Application
 ------------------
 There are a few key parts to any Bowtie application.
 
-1. Define the components in the app and any global state, e.g.::
+1. Define the app, components, and global state::
 
+    app = App(rows=1, columns=1, sidebar=True)
     plotly = Plotly()
     dropdown = Dropdown(*config)
     global_dataset = SQLQuery(cool_data)
 
+2. Layout the app, you can also do this globally,
+   but this can keep the code better organized::
+
+    def layout():
+        app.add_sidebar(dropdown)
+        app.add(plotly)
+    app.layout = layout
+
 2. Create what should happen in response to events::
 
+    @app.subscribe(dropdown.on_change)
     def callback(dropdown_item):
         # compute something cool and plot it
         data = cool_stuff(global_dataset, dropdown_item)
         plotly.do_all(data)
 
-3. Define the app and connect events to callbacks.
-   I encourage using a function decorated with ``command``::
+3. Create a main function that simply returns the app.
+   Then Bowtie knows how to build and serve the app::
 
     from bowtie import command
     @command
     def main():
-        app = App(rows=1, columns=1, sidebar=True)
-        app.add_sidebar(dropdown)
-        app.add(plotly)
-        app.subscribe(callback, dropdown.on_change)
         return app

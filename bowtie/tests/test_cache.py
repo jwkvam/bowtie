@@ -1,4 +1,5 @@
 """Test markdown and text widgets."""
+# pylint: disable=unused-argument,redefined-outer-name,invalid-name
 
 import time
 
@@ -11,7 +12,6 @@ from bowtie.tests.utils import reset_uuid, server_check
 reset_uuid()
 
 
-# pylint: disable=invalid-name
 button = Button()
 
 
@@ -38,21 +38,17 @@ def test_keys():
 
 
 @pytest.fixture
-def dummy(build_path, monkeypatch):
+def dummy(build_reset, monkeypatch):
     """Create basic app."""
-    monkeypatch.setattr(App, '_sourcefile', lambda self: 'bowtie.tests.test_cache')
-
-    app = App()
+    app = App(__name__)
     app.add(button)
-    app.subscribe(click, button.on_click)
-    # pylint: disable=protected-access
-    app._build()
+    app.subscribe(button.on_click)(click)
+    app._build()  # pylint: disable=protected-access
 
-    with server_check(build_path) as server:
+    with server_check(app) as server:
         yield server
 
 
-# pylint: disable=redefined-outer-name,unused-argument
 def test_cache(dummy, chrome_driver):
     """Test cache works."""
     chrome_driver.get('http://localhost:9991')

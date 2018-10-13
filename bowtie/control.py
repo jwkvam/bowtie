@@ -44,6 +44,8 @@ class Button(_Controller):
     def on_click(self) -> None:
         """Emit an event when the button is clicked.
 
+        There is no getter associated with this event.
+
         | **Payload:** ``None``.
 
         Returns
@@ -52,7 +54,6 @@ class Button(_Controller):
             Name of click event.
 
         """
-        pass
 
 
 class Upload(_Controller):
@@ -83,6 +84,8 @@ class Upload(_Controller):
     def on_upload(self):
         """Emit an event when the selection changes.
 
+        There is no getter associated with this event.
+
         | **Payload:** ``tuple`` with a str (name) and BytesIO (stream).
 
         The user is responsible for storing the object in this function
@@ -90,7 +93,6 @@ class Upload(_Controller):
         otherwise a return value of None or False indicate success.
 
         """
-        pass
 
 
 class Dropdown(_Controller):
@@ -537,8 +539,8 @@ class Slider(_Controller):
               'marks={{{marks}}} '
               'vertical={{{vertical}}}')
 
-    def __init__(self, start: Optional[Union[int, Sequence[int]]] = None, ranged: bool = False,
-                 minimum: int = 0, maximum: int = 100, step: int = 1,
+    def __init__(self, start: Optional[Union[float, Sequence[float]]] = None, ranged: bool = False,
+                 minimum: float = 0, maximum: float = 100, step: float = 1,
                  vertical: bool = False) -> None:
         """Create a slider.
 

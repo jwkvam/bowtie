@@ -60,33 +60,33 @@ on the official website.
 Creating Your First App
 -----------------------
 
-First we'll import the components we plan on using::
+We will be creating a slider that controls the frequency of a sinusoid and visualizing the sine wave.
+First we'll import the ``App`` class and two components we will use::
 
+    from bowtie import App
     from bowtie.visual import Plotly
-    from bowtie.control import Nouislider
+    from bowtie.control import Slider
     import numpy as np
-    import plotlywrapper as pw
 
-I imported `Plotlywrapper <https://github.com/jwkvam/plotlywrapper>`_ and `Numpy <http://www.numpy.org/>`_
-to make the generation of `Plotly <https://plot.ly/>`_ plots easier.
-Now we instantiate the components and configure them::
+I imported `Numpy <http://www.numpy.org/>`_ to generate sine waves.
+Now we instantiate the ``App`` and the components and configure them::
 
-    sine_plot = Plotly()
-    freq_slider = Nouislider(minimum=1, maximum=10, start=5)
+    app = App(sidebar=True)
+    chart = Plotly()
+    slider = Slider(minimum=1, maximum=10, start=5, step=0.1)
+
+Next we add these components to the ``app`` so they will be displayed on the web page.
+We place the slider in the sidebar and place the sine chart in the main view::
+
+    app.add_sidebar(slider)
+    app.add(chart)
 
 Next we'll create a listener that generates a plot on slider changes::
 
-    def listener(freq):
-        freq = float(freq[0])
+    @app.subscribe(slider.on_change)
+    def plot_sine(freq):
         t = np.linspace(0, 10, 100)
-        sine_plot.do_all(pw.line(t, np.sin(freq * t)).dict)
-
-If you prefer not to use ``plotlywrapper``::
-
-    def listener(freq):
-        freq = float(freq[0])
-        t = np.linspace(0, 10, 100)
-        sine_plot.do_all({
+        chart.do_all({
             'data': [{
                 'type': 'scatter',
                 'mode': 'lines+markers',
@@ -95,7 +95,7 @@ If you prefer not to use ``plotlywrapper``::
             }]
         })
 
-The :py:class:`bowtie.control.Nouislider` component sends its values as a list of strings so we had to cast it to a float.
+The :py:class:`bowtie.control.Slider` component sends its values as a list of strings so we had to cast it to a float.
 
 Lastly we need to build the application by laying out the components and connecting listeners to events.
 The ``App`` class handles this and we put this logic into a function.
@@ -105,11 +105,6 @@ To finish, we simply wrap the function with the ``command`` decorator::
     from bowtie import command
     @command
     def main():
-        from bowtie import App
-        app = App()
-        app.add_sidebar(freq_slider)
-        app.add(sine_plot)
-        app.subscribe(listener, freq_slider.on_change)
         return app
 
 Now take a look at the CLI we just created by running this script::
@@ -146,7 +141,7 @@ That will launch the app locally and you should be able to access it at http://l
 Deploy to Heroku
 ----------------
 
-This isn't streamlined right now but you can try the following approach.
+This isn't well documented, but you can try the following.
 For example, this was done to create `bowtie-demo <https://github.com/jwkvam/bowtie-demo/>`_ so you may refer to that.
 
 * Create the Procfile, try the following::
@@ -158,10 +153,10 @@ For example, this was done to create `bowtie-demo <https://github.com/jwkvam/bow
 
     python app.py prod
 
-* Commit the following files to your repo::
+* We need to add the Javascript, so commit the following file::
 
-    build/src/server.py
-    build/src/templates/index.html
-    build/src/static/bundle.js.gz
+    git add build/bundle.js.gz
 
-* Finally push your repo to Heroku!
+* Finally push your repo to Heroku!::
+
+    git push heroku master

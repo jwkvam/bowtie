@@ -6,15 +6,24 @@ from typing import (  # pylint: disable=unused-import
 import os
 import json
 import itertools
-import inspect
 import shutil
-import stat
 from collections import namedtuple, defaultdict
 from subprocess import Popen, PIPE, STDOUT, check_output
 from pathlib import Path
+import secrets
+import socket
 import warnings
+import traceback
 
-from jinja2 import Environment, FileSystemLoader
+import eventlet
+import msgpack
+import flask
+from flask import (
+    Flask, render_template, make_response,
+    copy_current_request_context, jsonify, request
+)
+from flask_socketio import SocketIO
+from jinja2 import Environment, FileSystemLoader, ChoiceLoader
 
 from bowtie._component import Event, Component, COMPONENT_REGISTRY
 from bowtie.pager import Pager
@@ -24,17 +33,54 @@ from bowtie.exceptions import (
     SpanOverlapError, SizeError, WebpackError, YarnError
 )
 
+eventlet.monkey_patch(time=True)
 
 Route = namedtuple('Route', ['view', 'path', 'exact'])
 _Import = namedtuple('_Import', ['module', 'component'])
-_Schedule = namedtuple('_Schedule', ['seconds', 'function'])
 
 _DIRECTORY = Path('build')
 _WEBPACK = './node_modules/.bin/webpack'
 _MIN_NODE_VERSION = 6, 11, 5
 
 
-def raise_not_number(x: int) -> None:
+class Scheduler:
+    """Run scheduled tasks."""
+
+    def __init__(self, app, seconds, func):
+        """Create a scheduled function."""
+        self.app = app
+        self.seconds = seconds
+        self.func = func
+        self.thread = None
+
+    def context(self, func):
+        """Provide flask context to function."""
+        def wrap():
+            with self.app.app_context():
+                func()
+        return wrap
+
+    def start(self):
+        """Start the scheduled task."""
+        self.thread = eventlet.spawn(self.run)
+
+    def run(self):
+        """Invoke the function repeatedly on a timer."""
+        ret = eventlet.spawn(self.context(self.func))
+        eventlet.sleep(self.seconds)
+        try:
+            ret.wait()
+        except Exception:  # pylint: disable=broad-except
+            traceback.print_exc()
+        self.thread = eventlet.spawn(self.run)
+
+    def stop(self):
+        """Stop the scheduled task."""
+        if self.thread:
+            self.thread.cancel()
+
+
+def raise_not_number(x: float) -> None:
     """Raise ``SizeError`` if ``x`` is not a number``."""
     try:
         float(x)
@@ -161,43 +207,43 @@ class Size:
         self.minimum = 'auto'
         return self
 
-    def pixels(self, value) -> 'Size':
+    def pixels(self, value: float) -> 'Size':
         """Set the size in pixels."""
         raise_not_number(value)
         self.maximum = '{}px'.format(value)
         return self
 
-    def min_pixels(self, value) -> 'Size':
+    def min_pixels(self, value: float) -> 'Size':
         """Set the minimum size in pixels."""
         raise_not_number(value)
         self.minimum = '{}px'.format(value)
         return self
 
-    def ems(self, value) -> 'Size':
+    def ems(self, value: float) -> 'Size':
         """Set the size in ems."""
         raise_not_number(value)
         self.maximum = '{}em'.format(value)
         return self
 
-    def min_ems(self, value) -> 'Size':
+    def min_ems(self, value: float) -> 'Size':
         """Set the minimum size in ems."""
         raise_not_number(value)
         self.minimum = '{}em'.format(value)
         return self
 
-    def fraction(self, value: int) -> 'Size':
-        """Set the fraction of free space to use as an integer."""
+    def fraction(self, value: float) -> 'Size':
+        """Set the fraction of free space to use."""
         raise_not_number(value)
-        self.maximum = '{}fr'.format(int(value))
+        self.maximum = '{}fr'.format(value)
         return self
 
-    def percent(self, value) -> 'Size':
+    def percent(self, value: float) -> 'Size':
         """Set the percentage of free space to use."""
         raise_not_number(value)
         self.maximum = '{}%'.format(value)
         return self
 
-    def min_percent(self, value) -> 'Size':
+    def min_percent(self, value: float) -> 'Size':
         """Set the minimum percentage of free space to use."""
         raise_not_number(value)
         self.minimum = '{}%'.format(value)
@@ -353,7 +399,7 @@ class View:
         cls._NEXT_UUID += 1
         return cls._NEXT_UUID
 
-    def __init__(self, rows: int = 1, columns: int = 1, sidebar: bool = True,
+    def __init__(self, rows: int = 1, columns: int = 1, sidebar: bool = False,
                  background_color: str = 'White') -> None:
         """Create a new grid.
 
@@ -370,6 +416,7 @@ class View:
 
         """
         self._uuid = View._next_uuid()
+        self.layout = None
         self.column_gap = Gap()
         self.row_gap = Gap()
         self.border = Gap().pixels(7)
@@ -377,6 +424,7 @@ class View:
         self.columns = [Size() for _ in range(columns)]
         self.sidebar = sidebar
         self.background_color = background_color
+        self.layout: Optional[Callable] = None
         self._controllers: List[Component] = []
         self._spans: Dict[Span, Components] = {}
 
@@ -536,16 +584,22 @@ class View:
 class App:
     """Core class to layout, connect, build a Bowtie app."""
 
-    def __init__(self, rows: int = 1, columns: int = 1, sidebar: bool = True,
-                 title: str = 'Bowtie App', basic_auth: bool = False,
-                 username: str = 'username', password: str = 'password',
+    def __init__(self, name='__main__', app=None, rows: int = 1, columns: int = 1,
+                 sidebar: bool = False, title: str = 'Bowtie App',
                  theme: Optional[str] = None, background_color: str = 'White',
-                 host: str = '0.0.0.0', port: int = 9991, socketio: str = '',
-                 debug: bool = False) -> None:
+                 socketio: str = '', debug: bool = False) -> None:
         """Create a Bowtie App.
 
         Parameters
         ----------
+        name : str, optional
+            Use __name__ or leave as default if using a single module.
+            Consult the Flask docs on "import_name" for details on more
+            complex apps.
+        app : Flask app, optional
+            If you are defining your own Flask app, pass it in here.
+            You only need this if you are doing other stuff with Flask
+            outside of bowtie.
         row : int, optional
             Number of rows in the grid.
         columns : int, optional
@@ -554,51 +608,61 @@ class App:
             Enable a sidebar for control components.
         title : str, optional
             Title of the HTML.
-        basic_auth : bool, optional
-            Enable basic authentication.
-        username : str, optional
-            Username for basic authentication.
-        password : str, optional
-            Password for basic authentication.
         theme : str, optional
             Color for Ant Design components.
         background_color : str, optional
             Background color of the control pane.
-        host : str, optional
-            Host IP address.
-        port : int, optional
-            Host port number.
         socketio : string, optional
             Socket.io path prefix, only change this for advanced deployments.
         debug : bool, optional
             Enable debugging in Flask. Disable in production!
 
         """
-        self._basic_auth = basic_auth
-        self._debug = debug
-        self._host = host
-        self._init: Optional[str] = None
-        self._password = password
-        self._port = port
-        self._socketio = socketio
-        self._schedules: List[_Schedule] = []
-        self._subscriptions: Dict[Event, List[Tuple[List[Event], str]]] = defaultdict(list)
-        self._pages: Dict[Pager, str] = {}
-        self._title = title
-        self._username = username
-        self._uploads: Dict[int, str] = {}
+        self.title = title
         self.theme = theme
+        self._init: Optional[Callable] = None
+        self._socketio_path = socketio
+        self._schedules: List[Scheduler] = []
+        self._subscriptions: Dict[Event, List[Tuple[List[Event], Callable]]] = defaultdict(list)
+        self._pages: Dict[Pager, Callable] = {}
+        self._uploads: Dict[int, Callable] = {}
         self._root = View(rows=rows, columns=columns, sidebar=sidebar,
                           background_color=background_color)
-        self._routes = [Route(view=self._root, path='/', exact=True)]
+        self._routes: List[Route] = []
+
         self._package_dir = Path(os.path.dirname(__file__))
         self._jinjaenv = Environment(
             loader=FileSystemLoader(str(self._package_dir / 'templates')),
             trim_blocks=True,
             lstrip_blocks=True
         )
+        if app is None:
+            self.app = Flask(name)
+        else:
+            self.app = app
+        self.app.debug = debug
+        self._socketio = SocketIO(self.app, binary=True, path=socketio + 'socket.io')
+        self.app.secret_key = secrets.token_bytes()
+        self.add_route(view=self._root, path='/', exact=True)
 
-    def __getattr__(self, name: str) -> Union[Gap, List[Size]]:
+        # https://buxty.com/b/2012/05/custom-template-folders-with-flask/
+        templates = Path(__file__).parent / 'templates'
+        self.app.jinja_loader = ChoiceLoader([
+            self.app.jinja_loader,
+            FileSystemLoader(str(templates)),
+        ])
+        self._build_dir = self.app.root_path / _DIRECTORY
+        self.app.before_first_request(self._endpoints)
+
+    def wsgi_app(self, environ, start_response):
+        """Support uwsgi and gunicorn."""
+        return self.app.wsgi_app(environ, start_response)
+
+    def __call__(self, environ, start_response):
+        """Support uwsgi and gunicorn."""
+        return self.wsgi_app(environ, start_response)
+
+    def __getattr__(self, name: str):
         """Export attributes from root view."""
         if name == 'columns':
             return self._root.columns
@@ -610,7 +674,15 @@ class App:
             return self._root.row_gap
         if name == 'border':
             return self._root.border
+        if name == 'layout':
+            return self._root.layout
         raise AttributeError(name)
+
+    def __setattr__(self, name, value):
+        """Set layout function for root view."""
+        if name == 'layout':
+            return self._root.__setattr__(name, value)
+        return super().__setattr__(name, value)
 
     def __getitem__(self, key: Any):
         """Get item from root view."""
@@ -661,129 +733,95 @@ class App:
             assert path != route.path, 'Cannot use the same path twice'
         self._routes.append(Route(view=view, path=path, exact=exact))
 
-    def respond(self, pager: Pager, func: Callable) -> None:
-        """Call a function in response to a page.
+        self.app.add_url_rule(
+            path, path[1:], lambda: render_template('bowtie.html', title=self.title)
+        )
 
-        When the pager calls notify, the function will be called.
+    def subscribe(self, *events: Union[Event, Pager]) -> Callable:
+        """Call a function in response to an event.
+
+        If more than one event is given, `func` will be given
+        as many arguments as there are events.
+
+        If the pager calls notify, the decorated function will be called.
 
         Parameters
         ----------
-        pager : Pager
-            Pager that to signal when func is called.
-        func : callable
-            Function to be called.
+        *event : event or pager
+            Bowtie event, must have at least one.
 
         Examples
         --------
+        Subscribing a function to multiple events.
+
+        >>> from bowtie.control import Dropdown, Slider
+        >>> app = App()
+        >>> dd = Dropdown()
+        >>> slide = Slider()
+        >>> @app.subscribe(dd.on_change, slide.on_change)
+        ... def callback(dd_item, slide_value):
+        ...     pass
+        >>> @app.subscribe(dd.on_change)
+        ... @app.subscribe(slide.on_change)
+        ... def callback2(value):
+        ...     pass
+
         Using the pager to run a callback function.
 
         >>> from bowtie.pager import Pager
         >>> app = App()
         >>> pager = Pager()
-        >>> def callback():
+        >>> @app.subscribe(pager)
+        ... def callback():
         ...     pass
         >>> def scheduledtask():
         ...     pager.notify()
-        >>> app.respond(pager, callback)
 
         """
-        self._pages[pager] = func.__name__
-
-    def subscribe(self, func: Callable, event: Event, *events: Event) -> None:
-        """Call a function in response to an event.
-
-        If more than one event is given, `func` will be given
-        as many arguments as there are events.
-
-        Parameters
-        ----------
-        func : callable
-            Function to be called.
-        event : event
-            A Bowtie event.
-        *events : Each is an event, optional
-            Additional events.
-
-        Examples
-        --------
-        Subscribing a function to multiple events.
-
-        >>> from bowtie.control import Dropdown, Slider
-        >>> app = App()
-        >>> dd = Dropdown()
-        >>> slide = Slider()
-        >>> def callback(dd_item, slide_value):
-        ...     pass
-        >>> app.subscribe(callback, dd.on_change, slide.on_change)
-
-        """
-        if not callable(func):
-            raise TypeError(
-                'The first argument to subscribe must be callable, found {}'.format(type(func))
+        try:
+            first_event = events[0]
+        except IndexError:
+            raise IndexError('Must subscribe to at least one event.')
+        if len(events) != len(set(events)):
+            raise ValueError(
+                'Subscribed to the same event multiple times. All events must be unique.'
             )
-        all_events = [event, *events]
-        if len(all_events) != len(set(all_events)):
-            raise ValueError('Subscribed to the same event multiple times. '
-                             'All events must be unique.')
 
-        if len(all_events) > 1:
+        if len(events) > 1:
             # check if we are using any non stateful events
-            for evt in all_events:
-                if evt.getter is None:
-                    msg = '{}.on_{} is not a stateful event. It must be used alone.'
-                    raise NotStatefulEvent(msg.format(evt.uuid, evt.name))
+            for event in events:
+                if isinstance(event, Pager):
+                    raise NotStatefulEvent('Pagers must be subscribed by itself.')
+                if event.getter is None:
+                    raise NotStatefulEvent(
+                        f'{event.uuid}.on_{event.name} is not a stateful event. '
+                        'It must be used alone.'
+                    )
 
-        if event.name == 'upload':
-            if event.uuid in self._uploads:
-                warnings.warn(
-                    ('Overwriting function "{func1}" with function '
-                     '"{func2}" for upload object "{obj}".').format(
-                         func1=self._uploads[event.uuid],
-                         func2=func.__name__,
-                         obj=COMPONENT_REGISTRY[event.uuid]
-                     ), Warning)
-            self._uploads[event.uuid] = func.__name__
-
-        for evt in all_events:
-            self._subscriptions[evt].append((all_events, func.__name__))
-
-    def listen(self, event: Event, *events: Event) -> Callable:
-        """Call a function in response to an event.
-
-        If more than one event is given, `func` will be given
-        as many arguments as there are events.
-
-        Parameters
-        ----------
-        event : event
-            A Bowtie event.
-        *events : Each is an event, optional
-            Additional events.
-
-        Examples
-        --------
-        Subscribing a function to multiple events.
-
-        >>> from bowtie.control import Dropdown, Slider
-        >>> app = App()
-        >>> dd = Dropdown()
-        >>> slide = Slider()
-        >>> @app.listen(dd.on_change, slide.on_change)
-        ... def callback(dd_item, slide_value):
-        ...     pass
-        >>> @app.listen(dd.on_change)
-        ... @app.listen(slide.on_change)
-        ... def callback2(value):
-        ...     pass
-
-        """
-        def decorator(func):
-            """Subscribe function to events."""
-            self.subscribe(func, event, *events)
+        def decorator(func: Callable) -> Callable:
+            """Handle three types of events: pages, uploads, and normal events."""
+            if isinstance(first_event, Pager):
+                self._pages[first_event] = func
+            elif first_event.name == 'upload':
+                if first_event.uuid in self._uploads:
+                    warnings.warn(
+                        ('Overwriting function "{func1}" with function '
+                         '"{func2}" for upload object "{obj}".').format(
+                             func1=self._uploads[first_event.uuid],
+                             func2=func.__name__,
+                             obj=COMPONENT_REGISTRY[first_event.uuid]
+                         ), Warning)
+                self._uploads[first_event.uuid] = func
+            else:
+                for event in events:
+                    # need to have `events` here to maintain order of arguments
+                    # not sure how to deal with mypy typing errors on events so ignoring
+                    self._subscriptions[event].append((events, func))  # type: ignore
             return func
+
         return decorator
 
-    def load(self, func: Callable) -> None:
+    def load(self, func: Callable) -> Callable:
         """Call a function on page load.
 
         Parameters
@@ -792,9 +830,10 @@ class App:
             Function to be called.
 
         """
-        self._init = func.__name__
+        self._init = func
+        return func
 
-    def schedule(self, seconds: float, func: Callable) -> None:
+    def schedule(self, seconds: float):
         """Call a function periodically.
 
         Parameters
@@ -805,61 +844,27 @@ class App:
             Function to be called.
 
         """
-        self._schedules.append(_Schedule(seconds, func.__name__))
+        def wrap(func: Callable):
+            self._schedules.append(Scheduler(self.app, seconds, func))
+        return wrap
 
-    def _sourcefile(self) -> str:  # pylint: disable=no-self-use
-        # [-1] grabs the top of the stack
-        return os.path.basename(inspect.stack()[-1].filename)[:-3]
-
-    def _write_templates(self, notebook: Optional[str] = None) -> Set[str]:
-        server = self._jinjaenv.get_template('server.py.j2')
-        indexhtml = self._jinjaenv.get_template('index.html.j2')
+    def _write_templates(self) -> Set[str]:
         indexjsx = self._jinjaenv.get_template('index.jsx.j2')
         componentsjs = self._jinjaenv.get_template('components.js.j2')
         webpack = self._jinjaenv.get_template('webpack.common.js.j2')
 
-        src, app, templates = create_directories()
+        src = self._create_jspath()
 
-        webpack_path = _DIRECTORY / webpack.name[:-3]  # type: ignore
+        webpack_path = self._build_dir / webpack.name[:-3]  # type: ignore
         with webpack_path.open('w') as f:
             f.write(
                 webpack.render(color=self.theme)
             )
 
-        server_path = src / server.name[:-3]  # type: ignore
-        with server_path.open('w') as f:
-            f.write(
-                server.render(
-                    basic_auth=self._basic_auth,
-                    username=self._username,
-                    password=self._password,
-                    notebook=notebook,
-                    source_module=self._sourcefile() if not notebook else None,
-                    subscriptions=self._subscriptions,
-                    uploads=self._uploads,
-                    schedules=self._schedules,
-                    initial=self._init,
-                    routes=self._routes,
-                    pages=self._pages,
-                    host="'{}'".format(self._host),
-                    port=self._port,
-                    debug=self._debug
-                )
-            )
-
-        perms = os.stat(server_path)
-        os.chmod(server_path, perms.st_mode | stat.S_IEXEC)
-
         # copy js modules that are always needed
         for name in ['progress.jsx', 'view.jsx', 'utils.js']:
             template_src = self._package_dir / 'src' / name
-            shutil.copy(template_src, app)
-
-        for route in self._routes:
-            # pylint: disable=protected-access
-            for template in route.view._templates:
-                template_src = self._package_dir / 'src' / template
-                shutil.copy(template_src, app)
+            shutil.copy(template_src, src)
 
         # Layout Design
         #
@@ -867,9 +872,6 @@ class App:
         #
         # To layout this will need to look through all components that have a key of the route
         #
-        #
-        # 1. This way they can
-
         # use cases
         # 1. statically add items to controller in list
         # 2. remove item from controller
@@ -883,31 +885,29 @@ class App:
         imports: Set[_Import] = set()
         packages: Set[str] = set()
         for route in self._routes:
+            if route.view.layout:
+                route.view.layout()
             packages |= route.view._packages  # pylint: disable=protected-access
             imports |= route.view._imports  # pylint: disable=protected-access
             components |= route.view._components  # pylint: disable=protected-access
+            for template in route.view._templates:  # pylint: disable=protected-access
+                template_src = self._package_dir / 'src' / template
+                shutil.copy(template_src, src)
 
-        with (app / componentsjs.name[:-3]).open('w') as f:  # type: ignore
+        with (src / componentsjs.name[:-3]).open('w') as f:  # type: ignore
             f.write(
                 componentsjs.render(
                     imports=imports,
-                    socketio=self._socketio,
+                    socketio=self._socketio_path,
                     components=components,
                 )
             )
 
-        with (templates / indexhtml.name[:-3]).open('w') as f:  # type: ignore
-            f.write(
-                indexhtml.render(
-                    title=self._title,
-                )
-            )
-
-        with (app / indexjsx.name[:-3]).open('w') as f:  # type: ignore
+        with (src / indexjsx.name[:-3]).open('w') as f:  # type: ignore
             f.write(
                 indexjsx.render(
                     maxviewid=View._NEXT_UUID,  # pylint: disable=protected-access
-                    socketio=self._socketio,
+                    socketio=self._socketio_path,
                     pages=self._pages,
                     routes=self._routes,
                 )
@@ -922,69 +922,166 @@ class App:
                 f'found version {node_version}.'
             )
 
-        packages = self._write_templates(notebook=notebook)
+        packages = self._write_templates()
 
-        if not os.path.isfile(os.path.join(_DIRECTORY, 'package.json')):
-            packagejson = os.path.join(self._package_dir, 'src/package.json')
-            shutil.copy(packagejson, _DIRECTORY)
+        for filename in ['package.json', 'webpack.prod.js', 'webpack.dev.js']:
+            if not (self._build_dir / filename).is_file():
+                sourcefile = self._package_dir / 'src' / filename
+                shutil.copy(sourcefile, self._build_dir)
 
-        if not os.path.isfile(os.path.join(_DIRECTORY, 'webpack.prod.json')):
-            webpackprod = os.path.join(self._package_dir, 'src/webpack.prod.js')
-            shutil.copy(webpackprod, _DIRECTORY)
-
-        if not os.path.isfile(os.path.join(_DIRECTORY, 'webpack.dev.json')):
-            webpackdev = os.path.join(self._package_dir, 'src/webpack.dev.js')
-            shutil.copy(webpackdev, _DIRECTORY)
-
-        if run(['yarn', '--ignore-engines', 'install'], notebook=notebook) > 1:
+        if self._run(['yarn', '--ignore-engines', 'install'], notebook=notebook) > 1:
             raise YarnError('Error installing node packages')
 
         if packages:
-            installed = installed_packages()
+            installed = self._installed_packages()
             new_packages = [x for x in packages if x.split('@')[0] not in installed]
 
             if new_packages:
-                retval = run(['yarn', '--ignore-engines', 'add'] + new_packages, notebook=notebook)
+                retval = self._run(
+                    ['yarn', '--ignore-engines', 'add'] + new_packages, notebook=notebook
+                )
                 if retval > 1:
                     raise YarnError('Error installing node packages')
                 elif retval == 1:
                     print('Yarn error but trying to continue build')
-        retval = run([_WEBPACK, '--config', 'webpack.dev.js'], notebook=notebook)
+        retval = self._run([_WEBPACK, '--config', 'webpack.dev.js'], notebook=notebook)
         if retval != 0:
             raise WebpackError('Error building with webpack')
 
+    def _endpoints(self):
+        def generate_sio_handler(main_event, supports):
+            # get all events from all subscriptions associated with this event
+            uniq_events = set()
+            for events, _ in supports:
+                uniq_events.update(events)
+            uniq_events.remove(main_event)
 
-def run(command: List[str], notebook: Optional[str] = None) -> int:
-    """Run command from terminal and notebook and view output from subprocess."""
-    if notebook is None:
-        return Popen(command, cwd=_DIRECTORY).wait()
-    cmd = Popen(command, cwd=_DIRECTORY, stdout=PIPE, stderr=STDOUT)
-    while True:
-        line = cmd.stdout.readline()
-        if line == b'' and cmd.poll() is not None:
-            return cmd.poll()
-        print(line.decode('utf-8'), end='')
-    raise Exception()
+            for event in uniq_events:
+                comp = COMPONENT_REGISTRY[event.uuid]
+                if event.getter is None:
+                    raise AttributeError(
+                        f'{comp} has no getter associated with event "on_{event.name}"'
+                    )
+
+            def handler(*args):
+                def wrapuser():
+                    event_data = {}
+                    for event in uniq_events:
+                        comp = COMPONENT_REGISTRY[event.uuid]
+                        # we already checked that this component has a getter
+                        event_data[event.signal] = getattr(comp, event.getter)()
+
+                    # if there is no getter, then there is no data to unpack
+                    # if there is a getter, then we need to unpack the data sent
+                    main_getter = main_event.getter
+                    if main_getter is not None:
+                        comp = COMPONENT_REGISTRY[main_event.uuid]
+                        event_data[main_event.signal] = getattr(comp, '_' + main_getter)(
+                            msgpack.unpackb(args[0], encoding='utf8')
+                        )
+
+                    # gather the remaining data from the other events through their getter methods
+                    for events, func in supports:
+                        if main_getter is not None:
+                            func(*(event_data[event.signal] for event in events))
+                        else:
+                            func()
+
+                # TODO replace with flask socketio start_background_task
+                eventlet.spawn(copy_current_request_context(wrapuser))
+            return handler
+
+        for event, supports in self._subscriptions.items():
+            self._socketio.on(event.signal)(generate_sio_handler(event, supports))
+
+        if self._init is not None:
+            self._socketio.on('INITIALIZE')(lambda: eventlet.spawn(
+                copy_current_request_context(self._init)
+            ))
+
+        def gen_upload(func):
+            def upload():
+                upfile = request.files['file']
+                retval = func(upfile.filename, upfile.stream)
+                if retval:
+                    return make_response(jsonify(), 400)
+                return make_response(jsonify(), 200)
+            return upload
+
+        for uuid, func in self._uploads.items():
+            self.app.add_url_rule(
+                f'/upload{uuid}', f'upload{uuid}', gen_upload(func), methods=['POST']
+            )
+
+        for page, func in self._pages.items():
+            # pylint: disable=protected-access
+            self._socketio.on(f'resp#{page._uuid}')(lambda: eventlet.spawn(
+                copy_current_request_context(func)
+            ))
+
+        # bundle route
+        @self.app.route('/bowtie/bundle.js')
+        def bowtiebundlejs():  # pylint: disable=unused-variable
+            bundle_path = self.app.root_path + '/build/bundle.js'
+            bundle_path_gz = bundle_path + '.gz'
+
+            try:
+                if os.path.getmtime(bundle_path) > os.path.getmtime(bundle_path_gz):
+                    return open(bundle_path, 'r').read()
+                bundle = open(bundle_path_gz, 'rb').read()
+                response = flask.make_response(bundle)
+                response.headers['content-encoding'] = 'gzip'
+                response.headers['vary'] = 'accept-encoding'
+                response.headers['content-length'] = len(response.data)
+                return response
+            except FileNotFoundError:
+                if os.path.isfile(bundle_path_gz):
+                    bundle = open(bundle_path_gz, 'rb').read()
+                    response = flask.make_response(bundle)
+                    response.headers['Content-Encoding'] = 'gzip'
+                    response.headers['Vary'] = 'Accept-Encoding'
+                    response.headers['Content-Length'] = len(response.data)
+                    return response
+                return open(bundle_path, 'r').read()
+
+        for schedule in self._schedules:
+            schedule.start()
+
+    def _serve(self, host='0.0.0.0', port=9991) -> None:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result = sock.connect_ex((host, port))
+        if result == 0:
+            raise Exception(f'Port {port} is unavailable on host {host}, aborting.')
+        self._socketio.run(self.app, host=host, port=port)
+        for schedule in self._schedules:
+            schedule.stop()
+
+    def _installed_packages(self) -> Generator[str, None, None]:
+        """Extract installed packages as list from `package.json`."""
+        with (self._build_dir / 'package.json').open('r') as f:
+            packages = json.load(f)
+        yield from packages['dependencies'].keys()
+
+    def _create_jspath(self) -> Path:
+        """Create the source directory for the build."""
+        src = self._build_dir / 'bowtiejs'
+        os.makedirs(src, exist_ok=True)
+        return src
+
+    def _run(self, command: List[str], notebook: Optional[str] = None) -> int:
+        """Run command from terminal and notebook and view output from subprocess."""
+        if notebook is None:
+            return Popen(command, cwd=self._build_dir).wait()
+        cmd = Popen(command, cwd=self._build_dir, stdout=PIPE, stderr=STDOUT)
+        while True:
+            line = cmd.stdout.readline()
+            if line == b'' and cmd.poll() is not None:
+                return cmd.poll()
+            print(line.decode('utf-8'), end='')
+        raise Exception()
 
 
 def node_version():
     """Get node version."""
     version = check_output(('node', '--version'))
     return tuple(int(x) for x in version.strip()[1:].split(b'.'))
-
-
-def installed_packages() -> Generator[str, None, None]:
-    """Extract installed packages as list from `package.json`."""
-    with (_DIRECTORY / 'package.json').open('r') as f:
-        packages = json.load(f)
-    yield from packages['dependencies'].keys()
-
-
-def create_directories() -> Tuple[Path, Path, Path]:
-    """Create all the necessary subdirectories for the build."""
-    src = _DIRECTORY / 'src'
-    templates = src / 'templates'
-    app = src / 'app'
-    os.makedirs(app, exist_ok=True)
-    os.makedirs(templates, exist_ok=True)
-    return src, app, templates

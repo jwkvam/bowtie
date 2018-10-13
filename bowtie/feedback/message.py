@@ -23,7 +23,7 @@ def _message(status, content):
     content : str
 
     """
-    event = 'message.{}'.format(status)
+    event = f'message.{status}'
     if flask.has_request_context():
         emit(event, dict(data=pack(content)))
     else:

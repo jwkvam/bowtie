@@ -2,7 +2,6 @@
 
 import ast
 import socket
-import os
 from os.path import join as pjoin
 from urllib.parse import urljoin
 import json
@@ -10,8 +9,7 @@ import re
 import sys
 import types
 import time
-from subprocess import Popen, PIPE, STDOUT
-from threading import Thread
+from multiprocessing import Process
 
 from IPython import get_ipython
 from IPython.display import display, HTML, clear_output
@@ -19,10 +17,11 @@ from IPython.core.error import UsageError
 from IPython.core.interactiveshell import InteractiveShell
 from IPython.core.magic import Magics, magics_class, line_magic
 from nbformat import read
+from notebook.notebookapp import list_running_servers
 import ipykernel
 import requests
 
-from bowtie._app import _DIRECTORY, App
+from bowtie._app import App
 
 
 def get_notebook_name() -> str:
@@ -33,8 +32,6 @@ def get_notebook_name() -> str:
     https://github.com/jupyter/notebook/issues/1000#issuecomment-359875246
 
     """
-    # this redefines a builtin >:( so putting it here to satisfy my linter
-    from notebook.notebookapp import list_running_servers
     kernel_id = re.search(  # type: ignore
         'kernel-(.*).json',
         ipykernel.connect.get_connection_file()
@@ -94,23 +91,26 @@ def load_notebook(fullname: str):
 class BowtieMagic(Magics):
     """Bowtie magic commands."""
 
-    server = None
+    process = None
 
     @line_magic
     def bowtie_stop(self, line=''):  # pylint: disable=unused-argument
         """Terminate Bowtie app."""
-        if self.server is None:
+        if self.process is None:
             print('No app has been run.')
         else:
             print('Terminating Bowtie app.')
-            self.server.terminate()
-            if self.server.poll() is None:
+            self.process.terminate()
+            if self.process.is_alive():
                 time.sleep(1)
-                if self.server.poll() is None:
+                self.process.kill()
+                time.sleep(1)
+                if self.process.is_alive():
                     print('Failed to stop Bowtie app.', file=sys.stderr)
                     return
             print('Successfully stopped Bowtie app.')
-            self.server = None
+            self.process.close()
+            self.process = None
 
     @line_magic
     def bowtie(self, line=''):
@@ -125,7 +125,7 @@ class BowtieMagic(Magics):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         result = sock.connect_ex((host, port))
         if result == 0:
-            raise Exception('Port {} is unavailable on host {}, aborting.'.format(port, host))
+            raise Exception(f'Port {port} is unavailable on host {host}, aborting.')
 
         global_ns = self.shell.user_global_ns
         local_ns = self.shell.user_ns
@@ -133,45 +133,18 @@ class BowtieMagic(Magics):
             # pylint: disable=eval-used
             app = eval(appvar, global_ns, local_ns)
         except NameError:
-            raise UsageError('Could not find App {}'.format(appvar))
+            raise UsageError(f'Could not find App {appvar}')
 
         if not isinstance(app, App):
-            raise UsageError('App is of type {} needs to be type <bowtie.App>'.format(type(app)))
+            raise UsageError(f'App is of type {type(app)} needs to be type <bowtie.App>')
 
-        # pylint: disable=protected-access
-        app._build(notebook=get_notebook_name())
-
-        filepath = './{}/src/server.py'.format(_DIRECTORY)
-        if os.path.isfile(filepath):
-            self.server = Popen(['python', '-u', filepath], stdout=PIPE, stderr=STDOUT)
-        else:
-            raise FileNotFoundError('Cannot find "{}". Did you build the app?'.format(filepath))
-
-        def flush_stdout(cmd):
-            """Flush stdout from command continuously."""
-            while True:
-                line = cmd.stdout.readline()
-                if line == b'' and cmd.poll() is not None:
-                    return cmd.poll()
-                print(line.decode('utf-8'), end='')
-            raise Exception()
-
-        thread = Thread(target=flush_stdout, args=(self.server,))
-        thread.daemon = True
-        thread.start()
-
-        while self.server.poll() is None:
-            try:
-                if requests.get('http://localhost:9991').ok:
-                    break
-            except requests.exceptions.RequestException:
-                continue
-            time.sleep(1)
-        else:
-            print(self.server.stdout.read().decode('utf-8'), end='')
+        app._build(notebook=get_notebook_name())  # pylint: disable=protected-access
+        self.process = Process(target=app._serve)  # pylint: disable=protected-access
+        self.process.start()
+        time.sleep(5)
 
         clear_output()
         display(HTML(
-            '<iframe src=http://localhost:9991 width={} height={} '
-            'frameBorder={}></iframe>'.format(width, height, border)
+            f'<iframe src=http://localhost:9991 width={width} height={height} '
+            f'frameBorder={border}></iframe>'
         ))
