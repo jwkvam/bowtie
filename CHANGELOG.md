@@ -4,10 +4,17 @@
 
 ### Added
 
+  * Start of Authentication API
+  * Better interoperability with Flask
+  * Views have a layout attribute that is run a build time, which can save time at serve time.
 
 ### Breaking
 
-  * sidebar now defaults to False
+  * Apps layout now happens in global state or in layout functions.
+  * Remove server.py and templates, bundle.js{,.gz} is placed directly in build directory.
+  * load and subscribe are decorators now, simplifying usage.
+  * Sidebar now defaults to `False`.
+  * Removed respond function, moved feature to subscribe.
 
 ## 0.10.1 / 2018-10-03
 
