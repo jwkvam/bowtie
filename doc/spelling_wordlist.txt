@@ -23,6 +23,7 @@ frontend
 func
 getter
 getters
+gunicorn
 iframe
 indices
 io
@@ -43,5 +44,7 @@ stateful
 todo
 username
 usernames
+uwsgi
 webpack
 webpage
+wsgi
