@@ -18,14 +18,13 @@ mainplot = Plotly()
 
 app.add_sidebar(sigma)
 app.add(mainplot)
-app.respond(pager, upgraph)
 
 
 def initialize():
     cache.save('data', [0.] * 100)
 
 
-@app.respond(pager)
+@app.subscribe(pager)
 def upgraph():
     data = cache.load('data')
     value = float(sigma.get())
