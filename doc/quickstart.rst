@@ -72,22 +72,21 @@ I imported `Numpy <http://www.numpy.org/>`_ to generate sine waves.
 Now we instantiate the ``App`` and the components and configure them::
 
     app = App(sidebar=True)
-    sine = Plotly()
-    frequency = Slider(minimum=1, maximum=10, start=5, step=0.1)
+    chart = Plotly()
+    slider = Slider(minimum=1, maximum=10, start=5, step=0.1)
 
 Next we add these components to the ``app`` so they will be displayed on the web page.
 We place the slider in the sidebar and place the sine chart in the main view::
 
-    app.add_sidebar(frequency)
-    app.add(sine)
+    app.add_sidebar(slider)
+    app.add(chart)
 
 Next we'll create a listener that generates a plot on slider changes::
 
     @app.subscribe(slider.on_change)
-    def update_sine(freq):
-        freq = float(freq[0])
+    def plot_sine(freq):
         t = np.linspace(0, 10, 100)
-        sine_plot.do_all({
+        chart.do_all({
             'data': [{
                 'type': 'scatter',
                 'mode': 'lines+markers',
