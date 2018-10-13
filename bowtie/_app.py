@@ -33,6 +33,7 @@ from bowtie.exceptions import (
     SpanOverlapError, SizeError, WebpackError, YarnError
 )
 
+eventlet.monkey_patch(time=True)
 
 Route = namedtuple('Route', ['view', 'path', 'exact'])
 _Import = namedtuple('_Import', ['module', 'component'])
@@ -47,7 +48,6 @@ class Scheduler:
 
     def __init__(self, app, seconds, func):
         """Create a scheduled function."""
-        print('created scheduler')
         self.app = app
         self.seconds = seconds
         self.func = func
@@ -652,6 +652,15 @@ class App:
             FileSystemLoader(str(templates)),
         ])
         self._build_dir = self.app.root_path / _DIRECTORY
+        self.app.before_first_request(self._endpoints)
+
+    def wsgi_app(self, environ, start_response):
+        """Support uwsgi and gunicorn."""
+        return self.app.wsgi_app(environ, start_response)
+
+    def __call__(self, environ, start_response):
+        """Support uwsgi and gunicorn."""
+        return self.wsgi_app(environ, start_response)
 
     def __getattr__(self, name: str):
         """Export attributes from root view."""
@@ -939,8 +948,7 @@ class App:
         if retval != 0:
             raise WebpackError('Error building with webpack')
 
-    def _serve(self, host='0.0.0.0', port=9991) -> None:
-
+    def _endpoints(self):
         def generate_sio_handler(main_event, supports):
             # get all events from all subscriptions associated with this event
             uniq_events = set()
@@ -1036,21 +1044,17 @@ class App:
                     return response
                 return open(bundle_path, 'r').read()
 
-        scheduled = not self.app.debug or os.environ.get('WERKZEUG_RUN_MAIN') == 'true'
-        if scheduled:
-            for schedule in self._schedules:
-                schedule.start()
+        for schedule in self._schedules:
+            schedule.start()
+
+    def _serve(self, host='0.0.0.0', port=9991) -> None:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         result = sock.connect_ex((host, port))
         if result == 0:
             raise Exception(f'Port {port} is unavailable on host {host}, aborting.')
-        # TODO afford the user some API to change server
-        # for example gunicorn or uwsgi
-        # even though this is production grade
         self._socketio.run(self.app, host=host, port=port)
-        if scheduled:
-            for schedule in self._schedules:
-                schedule.stop()
+        for schedule in self._schedules:
+            schedule.stop()
 
     def _installed_packages(self) -> Generator[str, None, None]:
         """Extract installed packages as list from `package.json`."""
