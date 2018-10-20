@@ -834,3 +834,299 @@ class Nouislider(_Controller):
 
         """
         return data
+
+
+class Checkbox(_Controller):
+    """Ant Design slider."""
+
+    _TEMPLATE = 'checkbox.jsx'
+    _COMPONENT = 'Checkboxes'
+    _PACKAGE = None
+    _ATTRS = ('options={{{options}}} '
+              'defaults={{{defaults}}}')
+
+    def __init__(self, options: Optional[Sequence[str]] = None,
+                 defaults: Optional[Sequence[str]] = None) -> None:
+        """Create a slider.
+
+        Parameters
+        ----------
+        options :
+        defaults
+
+        References
+        ----------
+        https://ant.design/components/checkbox/
+
+        """
+        super().__init__()
+
+        if options is None:
+            options = []
+        if defaults is None:
+            defaults = []
+
+        self._comp = self._tag.format(
+            options=options,
+            defaults=defaults
+        )
+
+    # pylint: disable=no-self-use
+    def do_max(self, value):
+        """Replace the max value of the slider.
+
+        Parameters
+        ----------
+        value : int
+            Maximum value of the slider.
+
+        """
+        return value
+
+    def do_min(self, value):
+        """Replace the min value of the slider.
+
+        Parameters
+        ----------
+        value : int
+            Minimum value of the slider.
+
+        """
+        return value
+
+    def do_value(self, value):
+        """Set the value of the slider.
+
+        Parameters
+        ----------
+        value : int
+            Value of the slider.
+
+        """
+        return value
+
+    def do_inc(self, value=1):
+        """Increment value of slider by given amount.
+
+        Parameters
+        ----------
+        value : int
+            Number to change value of slider by.
+
+        """
+        return value
+
+    def do_min_max_value(self, minimum, maximum, value):
+        """Set the minimum, maximum, and value of slider simultaneously.
+
+        Parameters
+        ----------
+        minimum : int
+            Minimum value of the slider.
+        maximum : int
+            Maximum value of the slider.
+        value : int
+            Value of the slider.
+
+        """
+        return minimum, maximum, value
+
+    def on_change(self) -> Callable:
+        """Emit an event when the slider's value changes.
+
+        | **Payload:** ``number`` or ``list`` of values.
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
+        return self.get
+
+    def on_after_change(self):
+        """Emit an event when the slider control is released.
+
+        | **Payload:** ``number`` or ``list`` of values.
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
+        return self.get
+
+    def get(self, data):
+        """
+        Get the currently selected value(s).
+
+        Returns
+        -------
+        list or number
+            List if it's a range slider and gives two values.
+
+        """
+        return data
+
+
+class Radio(_Controller):
+    """Ant Design slider."""
+
+    _TEMPLATE = 'slider.jsx'
+    _COMPONENT = 'AntSlider'
+    _PACKAGE = None
+    _ATTRS = ('range={{{range}}} '
+              'min={{{minimum}}} '
+              'max={{{maximum}}} '
+              'step={{{step}}} '
+              'start={{{start}}} '
+              'marks={{{marks}}} '
+              'vertical={{{vertical}}}')
+
+    def __init__(self, start: Optional[Union[float, Sequence[float]]] = None, ranged: bool = False,
+                 minimum: float = 0, maximum: float = 100, step: float = 1,
+                 vertical: bool = False) -> None:
+        """Create a slider.
+
+        Parameters
+        ----------
+        start : number or list with two values, optional
+            Determines the starting value.
+            If a list of two values are given it will be a range slider.
+        ranged : bool, optional
+            If this is a range slider.
+        minimum : number, optional
+            Minimum value of the slider.
+        maximum : number, optional
+            Maximum value of the slider.
+        step : number, optional
+            Step size.
+        vertical : bool, optional
+            If True, the slider will be vertical
+
+        References
+        ----------
+        https://ant.design/components/slider/
+
+        """
+        super().__init__()
+
+        if start is None:
+            if ranged:
+                start = [minimum, maximum]
+            else:
+                start = minimum
+        elif isinstance(start, Sequence):
+            if len(start) > 2:
+                raise ValueError('start cannot be more than 2 numbers')
+            start = list(start)
+            ranged = True
+
+        self._comp = self._tag.format(
+            range=jsbool(ranged),
+            minimum=minimum,
+            maximum=maximum,
+            start=start,
+            step=step,
+            marks={minimum: str(minimum), maximum: str(maximum)},
+            vertical=jsbool(vertical)
+        )
+
+    # pylint: disable=no-self-use
+    def do_max(self, value):
+        """Replace the max value of the slider.
+
+        Parameters
+        ----------
+        value : int
+            Maximum value of the slider.
+
+        """
+        return value
+
+    def do_min(self, value):
+        """Replace the min value of the slider.
+
+        Parameters
+        ----------
+        value : int
+            Minimum value of the slider.
+
+        """
+        return value
+
+    def do_value(self, value):
+        """Set the value of the slider.
+
+        Parameters
+        ----------
+        value : int
+            Value of the slider.
+
+        """
+        return value
+
+    def do_inc(self, value=1):
+        """Increment value of slider by given amount.
+
+        Parameters
+        ----------
+        value : int
+            Number to change value of slider by.
+
+        """
+        return value
+
+    def do_min_max_value(self, minimum, maximum, value):
+        """Set the minimum, maximum, and value of slider simultaneously.
+
+        Parameters
+        ----------
+        minimum : int
+            Minimum value of the slider.
+        maximum : int
+            Maximum value of the slider.
+        value : int
+            Value of the slider.
+
+        """
+        return minimum, maximum, value
+
+    def on_change(self) -> Callable:
+        """Emit an event when the slider's value changes.
+
+        | **Payload:** ``number`` or ``list`` of values.
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
+        return self.get
+
+    def on_after_change(self):
+        """Emit an event when the slider control is released.
+
+        | **Payload:** ``number`` or ``list`` of values.
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
+        return self.get
+
+    def get(self, data):
+        """
+        Get the currently selected value(s).
+
+        Returns
+        -------
+        list or number
+            List if it's a range slider and gives two values.
+
+        """
+        return data
