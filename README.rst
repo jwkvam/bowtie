@@ -10,8 +10,9 @@ Bowtie
 |Build Status| |Documentation Status| |PyPI version| |Conda version| |PyPI| |codecov|
 
 .. figure:: https://cloud.githubusercontent.com/assets/86304/20045988/69e5678a-a45a-11e6-853b-7f60a615c9da.gif
-   :alt: Demo
-
+   :alt: Bowtie Demo
+   :target: https://github.com/jwkvam/bowtie-demo/blob/master/example.py
+   
 Introduction
 ------------
 
