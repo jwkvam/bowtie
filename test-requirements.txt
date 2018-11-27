@@ -14,8 +14,8 @@ pandas
 plotlywrapper
 pycodestyle
 pydocstyle
-pylint>=2.2.1
-pytest>=4.0.0
+pylint
+pytest
 pytest-codestyle
 pytest-cov
 pytest-docstyle
