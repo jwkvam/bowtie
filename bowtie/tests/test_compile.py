@@ -7,10 +7,8 @@ from bowtie.visual import Plotly
 from bowtie.tests.utils import reset_uuid
 
 
-def callback(*args):
+def callback(*_):
     """dummy function"""
-    # pylint: disable=unused-argument
-    pass
 
 
 # pylint: disable=unused-argument
