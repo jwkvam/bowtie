@@ -53,7 +53,6 @@ def command(func):
     @click.group(options_metavar='[--help]')
     def cmd():
         """Bowtie CLI to help build and run your app."""
-        pass
 
     @cmd.command(add_help_option=False)
     def build():
