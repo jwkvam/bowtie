@@ -109,7 +109,7 @@ never-returning-functions=sys.exit
 [LOGGING]
 
 # Format style used to check logging format string
-logging-format-style=%%
+logging-format-style=old
 
 # Logging modules to check that the string format arguments are in logging
 # function parameter format.
