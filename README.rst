@@ -125,5 +125,5 @@ You can help Bowtie in many ways including:
    :target: https://codecov.io/gh/jwkvam/bowtie
 .. |coffee| image:: https://www.buymeacoffee.com/assets/img/custom_images/purple_img.png
    :target: https://www.buymeacoffee.com/jwkvam
-.. |prettier| image:: https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square
+.. |prettier| image:: https://img.shields.io/badge/code_style-prettier-ff69b4.svg
    :target: https://github.com/prettier/prettier
