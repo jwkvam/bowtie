@@ -10,6 +10,9 @@ addons:
   chrome:
     stable
   apt:
+    sources:
+      - google-chrome
+      - docker-xenial
     packages:
       - libenchant-dev
       - libnss3
