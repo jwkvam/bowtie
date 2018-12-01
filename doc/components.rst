@@ -126,6 +126,20 @@ Upload
     :members:
     :undoc-members:
 
+Checkbox
+~~~~~~~~
+
+.. autoclass:: bowtie.control.Checkbox
+    :members:
+    :undoc-members:
+
+Radio
+~~~~~
+
+.. autoclass:: bowtie.control.Radio
+    :members:
+    :undoc-members:
+
 HTML
 ----
 

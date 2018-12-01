@@ -957,7 +957,7 @@ class Radio(_Controller):
         ----------
         labels : optional, sequence of stings
         values : optional, sequence of strings or ints
-        defaults : optional, string or int
+        default : optional, string or int
 
         References
         ----------
@@ -990,9 +990,9 @@ class Radio(_Controller):
 
         Parameters
         ----------
-        labels : array-like
+        labels : Sequence
             List of strings which will be visible to the user.
-        values : array-like
+        values : Sequence
             List of values associated with the labels that are hidden from the user.
 
         Returns
