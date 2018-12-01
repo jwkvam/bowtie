@@ -1,4 +1,4 @@
-dist: trusty
+dist: xenial
 # https://github.com/travis-ci/travis-ci/issues/4895
 language: bash
 cache: 
