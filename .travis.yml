@@ -1,4 +1,4 @@
-dist: xenial
+dist: trusty
 # https://github.com/travis-ci/travis-ci/issues/4895
 language: bash
 cache: 
@@ -10,14 +10,9 @@ addons:
   chrome:
     stable
   apt:
-    sources:
-      - google-chrome
-      - docker-xenial
     packages:
-      - google_chrome
       - libenchant-dev
       - libnss3
-      - libatk-bridge2.0-0
 
 env:
   - PYTHON_VERSION=3.6 NODE_VERSION=10
