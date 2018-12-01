@@ -1,8 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import Select from 'react-select';
-// Be sure to include styles at some point, probably during your bootstrapping
-import 'react-select/dist/react-select.css';
 import { storeState } from './utils';
 
 var msgpack = require('msgpack-lite');

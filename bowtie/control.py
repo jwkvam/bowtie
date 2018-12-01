@@ -1,6 +1,6 @@
 """Control components."""
 
-from typing import Callable, Dict, Optional, Union, Sequence
+from typing import Callable, Dict, Optional, Union, Sequence, List
 
 from bowtie._component import Component, jdumps, jsbool, jsnull
 
@@ -862,9 +862,8 @@ class Checkbox(_Controller):
 
         """
         super().__init__()
-        if labels is None:
-            options = []
-        else:
+        options: List[Dict] = []
+        if labels is not None and values is not None:
             options = [{'label': label, 'value': value} for label, value in zip(labels, values)]
         if defaults is None:
             defaults = []
@@ -966,9 +965,8 @@ class Radio(_Controller):
 
         """
         super().__init__()
-        if labels is None:
-            options = []
-        else:
+        options: List[Dict] = []
+        if labels is not None and values is not None:
             options = [{'label': label, 'value': value} for label, value in zip(labels, values)]
         self._comp = self._tag.format(
             options=options,
