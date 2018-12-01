@@ -8,8 +8,8 @@ var config = {
         new CompressionPlugin({
             filename: '[path].gz[query]',
             algorithm: 'gzip',
-        })
-    ]
+        }),
+    ],
 };
 
 module.exports = merge(common, config);

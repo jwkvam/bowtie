@@ -1,8 +1,8 @@
 """Control components."""
 
-from typing import Callable, Optional, List, Union, Sequence
+from typing import Callable, Dict, Optional, Union, Sequence, List
 
-from bowtie._component import Component, jdumps, jsbool
+from bowtie._component import Component, jdumps, jsbool, jsnull
 
 
 # pylint: disable=too-few-public-methods
@@ -100,13 +100,13 @@ class Dropdown(_Controller):
 
     _TEMPLATE = 'dropdown.jsx'
     _COMPONENT = 'Dropdown'
-    _PACKAGE = 'react-select@1.3.0'
+    _PACKAGE = 'react-select@2.1.2'
     _ATTRS = ('initOptions={{{options}}} '
               'multi={{{multi}}} '
               'default={{{default}}}')
 
-    def __init__(self, labels: Optional[List[str]] = None,
-                 values: Optional[List[Union[str, int]]] = None, multi: bool = False,
+    def __init__(self, labels: Optional[Sequence[str]] = None,
+                 values: Optional[Sequence[Union[str, int]]] = None, multi: bool = False,
                  default: Optional[Union[str, int]] = None) -> None:
         """Create a drop down.
 
@@ -692,7 +692,7 @@ class Nouislider(_Controller):
 
     _TEMPLATE = 'nouislider.jsx'
     _COMPONENT = 'Nouislider'
-    _PACKAGE = 'nouislider@11.1.0'
+    _PACKAGE = 'nouislider@12.1.0'
     _ATTRS = ('range={{{{min: {min}, max: {max}}}}} '
               'socket={{socket}} '
               'start={{{start}}} '
@@ -823,6 +823,198 @@ class Nouislider(_Controller):
         return self.get
 
     # pylint: disable=no-self-use
+    def get(self, data):
+        """
+        Get the currently selected value(s).
+
+        Returns
+        -------
+        list or number
+            List if it's a range slider and gives two values.
+
+        """
+        return data
+
+
+class Checkbox(_Controller):
+    """Ant Design checkboxes."""
+
+    _TEMPLATE = 'checkbox.jsx'
+    _COMPONENT = 'Checkboxes'
+    _PACKAGE = None
+    _ATTRS = ('options={{{options}}} '
+              'defaults={{{defaults}}}')
+
+    def __init__(self, labels: Optional[Sequence[str]] = None,
+                 values: Optional[Sequence[Union[int, str]]] = None,
+                 defaults: Optional[Sequence[Union[int, str]]] = None) -> None:
+        """Create checkboxes.
+
+        Parameters
+        ----------
+        labels : optional, sequence of stings
+        values : optional, sequence of strings or ints
+        defaults : optional, sequence of strings or ints
+
+        References
+        ----------
+        https://ant.design/components/checkbox/
+
+        """
+        super().__init__()
+        options: List[Dict] = []
+        if labels is not None and values is not None:
+            options = [{'label': label, 'value': value} for label, value in zip(labels, values)]
+        if defaults is None:
+            defaults = []
+        self._comp = self._tag.format(
+            options=options,
+            defaults=defaults
+        )
+
+    # pylint: disable=no-self-use
+    def do_values(self, *value: Union[str, int]):
+        """Set the value(s) of the slider.
+
+        Parameters
+        ----------
+        value : int
+            Value of the slider.
+
+        """
+        return value
+
+    def do_options(self, labels: Sequence[str],
+                   values: Sequence[Union[str, int]]) -> Sequence[Dict]:
+        """Replace the checkbox options.
+
+        Parameters
+        ----------
+        labels : array-like
+            List of strings which will be visible to the user.
+        values : array-like
+            List of values associated with the labels that are hidden from the user.
+
+        Returns
+        -------
+        None
+
+        """
+        return [{'label': label, 'value': value} for label, value in zip(labels, values)]
+
+    def do_check(self, values: Sequence[Union[int, str]]):
+        """Set the value of the slider.
+
+        Parameters
+        ----------
+        values : Sequence of int, str
+            The radio value to select.
+
+        """
+        return values
+
+    def on_change(self) -> Callable:
+        """Emit an event when the slider's value changes.
+
+        | **Payload:** ``number`` or ``list`` of values.
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
+        return self.get
+
+    def get(self, data):
+        """
+        Get the checked values.
+
+        Returns
+        -------
+        list
+            List of values
+
+        """
+        return data
+
+
+class Radio(_Controller):
+    """Ant Design Radio Group."""
+
+    _TEMPLATE = 'radio.jsx'
+    _COMPONENT = 'Radios'
+    _PACKAGE = None
+    _ATTRS = ('options={{{options}}} '
+              'default={{{default}}}')
+
+    def __init__(self, labels: Optional[Sequence[str]] = None,
+                 values: Optional[Sequence[Union[int, str]]] = None,
+                 default: Optional[Union[int, str]] = None) -> None:
+        """Create radio boxes.
+
+        Parameters
+        ----------
+        labels : optional, sequence of stings
+        values : optional, sequence of strings or ints
+        defaults : optional, string or int
+
+        References
+        ----------
+        https://ant.design/components/radio/
+
+        """
+        super().__init__()
+        options: List[Dict] = []
+        if labels is not None and values is not None:
+            options = [{'label': label, 'value': value} for label, value in zip(labels, values)]
+        self._comp = self._tag.format(
+            options=options,
+            default=jsnull(default),
+        )
+
+    # pylint: disable=no-self-use
+    def do_select(self, value: Union[str, int]):
+        """Set the value of the slider.
+
+        Parameters
+        ----------
+        value : int, str
+            The radio value to select.
+
+        """
+        return value
+
+    def do_options(self, labels, values):
+        """Replace the radio button options.
+
+        Parameters
+        ----------
+        labels : array-like
+            List of strings which will be visible to the user.
+        values : array-like
+            List of values associated with the labels that are hidden from the user.
+
+        Returns
+        -------
+        None
+
+        """
+        return [{'label': label, 'value': value} for label, value in zip(labels, values)]
+
+    def on_change(self) -> Callable:
+        """Emit an event when the slider's value changes.
+
+        | **Payload:** ``number`` or ``list`` of values.
+
+        Returns
+        -------
+        str
+            Name of event.
+
+        """
+        return self.get
+
     def get(self, data):
         """
         Get the currently selected value(s).

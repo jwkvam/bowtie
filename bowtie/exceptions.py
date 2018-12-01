@@ -34,7 +34,7 @@ class NoSidebarError(Exception):
 
 
 class NotStatefulEvent(Exception):
-    """This event is not stateful and cannot be paired with other events."""
+    """Event is not stateful and cannot be paired with other events."""
 
 
 class SerializationError(TypeError):

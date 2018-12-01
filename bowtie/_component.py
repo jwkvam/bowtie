@@ -69,6 +69,13 @@ def jsbool(x: bool) -> str:
     return repr(x).lower()
 
 
+def jsnull(x: Any) -> Any:
+    """Convert to 'null' if None."""
+    if x is None:
+        return 'null'
+    return x
+
+
 def json_conversion(obj: Any) -> JSON:
     """Encode additional objects to JSON."""
     try:

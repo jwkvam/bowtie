@@ -1,16 +1,17 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Select from 'react-select';
+import { Radio } from 'antd';
 import { storeState } from './utils';
+const msgpack = require('msgpack-lite');
 
-var msgpack = require('msgpack-lite');
+const RadioGroup = Radio.Group;
 
-export default class Dropdown extends React.Component {
+export default class Radios extends React.Component {
     constructor(props) {
         super(props);
         var local = sessionStorage.getItem(this.props.uuid);
         if (local === null) {
-            this.state = { value: this.props.default, options: this.props.initOptions };
+            this.state = { value: this.props.default, options: this.props.options };
         } else {
             this.state = JSON.parse(local);
         }
@@ -22,10 +23,9 @@ export default class Dropdown extends React.Component {
         storeState(this.props.uuid, this.state, { value: value });
     };
 
-    choose = data => {
-        var arr = new Uint8Array(data['data']);
-        this.setState({ value: arr });
-        storeState(this.props.uuid, this.state, { value: arr });
+    select = data => {
+        var arr = msgpack.decode(new Uint8Array(data['data']));
+        this.handleChange(arr);
     };
 
     newOptions = data => {
@@ -39,7 +39,7 @@ export default class Dropdown extends React.Component {
         var uuid = this.props.uuid;
         socket.on(uuid + '#get', this.getValue);
         socket.on(uuid + '#options', this.newOptions);
-        socket.on(uuid + '#choose', this.choose);
+        socket.on(uuid + '#select', this.choose);
     }
 
     getValue = (data, fn) => {
@@ -48,20 +48,18 @@ export default class Dropdown extends React.Component {
 
     render() {
         return (
-            <Select
-                multi={this.props.multi}
-                value={this.state.value}
+            <RadioGroup
                 options={this.state.options}
+                value={this.state.value}
                 onChange={this.handleChange}
             />
         );
     }
 }
 
-Dropdown.propTypes = {
+Radios.propTypes = {
     uuid: PropTypes.string.isRequired,
     socket: PropTypes.object.isRequired,
-    multi: PropTypes.bool.isRequired,
     default: PropTypes.any,
-    initOptions: PropTypes.array,
+    options: PropTypes.array,
 };

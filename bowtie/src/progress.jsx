@@ -7,35 +7,35 @@ var msgpack = require('msgpack-lite');
 export default class AntProgress extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {percent: 0, visible: false, status: 'active'};
+        this.state = { percent: 0, visible: false, status: 'active' };
     }
 
     percent = data => {
         var arr = new Uint8Array(data['data']);
-        this.setState({percent: msgpack.decode(arr)});
-    }
+        this.setState({ percent: msgpack.decode(arr) });
+    };
 
     increment = data => {
         var arr = new Uint8Array(data['data']);
-        this.setState({percent: this.state.percent + msgpack.decode(arr)});
-    }
+        this.setState({ percent: this.state.percent + msgpack.decode(arr) });
+    };
 
     visible = data => {
         var arr = new Uint8Array(data['data']);
-        this.setState({visible: msgpack.decode(arr)});
-    }
+        this.setState({ visible: msgpack.decode(arr) });
+    };
 
     active = data => {
-        this.setState({status: 'active'});
-    }
+        this.setState({ status: 'active' });
+    };
 
     success = data => {
-        this.setState({status: 'success'});
-    }
+        this.setState({ status: 'success' });
+    };
 
     error = data => {
-        this.setState({status: 'exception'});
-    }
+        this.setState({ status: 'exception' });
+    };
 
     componentDidMount() {
         var uuid = this.props.uuid;
@@ -54,23 +54,25 @@ export default class AntProgress extends React.Component {
     render() {
         if (this.state.visible) {
             return (
-                <div style={{position: 'absolute',
-                    top: '50%', left: '50%',
-                    transform: 'translate(-50%, -50%)'
-                }}>
+                <div
+                    style={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                    }}
+                >
                     <Progress
                         type="circle"
                         showInfo
                         status={this.state.status}
                         percent={this.state.percent}
-                        style={{alignSelf: 'center'}}
+                        style={{ alignSelf: 'center' }}
                     />
                 </div>
             );
         } else {
-            return (
-                this.props.children
-            );
+            return this.props.children;
         }
     }
 }
@@ -78,5 +80,5 @@ export default class AntProgress extends React.Component {
 AntProgress.propTypes = {
     uuid: PropTypes.string.isRequired,
     socket: PropTypes.object.isRequired,
-    children: PropTypes.any
+    children: PropTypes.any,
 };

@@ -13,29 +13,27 @@ export default class Nouislider extends React.Component {
     }
 
     createSlider() {
-        var slider = this.slider = noUiSlider.create(this.sliderContainer,
-            {...this.props}
-        );
+        var slider = (this.slider = noUiSlider.create(this.sliderContainer, { ...this.props }));
 
         var uuid = this.props.uuid;
         var socket = this.props.socket;
 
-        slider.on('update', function (data) {
+        slider.on('update', function(data) {
             socket.emit(uuid + '#update', msgpack.encode(data));
         });
-        slider.on('change', function (data) {
+        slider.on('change', function(data) {
             socket.emit(uuid + '#change', msgpack.encode(data));
         });
-        slider.on('slide', function (data) {
+        slider.on('slide', function(data) {
             socket.emit(uuid + '#slide', msgpack.encode(data));
         });
-        slider.on('set', function (data) {
+        slider.on('set', function(data) {
             socket.emit(uuid + '#set', msgpack.encode(data));
         });
-        slider.on('start', function (data) {
+        slider.on('start', function(data) {
             socket.emit(uuid + '#start', msgpack.encode(data));
         });
-        slider.on('end', function (data) {
+        slider.on('end', function(data) {
             socket.emit(uuid + '#end', msgpack.encode(data));
         });
     }
@@ -67,9 +65,7 @@ export default class Nouislider extends React.Component {
     }
 
     render() {
-        return (
-            <div ref={(slider) => this.sliderContainer = slider} />
-        );
+        return <div ref={slider => (this.sliderContainer = slider)} />;
     }
 }
 
@@ -81,10 +77,7 @@ Nouislider.propTypes = {
     // http://refreshless.com/nouislider/behaviour-option/
     behaviour: PropTypes.string,
     // http://refreshless.com/nouislider/slider-options/#section-Connect
-    connect: PropTypes.oneOfType([
-        PropTypes.oneOf(['lower', 'upper']),
-        PropTypes.bool
-    ]),
+    connect: PropTypes.oneOfType([PropTypes.oneOf(['lower', 'upper']), PropTypes.bool]),
     // http://refreshless.com/nouislider/slider-options/#section-cssPrefix
     cssPrefix: PropTypes.string,
     // http://refreshless.com/nouislider/slider-options/#section-orientation
@@ -116,8 +109,8 @@ Nouislider.propTypes = {
         PropTypes.bool,
         PropTypes.arrayOf(
             PropTypes.shape({
-                to: PropTypes.func
-            })
-        )
-    ])
+                to: PropTypes.func,
+            }),
+        ),
+    ]),
 };

@@ -15,7 +15,7 @@ export default class AntSlider extends React.Component {
             this.state = {
                 value: this.props.start,
                 max: this.props.max,
-                min: this.props.min
+                min: this.props.min,
             };
         } else {
             this.state = JSON.parse(local);
@@ -30,54 +30,54 @@ export default class AntSlider extends React.Component {
 
     getValue = (data, fn) => {
         fn(msgpack.encode(this.state.value));
-    }
+    };
 
     setValue = data => {
         var arr = new Uint8Array(data['data']);
         arr = msgpack.decode(arr);
-        this.setState({value: arr});
-        storeState(this.props.uuid, this.state, {value: arr});
-    }
+        this.setState({ value: arr });
+        storeState(this.props.uuid, this.state, { value: arr });
+    };
 
     setMax = data => {
         var arr = new Uint8Array(data['data']);
         arr = msgpack.decode(arr);
-        this.setState({max: arr});
-        storeState(this.props.uuid, this.state, {max: arr});
-    }
+        this.setState({ max: arr });
+        storeState(this.props.uuid, this.state, { max: arr });
+    };
 
     setMin = data => {
         var arr = new Uint8Array(data['data']);
         arr = msgpack.decode(arr);
-        this.setState({min: arr});
-        storeState(this.props.uuid, this.state, {min: arr});
-    }
+        this.setState({ min: arr });
+        storeState(this.props.uuid, this.state, { min: arr });
+    };
 
     setMinMaxValue = data => {
         var arr = new Uint8Array(data['data']);
         arr = msgpack.decode(arr);
-        var value = {min: arr[0], max: arr[1], value: arr[2]};
+        var value = { min: arr[0], max: arr[1], value: arr[2] };
         this.setState(value);
         storeState(this.props.uuid, this.state, value);
-    }
+    };
 
     incValue = data => {
         var arr = new Uint8Array(data['data']);
         var value = msgpack.decode(arr);
         value += this.state.value;
-        this.setState({value: value});
-        storeState(this.props.uuid, this.state, {value: value});
-    }
+        this.setState({ value: value });
+        storeState(this.props.uuid, this.state, { value: value });
+    };
 
     onChange = value => {
-        this.setState({value: value});
-        storeState(this.props.uuid, this.state, {value: value});
+        this.setState({ value: value });
+        storeState(this.props.uuid, this.state, { value: value });
         this.props.socket.emit(this.props.uuid + '#change', msgpack.encode(value));
-    }
+    };
 
     onAfterChange = value => {
         this.props.socket.emit(this.props.uuid + '#after_change', msgpack.encode(value));
-    }
+    };
 
     render() {
         return (
@@ -102,11 +102,8 @@ AntSlider.propTypes = {
     min: PropTypes.number.isRequired,
     max: PropTypes.number.isRequired,
     range: PropTypes.bool.isRequired,
-    start: PropTypes.oneOfType([
-        PropTypes.number,
-        PropTypes.array
-    ]).isRequired,
+    start: PropTypes.oneOfType([PropTypes.number, PropTypes.array]).isRequired,
     step: PropTypes.number.isRequired,
     marks: PropTypes.object.isRequired,
-    vertical: PropTypes.bool.isRequired
+    vertical: PropTypes.bool.isRequired,
 };

@@ -14,9 +14,7 @@ export default class AntUpload extends React.Component {
     render() {
         return (
             <LocaleProvider locale={enUS}>
-                <Dragger
-                    action={'upload' + this.props.uuid}
-                    multiple={this.props.multiple} >
+                <Dragger action={'upload' + this.props.uuid} multiple={this.props.multiple}>
                     <p className="ant-upload-drag-icon">
                         <Icon type="inbox" />
                     </p>
