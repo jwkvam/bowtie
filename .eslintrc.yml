@@ -19,7 +19,7 @@ parserOptions:
 plugins:
     - react
 rules:
-    indent: 
+    indent:
         - error
         - 4
         - SwitchCase: 1
