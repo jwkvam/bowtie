@@ -24,14 +24,13 @@ export default class Checkboxes extends React.Component {
     };
 
     check = data => {
-        var arr = msgpack.decode(new Uint8Array(data['data']));
-        this.handleChange(arr);
+        this.handleChange(msgpack.decode(new Uint8Array(data['data'])));
     };
 
     newOptions = data => {
-        var arr = new Uint8Array(data['data']);
-        this.setState({ value: [], options: msgpack.decode(arr) });
-        storeState(this.props.uuid, this.state, { value: null, options: msgpack.decode(arr) });
+        var arr = msgpack.decode(new Uint8Array(data['data']));
+        this.setState({ value: [], options: arr });
+        storeState(this.props.uuid, this.state, { value: null, options: arr });
     };
 
     componentDidMount() {

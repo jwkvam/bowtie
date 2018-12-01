@@ -17,21 +17,24 @@ export default class Radios extends React.Component {
         }
     }
 
-    handleChange = value => {
+    updateValue = value => {
         this.setState({ value: value });
         this.props.socket.emit(this.props.uuid + '#change', msgpack.encode(value));
         storeState(this.props.uuid, this.state, { value: value });
     };
 
+    handleChange = event => {
+        this.updateValue(event.target.value);
+    };
+
     select = data => {
-        var arr = msgpack.decode(new Uint8Array(data['data']));
-        this.handleChange(arr);
+        this.updateValue(msgpack.decode(new Uint8Array(data['data'])));
     };
 
     newOptions = data => {
-        var arr = new Uint8Array(data['data']);
-        this.setState({ value: null, options: msgpack.decode(arr) });
-        storeState(this.props.uuid, this.state, { value: null, options: msgpack.decode(arr) });
+        var arr = msgpack.decode(new Uint8Array(data['data']));
+        this.setState({ value: null, options: arr });
+        storeState(this.props.uuid, this.state, { value: null, options: arr });
     };
 
     componentDidMount() {
@@ -39,7 +42,7 @@ export default class Radios extends React.Component {
         var uuid = this.props.uuid;
         socket.on(uuid + '#get', this.getValue);
         socket.on(uuid + '#options', this.newOptions);
-        socket.on(uuid + '#select', this.choose);
+        socket.on(uuid + '#select', this.select);
     }
 
     getValue = (data, fn) => {
