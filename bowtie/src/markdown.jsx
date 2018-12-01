@@ -9,7 +9,7 @@ export default class Markdown extends React.Component {
         super(props);
         var local = sessionStorage.getItem(this.props.uuid);
         if (local === null) {
-            this.state = {value: this.props.initial};
+            this.state = { value: this.props.initial };
         } else {
             this.state = JSON.parse(local);
         }
@@ -17,14 +17,14 @@ export default class Markdown extends React.Component {
 
     getValue = (data, fn) => {
         fn(msgpack.encode(this.state.value));
-    }
+    };
 
     setText = data => {
         var arr = new Uint8Array(data['data']);
         arr = msgpack.decode(arr);
-        this.setState({value: arr});
-        storeState(this.props.uuid, this.state, {value: arr});
-    }
+        this.setState({ value: arr });
+        storeState(this.props.uuid, this.state, { value: arr });
+    };
 
     componentDidMount() {
         var socket = this.props.socket;
@@ -33,13 +33,13 @@ export default class Markdown extends React.Component {
         socket.on(uuid + '#text', this.setText);
     }
 
-    render () {
-        return <div dangerouslySetInnerHTML={{__html: this.state.value}} />;
+    render() {
+        return <div dangerouslySetInnerHTML={{ __html: this.state.value }} />;
     }
 }
 
 Markdown.propTypes = {
     uuid: PropTypes.string.isRequired,
     socket: PropTypes.object.isRequired,
-    initial: PropTypes.string.isRequired
+    initial: PropTypes.string.isRequired,
 };

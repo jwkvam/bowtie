@@ -13,7 +13,7 @@
         "compression-webpack-plugin": "^2.0.0",
         "core-js": "^2.5.7",
         "css-loader": "^1.0.1",
-        "less": "^3.8.1",
+        "less": "^3.9.0",
         "less-loader": "^4.1.0",
         "lodash.clonedeep": "^4.5.0",
         "msgpack-lite": "^0.1.26",
@@ -26,9 +26,9 @@
         "react-router": "^4.3.1",
         "react-router-dom": "^4.3.1",
         "sass-loader": "^7.1.0",
-        "socket.io-client": "^2.1.1",
+        "socket.io-client": "^2.2.0",
         "style-loader": "^0.23.1",
-        "webpack": "^4.26.0",
+        "webpack": "^4.26.1",
         "webpack-cli": "^3.1.2",
         "webpack-merge": "^4.1.4"
     }

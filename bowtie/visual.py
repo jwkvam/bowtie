@@ -119,7 +119,7 @@ class SmartGrid(_Visual):
 
     _TEMPLATE = 'griddle.jsx'
     _COMPONENT = 'SmartGrid'
-    _PACKAGE = 'griddle-react@1.11.2'
+    _PACKAGE = 'griddle-react@1.13.1'
     _ATTRS = None
 
     def __init__(self) -> None:
@@ -227,7 +227,7 @@ class Plotly(_Visual):
 
     _TEMPLATE = 'plotly.jsx'
     _COMPONENT = 'PlotlyPlot'
-    _PACKAGE = 'plotly.js@1.40.1'
+    _PACKAGE = 'plotly.js@1.42.5'
     _ATTRS = 'initState={{{init}}}'
 
     def __init__(self, init: Optional[Dict] = None) -> None:

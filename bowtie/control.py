@@ -1,8 +1,8 @@
 """Control components."""
 
-from typing import Callable, Optional, List, Union, Sequence
+from typing import Callable, Dict, Optional, Union, Sequence
 
-from bowtie._component import Component, jdumps, jsbool
+from bowtie._component import Component, jdumps, jsbool, jsnull
 
 
 # pylint: disable=too-few-public-methods
@@ -100,13 +100,13 @@ class Dropdown(_Controller):
 
     _TEMPLATE = 'dropdown.jsx'
     _COMPONENT = 'Dropdown'
-    _PACKAGE = 'react-select@1.3.0'
+    _PACKAGE = 'react-select@2.1.2'
     _ATTRS = ('initOptions={{{options}}} '
               'multi={{{multi}}} '
               'default={{{default}}}')
 
-    def __init__(self, labels: Optional[List[str]] = None,
-                 values: Optional[List[Union[str, int]]] = None, multi: bool = False,
+    def __init__(self, labels: Optional[Sequence[str]] = None,
+                 values: Optional[Sequence[Union[str, int]]] = None, multi: bool = False,
                  default: Optional[Union[str, int]] = None) -> None:
         """Create a drop down.
 
@@ -692,7 +692,7 @@ class Nouislider(_Controller):
 
     _TEMPLATE = 'nouislider.jsx'
     _COMPONENT = 'Nouislider'
-    _PACKAGE = 'nouislider@11.1.0'
+    _PACKAGE = 'nouislider@12.1.0'
     _ATTRS = ('range={{{{min: {min}, max: {max}}}}} '
               'socket={{socket}} '
               'start={{{start}}} '
@@ -837,7 +837,7 @@ class Nouislider(_Controller):
 
 
 class Checkbox(_Controller):
-    """Ant Design slider."""
+    """Ant Design checkboxes."""
 
     _TEMPLATE = 'checkbox.jsx'
     _COMPONENT = 'Checkboxes'
@@ -845,14 +845,16 @@ class Checkbox(_Controller):
     _ATTRS = ('options={{{options}}} '
               'defaults={{{defaults}}}')
 
-    def __init__(self, options: Optional[Sequence[str]] = None,
-                 defaults: Optional[Sequence[str]] = None) -> None:
-        """Create a slider.
+    def __init__(self, labels: Optional[Sequence[str]] = None,
+                 values: Optional[Sequence[Union[int, str]]] = None,
+                 defaults: Optional[Sequence[Union[int, str]]] = None) -> None:
+        """Create checkboxes.
 
         Parameters
         ----------
-        options :
-        defaults
+        labels : optional, sequence of stings
+        values : optional, sequence of strings or ints
+        defaults : optional, sequence of strings or ints
 
         References
         ----------
@@ -860,92 +862,60 @@ class Checkbox(_Controller):
 
         """
         super().__init__()
-
-        if options is None:
+        if labels is None:
             options = []
+        else:
+            options = [{'label': label, 'value': value} for label, value in zip(labels, values)]
         if defaults is None:
             defaults = []
-
         self._comp = self._tag.format(
             options=options,
             defaults=defaults
         )
 
     # pylint: disable=no-self-use
-    def do_max(self, value):
-        """Replace the max value of the slider.
+    def do_values(self, *value: Union[str, int]):
+        """Set the value(s) of the slider.
 
         Parameters
         ----------
         value : int
-            Maximum value of the slider.
+            Value of the slider.
 
         """
         return value
 
-    def do_min(self, value):
-        """Replace the min value of the slider.
+    def do_options(self, labels: Sequence[str],
+                   values: Sequence[Union[str, int]]) -> Sequence[Dict]:
+        """Replace the checkbox options.
 
         Parameters
         ----------
-        value : int
-            Minimum value of the slider.
+        labels : array-like
+            List of strings which will be visible to the user.
+        values : array-like
+            List of values associated with the labels that are hidden from the user.
+
+        Returns
+        -------
+        None
 
         """
-        return value
+        return [{'label': label, 'value': value} for label, value in zip(labels, values)]
 
-    def do_value(self, value):
+    def do_check(self, values: Sequence[Union[int, str]]):
         """Set the value of the slider.
 
         Parameters
         ----------
-        value : int
-            Value of the slider.
+        values : Sequence of int, str
+            The radio value to select.
 
         """
-        return value
-
-    def do_inc(self, value=1):
-        """Increment value of slider by given amount.
-
-        Parameters
-        ----------
-        value : int
-            Number to change value of slider by.
-
-        """
-        return value
-
-    def do_min_max_value(self, minimum, maximum, value):
-        """Set the minimum, maximum, and value of slider simultaneously.
-
-        Parameters
-        ----------
-        minimum : int
-            Minimum value of the slider.
-        maximum : int
-            Maximum value of the slider.
-        value : int
-            Value of the slider.
-
-        """
-        return minimum, maximum, value
+        return values
 
     def on_change(self) -> Callable:
         """Emit an event when the slider's value changes.
-
-        | **Payload:** ``number`` or ``list`` of values.
-
-        Returns
-        -------
-        str
-            Name of event.
-
-        """
-        return self.get
-
-    def on_after_change(self):
-        """Emit an event when the slider control is released.
 
         | **Payload:** ``number`` or ``list`` of values.
 
@@ -959,155 +929,83 @@ class Checkbox(_Controller):
 
     def get(self, data):
         """
-        Get the currently selected value(s).
+        Get the checked values.
 
         Returns
         -------
-        list or number
-            List if it's a range slider and gives two values.
+        list
+            List of values
 
         """
         return data
 
 
 class Radio(_Controller):
-    """Ant Design slider."""
+    """Ant Design Radio Group."""
 
-    _TEMPLATE = 'slider.jsx'
-    _COMPONENT = 'AntSlider'
+    _TEMPLATE = 'radio.jsx'
+    _COMPONENT = 'Radios'
     _PACKAGE = None
-    _ATTRS = ('range={{{range}}} '
-              'min={{{minimum}}} '
-              'max={{{maximum}}} '
-              'step={{{step}}} '
-              'start={{{start}}} '
-              'marks={{{marks}}} '
-              'vertical={{{vertical}}}')
+    _ATTRS = ('options={{{options}}} '
+              'default={{{default}}}')
 
-    def __init__(self, start: Optional[Union[float, Sequence[float]]] = None, ranged: bool = False,
-                 minimum: float = 0, maximum: float = 100, step: float = 1,
-                 vertical: bool = False) -> None:
-        """Create a slider.
+    def __init__(self, labels: Optional[Sequence[str]] = None,
+                 values: Optional[Sequence[Union[int, str]]] = None,
+                 default: Optional[Union[int, str]] = None) -> None:
+        """Create radio boxes.
 
         Parameters
         ----------
-        start : number or list with two values, optional
-            Determines the starting value.
-            If a list of two values are given it will be a range slider.
-        ranged : bool, optional
-            If this is a range slider.
-        minimum : number, optional
-            Minimum value of the slider.
-        maximum : number, optional
-            Maximum value of the slider.
-        step : number, optional
-            Step size.
-        vertical : bool, optional
-            If True, the slider will be vertical
+        labels : optional, sequence of stings
+        values : optional, sequence of strings or ints
+        defaults : optional, string or int
 
         References
         ----------
-        https://ant.design/components/slider/
+        https://ant.design/components/radio/
 
         """
         super().__init__()
-
-        if start is None:
-            if ranged:
-                start = [minimum, maximum]
-            else:
-                start = minimum
-        elif isinstance(start, Sequence):
-            if len(start) > 2:
-                raise ValueError('start cannot be more than 2 numbers')
-            start = list(start)
-            ranged = True
-
+        if labels is None:
+            options = []
+        else:
+            options = [{'label': label, 'value': value} for label, value in zip(labels, values)]
         self._comp = self._tag.format(
-            range=jsbool(ranged),
-            minimum=minimum,
-            maximum=maximum,
-            start=start,
-            step=step,
-            marks={minimum: str(minimum), maximum: str(maximum)},
-            vertical=jsbool(vertical)
+            options=options,
+            default=jsnull(default),
         )
 
     # pylint: disable=no-self-use
-    def do_max(self, value):
-        """Replace the max value of the slider.
-
-        Parameters
-        ----------
-        value : int
-            Maximum value of the slider.
-
-        """
-        return value
-
-    def do_min(self, value):
-        """Replace the min value of the slider.
-
-        Parameters
-        ----------
-        value : int
-            Minimum value of the slider.
-
-        """
-        return value
-
-    def do_value(self, value):
+    def do_select(self, value: Union[str, int]):
         """Set the value of the slider.
 
         Parameters
         ----------
-        value : int
-            Value of the slider.
+        value : int, str
+            The radio value to select.
 
         """
         return value
 
-    def do_inc(self, value=1):
-        """Increment value of slider by given amount.
+    def do_options(self, labels, values):
+        """Replace the radio button options.
 
         Parameters
         ----------
-        value : int
-            Number to change value of slider by.
-
-        """
-        return value
-
-    def do_min_max_value(self, minimum, maximum, value):
-        """Set the minimum, maximum, and value of slider simultaneously.
-
-        Parameters
-        ----------
-        minimum : int
-            Minimum value of the slider.
-        maximum : int
-            Maximum value of the slider.
-        value : int
-            Value of the slider.
-
-        """
-        return minimum, maximum, value
-
-    def on_change(self) -> Callable:
-        """Emit an event when the slider's value changes.
-
-        | **Payload:** ``number`` or ``list`` of values.
+        labels : array-like
+            List of strings which will be visible to the user.
+        values : array-like
+            List of values associated with the labels that are hidden from the user.
 
         Returns
         -------
-        str
-            Name of event.
+        None
 
         """
-        return self.get
+        return [{'label': label, 'value': value} for label, value in zip(labels, values)]
 
-    def on_after_change(self):
-        """Emit an event when the slider control is released.
+    def on_change(self) -> Callable:
+        """Emit an event when the slider's value changes.
 
         | **Payload:** ``number`` or ``list`` of values.
 

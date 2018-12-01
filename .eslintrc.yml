@@ -3,6 +3,10 @@ env:
 extends:
     - 'eslint:recommended'
     - 'plugin:react/recommended'
+    - 'plugin:prettier/recommended'
+settings:
+    react:
+        version: "16.6.3"
 parser: babel-eslint
 parserOptions:
     ecmaVersion: 7
@@ -15,9 +19,10 @@ parserOptions:
 plugins:
     - react
 rules:
-    indent:
+    indent: 
         - error
         - 4
+        - SwitchCase: 1
     linebreak-style:
         - error
         - unix

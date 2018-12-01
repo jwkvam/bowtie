@@ -17,6 +17,9 @@ style:
 eslint:
 	eslint bowtie/src/*.js{,x}
 
+prettier:
+	prettier bowtie/src/*.js{,x} --write
+
 checkdocs:
 	pydocstyle --count --match-dir='(?!examples|build|node_modules|doc|.*templates)[^\.].*'
 

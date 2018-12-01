@@ -10,7 +10,7 @@ export default class AntNumber extends React.Component {
         super(props);
         var local = sessionStorage.getItem(this.props.uuid);
         if (local === null) {
-            this.state = {value: this.props.start};
+            this.state = { value: this.props.start };
         } else {
             this.state = JSON.parse(local);
         }
@@ -24,13 +24,13 @@ export default class AntNumber extends React.Component {
 
     getValue = (data, fn) => {
         fn(msgpack.encode(this.state.value));
-    }
+    };
 
     onChange = value => {
-        this.setState({value: value});
-        storeState(this.props.uuid, this.state, {value: value});
+        this.setState({ value: value });
+        storeState(this.props.uuid, this.state, { value: value });
         this.props.socket.emit(this.props.uuid + '#change', msgpack.encode(value));
-    }
+    };
 
     render() {
         return (

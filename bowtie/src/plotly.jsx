@@ -6,7 +6,6 @@ import cloneDeep from 'lodash.clonedeep';
 var msgpack = require('msgpack-lite');
 
 export default class PlotlyPlot extends React.Component {
-
     constructor(props) {
         super(props);
         this.selection = null;
@@ -22,7 +21,7 @@ export default class PlotlyPlot extends React.Component {
         }
 
         this.resize = this.resize.bind(this);
-        this.props.socket.on(this.props.uuid + '#all', (data) => {
+        this.props.socket.on(this.props.uuid + '#all', data => {
             var arr = new Uint8Array(data['data']);
             this.setState(msgpack.decode(arr));
             sessionStorage.setItem(this.props.uuid, JSON.stringify(msgpack.decode(arr)));
@@ -38,15 +37,15 @@ export default class PlotlyPlot extends React.Component {
         data.points = data.points.map(this.processPoint);
         this.selection = data;
         this.props.socket.emit(this.props.uuid + '#select', msgpack.encode(data));
-    }
-    
+    };
+
     getSelection = (data, fn) => {
         fn(msgpack.encode(this.selection));
-    }
+    };
 
     processData = data => {
         return this.processPoint(data.points[0]);
-    }
+    };
 
     processPoint = point => {
         var text = point.data.text;
@@ -56,46 +55,48 @@ export default class PlotlyPlot extends React.Component {
             x: point.x,
             y: point.y,
             // TODO this indexing needs to be checked
-            hover: (text == null) ? null : text[point.pointNumber]
+            hover: text == null ? null : text[point.pointNumber],
         };
         return datum;
-    }
+    };
 
     setLayout = data => {
         // https://plot.ly/javascript/plotlyjs-events/#update-data
-        if (data.hasOwnProperty('xaxis.range[0]') ||
+        if (
+            data.hasOwnProperty('xaxis.range[0]') ||
             data.hasOwnProperty('xaxis.autorange') ||
             data.hasOwnProperty('yaxis.range[0]') ||
             data.hasOwnProperty('yaxis.autorange') ||
-            data.hasOwnProperty('scene')) {
+            data.hasOwnProperty('scene')
+        ) {
             this.layout = data;
             this.props.socket.emit(this.props.uuid + '#relayout', msgpack.encode(data));
         }
-    }
+    };
 
     getLayout = (data, fn) => {
         fn(msgpack.encode(this.layout));
-    }
+    };
 
     setClick = data => {
         var datum = this.processData(data);
         this.click = datum;
         this.props.socket.emit(this.props.uuid + '#click', msgpack.encode(datum));
-    }
+    };
 
     getClick = (data, fn) => {
         fn(msgpack.encode(this.click));
-    }
+    };
 
     setHover = data => {
         var datum = this.processData(data);
         this.hover = datum;
         this.props.socket.emit(this.props.uuid + '#hover', msgpack.encode(datum));
-    }
+    };
 
     getHover = (data, fn) => {
         fn(msgpack.encode(this.hover));
-    }
+    };
 
     resize() {
         Plotly.Plots.resize(this.container);
@@ -121,9 +122,12 @@ export default class PlotlyPlot extends React.Component {
         layout['autosize'] = false;
         layout['height'] = parseFloat(parent.height);
         layout['width'] = parseFloat(parent.width);
-        Plotly.newPlot(this.container, this.state.data, cloneDeep(layout),
-            {autosizable: false, displaylogo: false, fillFrame: true}); //, config);
-        
+        Plotly.newPlot(this.container, this.state.data, cloneDeep(layout), {
+            autosizable: false,
+            displaylogo: false,
+            fillFrame: true,
+        }); //, config);
+
         this.addListeners();
         // this.setState({layout: layout});
     }
@@ -140,8 +144,11 @@ export default class PlotlyPlot extends React.Component {
         layout['width'] = parseFloat(parent.width);
 
         // this.setState({layout: layout});
-        Plotly.newPlot(this.container, this.state.data, cloneDeep(this.state.layout),
-            {autosizable: false, displaylogo: false, fillFrame: true}); //, config);
+        Plotly.newPlot(this.container, this.state.data, cloneDeep(this.state.layout), {
+            autosizable: false,
+            displaylogo: false,
+            fillFrame: true,
+        }); //, config);
         this.addListeners();
 
         // window.addEventListener('resize', this.resize);
@@ -157,11 +164,8 @@ export default class PlotlyPlot extends React.Component {
     }
 
     render() {
-        return (
-            <div ref={(node) => this.container=node} />
-        );
+        return <div ref={node => (this.container = node)} />;
     }
-
 }
 
 PlotlyPlot.propTypes = {
@@ -169,5 +173,5 @@ PlotlyPlot.propTypes = {
     socket: PropTypes.object.isRequired,
     initState: PropTypes.object,
     rows: PropTypes.number,
-    columns: PropTypes.number
+    columns: PropTypes.number,
 };

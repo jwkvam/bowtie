@@ -6,7 +6,6 @@ import { storeState } from './utils';
 
 var msgpack = require('msgpack-lite');
 
-
 export default class AntTable extends React.Component {
     constructor(props) {
         super(props);
@@ -14,7 +13,7 @@ export default class AntTable extends React.Component {
         if (local === null) {
             this.state = {
                 data: [],
-                columns: this.props.columns
+                columns: this.props.columns,
             };
         } else {
             this.state = JSON.parse(local);
@@ -31,16 +30,16 @@ export default class AntTable extends React.Component {
     newData = (data, fn) => {
         var arr = new Uint8Array(data['data']);
         var datacols = msgpack.decode(arr);
-        this.setState({data: datacols[0], columns: datacols[1]});
-        storeState(this.props.uuid, this.state, {data: datacols[0], columns: datacols[1]});
-    }
+        this.setState({ data: datacols[0], columns: datacols[1] });
+        storeState(this.props.uuid, this.state, { data: datacols[0], columns: datacols[1] });
+    };
 
     newColumns = (data, fn) => {
         var arr = new Uint8Array(data['data']);
         var columns = msgpack.decode(arr);
-        this.setState({columns: columns});
-        storeState(this.props.uuid, this.state, {columns: columns});
-    }
+        this.setState({ columns: columns });
+        storeState(this.props.uuid, this.state, { columns: columns });
+    };
 
     render() {
         return (
@@ -51,8 +50,8 @@ export default class AntTable extends React.Component {
                     size="small"
                     bordered={true}
                     pagination={{ pageSize: this.props.resultsPerPage }}
-                    style={{width: '100%'}}
-                    scroll={{y: false}}
+                    style={{ width: '100%' }}
+                    scroll={{ y: false }}
                 />
             </LocaleProvider>
         );
@@ -63,5 +62,5 @@ AntTable.propTypes = {
     uuid: PropTypes.string.isRequired,
     socket: PropTypes.object.isRequired,
     columns: PropTypes.array.isRequired,
-    resultsPerPage: PropTypes.number.isRequired
+    resultsPerPage: PropTypes.number.isRequired,
 };

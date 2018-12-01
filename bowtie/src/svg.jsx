@@ -6,11 +6,11 @@ var msgpack = require('msgpack-lite');
 export default class SVG extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {value: null};
+        this.state = { value: null };
     }
 
     handleChange(value) {
-        this.setState({value});
+        this.setState({ value });
         this.props.socket.emit(this.props.uuid + '#change', msgpack.encode(value));
     }
 
@@ -21,8 +21,8 @@ export default class SVG extends React.Component {
             var idx = str.indexOf(' ');
             str = str.slice(0, idx) + ' preserveAspectRatio="none"' + str.slice(idx);
         }
-        this.setState({value: str});
-    }
+        this.setState({ value: str });
+    };
 
     componentDidMount() {
         var socket = this.props.socket;
@@ -30,7 +30,7 @@ export default class SVG extends React.Component {
         socket.on(uuid + '#image', this.image);
     }
 
-    render () {
+    render() {
         return (
             <img
                 width={'100%'}

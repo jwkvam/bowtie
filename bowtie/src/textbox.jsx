@@ -10,7 +10,7 @@ export default class Textbox extends React.Component {
         super(props);
         var local = sessionStorage.getItem(this.props.uuid);
         if (local === null) {
-            this.state = {value: null};
+            this.state = { value: null };
         } else {
             this.state = JSON.parse(local);
         }
@@ -26,25 +26,25 @@ export default class Textbox extends React.Component {
     setValue = (data, fn) => {
         var arr = new Uint8Array(data['data']);
         arr = msgpack.decode(arr);
-        this.setState({value: arr});
-        storeState(this.props.uuid, this.state, {value: arr});
-    }
+        this.setState({ value: arr });
+        storeState(this.props.uuid, this.state, { value: arr });
+    };
 
     getValue = (data, fn) => {
         fn(msgpack.encode(this.state.value));
-    }
+    };
 
     onPressEnter = value => {
-        this.setState({value: value.target.value});
-        storeState(this.props.uuid, this.state, {value: value.target.value});
+        this.setState({ value: value.target.value });
+        storeState(this.props.uuid, this.state, { value: value.target.value });
         this.props.socket.emit(this.props.uuid + '#enter', msgpack.encode(value.target.value));
-    }
+    };
 
     onChange = value => {
-        this.setState({value: value.target.value});
-        storeState(this.props.uuid, this.state, {value: value.target.value});
+        this.setState({ value: value.target.value });
+        storeState(this.props.uuid, this.state, { value: value.target.value });
         this.props.socket.emit(this.props.uuid + '#change', msgpack.encode(value.target.value));
-    }
+    };
 
     render() {
         if (this.props.type == 'area') {

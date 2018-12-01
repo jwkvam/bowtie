@@ -13,7 +13,7 @@ export default class PickDates extends React.Component {
         super(props);
         var local = sessionStorage.getItem(this.props.uuid);
         if (local === null) {
-            this.state = {value: null, datestring: null};
+            this.state = { value: null, datestring: null };
         } else {
             local = JSON.parse(local);
             if (Array.isArray(local.value)) {
@@ -26,10 +26,10 @@ export default class PickDates extends React.Component {
     }
 
     handleChange = (mom, ds) => {
-        this.setState({value: mom, datestring: ds});
-        storeState(this.props.uuid, this.state, {value: mom, datestring: ds});
+        this.setState({ value: mom, datestring: ds });
+        storeState(this.props.uuid, this.state, { value: mom, datestring: ds });
         this.props.socket.emit(this.props.uuid + '#change', msgpack.encode(ds));
-    }
+    };
 
     componentDidMount() {
         var socket = this.props.socket;
@@ -39,9 +39,9 @@ export default class PickDates extends React.Component {
 
     getValue = (data, fn) => {
         fn(msgpack.encode(this.state.datestring));
-    }
+    };
 
-    render () {
+    render() {
         if (this.props.date) {
             return (
                 <LocaleProvider locale={enUS}>
