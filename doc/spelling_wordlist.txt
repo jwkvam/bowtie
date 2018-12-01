@@ -1,6 +1,7 @@
 Auth
 Bokeh
 Bowtie
+Checkbox
 Dict
 Dockerfile
 Heroku
@@ -14,6 +15,8 @@ accessor
 app
 auth
 backend
+checkbox
+checkboxes
 conda
 config
 decrement
