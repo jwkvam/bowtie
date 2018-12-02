@@ -6,7 +6,7 @@
         "@babel/polyfill": "^7.0.0",
         "@babel/preset-env": "^7.1.6",
         "@babel/preset-react": "^7.0.0",
-        "antd": "^3.10.8",
+        "antd": "^3.11.0",
         "babel-loader": "^8.0.4",
         "babel-plugin-import": "^1.11.0",
         "classnames": "^2.2.6",
