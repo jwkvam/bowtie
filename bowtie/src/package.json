@@ -13,7 +13,6 @@
         "compression-webpack-plugin": "^2.0.0",
         "core-js": "^2.6.3",
         "css-loader": "^2.1.0",
-        "hard-source-webpack-plugin": "^0.13.1",
         "less": "^3.9.0",
         "less-loader": "^4.1.0",
         "lodash.clonedeep": "^4.5.0",
@@ -32,8 +31,5 @@
         "webpack": "^4.29.3",
         "webpack-cli": "^3.2.3",
         "webpack-merge": "^4.2.1"
-    },
-    "resolutions": {
-        "ajv": "6.8.1"
     }
 }

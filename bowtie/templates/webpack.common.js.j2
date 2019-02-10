@@ -1,7 +1,6 @@
 const webpack = require('webpack');
 var path = require('path');
 var CompressionPlugin = require('compression-webpack-plugin');
-var HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 var BUILD_DIR = path.resolve(__dirname);
 var APP_DIR = path.resolve(__dirname, 'bowtiejs');
@@ -65,10 +64,7 @@ var config = {
         modules: [
             path.resolve(__dirname, APP_DIR), 'node_modules'
         ]
-    },
-    plugins: [
-        new HardSourceWebpackPlugin()
-    ]
+    }
 };
 
 module.exports = config;
