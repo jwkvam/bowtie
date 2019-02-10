@@ -49,12 +49,12 @@ install:
   - source activate test-environment
   - pip install --upgrade pip
   - pip install -r test-requirements.txt --progress-bar=off
-  - wget https://chromedriver.storage.googleapis.com/2.44/chromedriver_linux64.zip
+  - wget https://chromedriver.storage.googleapis.com/2.46/chromedriver_linux64.zip
   - unzip chromedriver_linux64.zip
   - chmod +x chromedriver
   - mv -f chromedriver $HOME/.yarn/bin
-  - wget https://github.com/errata-ai/vale/releases/download/v1.2.6/vale_1.2.6_Linux_64-bit.tar.gz
-  - tar xvf vale_1.2.6_Linux_64-bit.tar.gz
+  - wget https://github.com/errata-ai/vale/releases/download/v1.3.2/vale_1.3.2_Linux_64-bit.tar.gz
+  - tar xvf vale_1.3.2_Linux_64-bit.tar.gz
 
 script:
   - docker run --rm -i lukasmartinelli/hadolint hadolint --ignore DL3008 --ignore DL3013 - < Dockerfile
