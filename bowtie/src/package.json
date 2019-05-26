@@ -5,7 +5,7 @@
         "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
         "@babel/polyfill": "^7.4.4",
         "@babel/preset-env": "^7.4.5",
-        "@babel/preset-react": "^7.4.5",
+        "@babel/preset-react": "^7.0.0",
         "antd": "^3.19.0",
         "babel-loader": "^8.0.6",
         "babel-plugin-import": "^1.11.2",
