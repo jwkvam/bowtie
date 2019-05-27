@@ -940,10 +940,10 @@ class App:
                 retval = self._run(
                     ['yarn', '--ignore-engines', 'add'] + new_packages, notebook=notebook
                 )
-                if retval > 1:
-                    raise YarnError('Error installing node packages')
-                elif retval == 1:
+                if retval == 1:
                     print('Yarn error but trying to continue build')
+                elif retval > 1:
+                    raise YarnError('Error installing node packages')
         retval = self._run([_WEBPACK, '--config', 'webpack.dev.js'], notebook=notebook)
         if retval != 0:
             raise WebpackError('Error building with webpack')
