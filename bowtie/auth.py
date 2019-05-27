@@ -85,12 +85,12 @@ class BasicAuth(Auth):
     def before_request(self) -> Optional[Response]:
         """Determine if a user is allowed to view this route."""
         auth = request.authorization
-        if not auth or not self._check_auth(auth.username, auth.password):
+        if (not auth or auth.username is None or auth.password is None
+                or not self._check_auth(auth.username, auth.password)):
             return Response(
                 'Could not verify your access level for that URL.\n'
                 'You have to login with proper credentials', 401,
                 {'WWW-Authenticate': 'Basic realm="Login Required"'}
             )
         session['logged_in'] = auth.username
-        # pylint wants this return statement
-        return None
+        return None  # pylint wants this return statement

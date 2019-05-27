@@ -3,7 +3,7 @@
 all: test
 
 test:
-	py.test --cov=./ --mypy --codestyle --docstyle --pylint --pylint-rcfile=pylintrc --pylint-error-types=RCWEF
+	py.test --cov=./ --codestyle --docstyle --pylint --pylint-rcfile=pylintrc --pylint-error-types=RCWEF
 
 unit:
 	py.test --cov=./

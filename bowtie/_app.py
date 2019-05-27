@@ -647,11 +647,11 @@ class App:
 
         # https://buxty.com/b/2012/05/custom-template-folders-with-flask/
         templates = Path(__file__).parent / 'templates'
-        self.app.jinja_loader = ChoiceLoader([
+        self.app.jinja_loader = ChoiceLoader([  # type: ignore
             self.app.jinja_loader,
             FileSystemLoader(str(templates)),
         ])
-        self._build_dir = self.app.root_path / _DIRECTORY
+        self._build_dir = self.app.root_path / _DIRECTORY  # type: ignore
         self.app.before_first_request(self._endpoints)
 
     def wsgi_app(self, environ, start_response):
@@ -940,10 +940,10 @@ class App:
                 retval = self._run(
                     ['yarn', '--ignore-engines', 'add'] + new_packages, notebook=notebook
                 )
-                if retval > 1:
-                    raise YarnError('Error installing node packages')
-                elif retval == 1:
+                if retval == 1:
                     print('Yarn error but trying to continue build')
+                elif retval > 1:
+                    raise YarnError('Error installing node packages')
         retval = self._run([_WEBPACK, '--config', 'webpack.dev.js'], notebook=notebook)
         if retval != 0:
             raise WebpackError('Error building with webpack')
