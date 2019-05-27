@@ -647,11 +647,11 @@ class App:
 
         # https://buxty.com/b/2012/05/custom-template-folders-with-flask/
         templates = Path(__file__).parent / 'templates'
-        self.app.jinja_loader = ChoiceLoader([
+        self.app.jinja_loader = ChoiceLoader([  # type: ignore
             self.app.jinja_loader,
             FileSystemLoader(str(templates)),
         ])
-        self._build_dir = self.app.root_path / _DIRECTORY
+        self._build_dir = self.app.root_path / _DIRECTORY  # type: ignore
         self.app.before_first_request(self._endpoints)
 
     def wsgi_app(self, environ, start_response):
