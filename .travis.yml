@@ -30,7 +30,7 @@ install:
   - google-chrome-stable --version
   - node --version
   - yarn --version
-  - yarn global add eslint babel-eslint eslint-plugin-react prettier eslint-plugin-prettier eslint-config-prettier
+  - yarn add eslint babel-eslint eslint-plugin-react prettier eslint-plugin-prettier eslint-config-prettier
   - export PATH="$HOME/miniconda/bin:$PATH"
   - if ! hash conda 2>/dev/null; then
     wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
