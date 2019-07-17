@@ -1,7 +1,7 @@
 dist: trusty
 # https://github.com/travis-ci/travis-ci/issues/4895
 language: bash
-cache: 
+cache:
   pip: true
   yarn: true
   directories:
@@ -20,7 +20,6 @@ env:
   - PYTHON_VERSION=3.7 NODE_VERSION=11
   - PYTHON_VERSION=3.7 NODE_VERSION=10
   - PYTHON_VERSION=3.7 NODE_VERSION=8
-  - PYTHON_VERSION=3.7 NODE_VERSION=6
 
 before_install:
   - docker pull lukasmartinelli/hadolint
