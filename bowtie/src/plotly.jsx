@@ -63,11 +63,11 @@ export default class PlotlyPlot extends React.Component {
     setLayout = data => {
         // https://plot.ly/javascript/plotlyjs-events/#update-data
         if (
-            data.hasOwnProperty('xaxis.range[0]') ||
-            data.hasOwnProperty('xaxis.autorange') ||
-            data.hasOwnProperty('yaxis.range[0]') ||
-            data.hasOwnProperty('yaxis.autorange') ||
-            data.hasOwnProperty('scene')
+            Object.prototype.hasOwnProperty(data, 'xaxis.range[0]') ||
+            Object.prototype.hasOwnProperty(data, 'xaxis.autorange') ||
+            Object.prototype.hasOwnProperty(data, 'yaxis.range[0]') ||
+            Object.prototype.hasOwnProperty(data, 'yaxis.autorange') ||
+            Object.prototype.hasOwnProperty(data, 'scene')
         ) {
             this.layout = data;
             this.props.socket.emit(this.props.uuid + '#relayout', msgpack.encode(data));
