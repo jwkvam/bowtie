@@ -1,3 +1,5 @@
+/package-lock.json
+/package.json
 *.gif
 *.ipynb*
 *.mp4
