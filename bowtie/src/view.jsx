@@ -25,7 +25,7 @@ export class View extends React.Component {
             <div key={index.toString()}>{components[index]}</div>
         ));
         for (const key in this.state.spans) {
-            if (Object.prototype.hasOwnProperty(this.state.spans, key)) {
+            if (Object.prototype.hasOwnProperty.call(this.state.spans, key)) {
                 const comps = this.state.spans[key].map(number => (
                     <div key={number.toString}>{components[number]}</div>
                 ));
