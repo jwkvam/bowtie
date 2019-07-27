@@ -60,7 +60,7 @@ script:
   - make eslint
   - cd doc && make spelling && cd ..
   - ./vale --glob='*.rst' doc
-  - mypy -p bowtie
+  - make static
   - make test
 
 after_success:
