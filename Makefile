@@ -15,10 +15,10 @@ style:
 	py.test --codestyle -m codestyle
 
 eslint:
-	eslint bowtie/src/*.js{,x}
+	./node_modules/.bin/eslint bowtie/src/*.js{,x}
 
 prettier:
-	prettier bowtie/src/*.js{,x} --write
+	./node_modules/.bin/prettier bowtie/src/*.js{,x} --write
 
 checkdocs:
 	pydocstyle --count --match-dir='(?!examples|build|node_modules|doc|.*templates)[^\.].*'

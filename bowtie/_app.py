@@ -416,7 +416,6 @@ class View:
 
         """
         self._uuid = View._next_uuid()
-        self.layout = None
         self.column_gap = Gap()
         self.row_gap = Gap()
         self.border = Gap().pixels(7)
