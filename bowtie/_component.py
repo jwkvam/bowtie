@@ -170,6 +170,7 @@ def unpack(x: bytes) -> JSON:
 
 def make_event(event: Callable) -> Callable:
     """Create an event from a method signature."""
+    # docstyle
 
     @property  # type: ignore
     @wraps(event)
@@ -193,6 +194,7 @@ def is_event(attribute: str) -> bool:
 
 def make_command(command: Callable) -> Callable:
     """Create an command from a method signature."""
+    # docstyle
 
     @wraps(command)
     def actualcommand(self, *args, **kwds):  # pylint: disable=missing-docstring
@@ -218,6 +220,7 @@ def is_command(attribute: str) -> bool:
 
 def make_getter(getter: Callable) -> Callable:
     """Create an command from a method signature."""
+    # docstyle
 
     def get(self, timeout=10):  # pylint: disable=missing-docstring
         name = getter.__name__

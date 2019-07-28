@@ -73,6 +73,7 @@ class Scheduler:
 
     def context(self, func):
         """Provide flask context to function."""
+        # docstyle
 
         def wrap():
             with self.app.app_context():
@@ -881,6 +882,7 @@ class App:
             Function to be called.
 
         """
+        # docstyle
 
         def wrap(func: Callable):
             self._schedules.append(Scheduler(self.app, seconds, func))
