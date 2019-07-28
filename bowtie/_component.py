@@ -82,6 +82,7 @@ def json_conversion(obj: Any) -> JSON:
         # numpy isn't an explicit dependency of bowtie
         # so we can't assume it's available
         import numpy as np
+
         if isinstance(obj, (np.ndarray, np.generic)):
             return obj.tolist()
     except ImportError:
@@ -91,6 +92,7 @@ def json_conversion(obj: Any) -> JSON:
         # pandas isn't an explicit dependency of bowtie
         # so we can't assume it's available
         import pandas as pd
+
         if isinstance(obj, pd.DatetimeIndex):
             return [x.isoformat() for x in obj.to_pydatetime()]
         if isinstance(obj, pd.Index):
@@ -119,6 +121,7 @@ def encoders(obj: Any) -> JSON:  # pylint: disable=too-many-return-statements
         # numpy isn't an explicit dependency of bowtie
         # so we can't assume it's available
         import numpy as np
+
         if isinstance(obj, (np.ndarray, np.generic)):
             # https://docs.scipy.org/doc/numpy/reference/arrays.scalars.html
             return obj.tolist()
@@ -129,6 +132,7 @@ def encoders(obj: Any) -> JSON:  # pylint: disable=too-many-return-statements
         # pandas isn't an explicit dependency of bowtie
         # so we can't assume it's available
         import pandas as pd
+
         if isinstance(obj, pd.DatetimeIndex):
             return [x.isoformat() for x in obj.to_pydatetime()]
         if isinstance(obj, pd.Index):
@@ -152,8 +156,10 @@ def pack(x: Any) -> bytes:
     try:
         return msgpack.packb(x, default=encoders)
     except TypeError as exc:
-        message = ('Serialization error, check the data passed to a do_ command. '
-                   'Cannot serialize this object:\n') + str(exc)[16:]
+        message = (
+            'Serialization error, check the data passed to a do_ command. '
+            'Cannot serialize this object:\n'
+        ) + str(exc)[16:]
         raise SerializationError(message)
 
 
@@ -164,6 +170,7 @@ def unpack(x: bytes) -> JSON:
 
 def make_event(event: Callable) -> Callable:
     """Create an event from a method signature."""
+
     @property  # type: ignore
     @wraps(event)
     def actualevent(self):  # pylint: disable=missing-docstring
@@ -186,14 +193,13 @@ def is_event(attribute: str) -> bool:
 
 def make_command(command: Callable) -> Callable:
     """Create an command from a method signature."""
+
     @wraps(command)
     def actualcommand(self, *args, **kwds):  # pylint: disable=missing-docstring
         data = command(self, *args, **kwds)
         name = command.__name__[3:]
         signal = '{uuid}{sep}{event}'.format(
-            uuid=self._uuid,  # pylint: disable=protected-access
-            sep=SEPARATOR,
-            event=name
+            uuid=self._uuid, sep=SEPARATOR, event=name  # pylint: disable=protected-access
         )
         if flask.has_request_context():
             emit(signal, {'data': pack(data)})
@@ -212,12 +218,11 @@ def is_command(attribute: str) -> bool:
 
 def make_getter(getter: Callable) -> Callable:
     """Create an command from a method signature."""
+
     def get(self, timeout=10):  # pylint: disable=missing-docstring
         name = getter.__name__
         signal = '{uuid}{sep}{event}'.format(
-            uuid=self._uuid,  # pylint: disable=protected-access
-            sep=SEPARATOR,
-            event=name
+            uuid=self._uuid, sep=SEPARATOR, event=name  # pylint: disable=protected-access
         )
         event = LightQueue(1)
         if flask.has_request_context():
@@ -275,23 +280,28 @@ class Component(metaclass=_Maker):  # pylint: disable=too-few-public-methods
 
     @property
     @abstractmethod
-    def _TEMPLATE(self): pass  # pylint: disable=invalid-name,multiple-statements
+    def _TEMPLATE(self):  # pylint: disable=invalid-name,multiple-statements
+        pass
 
     @property
     @abstractmethod
-    def _COMPONENT(self): pass  # pylint: disable=invalid-name,multiple-statements
+    def _COMPONENT(self):  # pylint: disable=invalid-name,multiple-statements
+        pass
 
     @property
     @abstractmethod
-    def _PACKAGE(self): pass  # pylint: disable=invalid-name,multiple-statements
+    def _PACKAGE(self):  # pylint: disable=invalid-name,multiple-statements
+        pass
 
     @property
     @abstractmethod
-    def _ATTRS(self): pass  # pylint: disable=invalid-name,multiple-statements
+    def _ATTRS(self):  # pylint: disable=invalid-name,multiple-statements
+        pass
 
     @property
     @abstractmethod
-    def _instantiate(self): pass  # pylint: disable=invalid-name,multiple-statements
+    def _instantiate(self):
+        pass  # pylint: disable=invalid-name,multiple-statements
 
     @classmethod
     def _next_uuid(cls) -> int:

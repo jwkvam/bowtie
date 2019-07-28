@@ -161,7 +161,7 @@ def test_getitem(buttons):
     with pytest.raises(GridIndexError):
         app[0, 1:-1:-1] = but
 
-    app[1, ] = but
+    app[1,] = but
     assert count_used_cells(app._root) == 2
     app[0, :] = but
     assert count_used_cells(app._root) == 4

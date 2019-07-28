@@ -46,8 +46,7 @@ def command(func):
         )
     if not isinstance(app, App):
         raise TypeError(
-            f'Returned value {app} is of type {type(app)}, '
-            'it needs to be a bowtie.App instance.'
+            f'Returned value {app} is of type {type(app)}, ' 'it needs to be a bowtie.App instance.'
         )
 
     @click.group(options_metavar='[--help]')
@@ -74,16 +73,14 @@ def command(func):
         """Serve the Bowtie app."""
         app._serve(host, port)
 
-    @cmd.command(context_settings=dict(ignore_unknown_options=True),
-                 add_help_option=False)
+    @cmd.command(context_settings=dict(ignore_unknown_options=True), add_help_option=False)
     @click.argument('extra', nargs=-1, type=click.UNPROCESSED)
     def dev(extra):
         """Recompile the app for development."""
         line = (_WEBPACK, '--config', 'webpack.dev.js') + extra
         call(line, cwd=app._build_dir)
 
-    @cmd.command(context_settings=dict(ignore_unknown_options=True),
-                 add_help_option=False)
+    @cmd.command(context_settings=dict(ignore_unknown_options=True), add_help_option=False)
     @click.argument('extra', nargs=-1, type=click.UNPROCESSED)
     def prod(extra):
         """Recompile the app for production."""

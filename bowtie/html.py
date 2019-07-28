@@ -36,9 +36,7 @@ class Markdown(_HTML):
 
         """
         super().__init__()
-        self._comp = self._tag.format(
-            initial=Markup(markdown(initial).replace('\n', '\\n'))
-        )
+        self._comp = self._tag.format(initial=Markup(markdown(initial).replace('\n', '\\n')))
 
     # pylint: disable=no-self-use
     def do_text(self, text):
@@ -87,9 +85,7 @@ class Link(_HTML):
 
         """
         super().__init__()
-        self._comp = self._tag.format(
-            link=link
-        )
+        self._comp = self._tag.format(link=link)
 
 
 class Div(_HTML):
@@ -110,9 +106,7 @@ class Div(_HTML):
 
         """
         super().__init__()
-        self._comp = self._tag.format(
-            initial=text
-        )
+        self._comp = self._tag.format(initial=text)
 
     # pylint: disable=no-self-use
     def do_text(self, text):
@@ -147,8 +141,7 @@ class Header(_HTML):
     _TEMPLATE = 'header.jsx'
     _COMPONENT = 'Bowhead'
     _PACKAGE = None
-    _ATTRS = ("initial={{'{initial}'}} "
-              'size={{{size}}}')
+    _ATTRS = "initial={{'{initial}'}} " 'size={{{size}}}'
 
     def __init__(self, text: str = '', size: int = 1) -> None:
         """Create header text with a size.
@@ -164,10 +157,7 @@ class Header(_HTML):
         super().__init__()
         if size not in range(1, 7):
             raise ValueError('Header size must be in [1..6], found {}.'.format(size))
-        self._comp = self._tag.format(
-            initial=text,
-            size=size
-        )
+        self._comp = self._tag.format(initial=text, size=size)
 
     # pylint: disable=no-self-use
     def do_text(self, text):

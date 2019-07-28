@@ -1,7 +1,16 @@
 """Defines the App class."""
 
 from typing import (  # pylint: disable=unused-import
-    Any, Callable, Generator, List, Optional, Set, Tuple, Union, Dict, Sequence
+    Any,
+    Callable,
+    Generator,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    Union,
+    Dict,
+    Sequence,
 )
 import os
 import json
@@ -19,8 +28,12 @@ import eventlet
 import msgpack
 import flask
 from flask import (
-    Flask, render_template, make_response,
-    copy_current_request_context, jsonify, request
+    Flask,
+    render_template,
+    make_response,
+    copy_current_request_context,
+    jsonify,
+    request,
 )
 from flask_socketio import SocketIO
 from jinja2 import Environment, FileSystemLoader, ChoiceLoader
@@ -28,9 +41,14 @@ from jinja2 import Environment, FileSystemLoader, ChoiceLoader
 from bowtie._component import Event, Component, COMPONENT_REGISTRY
 from bowtie.pager import Pager
 from bowtie.exceptions import (
-    GridIndexError, NoSidebarError,
-    NotStatefulEvent, NoUnusedCellsError,
-    SpanOverlapError, SizeError, WebpackError, YarnError
+    GridIndexError,
+    NoSidebarError,
+    NotStatefulEvent,
+    NoUnusedCellsError,
+    SpanOverlapError,
+    SizeError,
+    WebpackError,
+    YarnError,
 )
 
 eventlet.monkey_patch(time=True)
@@ -55,9 +73,11 @@ class Scheduler:
 
     def context(self, func):
         """Provide flask context to function."""
+
         def wrap():
             with self.app.app_context():
                 func()
+
         return wrap
 
     def start(self):
@@ -91,8 +111,13 @@ def raise_not_number(x: float) -> None:
 class Span:
     """Define the location of a widget."""
 
-    def __init__(self, row_start: int, column_start: int, row_end: Optional[int] = None,
-                 column_end: Optional[int] = None) -> None:
+    def __init__(
+        self,
+        row_start: int,
+        column_start: int,
+        row_end: Optional[int] = None,
+        column_end: Optional[int] = None,
+    ) -> None:
         """Create a span for a widget.
 
         Indexing starts at 0. Start is inclusive and end is exclusive
@@ -140,10 +165,7 @@ class Span:
         This is used as a key in javascript.
         """
         return '{},{},{},{}'.format(
-            self.row_start + 1,
-            self.column_start + 1,
-            self.row_end + 1,
-            self.column_end + 1
+            self.row_start + 1, self.column_start + 1, self.row_end + 1, self.column_end + 1
         )
 
     def overlap(self, other: 'Span'):
@@ -161,8 +183,7 @@ class Span:
     def cells(self) -> Generator[Tuple[int, int], None, None]:
         """Generate cells in span."""
         yield from itertools.product(
-            range(self.row_start, self.row_end),
-            range(self.column_start, self.column_end)
+            range(self.row_start, self.row_end), range(self.column_start, self.column_end)
         )
 
 
@@ -342,9 +363,7 @@ class Components:
 
     TYPE_MSG: str = 'Must add a component or sequence of components, found {}.'
 
-    def __init__(self,
-                 component: Optional[Union[Component, Sequence[Component]]] = None
-                 ) -> None:
+    def __init__(self, component: Optional[Union[Component, Sequence[Component]]] = None) -> None:
         """Create a components list."""
         self.data: List[Component]
         if component is None:
@@ -399,8 +418,13 @@ class View:
         cls._NEXT_UUID += 1
         return cls._NEXT_UUID
 
-    def __init__(self, rows: int = 1, columns: int = 1, sidebar: bool = False,
-                 background_color: str = 'White') -> None:
+    def __init__(
+        self,
+        rows: int = 1,
+        columns: int = 1,
+        sidebar: bool = False,
+        background_color: str = 'White',
+    ) -> None:
         """Create a new grid.
 
         Parameters
@@ -446,9 +470,10 @@ class View:
     @property
     def _imports(self) -> Set[_Import]:
         # pylint: disable=protected-access
-        return set(_Import(component=x._COMPONENT,
-                           module=x._TEMPLATE[:x._TEMPLATE.find('.')])
-                   for x in self._all_components())
+        return set(
+            _Import(component=x._COMPONENT, module=x._TEMPLATE[: x._TEMPLATE.find('.')])
+            for x in self._all_components()
+        )
 
     @property
     def _components(self) -> Set[Component]:
@@ -509,17 +534,18 @@ class View:
             raise KeyError(f'Key {key} has not been used')
         return self._spans[span]
 
-    def __setitem__(self, key: Any,
-                    component: Union[Component, Sequence[Component]]) -> None:
+    def __setitem__(self, key: Any, component: Union[Component, Sequence[Component]]) -> None:
         """Add widget to the view."""
         span = self._key_to_span(key)
         for used_span in self._spans:
             if span != used_span and span.overlap(used_span):
-                raise SpanOverlapError(f'Spans {span} and {used_span} overlap. '
-                                       'This is not permitted. '
-                                       'If you want to do this please open an issue '
-                                       'and explain your use case. '
-                                       'https://github.com/jwkvam/bowtie/issues')
+                raise SpanOverlapError(
+                    f'Spans {span} and {used_span} overlap. '
+                    'This is not permitted. '
+                    'If you want to do this please open an issue '
+                    'and explain your use case. '
+                    'https://github.com/jwkvam/bowtie/issues'
+                )
         self._spans[span] = Components(component)
 
     def add(self, component: Union[Component, Sequence[Component]]) -> None:
@@ -583,10 +609,19 @@ class View:
 class App:
     """Core class to layout, connect, build a Bowtie app."""
 
-    def __init__(self, name='__main__', app=None, rows: int = 1, columns: int = 1,
-                 sidebar: bool = False, title: str = 'Bowtie App',
-                 theme: Optional[str] = None, background_color: str = 'White',
-                 socketio: str = '', debug: bool = False) -> None:
+    def __init__(
+        self,
+        name='__main__',
+        app=None,
+        rows: int = 1,
+        columns: int = 1,
+        sidebar: bool = False,
+        title: str = 'Bowtie App',
+        theme: Optional[str] = None,
+        background_color: str = 'White',
+        socketio: str = '',
+        debug: bool = False,
+    ) -> None:
         """Create a Bowtie App.
 
         Parameters
@@ -625,15 +660,16 @@ class App:
         self._subscriptions: Dict[Event, List[Tuple[List[Event], Callable]]] = defaultdict(list)
         self._pages: Dict[Pager, Callable] = {}
         self._uploads: Dict[int, Callable] = {}
-        self._root = View(rows=rows, columns=columns, sidebar=sidebar,
-                          background_color=background_color)
+        self._root = View(
+            rows=rows, columns=columns, sidebar=sidebar, background_color=background_color
+        )
         self._routes: List[Route] = []
 
         self._package_dir = Path(os.path.dirname(__file__))
         self._jinjaenv = Environment(
             loader=FileSystemLoader(str(self._package_dir / 'templates')),
             trim_blocks=True,
-            lstrip_blocks=True
+            lstrip_blocks=True,
         )
         if app is None:
             self.app = Flask(name)
@@ -646,10 +682,9 @@ class App:
 
         # https://buxty.com/b/2012/05/custom-template-folders-with-flask/
         templates = Path(__file__).parent / 'templates'
-        self.app.jinja_loader = ChoiceLoader([  # type: ignore
-            self.app.jinja_loader,
-            FileSystemLoader(str(templates)),
-        ])
+        self.app.jinja_loader = ChoiceLoader(  # type: ignore
+            [self.app.jinja_loader, FileSystemLoader(str(templates))]
+        )
         self._build_dir = self.app.root_path / _DIRECTORY  # type: ignore
         self.app.before_first_request(self._endpoints)
 
@@ -687,8 +722,7 @@ class App:
         """Get item from root view."""
         return self._root.__getitem__(key)
 
-    def __setitem__(self, key: Any,
-                    value: Union[Component, Sequence[Component]]) -> None:
+    def __setitem__(self, key: Any, value: Union[Component, Sequence[Component]]) -> None:
         """Add widget to the root view."""
         self._root.__setitem__(key, value)
 
@@ -804,12 +838,16 @@ class App:
             elif first_event.name == 'upload':
                 if first_event.uuid in self._uploads:
                     warnings.warn(
-                        ('Overwriting function "{func1}" with function '
-                         '"{func2}" for upload object "{obj}".').format(
-                             func1=self._uploads[first_event.uuid],
-                             func2=func.__name__,
-                             obj=COMPONENT_REGISTRY[first_event.uuid]
-                         ), Warning)
+                        (
+                            'Overwriting function "{func1}" with function '
+                            '"{func2}" for upload object "{obj}".'
+                        ).format(
+                            func1=self._uploads[first_event.uuid],
+                            func2=func.__name__,
+                            obj=COMPONENT_REGISTRY[first_event.uuid],
+                        ),
+                        Warning,
+                    )
                 self._uploads[first_event.uuid] = func
             else:
                 for event in events:
@@ -843,8 +881,10 @@ class App:
             Function to be called.
 
         """
+
         def wrap(func: Callable):
             self._schedules.append(Scheduler(self.app, seconds, func))
+
         return wrap
 
     def _write_templates(self) -> Set[str]:
@@ -856,9 +896,7 @@ class App:
 
         webpack_path = self._build_dir / webpack.name[:-3]  # type: ignore
         with webpack_path.open('w') as f:
-            f.write(
-                webpack.render(color=self.theme)
-            )
+            f.write(webpack.render(color=self.theme))
 
         # copy js modules that are always needed
         for name in ['progress.jsx', 'view.jsx', 'utils.js']:
@@ -896,9 +934,7 @@ class App:
         with (src / componentsjs.name[:-3]).open('w') as f:  # type: ignore
             f.write(
                 componentsjs.render(
-                    imports=imports,
-                    socketio=self._socketio_path,
-                    components=components,
+                    imports=imports, socketio=self._socketio_path, components=components
                 )
             )
 
@@ -988,15 +1024,16 @@ class App:
 
                 # TODO replace with flask socketio start_background_task
                 eventlet.spawn(copy_current_request_context(wrapuser))
+
             return handler
 
         for event, supports in self._subscriptions.items():
             self._socketio.on(event.signal)(generate_sio_handler(event, supports))
 
         if self._init is not None:
-            self._socketio.on('INITIALIZE')(lambda: eventlet.spawn(
-                copy_current_request_context(self._init)
-            ))
+            self._socketio.on('INITIALIZE')(
+                lambda: eventlet.spawn(copy_current_request_context(self._init))
+            )
 
         def gen_upload(func):
             def upload():
@@ -1005,6 +1042,7 @@ class App:
                 if retval:
                     return make_response(jsonify(), 400)
                 return make_response(jsonify(), 200)
+
             return upload
 
         for uuid, func in self._uploads.items():
@@ -1014,9 +1052,9 @@ class App:
 
         for page, func in self._pages.items():
             # pylint: disable=protected-access
-            self._socketio.on(f'resp#{page._uuid}')(lambda: eventlet.spawn(
-                copy_current_request_context(func)
-            ))
+            self._socketio.on(f'resp#{page._uuid}')(
+                lambda: eventlet.spawn(copy_current_request_context(func))
+            )
 
         # bundle route
         @self.app.route('/bowtie/bundle.js')
