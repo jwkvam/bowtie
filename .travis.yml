@@ -14,6 +14,7 @@ addons:
       - libenchant-dev
       - libnss3
 
+# keep these aligned with `bowtie._app.MIN_NODE_VERSION`
 env:
   - PYTHON_VERSION=3.6 NODE_VERSION=10
   - PYTHON_VERSION=3.7 NODE_VERSION=12
