@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Upload, Icon, LocaleProvider } from 'antd';
+import { Upload, Icon, ConfigProvider } from 'antd';
 import enUS from 'antd/lib/locale-provider/en_US';
 
 const Dragger = Upload.Dragger;
@@ -13,7 +13,7 @@ export default class AntUpload extends React.Component {
 
     render() {
         return (
-            <LocaleProvider locale={enUS}>
+            <ConfigProvider locale={enUS}>
                 <Dragger action={'upload' + this.props.uuid} multiple={this.props.multiple}>
                     <p className="ant-upload-drag-icon">
                         <Icon type="inbox" />
@@ -21,7 +21,7 @@ export default class AntUpload extends React.Component {
                     <p className="ant-upload-text">Click or drag file to this area to upload</p>
                     <p className="ant-upload-hint">Support for a single or bulk upload.</p>
                 </Dragger>
-            </LocaleProvider>
+            </ConfigProvider>
         );
     }
 }

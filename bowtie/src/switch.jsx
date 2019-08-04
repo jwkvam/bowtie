@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Switch, LocaleProvider } from 'antd';
+import { Switch, ConfigProvider } from 'antd';
 import enUS from 'antd/lib/locale-provider/en_US';
 import { storeState } from './utils';
 
@@ -35,13 +35,13 @@ export default class Toggle extends React.Component {
 
     render() {
         return (
-            <LocaleProvider locale={enUS}>
+            <ConfigProvider locale={enUS}>
                 <Switch
                     checked={this.state.checked}
                     defaultChecked={this.props.defaultChecked}
                     onChange={this.handleChange}
                 />
-            </LocaleProvider>
+            </ConfigProvider>
         );
     }
 }

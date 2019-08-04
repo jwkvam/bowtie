@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { DatePicker, LocaleProvider } from 'antd';
+import { DatePicker, ConfigProvider } from 'antd';
 import enUS from 'antd/lib/locale-provider/en_US';
 const { MonthPicker, RangePicker } = DatePicker;
 import { storeState } from './utils';
@@ -44,36 +44,36 @@ export default class PickDates extends React.Component {
     render() {
         if (this.props.date) {
             return (
-                <LocaleProvider locale={enUS}>
+                <ConfigProvider locale={enUS}>
                     <DatePicker
                         style={{ width: '100%' }}
                         value={this.state.value}
                         onChange={this.handleChange}
                         locale={enUS}
                     />
-                </LocaleProvider>
+                </ConfigProvider>
             );
         } else if (this.props.month) {
             return (
-                <LocaleProvider locale={enUS}>
+                <ConfigProvider locale={enUS}>
                     <MonthPicker
                         style={{ width: '100%' }}
                         value={this.state.value}
                         onChange={this.handleChange}
                         locale={enUS}
                     />
-                </LocaleProvider>
+                </ConfigProvider>
             );
         } else {
             return (
-                <LocaleProvider locale={enUS}>
+                <ConfigProvider locale={enUS}>
                     <RangePicker
                         style={{ width: '100%' }}
                         value={this.state.value}
                         onChange={this.handleChange}
                         locale={enUS}
                     />
-                </LocaleProvider>
+                </ConfigProvider>
             );
         }
     }

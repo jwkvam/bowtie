@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Table, LocaleProvider } from 'antd';
+import { Table, ConfigProvider } from 'antd';
 import enUS from 'antd/lib/locale-provider/en_US';
 import { storeState } from './utils';
 
@@ -43,7 +43,7 @@ export default class AntTable extends React.Component {
 
     render() {
         return (
-            <LocaleProvider locale={enUS}>
+            <ConfigProvider locale={enUS}>
                 <Table
                     dataSource={this.state.data}
                     columns={this.state.columns}
@@ -53,7 +53,7 @@ export default class AntTable extends React.Component {
                     style={{ width: '100%' }}
                     scroll={{ y: false }}
                 />
-            </LocaleProvider>
+            </ConfigProvider>
         );
     }
 }
