@@ -40,3 +40,6 @@ monkeytype:
 
 outdated:
 	cd bowtie/src && yarn --ignore-engines install && yarn outdated
+
+black:
+	black -S -l 100 -t py36 bowtie

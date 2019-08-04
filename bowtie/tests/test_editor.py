@@ -12,15 +12,19 @@ from bowtie.tests.utils import reset_uuid, server_check
 
 reset_uuid()
 
-mark = Markdown('''
+mark = Markdown(
+    '''
 # top
 ## middle
 
 [link]('hello.html')
-''')
-side = Markdown('''
+'''
+)
+side = Markdown(
+    '''
 # sideheader
-''')
+'''
+)
 text = Textbox(area=True)
 
 

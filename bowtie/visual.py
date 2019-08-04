@@ -32,11 +32,11 @@ class Table(_Visual):
     _TEMPLATE = 'table.jsx'
     _COMPONENT = 'AntTable'
     _PACKAGE = None
-    _ATTRS = ('columns={{{columns}}} '
-              'resultsPerPage={{{results_per_page}}}')
+    _ATTRS = 'columns={{{columns}}} ' 'resultsPerPage={{{results_per_page}}}'
 
-    def __init__(self, data=None, columns: Optional[List[Union[int, str]]] = None,
-                 results_per_page: int = 10) -> None:
+    def __init__(
+        self, data=None, columns: Optional[List[Union[int, str]]] = None, results_per_page: int = 10
+    ) -> None:
         """Create a table and optionally initialize the data.
 
         Parameters
@@ -58,18 +58,12 @@ class Table(_Visual):
 
         self.results_per_page = results_per_page
 
-        self._comp = self._tag.format(
-            columns=self.columns,
-            results_per_page=self.results_per_page
-        )
+        self._comp = self._tag.format(columns=self.columns, results_per_page=self.results_per_page)
 
     @staticmethod
     def _make_columns(columns: List[Union[int, str]]) -> List[Dict]:
         """Transform list of columns into AntTable format."""
-        return [dict(title=str(c),
-                     dataIndex=str(c),
-                     key=str(c))
-                for c in columns]
+        return [dict(title=str(c), dataIndex=str(c), key=str(c)) for c in columns]
 
     @staticmethod
     def _make_data(data) -> Tuple[List[Dict], List[Dict]]:
@@ -178,9 +172,7 @@ class SVG(_Visual):
         """
         super().__init__()
         self.preserve_aspect_ratio = preserve_aspect_ratio
-        self._comp = self._tag.format(
-            preserve_aspect_ratio=jsbool(self.preserve_aspect_ratio)
-        )
+        self._comp = self._tag.format(preserve_aspect_ratio=jsbool(self.preserve_aspect_ratio))
 
     # pylint: disable=no-self-use
     def do_image(self, image):
@@ -244,9 +236,7 @@ class Plotly(_Visual):
             init = dict(data=[], layout={'autosize': False})
         self.init = init
 
-        self._comp = self._tag.format(
-            init=jdumps(self.init)
-        )
+        self._comp = self._tag.format(init=jdumps(self.init))
 
     # Events
 

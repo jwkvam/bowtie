@@ -33,13 +33,13 @@ def get_notebook_name() -> str:
 
     """
     kernel_id = re.search(  # type: ignore
-        'kernel-(.*).json',
-        ipykernel.connect.get_connection_file()
+        'kernel-(.*).json', ipykernel.connect.get_connection_file()
     ).group(1)
     servers = list_running_servers()
     for server in servers:
-        response = requests.get(urljoin(server['url'], 'api/sessions'),
-                                params={'token': server.get('token', '')})
+        response = requests.get(
+            urljoin(server['url'], 'api/sessions'), params={'token': server.get('token', '')}
+        )
         for session in json.loads(response.text):
             if session['kernel']['id'] == kernel_id:
                 relative_path = session['notebook']['path']
@@ -144,7 +144,9 @@ class BowtieMagic(Magics):
         time.sleep(5)
 
         clear_output()
-        display(HTML(
-            f'<iframe src=http://localhost:9991 width={width} height={height} '
-            f'frameBorder={border}></iframe>'
-        ))
+        display(
+            HTML(
+                f'<iframe src=http://localhost:9991 width={width} height={height} '
+                f'frameBorder={border}></iframe>'
+            )
+        )

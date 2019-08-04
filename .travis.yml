@@ -14,6 +14,7 @@ addons:
       - libenchant-dev
       - libnss3
 
+# keep these aligned with `bowtie._app.MIN_NODE_VERSION`
 env:
   - PYTHON_VERSION=3.6 NODE_VERSION=10
   - PYTHON_VERSION=3.7 NODE_VERSION=12
@@ -48,18 +49,19 @@ install:
   - source activate test-environment
   - pip install --upgrade pip
   - pip install -r test-requirements.txt --progress-bar=off
-  - wget https://chromedriver.storage.googleapis.com/74.0.3729.6/chromedriver_linux64.zip
+  - wget https://chromedriver.storage.googleapis.com/76.0.3809.68/chromedriver_linux64.zip
   - unzip chromedriver_linux64.zip
   - chmod +x chromedriver
   - mv -f chromedriver $HOME/.yarn/bin
-  - wget https://github.com/errata-ai/vale/releases/download/v1.4.0/vale_1.4.0_Linux_64-bit.tar.gz
-  - tar xvf vale_1.4.0_Linux_64-bit.tar.gz
+  - wget https://github.com/errata-ai/vale/releases/download/v1.7.0/vale_1.7.0_Linux_64-bit.tar.gz
+  - tar xvf vale_1.7.0_Linux_64-bit.tar.gz
 
 script:
   - docker run --rm -i lukasmartinelli/hadolint hadolint --ignore DL3008 --ignore DL3013 - < Dockerfile
   - make eslint
   - cd doc && make spelling && cd ..
   - ./vale --glob='*.rst' doc
+  - black --check -S -l 100 -t py36 bowtie
   - make static
   - make test
 
