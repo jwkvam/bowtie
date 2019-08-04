@@ -58,7 +58,7 @@ _Import = namedtuple('_Import', ['module', 'component'])
 
 _DIRECTORY = Path('build')
 _WEBPACK = './node_modules/.bin/webpack'
-_MIN_NODE_VERSION = 6, 11, 5
+_MIN_NODE_VERSION = 8, 10, 0
 
 
 class Scheduler:
