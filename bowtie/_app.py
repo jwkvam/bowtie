@@ -985,10 +985,10 @@ class App:
         if retval != 0:
             raise WebpackError('Error building with webpack')
 
-    def _endpoints(self):
-        def generate_sio_handler(main_event, supports):
+    def _endpoints(self) -> None:
+        def generate_sio_handler(main_event: Event, supports) -> Callable:
             # get all events from all subscriptions associated with this event
-            uniq_events = set()
+            uniq_events: Set[Event] = set()
             for events, _ in supports:
                 uniq_events.update(events)
             uniq_events.remove(main_event)
@@ -1037,7 +1037,7 @@ class App:
                 lambda: eventlet.spawn(copy_current_request_context(self._init))
             )
 
-        def gen_upload(func):
+        def gen_upload(func) -> Callable:
             def upload():
                 upfile = request.files['file']
                 retval = func(upfile.filename, upfile.stream)
@@ -1120,7 +1120,7 @@ class App:
         raise Exception()
 
 
-def node_version():
+def node_version() -> Tuple[int, ...]:
     """Get node version."""
     version = check_output(('node', '--version'))
     return tuple(int(x) for x in version.strip()[1:].split(b'.'))
