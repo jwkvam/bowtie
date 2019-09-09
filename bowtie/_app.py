@@ -35,10 +35,10 @@ from flask import (
     jsonify,
     request,
 )
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, emit
 from jinja2 import Environment, FileSystemLoader, ChoiceLoader
 
-from bowtie._component import Event, Component, COMPONENT_REGISTRY
+from bowtie._component import Event, Component, COMPONENT_REGISTRY, SEPARATOR, pack
 from bowtie.pager import Pager
 from bowtie.exceptions import (
     GridIndexError,
@@ -451,6 +451,19 @@ class View:
         self.layout: Optional[Callable] = None
         self._controllers: List[Component] = []
         self._spans: Dict[Span, Components] = {}
+
+    def assign(self, span: Span, components: Union[Component, Sequence[Component]]):
+        event = f'{self._uuid}{SEPARATOR}assign'
+        if isinstance(components, Component):
+            components = [components]
+        payload = {'data': pack((span, [x._uuid for x in components]))}
+
+        if flask.has_request_context():
+            emit(event, payload)
+        else:
+            sio = flask.current_app.extensions['socketio']
+            sio.emit(event, payload)
+        eventlet.sleep()
 
     def _all_components(self) -> Generator[Component, None, None]:
         yield from self._controllers

@@ -24,11 +24,12 @@ def _message(status, content):
 
     """
     event = f'message.{status}'
+    payload = {'data': pack(content)}
     if flask.has_request_context():
-        emit(event, dict(data=pack(content)))
+        emit(event, payload)
     else:
         sio = flask.current_app.extensions['socketio']
-        sio.emit(event, dict(data=pack(content)))
+        sio.emit(event, payload)
     eventlet.sleep()
 
 

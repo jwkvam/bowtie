@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 
 import { components } from './components';
 import { str2ints } from './utils';
+import { socket } from './components';
 
 export class View extends React.Component {
     constructor(props) {
@@ -17,6 +18,20 @@ export class View extends React.Component {
             controllers: this.props.controllers,
             sidebar: this.props.sidebar,
         };
+    }
+
+    setSpan = data => {
+        // var arr = new Uint8Array(data['key']);
+        // var key = msgpack.decode(arr);
+        var value = new Uint8Array(data['data']);
+        console.log('value    ');
+        console.log(value);
+        // this.state.spans //].setItem('cache' + key, value);
+    };
+
+    componentDidMount() {
+        var uuid = this.props.uuid;
+        socket.on(uuid + '#assign', this.setSpan);
     }
 
     render() {

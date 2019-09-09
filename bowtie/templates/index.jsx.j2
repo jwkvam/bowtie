@@ -82,7 +82,7 @@ class Dashboard extends React.Component {
                             exact
                             {% endif %}
                             path='{{ route.path }}'
-                            render={() => 
+                            render={() =>
                                     <View
                                         uuid={'{{route.view._uuid}}'}
                                         background_color={'{{route.view.background_color}}'}
@@ -100,7 +100,7 @@ class Dashboard extends React.Component {
                                            ],
                                         {% endfor %}
                                         {{ '}}'}}
-                                        controllers={[ 
+                                        controllers={[
                                         {% for component in route.view._controllers %}
                                             {{ component._uuid }},
                                         {% endfor %}
