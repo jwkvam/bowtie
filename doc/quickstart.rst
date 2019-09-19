@@ -27,7 +27,8 @@ If you use ``pip``, you can install with::
 
 To install bleeding edge you can use `flit <http://flit.readthedocs.io/en/latest/index.html>`_, to install::
 
-    flit install
+    pip install flit
+    flit installfrom github:jwkvam/bowtie
 
 Install Yarn
 ------------
